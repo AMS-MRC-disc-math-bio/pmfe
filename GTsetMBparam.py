@@ -2,19 +2,14 @@
 import sys, argparse, os, shutil, fileinput
 
 def main(argv):
-    # Set up filename variables and process arguments
-    paramfile = ''
-    turnerdir = ''
-    outputdir = ''
-    
+    # Set up and process arguments   
     parser = argparse.ArgumentParser(description="Set up GTfold with specified multibranch energy parameters")
-
-    parser.add_argument("-p", "--paramfile", nargs=1, help="Multibranch vector file location", required=True)
     parser.add_argument("-t", "--turnerdir", nargs=1, help="Location of original Turner99 DAT files", required=True)
     parser.add_argument("-o", "--outputdir", nargs=1, help="Output base directory to receive new Turner99 directory", required=True)
+    parser.add_argument("-p", "--paramfile", nargs='?', help="Multibranch vector file (or give parameters on stdin", default=sys.stdin, type=argparse.FileType('r'))
     
     args = vars(parser.parse_args())
-    paramfile = os.path.abspath(args["paramfile"][0])
+    paramfile = args["paramfile"]
     turnerdir = os.path.abspath(args["turnerdir"][0])
     outputdir = os.path.abspath(args["outputdir"][0])
     targetdir = os.path.join(outputdir, "Turner99")
@@ -23,18 +18,17 @@ def main(argv):
     copy_turner(turnerdir, targetdir)
 
     # Make a vector of floats of the new parameters
-    new_params = map(float, get_params(paramfile))
+    new_params = get_params(paramfile)
 
     # Modify the copied Turner99 files with the parameters
     write_new_params(targetdir, new_params)
-
+        
 def copy_turner(turnerdir, targetdir):
     shutil.rmtree(targetdir, ignore_errors=True)
     shutil.copytree(turnerdir, targetdir)
     
 def get_params(paramfile):
-    f = open(paramfile, 'r')
-    params = [str(round(float(p), 2)) for p in f.readline().split()]
+    params = [round(float(p), 2) for p in paramfile.readline().split()]
     return params
 
 def write_new_params(targetdir, new_params):
@@ -72,3 +66,7 @@ def process_word(word, d):
         # Some of the words are strings of nucleotides, which can't be cast to float
         pass
     return str(word)
+
+# Voodoo to make Python run the program
+if __name__ == "__main__":
+    main(sys.argv[1:])
