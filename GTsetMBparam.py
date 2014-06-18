@@ -28,7 +28,8 @@ def copy_turner(turnerdir, targetdir):
     shutil.copytree(turnerdir, targetdir)
     
 def get_params(paramfile):
-    params = [round(float(p), 2) for p in paramfile.readline().split()]
+    # Note that we negate the parameters since GTfold is a minimizer
+    params = [-round(float(p), 2) for p in paramfile.readline().split()]
     return params
 
 def write_new_params(targetdir, new_params):
