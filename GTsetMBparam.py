@@ -1,8 +1,8 @@
 #!/usr/bin/env python
-
-import sys, argparse, os, shutil
+import sys, argparse, os, shutil, fileinput
 
 def main(argv):
+    # Set up filename variables and process arguments
     paramfile = ''
     turnerdir = ''
     outputdir = ''
@@ -19,11 +19,14 @@ def main(argv):
     outputdir = os.path.abspath(args["outputdir"][0])
     targetdir = os.path.join(outputdir, "Turner99")
 
+    # Copy the Turner99 data files into the new directory
     copy_turner(turnerdir, targetdir)
 
-    new_params = get_params(paramfile)
+    # Make a vector of floats of the new parameters
+    new_params = map(float, get_params(paramfile))
 
-    write_params(targetdir, new_params)
+    # Modify the copied Turner99 files with the parameters
+    write_new_params(targetdir, new_params)
 
 def copy_turner(turnerdir, targetdir):
     shutil.rmtree(targetdir, ignore_errors=True)
@@ -34,21 +37,38 @@ def get_params(paramfile):
     params = [str(round(float(p), 2)) for p in f.readline().split()]
     return params
 
-def write_params(targetdir, new_params):
-    miscfile = os.path.join(targetdir, "miscloop.DAT")
-    miscbak = os.path.join(targetdir, "miscloop.DAT.BAK")
+def write_new_params(targetdir, new_params):
+    # Locate the Turner99 files and build a generator of their absolute paths
+    files = (os.path.join(targetdir, file) for file in  os.listdir(targetdir))
+    miscfile = os.path.join(targetdir, "Turner99")
 
-    shutil.move(miscfile, miscbak)
+    # Open all the files and munge them using the new parameters
+    input = fileinput.input(files, inplace=True)
+    for line in input:
+        rewrite_line(line, new_params)
+    input.close()
 
-    newline = "\t".join(new_params) + "\n"
-    
-    source = open(miscbak, 'r')
-    target = open(miscfile, 'w')
-    
-    lines = source.readlines()
-    lines[3] = newline # We believe the third line of this file controls the multibranch loops
+def rewrite_line(line, new_params):
+    # Each line of the file is made of up "words", which may be numbers or other string data.
+    # We first split them into a list.
+    words = line.split()
 
-    target.writelines(lines)    
+    # If this is the multibranch parameters, replace them with a, b, c
+    if words == ["3.40", ".00", ".40"]:
+        newwords = map(str, new_params[:3])
+    # Otherwise, multiply all the numerical words by d
+    else:
+        newwords = [process_word(word, new_params[3]) for word in words]
 
-if __name__ == "__main__":
-    main(sys.argv[1:])
+    # Finally, we build a new line separated by tab characters.
+    # The semantics of fileinput require that we print the desired line to stdout.
+    print "\t".join(newwords)
+
+def process_word(word, d):
+    try:
+        # Multiply the word by d if it's a number
+        word = d*float(word) 
+    except ValueError:
+        # Some of the words are strings of nucleotides, which can't be cast to float
+        pass
+    return str(word)
