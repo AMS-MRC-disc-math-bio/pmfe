@@ -10,16 +10,24 @@ def main(argv):
     
     args = vars(parser.parse_args())
     paramfile = args["paramfile"]
+   
     turnerdir = os.path.abspath(args["turnerdir"][0])
     outputdir = os.path.abspath(args["outputdir"][0])
+
+    setup_gt(turnerdir, outputdir, paramfile)
+    
+def setup_gt(turnerdir, outputdir, paramfile):    
+    # We separate out the program logic so this can be run from other Python scripts
+
+    # Define the target directory name
     targetdir = os.path.join(outputdir, "Turner99")
 
     # Copy the Turner99 data files into the new directory
     copy_turner(turnerdir, targetdir)
 
-    # Make a vector of floats of the new parameters
+    # Read the numerical values of the parameters
     new_params = get_params(paramfile)
-
+     
     # Modify the copied Turner99 files with the parameters
     write_new_params(targetdir, new_params)
         
