@@ -69,11 +69,18 @@ def rewrite_line(line, new_params):
 
 def process_word(word, d):
     try:
-        # Multiply the word by d if it's a number
-        word = d*float(word) 
+        # Leave the word alone if it's an integer
+        word = int(word)
+
     except ValueError:
-        # Some of the words are strings of nucleotides, which can't be cast to float
-        pass
+        try: 
+            # Multiply the word by d if it's a float
+            word = d*float(word) 
+            
+        except ValueError:
+            # Some of the words are strings of nucleotides, which can't be cast to float
+            pass
+            
     return str(word)
 
 # Voodoo to make Python run the program
