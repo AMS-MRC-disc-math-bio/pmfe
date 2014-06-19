@@ -1,0 +1,1 @@
+g++ -o iB4e main.cc BBpolytope.cc euclideanvector.cc faces.cc linalg.cc stack.cc -fpermissive
