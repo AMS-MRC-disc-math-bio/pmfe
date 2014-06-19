@@ -24,7 +24,7 @@ def run_gt(turnerdir, outputdir, paramfile, seqfile):
     GTsetMBparam.setup_gt_from_file(turnerdir, outputdir, paramfile)
 
     # Then we run GTfold on the specified sequence
-    subprocess.check_output(["gtmfe", "-p", os.path.join(outputdir, turnerdir), seqfile])
+    subprocess.check_output(["gtmfe", "-v", "-p", os.path.join(outputdir, turnerdir), seqfile])
     
 def run_scorer(turnerdir, outputdir, structfile):
     x, y, z, w = GTscorer.find_xyzw(turnerdir, outputdir, structfile)

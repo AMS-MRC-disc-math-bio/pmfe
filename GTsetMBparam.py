@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-import sys, argparse, os, shutil, fileinput, re
+import sys, argparse, os, shutil, fileinput, re, numpy
 
 def main(argv):
     # Set up and process arguments   
@@ -47,11 +47,18 @@ def write_new_params(targetdir, new_params):
     files = (os.path.join(targetdir, file) for file in  os.listdir(targetdir))
     miscfile = os.path.join(targetdir, "Turner99")
 
+    normed_params = normalize_params(new_params)
+
     # Open all the files and munge them using the new parameters
     input = fileinput.input(files, inplace=True)
     for line in input:
-        rewrite_line(line, new_params)
+        rewrite_line(line, normed_params)
     input.close()
+
+def normalize_params(parameters):
+    p = numpy.array(parameters)
+    pnorm = numpy.sqrt(p.dot(p))
+    return 100 * p/pnorm
 
 def rewrite_line(line, new_params):
     # Each line of the file is made of up "words", which may be numbers or other string data.
@@ -72,27 +79,33 @@ def rewrite_line(line, new_params):
 def process_word_generic(word, d):
     try:
         # Leave the word alone if it's an integer
-        word = int(word)
+        newword = str(int(word))
 
     except ValueError:
-        try: 
-            # Multiply the word by d if it's a float
-            word = d*float(word) 
-            
+        try:
+            if word == "inf":
+                # Leave inf as it is, no matter what
+                newword = '%7f' % float(word)
+            else:
+                # Multiply the word by d if it's a float
+                newnum = float(d)*float(word)
+                newword = '%.7f' % newnum
+
         except ValueError:
             # Some of the words are strings of nucleotides, which can't be cast to float
+            newword = word
             pass
             
-    return str(word)
+    return newword
 
 def process_word_abc(word, params):
     a, b, c = params
     if word == "3.40":
-        newword = round(float(a), 2)
+        newword = '%.7f' % float(a) 
     elif word == ".00":
-        newword = round(float(b), 2)
+        newword = '%.7f' % float(b) 
     elif word == ".40":
-        newword = round(float(c), 2)
+        newword = '%.7f' % float(c) 
     else:
         newword = word
 
