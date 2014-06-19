@@ -4,7 +4,7 @@ import GTsetMBparam, GTscorer, os, sys, argparse, subprocess
 def main(argv):
     # Set up variables for this program
     turnerdir = "Turner99"
-    outputdir = "output"
+    outputdir = "output/data"
     
     # Set up parameters
     parser = argparse.ArgumentParser(description="Run GTfold with specified a, b, c, d parameters for iB4e")
