@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-import GTsetMBparam, os, sys, argparse, subprocess
+import GTsetMBparam, GTscorer, os, sys, argparse, subprocess
 
 def main(argv):
     # Set up variables for this program
@@ -14,16 +14,21 @@ def main(argv):
     args = vars(parser.parse_args())
     paramfile = args["paramfile"]
     seqfile = args["sequence"][0]
+    structfile = os.path.splitext(seqfile)[0] + ".ct"
 
     run_gt(turnerdir, outputdir, paramfile, seqfile)
+    run_scorer(turnerdir, outputdir, structfile)
 
 def run_gt(turnerdir, outputdir, paramfile, seqfile):
     # First, we set up an environment for GTfold
-    GTsetMBparam.setup_gt(turnerdir, outputdir, paramfile)
+    GTsetMBparam.setup_gt_from_file(turnerdir, outputdir, paramfile)
 
     # Then we run GTfold on the specified sequence
-    print outputdir
-    subprocess.call(["gtmfe", "-p", os.path.join(outputdir, turnerdir), seqfile])
+    subprocess.check_output(["gtmfe", "-p", os.path.join(outputdir, turnerdir), seqfile])
+    
+def run_scorer(turnerdir, outputdir, structfile):
+    x, y, z, w = GTscorer.find_xyzw(turnerdir, outputdir, structfile)
+    print x, y, z, w
 
 # Voodoo to make Python run the program
 if __name__ == "__main__":

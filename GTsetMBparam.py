@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-import sys, argparse, os, shutil, fileinput
+import sys, argparse, os, shutil, fileinput, re
 
 def main(argv):
     # Set up and process arguments   
@@ -14,26 +14,28 @@ def main(argv):
     turnerdir = os.path.abspath(args["turnerdir"][0])
     outputdir = os.path.abspath(args["outputdir"][0])
 
-    setup_gt(turnerdir, outputdir, paramfile)
+    setup_gt_from_file(turnerdir, outputdir, paramfile)
     
-def setup_gt(turnerdir, outputdir, paramfile):    
-    # We separate out the program logic so this can be run from other Python scripts
+def setup_gt_from_file(turnerdir, outputdir, paramfile):
+    # Read the numerical values of the parameters
+    new_params = get_params(paramfile)
 
+    setup_gt_from_vec(turnerdir, outputdir, new_params)
+
+def copy_turner(turnerdir, targetdir):
+    shutil.rmtree(targetdir, ignore_errors=True)
+    shutil.copytree(turnerdir, targetdir)
+
+def setup_gt_from_vec(turnerdir, outputdir, new_params):
+    # We separate out the program logic so this can be run from other Python scripts
     # Define the target directory name
     targetdir = os.path.join(outputdir, "Turner99")
 
     # Copy the Turner99 data files into the new directory
     copy_turner(turnerdir, targetdir)
-
-    # Read the numerical values of the parameters
-    new_params = get_params(paramfile)
      
     # Modify the copied Turner99 files with the parameters
     write_new_params(targetdir, new_params)
-        
-def copy_turner(turnerdir, targetdir):
-    shutil.rmtree(targetdir, ignore_errors=True)
-    shutil.copytree(turnerdir, targetdir)
     
 def get_params(paramfile):
     # Note that we negate the parameters since GTfold is a minimizer
@@ -54,20 +56,20 @@ def write_new_params(targetdir, new_params):
 def rewrite_line(line, new_params):
     # Each line of the file is made of up "words", which may be numbers or other string data.
     # We first split them into a list.
-    words = line.split()
+    words = re.split(r'(\s+)', line.rstrip('\n'))
 
     # If this is the multibranch parameters, replace them with a, b, c
-    if words == ["3.40", ".00", ".40"]:
-        newwords = map(str, new_params[:3])
+    if "3.40" in words and ".00" in words and ".40" in words:
+        newwords = [process_word_abc(word, new_params[:3]) for word in words]
     # Otherwise, multiply all the numerical words by d
     else:
-        newwords = [process_word(word, new_params[3]) for word in words]
+        newwords = [process_word_generic(word, new_params[3]) for word in words]
 
     # Finally, we build a new line separated by tab characters.
     # The semantics of fileinput require that we print the desired line to stdout.
-    print "\t".join(newwords)
+    print ''.join(newwords)
 
-def process_word(word, d):
+def process_word_generic(word, d):
     try:
         # Leave the word alone if it's an integer
         word = int(word)
@@ -82,6 +84,19 @@ def process_word(word, d):
             pass
             
     return str(word)
+
+def process_word_abc(word, params):
+    a, b, c = params
+    if word == "3.40":
+        newword = round(float(a), 2)
+    elif word == ".00":
+        newword = round(float(b), 2)
+    elif word == ".40":
+        newword = round(float(c), 2)
+    else:
+        newword = word
+
+    return str(newword)
 
 # Voodoo to make Python run the program
 if __name__ == "__main__":
