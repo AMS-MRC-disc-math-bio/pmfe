@@ -47,18 +47,23 @@ def write_new_params(targetdir, new_params):
     files = (os.path.join(targetdir, file) for file in  os.listdir(targetdir))
     miscfile = os.path.join(targetdir, "Turner99")
 
-    normed_params = normalize_params(new_params)
+    normalized_params = normalize_params(new_params)
 
     # Open all the files and munge them using the new parameters
     input = fileinput.input(files, inplace=True)
     for line in input:
-        rewrite_line(line, normed_params)
+        rewrite_line(line, normalized_params)
     input.close()
 
 def normalize_params(parameters):
     p = numpy.array(parameters)
-    pnorm = numpy.sqrt(p.dot(p))
-    return 100 * p/pnorm
+    pnorm2 = p.dot(p)
+    
+    if pnorm2 > 10000:
+        result = 100*p/numpy.sqrt(pnorm2)
+    else:
+        result = p
+    return result
 
 def rewrite_line(line, new_params):
     # Each line of the file is made of up "words", which may be numbers or other string data.
