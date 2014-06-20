@@ -52,7 +52,8 @@ def build_sage_polytope_file(points, sagefile):
     file.write("poly = Polyhedron(points, base_ring=QQ)\n")
     file.write("slice = Polyhedron(eqns=[(1,0,0,0,1)])\n")
     file.write("fan = NormalFan(poly)\n")
-    file.write("regions = [slice.intersection(cone.polyhedron()) for cone in fan.cones()[-1]]")
+    file.write("regions = [slice.intersection(cone.polyhedron()) for cone in fan.cones()[-1]]\n")
+    file.write("regions = filter(lambda region: not region.is_empty(), regions)\n")
     file.close()
 
 # Voodoo to make Python run the program
