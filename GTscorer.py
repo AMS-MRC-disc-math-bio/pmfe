@@ -13,14 +13,14 @@ def main(argv):
     args = vars(parser.parse_args())
     structfile = args["structure"][0]
 
-    print find_xyzw(turnerdir, outputdir, structfile)
+    result = find_xyzw(turnerdir, outputdir, structfile)
 
 def find_xyzw(turnerdir, outputdir, structfile):
-
     x = run_scorer(turnerdir, outputdir, structfile, [1, 0, 0, 0])
     y = run_scorer(turnerdir, outputdir, structfile, [0, 1, 0, 0])
     z = run_scorer(turnerdir, outputdir, structfile, [0, 0, 1, 0])
     w = run_scorer(turnerdir, outputdir, structfile, [0, 0, 0, 1])
+
     return [x, y, z, w]
 
 def run_scorer(turnerdir, outputdir, seqfile, paramvec):
@@ -35,7 +35,7 @@ def run_scorer(turnerdir, outputdir, seqfile, paramvec):
     lastline = lines[-1]
     score = round(float(lastline.split()[3]), 2)
     return score
-
+    
 # Voodoo to make Python run the program
 if __name__ == "__main__":
     main(sys.argv[1:])

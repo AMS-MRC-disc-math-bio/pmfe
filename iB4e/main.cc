@@ -3,9 +3,9 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string>
-#include <string.h>
 #include <vector>
 #include <algorithm>
+#include <sstream>
 
 #include "BBpolytope.h"
 #include "euclideanvector.h"
@@ -23,9 +23,8 @@ using namespace std;
 class general_Polytope : public BBPolytope {
 
  public:
-  general_Polytope(int d, const char *call):BBPolytope(d){strcpy(optimizer_caller, call);};
+  general_Polytope(int d):BBPolytope(d){;};
   void BlackBoxOptimize(EuclideanVector *objective, EuclideanVector *solution);
-  char optimizer_caller[500];
 };
 
 
@@ -34,7 +33,7 @@ int main(const int argc, const char * argv[])
   int dim;
   sscanf(argv[1],"%d",&dim);
 
-  general_Polytope polytope(dim, argv[2]); // second arg is the call string
+  general_Polytope polytope(dim);
   polytope.Build();
 
   return 0;
@@ -43,28 +42,30 @@ int main(const int argc, const char * argv[])
 
 void general_Polytope::BlackBoxOptimize(EuclideanVector *objective, EuclideanVector *solution) 
 {
-
-  char optimizer_call[1000];
-
-  ofstream out("./objective");    
-
+  cout << "[";
   for(int i = 0; i < dimension; i++) {
     #ifdef GMP
-      out << objective->data[i].get_str(10) << " ";
+      cout << objective->data[i].get_str(10) << ",";
     #else
-      out << objective->data[i] << " ";
+      cout << objective->data[i] << ",";
     #endif
   }
-  out.close();
+  cout << "]\n";
+
+  string line;
+  getline(cin, line);
+  cin.clear();
+
+  string buf;
+  stringstream ss(line);
+  vector<long> tokens;
+
+  while (ss >> buf)
+    tokens.push_back(atol(buf.c_str()));
   
-  sprintf(optimizer_call, "cat ./objective | %s  > ./solution ", optimizer_caller); 
-  system(optimizer_call);
-
-  ifstream in("./solution");
-  for(int i = 0; i < dimension; i++)
-      in >> solution->data[i]; // does this work with GMP ????
-  in.close();
-
+  for(int i = 0; i < dimension; i++){
+    solution->data[i] = tokens[i];
+  }
+ 
   return;
-
 }

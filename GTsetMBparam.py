@@ -56,11 +56,11 @@ def write_new_params(targetdir, new_params):
     input.close()
 
 def normalize_params(parameters):
-    p = numpy.array(parameters)
-    pnorm2 = p.dot(p)
+    p = numpy.float_(parameters)
+    pnorm = numpy.linalg.norm(p)
     
-    if pnorm2 > 10000:
-        result = 100*p/numpy.sqrt(pnorm2)
+    if pnorm > 100:
+        result = 100*p/pnorm
     else:
         result = p
     return result
@@ -90,11 +90,11 @@ def process_word_generic(word, d):
         try:
             if word == "inf":
                 # Leave inf as it is, no matter what
-                newword = '%7f' % float(word)
+                newword = word
             else:
                 # Multiply the word by d if it's a float
-                newnum = float(d)*float(word)
-                newword = '%.7f' % newnum
+                newnum = d*float(word)
+                newword = '%.2f' % newnum
 
         except ValueError:
             # Some of the words are strings of nucleotides, which can't be cast to float
@@ -106,11 +106,11 @@ def process_word_generic(word, d):
 def process_word_abc(word, params):
     a, b, c = params
     if word == "3.40":
-        newword = '%.7f' % float(a) 
+        newword = '%.2f' % float(a) 
     elif word == ".00":
-        newword = '%.7f' % float(b) 
+        newword = '%.2f' % float(b) 
     elif word == ".40":
-        newword = '%.7f' % float(c) 
+        newword = '%.2f' % float(c) 
     else:
         newword = word
 
