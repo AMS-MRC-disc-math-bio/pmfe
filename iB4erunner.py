@@ -40,6 +40,9 @@ def main(argv):
         points.append(scores)
         result = " ".join(map(str, scores)) + "\n"
 
+        # Clean up the temporary structure file
+        os.remove(structfile)
+
         # Send the score vector to iB4e
         iB4e.stdin.write(result)
 
