@@ -1,0 +1,10 @@
+*.seq
+*.ct
+*.poly
+*.o
+*.pyc
+iB4e
+objective
+solution
+output/
+
