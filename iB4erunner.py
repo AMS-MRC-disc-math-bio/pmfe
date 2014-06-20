@@ -13,6 +13,7 @@ def main(argv):
 
     turnerdir = "Turner99"
     outputdir = "output/data"
+    scoredir = "output/scoring"
 
     points = []
 
@@ -36,7 +37,7 @@ def main(argv):
         structfile = GTrunner.run_gt(turnerdir, outputdir, seqfile)
         
         # Score the structure using GTfold
-        scores = GTscorer.find_xyzw(turnerdir, outputdir, structfile)
+        scores = GTscorer.find_xyzw(turnerdir, scoredir, structfile)
         points.append(scores)
         result = " ".join(map(str, scores)) + "\n"
 

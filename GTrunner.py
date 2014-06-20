@@ -5,6 +5,7 @@ def main(argv):
     # Set up variables for this program
     turnerdir = "Turner99"
     outputdir = "output/data"
+    scoredir = "output/scoring"
     
     # Set up parameters
     parser = argparse.ArgumentParser(description="Run GTfold with specified a, b, c, d parameters for iB4e")
@@ -28,10 +29,6 @@ def run_gt(turnerdir, outputdir, seqfile):
 
     structfile = os.path.splitext(seqfile)[0] + ".ct"
     return structfile
-    
-def run_scorer(turnerdir, outputdir, structfile):
-    x, y, z, w = GTscorer.find_xyzw(turnerdir, outputdir, structfile)
-    return [x, y, z, w]
 
 def write_polyfile_vector(vector, polyfile):
     # Write out the vector in Polymake format with homogenous coordinates

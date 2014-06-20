@@ -4,7 +4,7 @@ import GTsetMBparam, os, sys, argparse, subprocess
 def main(argv):    
     # Set up variables for this program
     turnerdir = "Turner99"
-    outputdir = "output/data"
+    scoredir = "output/scoring"
 
     # Set up parameters
     parser = argparse.ArgumentParser(description="Calculate multibranch profile for an MFE structure")
@@ -13,22 +13,29 @@ def main(argv):
     args = vars(parser.parse_args())
     structfile = args["structure"][0]
 
-    result = find_xyzw(turnerdir, outputdir, structfile)
+    result = find_xyzw(turnerdir, scoredir, structfile)
 
-def find_xyzw(turnerdir, outputdir, structfile):
-    x = run_scorer(turnerdir, outputdir, structfile, [1, 0, 0, 0])
-    y = run_scorer(turnerdir, outputdir, structfile, [0, 1, 0, 0])
-    z = run_scorer(turnerdir, outputdir, structfile, [0, 0, 1, 0])
-    w = run_scorer(turnerdir, outputdir, structfile, [0, 0, 0, 1])
+def find_xyzw(turnerdir, scoredir, structfile):
+    x = run_vscorer(turnerdir, scoredir, "x", [1,0,0,0], structfile)
+    y = run_vscorer(turnerdir, scoredir, "y", [0,1,0,0], structfile)
+    z = run_vscorer(turnerdir, scoredir, "z", [0,0,1,0], structfile)
+    w = run_vscorer(turnerdir, scoredir, "w", [0,0,0,1], structfile)
 
     return [x, y, z, w]
 
-def run_scorer(turnerdir, outputdir, seqfile, paramvec):
+def run_vscorer(turnerdir, scoredir, vname, paramvec, structfile):
+    vdir = os.path.join(scoredir, vname, "data")
+    if not os.path.isfile(os.path.join(vdir, "Turner99", "miscloop.dat")):
+        setup_scorer(turnerdir, vdir, paramvec)
+
+    return run_scorer(vdir, structfile)
+
+def setup_scorer(turnerdir, outputdir, paramvec):
     # First, we set up an environment with the specified parameters
     GTsetMBparam.setup_gt_from_vec(turnerdir, outputdir, paramvec)
 
-    # Then we run RNAScoring using those parameters
-    result = subprocess.check_output(["RNAScoring", "--param-dir", os.path.split(outputdir)[0] + "/", seqfile])
+def run_scorer(outputdir, structfile):
+    result = subprocess.check_output(["RNAScoring", "--param-dir", os.path.split(outputdir)[0] + "/", structfile])
 
     # The last line of the output contains the desired score
     lines = result.decode("utf-8").splitlines()
