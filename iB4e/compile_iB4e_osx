@@ -1,0 +1,1 @@
+/opt/local/bin/g++-mp-4.9 -o iB4e main.cc BBpolytope.cc euclideanvector.cc faces.cc linalg.cc stack.cc -fpermissive
