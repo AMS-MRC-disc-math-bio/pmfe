@@ -17,17 +17,8 @@ You can obtain the code in two ways:
 1. By cloning this repository to your computer, or
 1. By downloading a ZIP archive of the current state.
 
-### Linux installation
 Once you have obtained the code, you will need to build our custom version of iB4e.
 Run the `compile_iB4e` script in the `iB4e` directory to set it up.
-This requires the g++ compiler from the GCC suite, which is available in standard Linux distributions.
-
-### OSX installation
-
-`iB4e` *requires* the g++ compiler from the GCC suite.
-The Clang compiler included in Mac OSX *will not work*.
-You can install g++ using [Macports][macports].
-Once you do, run the `compile_iB4e_osx` script in the `iB4e` directory to set it up.
 
 ## Usage
 
