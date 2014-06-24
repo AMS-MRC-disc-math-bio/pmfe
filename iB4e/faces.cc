@@ -23,6 +23,7 @@
 #include "faces.h"
 #include <iostream>
 #include <stdlib.h>
+#include <stdint.h>
 
 //#define DEBUG
 
@@ -413,13 +414,13 @@ void Face::SortVertices()
 {
   EuclideanVector *swap;
 
-  size_t compare1, compare2;
+  uintptr_t compare1, compare2;
 
   for(int i = 0; i < numvertices; i++)
   for(int j = 0; j < numvertices; j++)
   {
-    compare1 = (size_t)((void *)(vertices[i]));
-    compare2 = (size_t)((void *)(vertices[j]));
+    compare1 = (uintptr_t)((void *)(vertices[i]));
+    compare2 = (uintptr_t)((void *)(vertices[j]));
     if(compare1 < compare2) {
       swap = vertices[i];
       vertices[i] = vertices[j];

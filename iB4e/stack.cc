@@ -1,5 +1,6 @@
 
 #include <stdlib.h>
+#include <stdint.h>
 
 #include "stack.h"
 #include "faces.h"
@@ -76,7 +77,7 @@ int sortcompare(void *a, void *b)
   face1 = (Face *) a; 
   face2 = (Face *) b;
 
-  size_t compare1, compare2;
+  uintptr_t compare1, compare2;
 
   if(face1->numvertices != face2->numvertices) {
     cerr << "Number of vertices mismatch in sortcompare!!";
@@ -89,8 +90,8 @@ int sortcompare(void *a, void *b)
 
   for(int i = 0; i < face1->numvertices; i++) {
 
-    compare1 = (size_t)(face1->vertices[i]);
-    compare2 = (size_t)(face2->vertices[i]);
+    compare1 = (uintptr_t)(face1->vertices[i]);
+    compare2 = (uintptr_t)(face2->vertices[i]);
 
     #ifdef DEBUG
     cout << "\n" << compare1 << " vs " << compare2;
