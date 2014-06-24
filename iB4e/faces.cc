@@ -178,7 +178,8 @@ void Face::AddLIVertexToLowDim(EuclideanVector *v)
   }
 
   if((numvertices) > 1 && (numvertices <= ambientdimension)) {
-    EuclideanVector orthobasis[ambientdimension];
+    //EuclideanVector orthobasis[ambientdimension];
+    EuclideanVector *orthobasis = new EuclideanVector[ambientdimension];
 
     for(int i = 0; i < ambientdimension; i++)
       orthobasis[i].Constructor(ambientdimension);
@@ -368,7 +369,8 @@ Face *  Face::AddFacetWithoutVertex(int k)
 void Face::ComputeNormalVectorAwayFromPoint(EuclideanVector *p) 
 {
 
-  EuclideanVector orthobasis[ambientdimension];
+  //EuclideanVector orthobasis[ambientdimension];
+  EuclideanVector *orthobasis = new EuclideanVector[ambientdimension];
 
   for(int i = 0; i < ambientdimension; i++)
     orthobasis[i].Constructor(ambientdimension);
@@ -411,13 +413,13 @@ void Face::SortVertices()
 {
   EuclideanVector *swap;
 
-  int compare1, compare2;
+  size_t compare1, compare2;
 
   for(int i = 0; i < numvertices; i++)
   for(int j = 0; j < numvertices; j++)
   {
-    compare1 = (int)((void *)(vertices[i]));
-    compare2 = (int)((void *)(vertices[j]));
+    compare1 = (size_t)((void *)(vertices[i]));
+    compare2 = (size_t)((void *)(vertices[j]));
     if(compare1 < compare2) {
       swap = vertices[i];
       vertices[i] = vertices[j];
