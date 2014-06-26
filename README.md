@@ -18,7 +18,7 @@ You can obtain the code in two ways:
 1. By downloading a ZIP archive of the current state.
 
 Once you have obtained the code, you will need to build our custom version of iB4e.
-Run the `compile_iB4e` script in the `iB4e` directory to set it up.
+Run `make` in the `iB4e` directory to set it up.
 
 ## Usage
 
