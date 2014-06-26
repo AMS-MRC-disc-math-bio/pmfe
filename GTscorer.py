@@ -14,6 +14,7 @@ def main(argv):
     structfile = args["structure"][0]
 
     result = find_xyzw(turnerdir, scoredir, structfile)
+    print result
 
 def find_xyzw(turnerdir, scoredir, structfile):
     x = run_vscorer(turnerdir, scoredir, "x", [1,0,0,0], structfile)
