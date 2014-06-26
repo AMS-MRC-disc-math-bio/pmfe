@@ -23,6 +23,11 @@ def main(argv):
                             stderr=subprocess.PIPE,
                             shell=False)
 
+    # Compute classical scores for later reference
+    classical_struct = GTrunner.run_gt(turnerdir, "", seqfile)
+    classical_scores = GTscorer.find_xyzw(turnerdir, scoredir, classical_struct)
+
+    # Now turn iB4e loose to compute the geometry
     while True:
         # At the end of the file, we'll receive an EOF character, which makes eval() choke
         try:
@@ -47,17 +52,23 @@ def main(argv):
         # Send the score vector to iB4e
         iB4e.stdin.write(result)
 
-    build_sage_polytope_file(points, sagefile)
+    # Now build a Sage file encoding the desired data
+    build_sage_polytope_file(classical_scores, points, sagefile)
+    print "Wrote Sage polytope file " + sagefile
     
-def build_sage_polytope_file(points, sagefile):
+def build_sage_polytope_file(classical_scores, points, sagefile):
     pointstring = ", ".join(str(point) for point in points)
     file = open(sagefile, mode='w+')
     file.write("points = [" + pointstring + "]\n")
+    file.write("classical_scores = " + str(classical_scores) + "\n")
     file.write("poly = Polyhedron(points, base_ring=QQ)\n")
     file.write("slice = Polyhedron(eqns=[(1,0,0,0,1)])\n")
     file.write("fan = NormalFan(poly)\n")
-    file.write("regions = [slice.intersection(cone.polyhedron()) for cone in fan.cones()[-1]]\n")
-    file.write("regions = filter(lambda region: not region.is_empty(), regions)\n")
+    file.write("regions4 = [slice.intersection(cone.polyhedron()) for cone in fan.cones()[-1]]\n")
+    file.write("regions4 = filter(lambda region: not region.is_empty(), regions4)\n")
+    file.write("vecprojector = lambda vec: vec[:-1]\n")
+    file.write("polyprojector = lambda polyslice: Polyhedron(ieqs = [vecprojector(ieq) for ieq in polyslice.Hrepresentation()[1:]])\n")
+    file.write("regions = [polyprojector(region) for region in regions4]\n")
     file.close()
 
 # Voodoo to make Python run the program
