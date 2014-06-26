@@ -60,7 +60,7 @@ def normalize_params(parameters):
     pnorm = numpy.linalg.norm(p)
     
     if pnorm > 100:
-        result = 100*p/pnorm
+        result = numpy.rint(100*p/pnorm)
     else:
         result = p
     return result
