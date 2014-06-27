@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 import GTsetMBparam, GTscorer, os, sys, argparse, subprocess
 
+gtmfe_path = "gtmfe"
+
 def main(argv):
     # Set up variables for this program
     turnerdir = "Turner99"
@@ -24,7 +26,7 @@ def main(argv):
 
 def run_gt(turnerdir, outputdir, seqfile):
     # Then we run GTfold on the specified sequence
-    subprocess.check_output(["gtmfe", "-p", os.path.join(outputdir, turnerdir), seqfile])
+    subprocess.check_output([gtmfe_path, "-p", os.path.join(outputdir, turnerdir), seqfile])
 
     structfile = os.path.splitext(seqfile)[0] + ".ct"
     return structfile
