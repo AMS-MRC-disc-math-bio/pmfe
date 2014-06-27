@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-import GTsetMBparam, os, sys, argparse, subprocess
+import GTsetMBparam, os, sys, argparse, subprocess, logging
 
 RNAScoring_path = "RNAScoring"
 
@@ -11,12 +11,20 @@ def main(argv):
     # Set up parameters
     parser = argparse.ArgumentParser(description="Calculate multibranch profile for an MFE structure")
     parser.add_argument("-s", "--structure", nargs=1, help="Structure to profile", required=True)
+    parser.add_argument("-v", "--verbose", help="Output debugging information", action="store_true")
 
     args = vars(parser.parse_args())
     structfile = args["structure"][0]
+    verbose = args["verbose"]
+
+    logger = logging.getLogger()
+    if verbose:
+        logger.setLevel(logging.DEBUG)
+    else:
+        logger.setLevel(logging.INFO)
 
     result = find_xyzw(turnerdir, scoredir, structfile)
-    print result
+    logging.info("Scores: " + str(result))
 
 def find_xyzw(turnerdir, scoredir, structfile):
     x = run_vscorer(turnerdir, scoredir, "x", [1,0,0,0], structfile, as_float=False)
@@ -24,13 +32,17 @@ def find_xyzw(turnerdir, scoredir, structfile):
     z = run_vscorer(turnerdir, scoredir, "z", [0,0,1,0], structfile, as_float=False)
     w = run_vscorer(turnerdir, scoredir, "w", [0,0,0,1], structfile, as_float=True)
 
-    return [x, y, z, w]
+    res = [x, y, z, w]
+    logging.debug("Score for " + str(structfile) + " is " + str(res))
+    return res
 
 def run_vscorer(turnerdir, scoredir, vname, paramvec, structfile, as_float=True):
     vdir = os.path.join(scoredir, vname, "data")
     if not os.path.isfile(os.path.join(vdir, "Turner99", "miscloop.dat")):
         setup_scorer(turnerdir, vdir, paramvec)
 
+    logging.debug("Scoring structure " + str(structfile) + " with parameters " + str(paramvec))
+        
     return run_scorer(vdir, structfile, as_float)
 
 def setup_scorer(turnerdir, outputdir, paramvec):

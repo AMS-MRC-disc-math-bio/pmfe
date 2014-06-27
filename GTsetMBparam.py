@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-import sys, argparse, os, shutil, fileinput, re, numpy
+import sys, argparse, os, shutil, fileinput, re, numpy, logging
 
 def main(argv):
     # Set up and process arguments   
@@ -7,12 +7,20 @@ def main(argv):
     parser.add_argument("-t", "--turnerdir", nargs=1, help="Location of original Turner99 DAT files", required=True)
     parser.add_argument("-o", "--outputdir", nargs=1, help="Output base directory to receive new Turner99 directory", required=True)
     parser.add_argument("-p", "--paramfile", nargs='?', help="Multibranch vector file (or give parameters on stdin", default=sys.stdin, type=argparse.FileType('r'))
+    parser.add_argument("-v", "--verbose", help="Output debugging information", action="store_true")
     
     args = vars(parser.parse_args())
     paramfile = args["paramfile"]
    
     turnerdir = os.path.abspath(args["turnerdir"][0])
     outputdir = os.path.abspath(args["outputdir"][0])
+    verbose = args["verbose"]
+
+    logger = logging.getLogger()
+    if verbose:
+        logger.setLevel(logging.DEBUG)
+    else:
+        logger.setLevel(logging.INFO)
 
     setup_gt_from_file(turnerdir, outputdir, paramfile)
     
@@ -23,6 +31,7 @@ def setup_gt_from_file(turnerdir, outputdir, paramfile):
     setup_gt_from_vec(turnerdir, outputdir, new_params)
 
 def copy_turner(turnerdir, targetdir):
+    logging.debug("Copied Turner99 parameters to " + str(targetdir))
     shutil.rmtree(targetdir, ignore_errors=True)
     shutil.copytree(turnerdir, targetdir)
 
@@ -36,6 +45,7 @@ def setup_gt_from_vec(turnerdir, outputdir, new_params):
      
     # Modify the copied Turner99 files with the parameters
     write_new_params(targetdir, new_params)
+    logging.debug("Wrote parameters " + str(new_params) + " to " + str(targetdir))
     
 def get_params(paramfile):
     # Note that we negate the parameters since GTfold is a minimizer
