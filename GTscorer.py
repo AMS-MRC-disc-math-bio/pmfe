@@ -38,7 +38,10 @@ def setup_scorer(turnerdir, outputdir, paramvec):
     GTsetMBparam.setup_gt_from_vec(turnerdir, outputdir, paramvec)
 
 def run_scorer(outputdir, structfile, as_float=True):
-    result = subprocess.check_output([RNAScoring_path, "--param-dir", os.path.split(outputdir)[0] + "/", structfile])
+    try:
+        result = subprocess.check_output([RNAScoring_path, "--param-dir", os.path.split(outputdir)[0] + "/", structfile])
+    except OSError:
+        raise OSError("RNAScoring executable not found!\nEdit the variable in " + __file__ + ".")
 
     # The last line of the output contains the desired score
     lines = result.decode("utf-8").splitlines()

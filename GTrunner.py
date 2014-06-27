@@ -26,7 +26,10 @@ def main(argv):
 
 def run_gt(turnerdir, outputdir, seqfile):
     # Then we run GTfold on the specified sequence
-    subprocess.check_output([gtmfe_path, "-p", os.path.join(outputdir, turnerdir), seqfile])
+    try:
+        subprocess.check_output([gtmfe_path, "-p", os.path.join(outputdir, turnerdir), seqfile])
+    except OSError:
+        raise OSError("gtmfe executable not found!\nEdit the variable in " + __file__ + ".")
 
     structfile = os.path.splitext(seqfile)[0] + ".ct"
     return structfile

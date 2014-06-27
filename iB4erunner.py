@@ -19,11 +19,14 @@ def main(argv):
 
     points = []
 
-    iB4e = subprocess.Popen([iB4e_path, '4'], # Our problem operates in 4 dimensions
-                            stdin=subprocess.PIPE,
-                            stdout=subprocess.PIPE,
-                            stderr=subprocess.PIPE,
-                            shell=False)
+    try:
+        iB4e = subprocess.Popen([iB4e_path, '4'], # Our problem operates in 4 dimensions
+                                stdin=subprocess.PIPE,
+                                stdout=subprocess.PIPE,
+                                stderr=subprocess.PIPE,
+                                shell=False)
+    except OSError:
+        raise OSError("iB4e-rna executable not found!\nBe sure it is built, then edit the variable in " + __file__ + ".")
 
     # Compute classical scores for later reference
     classical_struct = GTrunner.run_gt(turnerdir, "", seqfile)
