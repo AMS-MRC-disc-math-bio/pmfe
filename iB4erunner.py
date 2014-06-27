@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-import os, sys, argparse, subprocess
+import os, sys, argparse, subprocess, shutil
 import GTrunner, GTsetMBparam, GTscorer
 
 iB4e_path = "iB4e/iB4e-rna"
@@ -16,6 +16,7 @@ def main(argv):
     turnerdir = "Turner99"
     outputdir = "output/data"
     scoredir = "output/scoring"
+    structdir = os.path.splitext(seqfile)[0]
 
     points = []
 
@@ -31,6 +32,10 @@ def main(argv):
     # Compute classical scores for later reference
     classical_struct = GTrunner.run_gt(turnerdir, "", seqfile)
     classical_scores = GTscorer.find_xyzw(turnerdir, scoredir, classical_struct)
+
+    # Create storage directory for structures
+    shutil.rmtree(structdir, ignore_errors=True)
+    os.mkdir(structdir)
 
     # Now turn iB4e loose to compute the geometry
     while True:
@@ -51,11 +56,16 @@ def main(argv):
         points.append(scores)
         result = " ".join(map(str, scores)) + "\n"
 
-        # Clean up the temporary structure file
-        os.remove(structfile)
+        # Move the structure file to the storage directory
+        #structname = os.path.splitext(os.path.basename(structfile))[0] + "." + ".".join(str(int(score)) for score in scores) + ".ct"
+        structname = os.path.splitext(os.path.basename(structfile))[0] + "." + str(scores) + ".ct"
+        structtarget = os.path.join(structdir, structname)
+        os.rename(structfile, structtarget)
 
         # Send the score vector to iB4e
         iB4e.stdin.write(result)
+
+    print "Stored structures in " + structdir
 
     # Now build a Sage file encoding the desired data
     build_sage_polytope_file(classical_scores, points, sagefile)
