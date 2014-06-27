@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 import GTsetMBparam, os, sys, argparse, subprocess
 
+RNAScoring_path = "RNAScoring"
+
 def main(argv):    
     # Set up variables for this program
     turnerdir = "Turner99"
@@ -36,7 +38,7 @@ def setup_scorer(turnerdir, outputdir, paramvec):
     GTsetMBparam.setup_gt_from_vec(turnerdir, outputdir, paramvec)
 
 def run_scorer(outputdir, structfile, as_float=True):
-    result = subprocess.check_output(["RNAScoring", "--param-dir", os.path.split(outputdir)[0] + "/", structfile])
+    result = subprocess.check_output([RNAScoring_path, "--param-dir", os.path.split(outputdir)[0] + "/", structfile])
 
     # The last line of the output contains the desired score
     lines = result.decode("utf-8").splitlines()
