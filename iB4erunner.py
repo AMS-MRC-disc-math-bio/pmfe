@@ -2,6 +2,8 @@
 import os, sys, argparse, subprocess
 import GTrunner, GTsetMBparam, GTscorer
 
+iB4e_path = "iB4e/iB4e-rna"
+
 def main(argv):    
     # Set up parameters
     parser = argparse.ArgumentParser(description="Run GTfold with specified a, b, c, d parameters for iB4e")
@@ -17,7 +19,7 @@ def main(argv):
 
     points = []
 
-    iB4e = subprocess.Popen(['iB4e/iB4e', '4'],
+    iB4e = subprocess.Popen([iB4e_path, '4'], # Our problem operates in 4 dimensions
                             stdin=subprocess.PIPE,
                             stdout=subprocess.PIPE,
                             stderr=subprocess.PIPE,

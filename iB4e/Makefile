@@ -1,9 +1,9 @@
 CC=g++
-CFLAGS=-c -Wall
+CFLAGS=-c
 LDFLAGS=
 SOURCES=main.cc BBpolytope.cc euclideanvector.cc faces.cc linalg.cc stack.cc
 OBJECTS=$(SOURCES:.cc=.o)
-EXECUTABLE=iB4e
+EXECUTABLE=iB4e-rna
 
 all: $(SOURCES) $(EXECUTABLE)
 
