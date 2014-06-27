@@ -32,10 +32,6 @@ To run the calculation on the sequence in `testseq.fasta`, type
 
 The result will be a file `testseq.sage` containing the required Sage commands.
 
-## Contributors
-
-Let people know how they can dive into the project, include important links to things like issue trackers, irc, twitter accounts if applicable.
-
 ## License
 
 The source for iB4e-GTfold-parametrizer is released under the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
