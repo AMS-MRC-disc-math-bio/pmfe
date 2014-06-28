@@ -22,8 +22,11 @@ def main(argv):
         logger.setLevel(logging.INFO)
         
 
-    turnerdir = "Turner99"
-    outputdir = "output/data"
+    baseinputdir = "input"
+    gtinputdir = os.path.join(baseinputdir, "gt", "Turner99")
+    scoringinputdir = os.path.join(baseinputdir, "scoring", "Turner99")
+    
+    outputdir = "output/gt"
     scoredir = "output/scoring"
     structdir = os.path.splitext(seqfile)[0]
 
@@ -43,8 +46,8 @@ def main(argv):
     logging.debug("Computing classical scores")
 
     # Compute classical scores for later reference
-    classical_struct = GTrunner.run_gt(turnerdir, "", seqfile)
-    classical_scores = GTscorer.find_xyzw(turnerdir, scoredir, classical_struct)
+    classical_struct = GTrunner.run_gt(gtinputdir, gtinputdir, seqfile)
+    classical_scores = GTscorer.find_xyzw(scoringinputdir, scoredir, classical_struct)
 
     logging.debug("Classical scores: " + str(classical_scores))
 
@@ -64,13 +67,13 @@ def main(argv):
         logging.debug("iB4e requests vector " + str(params))
         
         # Set up the parameters
-        GTsetMBparam.setup_gt_from_vec(turnerdir, outputdir, params)
+        GTsetMBparam.setup_gt_from_vec(gtinputdir, outputdir, params)
         
         # Find the MFE structure
-        structfile = GTrunner.run_gt(turnerdir, outputdir, seqfile)
+        structfile = GTrunner.run_gt(gtinputdir, os.path.join(outputdir, "Turner99"), seqfile)
         
         # Score the structure using GTfold
-        scores = GTscorer.find_xyzw(turnerdir, scoredir, structfile)
+        scores = GTscorer.find_xyzw(scoringinputdir, scoredir, structfile)
         points.append(scores)
         result = " ".join(map(str, scores)) + "\n"
 

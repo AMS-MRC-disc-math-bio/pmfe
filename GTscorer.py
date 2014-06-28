@@ -5,7 +5,7 @@ RNAScoring_path = "RNAScoring"
 
 def main(argv):    
     # Set up variables for this program
-    turnerdir = "Turner99"
+    inputdir = "input/scoring/Turner99"
     scoredir = "output/scoring"
 
     # Set up parameters
@@ -23,31 +23,31 @@ def main(argv):
     else:
         logger.setLevel(logging.INFO)
 
-    result = find_xyzw(turnerdir, scoredir, structfile)
+    result = find_xyzw(inputdir, scoredir, structfile)
     logging.info("Scores: " + str(result))
 
-def find_xyzw(turnerdir, scoredir, structfile):
-    x = run_vscorer(turnerdir, scoredir, "x", [1,0,0,0], structfile, as_float=False)
-    y = run_vscorer(turnerdir, scoredir, "y", [0,1,0,0], structfile, as_float=False)
-    z = run_vscorer(turnerdir, scoredir, "z", [0,0,1,0], structfile, as_float=False)
-    w = run_vscorer(turnerdir, scoredir, "w", [0,0,0,1], structfile, as_float=True)
+def find_xyzw(inputdir, scoredir, structfile):
+    x = run_vscorer(inputdir, scoredir, "x", [1,0,0,0], structfile, as_float=False)
+    y = run_vscorer(inputdir, scoredir, "y", [0,1,0,0], structfile, as_float=False)
+    z = run_vscorer(inputdir, scoredir, "z", [0,0,1,0], structfile, as_float=False)
+    w = run_vscorer(inputdir, scoredir, "w", [0,0,0,1], structfile, as_float=True)
 
     res = [x, y, z, w]
     logging.debug("Score for " + str(structfile) + " is " + str(res))
     return res
 
-def run_vscorer(turnerdir, scoredir, vname, paramvec, structfile, as_float=True):
+def run_vscorer(inputdir, scoredir, vname, paramvec, structfile, as_float=True):
     vdir = os.path.join(scoredir, vname, "data")
     if not os.path.isfile(os.path.join(vdir, "Turner99", "miscloop.dat")):
-        setup_scorer(turnerdir, vdir, paramvec)
+        setup_scorer(inputdir, vdir, paramvec)
 
     logging.debug("Scoring structure " + str(structfile) + " with parameters " + str(paramvec))
         
     return run_scorer(vdir, structfile, as_float)
 
-def setup_scorer(turnerdir, outputdir, paramvec):
+def setup_scorer(inputdir, outputdir, paramvec):
     # First, we set up an environment with the specified parameters
-    GTsetMBparam.setup_gt_from_vec(turnerdir, outputdir, paramvec)
+    GTsetMBparam.setup_gt_from_vec(inputdir, outputdir, paramvec)
 
 def run_scorer(outputdir, structfile, as_float=True):
     try:

@@ -5,8 +5,8 @@ gtmfe_path = "gtmfe"
 
 def main(argv):
     # Set up variables for this program
-    turnerdir = "Turner99"
-    outputdir = "output/data"
+    inputdir = "input/gt/Turner99"
+    outputdir = "output/gt/Turner99"
     scoredir = "output/scoring"
     
     # Set up parameters
@@ -27,15 +27,16 @@ def main(argv):
         logger.setLevel(logging.INFO)
 
     # First, we set up an environment for GTfold
-    GTsetMBparam.setup_gt_from_file(turnerdir, outputdir, paramfile)
+    
+    GTsetMBparam.setup_gt_from_file(inputdir, outputdir, paramfile)
 
-    structfile = run_gt(turnerdir, outputdir, seqfile)
+    structfile = run_gt(inputdir, outputdir, seqfile)
     print "Structure stored in " + structfile
 
-def run_gt(turnerdir, outputdir, seqfile=False):
+def run_gt(inputdir, outputdir, seqfile=False):
     # Then we run GTfold on the specified sequence
     try:
-        subprocess.check_output([gtmfe_path, "-p", os.path.join(outputdir, turnerdir), seqfile])
+        subprocess.check_output([gtmfe_path, "-p", outputdir, seqfile])
     except OSError:
         raise OSError("gtmfe executable not found!\nEdit the variable in " + __file__ + ".")
 
