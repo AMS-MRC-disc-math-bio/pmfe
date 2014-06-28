@@ -103,8 +103,7 @@ def process_word_generic(word, d):
                 newword = word
             else:
                 # Multiply the word by d if it's a float
-                newnum = d*float(word)
-                newword = '%.2f' % newnum
+                newword = "{:.3f}".format(d*float(word))[:len(word)]
 
         except ValueError:
             # Some of the words are strings of nucleotides, which can't be cast to float

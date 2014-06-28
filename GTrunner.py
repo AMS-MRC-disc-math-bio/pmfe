@@ -6,7 +6,7 @@ gtmfe_path = "gtmfe"
 def main(argv):
     # Set up variables for this program
     inputdir = "input/gt/Turner99"
-    outputdir = "output/gt/Turner99"
+    outputdir = "output/gt"
     scoredir = "output/scoring"
     
     # Set up parameters
@@ -27,10 +27,9 @@ def main(argv):
         logger.setLevel(logging.INFO)
 
     # First, we set up an environment for GTfold
-    
     GTsetMBparam.setup_gt_from_file(inputdir, outputdir, paramfile)
 
-    structfile = run_gt(inputdir, outputdir, seqfile)
+    structfile = run_gt(inputdir, os.path.join(outputdir, "Turner99"), seqfile)
     print "Structure stored in " + structfile
 
 def run_gt(inputdir, outputdir, seqfile=False):
