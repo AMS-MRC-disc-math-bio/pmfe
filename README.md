@@ -5,22 +5,36 @@ iB4e-GTFold-parametrizer determines the sensitivity of RNA folding to multibranc
 ## Prerequisites
 
 You will need the `gtmfe` and `RNAScoring` programs from the [GTFold][gtfold] project.
-Download and build them according to the instructions provided at the project site.
-Be sure to run `make install` so that these are available in your path.
+At present, we recommend using our [fork][mrc-gtfold], especially if you are running a Mac.
+To do this, run the following in your terminal:
+
+```
+git clone https://github.com/AMS-MRC-disc-math-bio/gtfold.git
+cd gtfold/gtfold-mre
+make
+sudo make install
+cd ../rna-scoring
+make
+sudo make install
+```
+
+If you do not have Git on your system, you can instead download a ZIP archive of the current state of the repository.
+Extract it, then proceed from the second line of the above instructions.
 
 You will also need a working Python environment.
 
 ## Installation
 
-You can obtain the code in two ways:
+This project is under active development, so we recommend downloading it using Git.
+To do this, run the following in your terminal:
 
-1. By cloning this repository to your computer, or
-1. By downloading a ZIP archive of the current state.
+```
+git clone https://github.com/AMS-MRC-disc-math-bio/iB4e-GTfold-parametrizer.git
+cd iB4e-GTfold-parametrizer/iB4e
+make
+```
 
-Because this codebase is under active development, we recommend using `git clone`; this will allow you to update your version quickly and painlessly.
-
-Once you have obtained the code, you will need to build our custom version of iB4e.
-Run `make` in the `iB4e` directory to set it up.
+This will download the code and build our custom version of iB4e.
 
 ## Usage
 
@@ -41,3 +55,4 @@ The code in the `iB4e` folder is from the iB4e project by Peter Huggins, used an
 
 [gtfold]: https://github.com/gtfold/gtfold
 [macports]: https://www.macports.org/
+[mrc-gtfold]: https://github.com/AMS-MRC-disc-math-bio/gtfold
