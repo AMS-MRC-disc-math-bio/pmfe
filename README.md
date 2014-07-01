@@ -36,6 +36,12 @@ make
 
 This will download the code and build our custom version of iB4e.
 
+## Updating
+
+If you used Git to download your copy of this software, you can update it easily.
+Just run `git pull` in a terminal from anywhere inside the repository to fetch the latest version.
+Be sure to run `make` in the `iB4e` directory if the iB4e code has been updated!
+
 ## Usage
 
 Given a FASTA file representing an RNA sequence, the program will produce a Sage file representing the regions of ℝ<sup>3</sup> in which given structures are optimal.
