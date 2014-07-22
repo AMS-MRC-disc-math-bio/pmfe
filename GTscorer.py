@@ -51,7 +51,7 @@ def setup_scorer(inputdir, outputdir, paramvec):
 
 def run_scorer(outputdir, structfile, as_float=True):
     try:
-        result = subprocess.check_output([RNAScoring_path, "--param-dir", os.path.split(outputdir)[0] + "/", structfile])
+        result = subprocess.check_output([RNAScoring_path, "--d0", "--param-dir", os.path.split(outputdir)[0] + "/", structfile])
     except OSError:
         raise OSError("RNAScoring executable not found!\nEdit the variable in " + __file__ + ".")
 

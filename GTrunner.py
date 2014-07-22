@@ -35,7 +35,7 @@ def main(argv):
 def run_gt(inputdir, outputdir, seqfile=False):
     # Then we run GTfold on the specified sequence
     try:
-        subprocess.check_output([gtmfe_path, "-p", outputdir, seqfile])
+        subprocess.check_output([gtmfe_path, "-d 0", "-p", outputdir, seqfile])
     except OSError:
         raise OSError("gtmfe executable not found!\nEdit the variable in " + __file__ + ".")
 
