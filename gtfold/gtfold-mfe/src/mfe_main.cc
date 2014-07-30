@@ -99,13 +99,7 @@ void init_fold(const char* seq) {
 }
 
 void free_fold(int len) {
-	if (CONS_ENABLED) 
-		free_constraints(len);
-	if (SHAPE_ENABLED){
-		free_shapeArray(len);
-	}
-
-	free_tables(len);
+        free_tables(len);
 	free_global_params();
 }
 
