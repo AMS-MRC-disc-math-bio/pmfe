@@ -87,49 +87,6 @@ void init_fold(const char* seq) {
 
   create_tables(len);
 
-  if (CONS_ENABLED) {
-    init_constraints(constraintsFile.c_str(), len);
-  }
-
-  if (SHAPE_ENABLED) {
-    readSHAPEarray(shapeFile.c_str(),len);
-  }
-
-  if (UNAMODE) {
-    if (T_MISMATCH) if(!SILENT) printf("Ignoring -m option, using --unafold\n");
-    if (PARAM_DIR) if(!SILENT) printf("Ignoring -p option, using --unafold\n");
-    if (dangles == 0 || dangles == 1 || dangles == 2) 
-      if(!SILENT) printf("Ignoring -d option, using --unafold\n");
-    if (b_prefilter == 1) 
-      if(!SILENT) printf("Ignoring --prefilter option, using --unafold\n");
-    T_MISMATCH = false;
-    PARAM_DIR = false;
-    dangles = -1;
-    b_prefilter = false;
-  }
-
-  if (RNAMODE) {
-    if (T_MISMATCH) if(!SILENT) printf("Ignoring -m option, using --rnafold\n");
-    if (PARAM_DIR) if(!SILENT) printf("Ignoring -p option, using --rnafold\n");
-    if (dangles == 0 || dangles == 1 || dangles == 2) 
-      if(!SILENT) printf("Ignoring -d option, using --rnafold\n");
-    if (b_prefilter == 1) 
-      if(!SILENT) printf("Ignoring --prefilter option, using --rnafold\n");
-    T_MISMATCH = false;
-    PARAM_DIR = false;
-    dangles = -1;
-    b_prefilter = false;
-  }
-
-  if ((dangles == 0 || dangles == 1 ||dangles == 2) && !UNAMODE && !RNAMODE) {
-    if (T_MISMATCH) if(!SILENT) printf("Ignoring -m option, using -d option\n");
-    T_MISMATCH = false;
-  } else {
-    if (dangles != -1 && !UNAMODE && !RNAMODE) if(!SILENT) printf("Ignoring -d as it accept 0 1 or 2 only\n");	
-    dangles = -1;
-  }
-  if(dangles==1) dangles=-1;
-
   g_nthreads = nThreads;
   g_unamode  = UNAMODE;
   g_mismatch = T_MISMATCH;
@@ -138,15 +95,6 @@ void init_fold(const char* seq) {
   g_prefilter1  = prefilter1;
   g_prefilter2  = prefilter2;
   g_dangles = dangles;
-
-#ifdef DEBUG
-  if(!SILENT) printf("g_nthreads = %d\n", g_nthreads);
-  if(!SILENT) printf("g_unamode = %d\n", g_unamode);
-  if(!SILENT) printf("g_mismatch = %d\n", g_mismatch);
-  if(!SILENT) printf("g_prefilter_mode = %d\n", g_prefilter_mode);
-  if(!SILENT) printf("g_dangles = %d\n", g_dangles);
-
-#endif
 
 }
 
