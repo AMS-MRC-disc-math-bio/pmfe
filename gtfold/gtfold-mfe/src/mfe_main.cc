@@ -170,7 +170,6 @@ int mfe_main(string seq_file, string output_file, string param_dir, int dangle_m
              
         if (!(dangles == 0 || dangles == 1 || dangles == 2)) {
           dangles = -1;
-          printf("Ignoring dangle_model option as it accepts either 0 1 or 2\n");
         }
 
         paramDir = param_dir;
@@ -188,50 +187,12 @@ int mfe_main(string seq_file, string output_file, string param_dir, int dangle_m
 	// Read in thermodynamic parameters. Always use Turner99 data (for now)
         readThermodynamicParameters(paramDir.c_str(), PARAM_DIR, UNAMODE, RNAMODE, T_MISMATCH);
 
-	if(!SILENT) printf("\nComputing minimum free energy structure...\n");
-	fflush(stdout);
-
-	double t1 = get_seconds();
-	energy = calculate(seq.length()) ; 
-	t1 = get_seconds() - t1;
+	energy = calculate(seq.length()) ;
+        printf("%d", energy);
 	
-	if(!SILENT) printf("Done.\n\n");
-	if(!SILENT) printf("Results:\n");
-	if (energy >= MAXENG)	
-		printf("- Minimum Free Energy: %12.4f kcal/mol\n", 0.00);
-	else
-		printf("- Minimum Free Energy: %12.4f kcal/mol\n", energy/100.00);
-	printf("- MFE runtime: %9.6f seconds\n", t1);
-
-	t1 = get_seconds();
 	trace(seq.length(), print_energy_decompose, energyDecomposeOutFile.c_str());
-	t1 = get_seconds() - t1;
 	
-	printf("\n");
-	print_sequence(seq.length());
-	print_structure(seq.length());
-
-	if (CONS_ENABLED)
-		print_constraints(seq.length());
-
-	if (SHAPE_ENABLED && VERBOSE)
-		print_shapeArray(seq.length());
-
 	save_ct_file(outputFile, seq, energy);
-	printf("\nMFE structure saved in .ct format to %s\n", outputFile.c_str());
-
-	if(CONS_ENABLED && VERBOSE){
-		if(!SILENT) printf("Verifying that structure fulfills constraint criteria... ");
-		if(verify_structure()){
-			printf("OK\n");
-		}
-		else{
-			printf("ERROR: NOT OK!!\n");
-			fprintf(stderr, "ERROR: Structure does not fulfill constraint criteria.\n");
-			fprintf(stderr, "Structure file: %s\n", outputFile.c_str());
-			fprintf(stderr, "Constraint file: %s\n", constraintsFile.c_str());
-		}
-	}
 
 	free_fold(seq.length());
 	
