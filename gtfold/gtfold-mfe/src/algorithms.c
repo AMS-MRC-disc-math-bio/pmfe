@@ -126,13 +126,6 @@ int calculate(int len) {
   if (g_nthreads > 0) omp_set_num_threads(g_nthreads);
 #endif
 
-#ifdef _OPENMP
-#pragma omp parallel
-#pragma omp master
-  //if (g_verbose) fprintf(stdout,"Thread count: %3d \n",omp_get_num_threads());
-  fprintf(stdout,"Thread count: %3d \n",omp_get_num_threads());
-#endif
-
   initializeMatrix(len);
   if (g_unamode || g_prefilter_mode) {
     prefilter(len,g_prefilter1,g_prefilter2);
