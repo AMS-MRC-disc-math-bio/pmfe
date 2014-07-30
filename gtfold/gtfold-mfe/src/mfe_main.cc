@@ -140,20 +140,3 @@ int mfe_main(string seq_file, string output_file, string param_dir, int dangle_m
 	
         return EXIT_SUCCESS;
 }
-
-//double calculate_mfe(int argc, char** argv) {
-double calculate_mfe(std::string seq) {
-	int energy;
-	fflush(stdout);
-	double t1 = get_seconds();
-	energy = calculate(seq.length()) ; 
-	t1 = get_seconds() - t1;
-	/*if (energy >= MAXENG)	
-	  printf("- Minimum Free Energy: %12.4f kcal/mol\n", 0.00);
-	  else
-	  printf("- Minimum Free Energy: %12.4f kcal/mol\n", energy/100.00);
-	  printf("- MFE runtime: %9.6f seconds\n", t1);*/
-
-	//free_fold(seq.length());
-	return energy/100.0;
-}
