@@ -153,12 +153,7 @@ int calculate(int len) {
         int d3 = canSS(j-1)?Ed3(i,j,j-1):INFINITY_;
         int d5 = canSS(i+1)?Ed5(i,j,i+1):INFINITY_;
 
-        if (g_unamode || g_mismatch) { // unamode, terminal mismatch
-          VM(i,j) = MIN(VM(i,j), WMPrime[i+1][j-1] + auPenalty(i,j) + Ea + Eb);
-          VM(i,j) = MIN(VM(i,j), WMPrime[i+2][j-1] + d5 + auPenalty(i,j) + Ea + Eb + Ec);
-          VM(i,j) = MIN(VM(i,j), WMPrime[i+1][j-2] + d3 + auPenalty(i,j) + Ea + Eb + Ec);
-          VM(i,j) = MIN(VM(i,j), WMPrime[i+2][j-2] + Estackm(i,j) + auPenalty(i,j) + Ea + Eb + 2*Ec);
-        } else if (g_dangles == 2) { // -d2
+        if (g_dangles == 2) { // -d2
           VM(i,j) = MIN(VM(i,j), WMPrime[i+1][j-1] + d3 + d5 + auPenalty(i,j) + Ea + Eb);
         } else if (g_dangles == 0) { // -d0
           VM(i,j) = MIN(VM(i,j), WMPrime[i+1][j-1] + auPenalty(i,j) + Ea + Eb);

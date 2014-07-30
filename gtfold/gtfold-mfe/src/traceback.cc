@@ -32,11 +32,14 @@
 
 int total_en = 0;
 int total_ex = 0;
+int count_multiloops;
+int count_unpaired;
+int count_branches;
 int length = 0;
 int print_energy_decompose = 0;
 FILE* energy_decompose_outfile;
 
-void trace(int len, int print_energy_decompose1, const char* energy_decompose_output_file) { 
+PolytopeVector trace(int len, int print_energy_decompose1, const char* energy_decompose_output_file) { 
 	print_energy_decompose = print_energy_decompose1;
         if(print_energy_decompose==1){
 		energy_decompose_outfile = fopen(energy_decompose_output_file, "w");
@@ -53,10 +56,14 @@ void trace(int len, int print_energy_decompose1, const char* energy_decompose_ou
 	length = len;
 	if (W[len] >= MAXENG) {
 		printf("- No Structure \n");
-		return;
+                exit(EXIT_FAILURE);
 	}
 
 	printf("\n");
+
+        count_multiloops = 0;
+        count_unpaired = 0;
+        count_branches = 0;
 	
 	traceW(len);
 	if (print_energy_decompose == 1) {
@@ -66,7 +73,13 @@ void trace(int len, int print_energy_decompose1, const char* energy_decompose_ou
 	if(print_energy_decompose==1){
 		fclose(energy_decompose_outfile);
 	}
-  	return;
+
+        struct PolytopeVector result;
+        result.x = count_multiloops;
+        result.y = count_branches;
+        result.z = count_unpaired;
+
+        return result;
 }
 
 void traceW(int j) {
@@ -242,46 +255,45 @@ int traceVM(int i, int j) {
 	int done = 0;
 	int eVM = 0;
 
-	if (g_unamode||g_mismatch) {
-		if (VM(i,j) == WMPrime[i+1][j - 1] + Ea + Eb + auPenalty(i, j) ) {
-			done = 1;
-			eVM += traceWMPrime(i + 1, j - 1);
-		} else if (VM(i,j) == WMPrime[i + 2][j - 1] + Ea + Eb + auPenalty(i,j) + Ed5(i,j,i + 1) + Ec && canSS(i+1) ) {
-			done = 1;
-			eVM += traceWMPrime(i + 2, j - 1);
-		}
-		else if ( VM(i,j) == WMPrime[i + 1][j - 2] + Ea + Eb + auPenalty(i, j) + Ed3(i,j,j - 1) + Ec && canSS(j-1)) {
-			done = 1;
-			eVM += traceWMPrime(i + 1, j - 2);
-		}
-		else if (V(i,j) == WMPrime[i + 2][j - 2] + Ea + Eb + auPenalty(i,j) + Estackm(i,j) + 2*Ec && canSS(i+1) && canSS(j-1) ) {
-			done = 1;
-			eVM += traceWMPrime(i + 2, j - 2);
-		}
-	} else if (g_dangles == 2) {
+        if (g_dangles == 2) {
 		if (V(i,j) ==  WMPrime[i + 1][j - 1] + Ea + Eb + auPenalty(i,j) + Ed5(i,j,i + 1) + Ed3(i,j,j - 1) && canSS(i+1) && canSS(j-1) ) {
 			done = 1;
 			eVM += traceWMPrime(i + 1, j - 1);
+                        count_multiloops++;
+                        count_branches++;
 		}
 	}	else if (g_dangles == 0) {
 		if (VM(i,j) == WMPrime[i+1][j - 1] + Ea + Eb + auPenalty(i, j) ) {
 			done = 1;
 			eVM += traceWMPrime(i + 1, j - 1);
+                        count_multiloops++;
+                        count_branches++;
 		}
 	} else {
 		if (VM(i,j) == WMPrime[i+1][j - 1] + Ea + Eb + auPenalty(i, j) ) {
 			done = 1;
 			eVM += traceWMPrime(i + 1, j - 1);
+                        count_multiloops++;
+                        count_branches++;
 		} else if (VM(i,j) == WMPrime[i + 2][j - 1] + Ea + Eb + auPenalty(i,j) + Ed5(i,j,i + 1) + Ec && canSS(i+1) ) {
 			done = 1;
 			eVM += traceWMPrime(i + 2, j - 1);
+                        count_multiloops++;
+                        count_branches++;
+                        count_unpaired++;
 		}
 		else if ( VM(i,j) == WMPrime[i + 1][j - 2] + Ea + Eb + auPenalty(i, j) + Ed3(i,j,j - 1) + Ec && canSS(j-1)) {
 			done = 1;
 			eVM += traceWMPrime(i + 1, j - 2);
+                        count_multiloops++;
+                        count_branches++;
+                        count_unpaired++;
 		} else if (V(i,j) ==  WMPrime[i + 2][j - 2] + Ea + Eb + auPenalty(i,j) + Ed5(i,j,i + 1) + Ed3(i,j,j - 1) + 2*Ec && canSS(i+1) && canSS(j-1) ) {
 			done = 1;
 			eVM += traceWMPrime(i + 2, j - 2);
+                        count_multiloops++;
+                        count_branches++;
+                        count_unpaired += 2;
 		}
 	}
 	if(!done) { 
@@ -315,45 +327,40 @@ int traceWM(int i, int j) {
 	}
 
 	if (!done){
-		if (g_unamode||g_mismatch) {
-						if (WM(i,j) == V(i,j) + auPenalty(i, j) + Eb && canStack(i,j)) { 
-										eWM += traceV(i, j);
-										done = 1;
-						} else if (WM(i,j) == V(i+1, j) + Ed3(j,i + 1,i) + auPenalty(i+1, j) + Eb + Ec && canSS(i) &&  canStack(i+1,j)) { 
-										eWM += traceV(i + 1, j);
-										done = 1;
-						} else if (WM(i,j) == V(i,j-1) + Ed5(j-1,i,j) + auPenalty(i,j-1) +  Eb + Ec && canSS(j) && canStack(i,j-1)) { 
-										done = 1;
-										eWM += traceV(i, j - 1);
-						} else if (WM(i,j) == V(i+1,j-1) + Estackm(j-1,i+1) + auPenalty(i+1, j-1) + Eb + 2*Ec && canSS(i) && canSS(j) && canStack(i+1,j-1)) {
-										done = 1;
-										eWM += traceV(i + 1, j - 1);
-						}
-		} else if (g_dangles == 2) {
+                if (g_dangles == 2) {
 						int energy = V(i,j) + auPenalty(i, j) + Eb;				
 						energy += (i==1)?Ed3(j,i,length):Ed3(j,i,i-1);
 						/*if (j<len)*/ energy += Ed5(j,i,j+1);
-						if (WM(i,j) ==  energy && canSS(i) && canSS(j) && canStack(i+1,j-1)) { 
+						if (WM(i,j) ==  energy && canSS(i) && canSS(j) && canStack(i+1,j-1)) {
 										eWM += traceV(i, j);
+                                                                                count_branches++;
 										done = 1;
 						}
 		} else if (g_dangles == 0) {
 						if (WM(i,j) == V(i,j) + auPenalty(i, j) + Eb && canStack(i,j)) { 
 										eWM += traceV(i, j);
+                                                                                count_branches++;
 										done = 1;
 						}
 		} else  {
 						if (WM(i,j) == V(i,j) + auPenalty(i, j) + Eb && canStack(i,j)) { 
 										eWM += traceV(i, j);
+                                                                                count_branches++;
 										done = 1;
 						} else if (WM(i,j) == V(i+1, j) + Ed3(j,i + 1,i) + auPenalty(i+1, j) + Eb + Ec && canSS(i) &&  canStack(i+1,j)) { 
 										eWM += traceV(i + 1, j);
+                                                                                count_branches++;
+                                                                                count_unpaired++;
 										done = 1;
 						} else if (WM(i,j) == V(i,j-1) + Ed5(j-1,i,j) + auPenalty(i,j-1) +  Eb + Ec && canSS(j) && canStack(i,j-1)) { 
 										eWM += traceV(i, j - 1);
+                                                                                count_branches++;
+                                                                                count_unpaired++;
 										done = 1;
 						} else if (WM(i,j) == V(i+1,j-1) + Ed3(j-1,i+1,i) + Ed5(j-1,i+1,j) + auPenalty(i+1, j-1) + Eb + 2*Ec && canSS(i) && canSS(j) && canStack(i+1,j-1)) { 
 										eWM += traceV(i + 1, j - 1);
+                                                                                count_branches++;
+                                                                                count_unpaired += 2;
 										done = 1;
 						}
 		}
@@ -363,9 +370,11 @@ int traceWM(int i, int j) {
 		if (WM(i,j) == WM(i + 1,j) + Ec && canSS(i)) { 
 							done = 1;
 							eWM += traceWM(i + 1, j);
+                                                        count_unpaired++;
 		} else if (WM(i,j) == WM(i,j - 1) + Ec && canSS(j)) { 
 							done = 1;
 							eWM += traceWM(i, j - 1);
+                                                        count_unpaired++;
 		}
 	}
 

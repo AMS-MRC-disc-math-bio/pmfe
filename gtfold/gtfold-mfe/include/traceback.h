@@ -23,13 +23,9 @@
 #ifndef _TRACEBACK_H
 #define _TRACEBACK_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-	void trace(int len, int print_energy_decompose, const char* energy_decompose_output_file); //, int vv, int mode, int mismatch);
-#ifdef __cplusplus
-}
-#endif
+#include "PolytopeVector.h"
+
+PolytopeVector trace(int len, int print_energy_decompose, const char* energy_decompose_output_file); //, int vv, int mode, int mismatch);
 
 void traceW(int i);
 int traceV(int i, int j);

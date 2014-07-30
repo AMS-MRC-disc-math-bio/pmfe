@@ -111,19 +111,15 @@ PolytopeVector mfe_main(string seq_file, string output_file, string param_dir, i
 
 	energy = calculate(seq.length()) ;
         printf("%d", energy);
-	
-	trace(seq.length(), 0, "");
+
+        struct PolytopeVector result;
+        result = trace(seq.length(), 0, "");
+        result.energy = energy/100.0;
+        result.w = result.energy + (result.x * Ea + result.y * Eb + result.z * Ec)/100.0;
 	
 	save_ct_file(outputFile, seq, energy);
 
 	free_fold(seq.length());
-	
-        struct PolytopeVector result;
-        result.x = 0;
-        result.y = 0;
-        result.z = 0;
-        result.w = 0;
-        result.energy = energy;
 
         return result;
 }
