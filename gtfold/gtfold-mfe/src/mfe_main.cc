@@ -43,12 +43,9 @@
 
 using namespace std;
 
-static bool PARAM_DIR = false;
-
 static string seqfile = "";
 static string outputFile = "";
 static string outputDir = "";
-static string paramDir; // default value
 
 static int dangles=-1;
 
@@ -94,9 +91,6 @@ PolytopeVector mfe_main(string seq_file, string output_file, string param_dir, i
           dangles = -1;
         }
 
-        paramDir = param_dir;
-        PARAM_DIR = true;
-
         outputFile = output_file;
 
 	if (read_sequence_file(seq_file.c_str(), seq) == FAILURE) {
@@ -107,7 +101,7 @@ PolytopeVector mfe_main(string seq_file, string output_file, string param_dir, i
 	init_fold(seq.c_str());
 	
 	// Read in thermodynamic parameters. Always use Turner99 data (for now)
-        readThermodynamicParameters(paramDir.c_str(), PARAM_DIR, false, false, false);
+        readThermodynamicParameters(param_dir.c_str());
 
 	energy = calculate(seq.length()) ;
         printf("%d", energy);

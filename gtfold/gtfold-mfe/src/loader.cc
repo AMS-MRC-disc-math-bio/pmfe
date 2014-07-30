@@ -85,67 +85,14 @@ int init;
 int gail; /* It is either 0 or 1. It is used for grosely asymmetric internal loops */
 float prelog;
 
-void readThermodynamicParameters(const char *userdatadir,bool userdatalogic, int unamode = 0, int rnamode = 0, int mismatch = 0) {
+void readThermodynamicParameters(const char *userdatadir) {
 	struct stat buf;
 
-	if (!userdatalogic) {
-		std::string opt1, opt2, opt3;
-		char cwd[1024];
-		bool found = false;
-
-		opt1.assign(xstr(DATADIR));
-		if (getenv("GTFOLDDATADIR") != 0)
-			opt2.assign(getenv("GTFOLDDATADIR"));
-		if (getcwd(cwd, sizeof(cwd)) != 0) {
-			opt3.assign(cwd);
-			opt3 += "/data";
-		}
-
-		if (stat(opt2.c_str(), &buf) == 0) {
-			found = true;
-			EN_DATADIR.assign(opt2);
-			fprintf(stdout,"Checking for environ variable 'GTFOLDDATADIR', found \n");
-		} else {
-			if (found == false)	fprintf(stdout,"Checking for environ variable 'GTFOLDDATADIR', not found \n");
-		}
-
-		if (!found && stat(opt1.c_str(), &buf) == 0) {
-			found = true;
-			EN_DATADIR.assign(opt1); 
-			fprintf(stdout,"Checking for default datadir '%s', found.\n", opt1.c_str());
-		} else  {
-			if (found == false)	fprintf(stdout,"Checking for default datadir '%s', not found.\n", opt1.c_str());
-		}
-
-		if (!found && stat(opt3.c_str(), &buf) == 0){
-			found = true;
-			EN_DATADIR.assign(opt3);
-			fprintf(stdout,"Checking under current dir '%s', found.\n", opt3.c_str());
-
-		} else {
-			if (found == false)	fprintf(stdout,"Checking under current dir '%s', not found.\n", opt3.c_str());
-		}
-
-		EN_DATADIR += "/";
-		if (found == false) {
-			exit(-1);
-		}	
-
-		if (unamode) {
-			EN_DATADIR += "UNAParams";
-		}else if (rnamode) {
-			EN_DATADIR += "RNAParams";
-		} else {
-			EN_DATADIR += "Turner99";
-		}
-	}
-	else {
-		EN_DATADIR.assign(userdatadir);
-		if (stat(EN_DATADIR.c_str(), &buf) == -1){
-			fprintf(stdout,"Checking for parameter files in dir '%s', not found.\n\n", EN_DATADIR.c_str());
-			exit(-1);		
-		}
-	}
+        EN_DATADIR.assign(userdatadir);
+        if (stat(EN_DATADIR.c_str(), &buf) == -1){
+          fprintf(stdout,"Checking for parameter files in dir '%s', not found.\n\n", EN_DATADIR.c_str());
+          exit(-1);		
+        }
 
 	//Handle the ending forward slash case
 	if (EN_DATADIR[EN_DATADIR.length() - 1] != '/') {
@@ -160,26 +107,9 @@ void readThermodynamicParameters(const char *userdatadir,bool userdatalogic, int
 	initTstkiValues("tstacki.DAT", EN_DATADIR);
 	initTloopValues("tloop.DAT", EN_DATADIR);
 
-	if (unamode) {
-		initInt21Values("asint1x2.DAT", EN_DATADIR);
-		initInt22Values("sint4.DAT", EN_DATADIR);
-		initInt11Values("sint2.DAT", EN_DATADIR);
-		initTstkmValues("tstackm.DAT", EN_DATADIR);
-		initTstkeValues("tstacke.DAT", EN_DATADIR);
-		initTstk23Values("tstacki23.DAT", EN_DATADIR);
-	} else if (mismatch) {
-		initTstkmValues("tstackm.DAT", EN_DATADIR);
-		initTstkeValues("tstacke.DAT", EN_DATADIR);
-		initInt21Values("int21.DAT", EN_DATADIR);
-		initInt22Values("int22.DAT", EN_DATADIR);
-		initInt11Values("int11.DAT", EN_DATADIR);
-
-	}	
-	else {
-		initInt21Values("int21.DAT", EN_DATADIR);
-		initInt22Values("int22.DAT", EN_DATADIR);
-		initInt11Values("int11.DAT", EN_DATADIR);
-	}
+        initInt21Values("int21.DAT", EN_DATADIR);
+        initInt22Values("int22.DAT", EN_DATADIR);
+        initInt11Values("int11.DAT", EN_DATADIR);
 }
 
 int initStackValues(const string& fileName, const string& dirPath)  { 
