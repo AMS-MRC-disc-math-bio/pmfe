@@ -44,35 +44,16 @@
 using namespace std;
 
 static bool PARAM_DIR = false;
-//static bool LIMIT_DISTANCE;
-static bool CONS_ENABLED = false;
-static bool VERBOSE = false;
-static bool SILENT = false;
-//static bool SHAPE_ENABLED = false;
-
-//extern int SHAPE_ENABLED;
-
-static bool T_MISMATCH = false;
-static bool UNAMODE = false;
-static bool RNAMODE = false;
-static bool b_prefilter = false;
 
 static string seqfile = "";
-static string constraintsFile = "";
-static string outputPrefix = "";
 static string outputFile = "";
-static string energyDecomposeOutFile = "";
 static string outputDir = "";
-static string shapeFile = "";
 static string paramDir; // default value
 
 static int dangles=-1;
-static int prefilter1=2;
-static int prefilter2=2;
-static int print_energy_decompose = 0;
 
 static int nThreads = -1;
-static int contactDistance = -1;
+
 
 void init_fold(const char* seq) {
   assert(seq != NULL);
@@ -88,12 +69,12 @@ void init_fold(const char* seq) {
   create_tables(len);
 
   g_nthreads = nThreads;
-  g_unamode  = UNAMODE;
-  g_mismatch = T_MISMATCH;
-  g_verbose  = VERBOSE;
-  g_prefilter_mode  = b_prefilter;
-  g_prefilter1  = prefilter1;
-  g_prefilter2  = prefilter2;
+  g_unamode  = false;
+  g_mismatch = false;
+  g_verbose  = false;
+  g_prefilter_mode  = false;
+  g_prefilter1  = 2;
+  g_prefilter2  = 2;
   g_dangles = dangles;
 
 }
@@ -127,12 +108,12 @@ int mfe_main(string seq_file, string output_file, string param_dir, int dangle_m
 	init_fold(seq.c_str());
 	
 	// Read in thermodynamic parameters. Always use Turner99 data (for now)
-        readThermodynamicParameters(paramDir.c_str(), PARAM_DIR, UNAMODE, RNAMODE, T_MISMATCH);
+        readThermodynamicParameters(paramDir.c_str(), PARAM_DIR, false, false, false);
 
 	energy = calculate(seq.length()) ;
         printf("%d", energy);
 	
-	trace(seq.length(), print_energy_decompose, energyDecomposeOutFile.c_str());
+	trace(seq.length(), 0, "");
 	
 	save_ct_file(outputFile, seq, energy);
 
