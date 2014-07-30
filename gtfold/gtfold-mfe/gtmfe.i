@@ -16,4 +16,8 @@
 #include "omp.h"
 %}
 
-int mfe_main(std::string seq_file, std::string output_file, std::string param_dir, int dangle_model = 1);
+struct PolytopeVector {
+  double x, y, z, w, energy;
+};
+
+PolytopeVector mfe_main(std::string seq_file, std::string output_file, std::string param_dir, int dangle_model = 1);

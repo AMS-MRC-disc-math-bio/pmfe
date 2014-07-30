@@ -54,7 +54,6 @@ static int dangles=-1;
 
 static int nThreads = -1;
 
-
 void init_fold(const char* seq) {
   assert(seq != NULL);
   int len = strlen(seq);
@@ -85,7 +84,7 @@ void free_fold(int len) {
 }
 
 
-int mfe_main(string seq_file, string output_file, string param_dir, int dangle_model) {
+PolytopeVector mfe_main(string seq_file, string output_file, string param_dir, int dangle_model) {
         std::string seq;
         int energy;
 	
@@ -119,5 +118,12 @@ int mfe_main(string seq_file, string output_file, string param_dir, int dangle_m
 
 	free_fold(seq.length());
 	
-        return EXIT_SUCCESS;
+        struct PolytopeVector result;
+        result.x = 0;
+        result.y = 0;
+        result.z = 0;
+        result.w = 0;
+        result.energy = energy;
+
+        return result;
 }
