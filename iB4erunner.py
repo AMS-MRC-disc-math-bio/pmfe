@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import os, sys, argparse, subprocess, shutil, logging
-import GTrunner, GTsetMBparam, GTscorer
+sys.path.append("gtfold/gtfold-mfe")
+import gtmfe
 
 iB4e_path = "iB4e/iB4e-rna"
 
@@ -22,12 +23,8 @@ def main(argv):
         logger.setLevel(logging.INFO)
         
 
-    baseinputdir = "input"
-    gtinputdir = os.path.join(baseinputdir, "gt", "Turner99")
-    scoringinputdir = os.path.join(baseinputdir, "scoring", "Turner99")
+    paramdir = "Turner99"
     
-    outputdir = "output/gt"
-    scoredir = "output/scoring"
     structdir = os.path.splitext(seqfile)[0]
 
     points = []
@@ -46,8 +43,8 @@ def main(argv):
     logging.debug("Computing classical scores")
 
     # Compute classical scores for later reference
-    classical_struct = GTrunner.run_gt(gtinputdir, gtinputdir, seqfile)
-    classical_scores = GTscorer.find_xyzw(scoringinputdir, scoredir, classical_struct)
+    classical_result = gtmfe.mfe_main(seqfile, os.path.join(structdir, os.path.splitext(seqfile)[0] + ".classical.ct"), paramdir)
+    classical_scores = [classical_result.x, classical_result.y, classical_result.z, classical_result.w]
 
     logging.debug("Classical scores: " + str(classical_scores))
 
@@ -66,23 +63,16 @@ def main(argv):
 
         logging.debug("iB4e requests vector " + str(params))
         
-        # Set up the parameters
-        GTsetMBparam.setup_gt_from_vec(gtinputdir, outputdir, params)
-        
         # Find the MFE structure
-        structfile = GTrunner.run_gt(gtinputdir, os.path.join(outputdir, "Turner99"), seqfile)
+        structname = os.path.splitext(os.path.basename(seqfile))[0] + "." + str(params) + ".ct"
+        structtarget = os.path.join(structdir, structname)
+        result = gtmfe.mfe_main(seqfile, structtarget, paramdir, params[0], params[1], params[2], params[3])
+        logging.debug("Stored structure as " + str(structtarget))
         
-        # Score the structure using GTfold
-        scores = GTscorer.find_xyzw(scoringinputdir, scoredir, structfile)
+        # Store the scores
+        scores = [result.x, result.y, result.z, result.w]
         points.append(scores)
         result = " ".join(map(str, scores)) + "\n"
-
-        # Move the structure file to the storage directory
-        #structname = os.path.splitext(os.path.basename(structfile))[0] + "." + ".".join(str(int(score)) for score in scores) + ".ct"
-        structname = os.path.splitext(os.path.basename(structfile))[0] + "." + str(scores) + ".ct"
-        structtarget = os.path.join(structdir, structname)
-        os.rename(structfile, structtarget)
-        logging.debug("Stored structure as " + str(structtarget))
 
         # Send the score vector to iB4e
         iB4e.stdin.write(result)
