@@ -60,6 +60,8 @@ def main(argv):
         except SyntaxError:
             break
 
+        # Things work more nicely if we reverse iB4e's vectors before using them 
+        params.reverse()
 
         logging.debug("iB4e requests vector " + str(params))
         
