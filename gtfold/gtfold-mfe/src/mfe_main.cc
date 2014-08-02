@@ -109,7 +109,6 @@ PolytopeVector mfe_main(string seq_file, string output_file, string param_dir, d
         readThermodynamicParameters(param_dir.c_str(), params);
 
 	energy = calculate(seq.length()) ;
-        printf("%f", energy);
 
         struct PolytopeVector result;
         result = trace(seq.length(), 0, "");
