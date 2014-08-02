@@ -28,10 +28,10 @@
 PolytopeVector trace(int len, int print_energy_decompose, const char* energy_decompose_output_file); //, int vv, int mode, int mismatch);
 
 void traceW(int i);
-int traceV(int i, int j);
-int traceVM(int i, int j);
-int traceVBI(int i, int j);
-int traceWM(int i, int j);
-int traceWMPrime(int i, int j);
+double traceV(int i, int j);
+double traceVM(int i, int j);
+double traceVBI(int i, int j);
+double traceWM(int i, int j);
+double traceWMPrime(int i, int j);
 
 #endif

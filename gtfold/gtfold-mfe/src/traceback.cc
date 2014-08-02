@@ -30,8 +30,8 @@
 #include "utils.h"
 #include "shapereader.h"
 
-int total_en = 0;
-int total_ex = 0;
+double total_en = 0;
+double total_ex = 0;
 int count_multiloops;
 int count_unpaired;
 int count_branches;
@@ -66,13 +66,6 @@ PolytopeVector trace(int len, int print_energy_decompose1, const char* energy_de
         count_branches = 0;
 	
 	traceW(len);
-	if (print_energy_decompose == 1) {
-		fprintf(energy_decompose_outfile, "- sum of energy of Loops:   	  %12.2f kcal/mol\n", total_en/100.0);
-		fprintf(energy_decompose_outfile, "- sum of energy of External Loop: %12.2f kcal/mol\n", total_ex/100.0);
-  	}
-	if(print_energy_decompose==1){
-		fclose(energy_decompose_outfile);
-	}
 
         struct PolytopeVector result;
         result.x = count_multiloops;
@@ -84,7 +77,8 @@ PolytopeVector trace(int len, int print_energy_decompose1, const char* energy_de
 
 void traceW(int j) {
 	int done = 0, i;
-	int wim1, flag = 1 ;
+	int flag = 1;
+        double wim1;
 	
   if (j == 0 || j == 1)
     return;
@@ -96,43 +90,12 @@ void traceW(int j) {
 		flag = 1;
 		if ( wim1 != W[i-1] && canSSregion(0,i)) flag = 0;
 
-		if (g_unamode||g_mismatch) {
-			if ((W[j] == V(i,j) + auPenalty(i, j) + wim1 && canStack(i,j)) || forcePair(i,j)) { 
-							done = 1;
-							if (print_energy_decompose == 1) fprintf(energy_decompose_outfile, "i %5d j %5d ExtLoop   %12.2f\n", i, j, auPenalty(i, j)/100.00);
-							total_ex += auPenalty(i, j);
-							traceV(i, j);
-							if (flag ) traceW(i - 1);
-							break;
-			} else if ((W[j] ==  V(i,j-1) + auPenalty(i,j-1) + Ed5(j-1,i,j) + wim1 && canSS(j) && canStack(i,j-1)) || forcePair(i, j-1)) { 	
-							done = 1;
-							if (print_energy_decompose == 1) fprintf(energy_decompose_outfile, "i %5d j %5d ExtLoop   %12.2f\n", i, j-1, (auPenalty(i,j-1) + Ed5(j-1,i,j))/100.00);
-							total_ex += (auPenalty(i,j-1) + Ed5(j-1,i,j));
-							traceV(i, j - 1);
-							if (flag ) traceW(i - 1);
-							break;
-			} else if ((W[j] == V(i+1,j) + auPenalty(i+1,j) + Ed3(j,i+1,i) + wim1 && canSS(i) && canStack(i+1,j)) || forcePair(i+1,j)){
-							done = 1;
-							if (print_energy_decompose == 1) fprintf(energy_decompose_outfile, "i %5d j %5d ExtLoop   %12.2f\n", i+1, j, (auPenalty(i+1,j) + Ed3(j,i+1,i))/100.00);
-							total_ex += (auPenalty(i+1,j) + Ed3(j,i+1,i));
-							traceV(i + 1, j);
-							if (flag ) traceW(i - 1);
-							break;
-			} else if ((W[j] == V(i+1,j-1) + auPenalty(i+1, j-1) + Estacke(j-1,i+1) + wim1 && canSS(i) && canSS(j) && canStack(i+1,j-1)) || forcePair(i+1,j-1)) { 
-							done = 1;
-							if (print_energy_decompose == 1) fprintf(energy_decompose_outfile, "i %5d j %5d ExtLoop   %12.2f\n", i+1, j-1, (auPenalty(i+1, j-1) + Estacke(j-1,i+1))/100.00);
-							total_ex += (auPenalty(i+1, j-1) + Estacke(j-1,i+1));
-							traceV(i + 1, j - 1);
-							if (flag ) traceW(i - 1);
-							break;
-			}
-		} else if (g_dangles == 2) {
-				int e_dangles = 0;
+                if (g_dangles == 2) {
+				double e_dangles = 0;
 				if (i>1) e_dangles +=  Ed3(j,i,i-1);
 				if (j<length) e_dangles += Ed5(j,i,j+1);
 				if ((W[j] == V(i,j) + auPenalty(i, j) + e_dangles + wim1 && canSS(i) && canSS(j) && canStack(i+1,j-1)) || forcePair(i+1,j-1)) { 
 												done = 1;
-												if (print_energy_decompose == 1) fprintf(energy_decompose_outfile, "i %5d j %5d ExtLoop   %12.2f\n", i+1, j-1, (auPenalty(i, j) + e_dangles)/100.00);
 												total_ex += (auPenalty(i, j) + e_dangles);
 												traceV(i, j);
 												if (flag ) traceW(i - 1);
@@ -141,7 +104,6 @@ void traceW(int j) {
 		}	else if (g_dangles == 0) {
 			if ((W[j] == V(i,j) + auPenalty(i, j) + wim1 && canStack(i,j)) || forcePair(i,j)) { 
 							done = 1;
-							if (print_energy_decompose == 1) fprintf(energy_decompose_outfile, "i %5d j %5d ExtLoop   %12.2f\n", i, j, auPenalty(i, j)/100.00);
 							total_ex += auPenalty(i, j);
 							traceV(i, j);
 							if (flag ) traceW(i - 1);
@@ -150,28 +112,24 @@ void traceW(int j) {
 		} else { // default
 			if ((W[j] == V(i,j) + auPenalty(i, j) + wim1 && canStack(i,j)) || forcePair(i,j)) { 
 							done = 1;
-							if (print_energy_decompose == 1) fprintf(energy_decompose_outfile, "i %5d j %5d ExtLoop   %12.2f\n", i, j, auPenalty(i, j)/100.00);
 							total_ex += auPenalty(i, j);
 							traceV(i, j);
 							if (flag ) traceW(i - 1);
 							break;
 			} else if ((W[j] ==  V(i,j-1) + auPenalty(i,j-1) + Ed5(j-1,i,j) + wim1 && canSS(j) && canStack(i,j-1)) || forcePair(i, j-1)) { 	
 							done = 1;
-							if (print_energy_decompose == 1) fprintf(energy_decompose_outfile, "i %5d j %5d ExtLoop   %12.2f\n", i, j-1, (auPenalty(i,j-1) + Ed5(j-1,i,j))/100.00);
 							total_ex += (auPenalty(i,j-1) + Ed5(j-1,i,j));
 							traceV(i, j - 1);
 							if (flag ) traceW(i - 1);
 							break;
 			} else if ((W[j] == V(i+1,j) + auPenalty(i+1,j) + Ed3(j,i+1,i) + wim1 && canSS(i) && canStack(i+1,j)) || forcePair(i+1,j)){
 							done = 1;
-							if (print_energy_decompose == 1) fprintf(energy_decompose_outfile, "i %5d j %5d ExtLoop   %12.2f\n", i+1, j, (auPenalty(i+1,j) + Ed3(j,i+1,i))/100.00);
 							total_ex += (auPenalty(i+1,j) + Ed3(j,i+1,i));
 							traceV(i + 1, j);
 							if (flag ) traceW(i - 1);
 							break;
 			} else if ((W[j] == V(i+1,j-1) + auPenalty(i+1, j-1) + Ed3(j-1,i+1,i) + Ed5(j-1,i+1,j) + wim1 && canSS(i) && canSS(j) && canStack(i+1,j-1)) || forcePair(i+1,j-1)) { 
 							done = 1;
-							if (print_energy_decompose == 1) fprintf(energy_decompose_outfile, "i %5d j %5d ExtLoop   %12.2f\n", i+1, j-1, (auPenalty(i+1, j-1) + Ed3(j-1,i+1,i) + Ed5(j-1,i+1,j))/100.00);
 							total_ex += (auPenalty(i+1, j-1) + Ed3(j-1,i+1,i) + Ed5(j-1,i+1,j));
 							traceV(i + 1, j - 1);
 							if (flag ) traceW(i - 1);
@@ -181,43 +139,37 @@ void traceW(int j) {
 	}
 		
 	if (W[j] == W[j - 1] && !done) traceW(j-1);
- 
-	//if (!done) {
-	//	fprintf(stderr, "ERROR: W(%d) could not be traced\n", j);
-	//}
 
 	return;
 }
 
-int traceV(int i, int j) {
-	int a, b, c, d, Vij;
+double traceV(int i, int j) {
+        double a, b, c, d;
+        double Vij;
 	if (j-i < TURN)  return INFINITY_;
 
 	a = canHairpin(i,j)?eH(i, j):INFINITY_;
 	b = canStack(i,j)?eS(i, j) + V(i + 1, j - 1):INFINITY_;
 	c = canStack(i,j)?VBI(i,j):INFINITY_;
 	d = canStack(i,j)?VM(i,j):INFINITY_;
-	
+
 	Vij = V(i,j);
 	structure[i] = j;
 	structure[j] = i;
+	
 
 	if (Vij == a ) { 
-		if (print_energy_decompose == 1) fprintf(energy_decompose_outfile, "i %5d j %5d Hairpin   %12.2f\n", i, j, eH(i, j)/100.00);
 		total_en += eH(i,j);
 		return Vij;
 	} else if (Vij == b) { 
-		if (print_energy_decompose == 1) fprintf(energy_decompose_outfile, "i %5d j %5d Stack     %12.2f\n", i, j, eS(i, j)/100.00);
 		total_en += eS(i,j);
 		traceV(i + 1, j - 1);
 		return Vij;
 	} else if (Vij == c) { 
-		if (print_energy_decompose == 1) fprintf(energy_decompose_outfile, "i %5d j %5d IntLoop  ", i, j);
 		traceVBI(i, j);
 		return Vij;
 	} else if (Vij == d) { 
-		int eVM = traceVM(i, j);
-		if (print_energy_decompose ==1) fprintf(energy_decompose_outfile, "i %5d j %5d MultiLoop %12.2f\n", i, j, (Vij-eVM)/100.0);
+		double eVM = traceVM(i, j);
 		total_en += (Vij-eVM);
 		return Vij;
 	}
@@ -225,8 +177,8 @@ int traceV(int i, int j) {
 	return 0;
 }
 
-int traceVBI(int i, int j) {
-	int VBIij;
+double traceVBI(int i, int j) {
+	double VBIij;
 	int ip, jp;
 	int ifinal, jfinal;
 
@@ -245,15 +197,14 @@ int traceVBI(int i, int j) {
 		if (jp != j) break;
 	}
 
-	if (print_energy_decompose==1) fprintf(energy_decompose_outfile, " %12.2f\n", eL(i, j, ifinal, jfinal)/100.00);
 	total_en += eL(i, j, ifinal, jfinal);
 
 	return traceV(ifinal, jfinal);
 }
 
-int traceVM(int i, int j) {
+double traceVM(int i, int j) {
 	int done = 0;
-	int eVM = 0;
+	double eVM = 0;
 
         if (g_dangles == 2) {
 		if (V(i,j) ==  WMPrime[i + 1][j - 1] + Ea + Eb + auPenalty(i,j) + Ed5(i,j,i + 1) + Ed3(i,j,j - 1) && canSS(i+1) && canSS(j-1) ) {
@@ -296,15 +247,13 @@ int traceVM(int i, int j) {
                         count_unpaired += 2;
 		}
 	}
-	if(!done) { 
-		fprintf(stderr, "ERROR: VM(%d,%d) could not be traced\n", i,j);
-	}
 
 	return eVM;
 }
 
-int traceWMPrime(int i, int j) {
-	int done=0, h, energy=0;
+double traceWMPrime(int i, int j) {
+        int done=0, h;
+        double energy=0;
 	
 	for (h = i; h < j && !done; h++) {
 			if (WM(i,h) + WM(h + 1,j) == WMPrime(i,j)) {
@@ -317,9 +266,10 @@ int traceWMPrime(int i, int j) {
 	return energy;
 }
 
-int traceWM(int i, int j) {
+double traceWM(int i, int j) {
 	assert(i < j);
-	int done=0, eWM=0;
+	int done=0;
+        double eWM=0;
 
 	if (!done && WM(i,j) == WMPrime[i][j]) {
 			eWM += traceWMPrime(i,j);
@@ -328,7 +278,7 @@ int traceWM(int i, int j) {
 
 	if (!done){
                 if (g_dangles == 2) {
-						int energy = V(i,j) + auPenalty(i, j) + Eb;				
+						double energy = V(i,j) + auPenalty(i, j) + Eb;				
 						energy += (i==1)?Ed3(j,i,length):Ed3(j,i,i-1);
 						/*if (j<len)*/ energy += Ed5(j,i,j+1);
 						if (WM(i,j) ==  energy && canSS(i) && canSS(j) && canStack(i+1,j-1)) {
@@ -378,8 +328,5 @@ int traceWM(int i, int j) {
 		}
 	}
 
-	if(!done) { 
-		fprintf(stderr, "ERROR: WM(%d,%d) could not be traced\n", i,j);
-	}
 	return eWM;
 }
