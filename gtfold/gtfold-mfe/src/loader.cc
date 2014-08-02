@@ -44,22 +44,22 @@ using namespace std;
 
 std::string EN_DATADIR;
 
-int poppen[5];
-int maxpen;
-int eparam[11];
-int multConst[3]; /* for multiloop penalties. */
-int dangle[4][4][4][2]; /* Contain dangling energy values */
-int inter[31]; /* Contains size penalty for internal loops */
-int bulge[31]; /* Contain the size penalty for bulges */
-int hairpin[31]; /* Contains the size penalty for hairpin loops */
-int stack[256]; /* Stacking energy used to calculate energy of stack loops */
-int tstkh[256]; /* Terminal mismatch energy used in the calculations of hairpin loops */
-int tstki[256]; /* Terminal mismatch energy used in the calculations of internal loops */
-int tloop[maxtloop + 1][2];
+double poppen[5];
+double maxpen;
+double eparam[11];
+double multConst[3]; /* for multiloop penalties. */
+double dangle[4][4][4][2]; /* Contain dangling energy values */
+double inter[31]; /* Contains size penalty for internal loops */
+double bulge[31]; /* Contain the size penalty for bulges */
+double hairpin[31]; /* Contains the size penalty for hairpin loops */
+double stack[256]; /* Stacking energy used to calculate energy of stack loops */
+double tstkh[256]; /* Terminal mismatch energy used in the calculations of hairpin loops */
+double tstki[256]; /* Terminal mismatch energy used in the calculations of internal loops */
+double tloop[maxtloop + 1][2];
 int numoftloops;
-int iloop21[5][5][5][5][5][5][5]; /* 2*1 internal loops */
-int iloop22[5][5][5][5][5][5][5][5]; /* 2*2 internal looops */
-int iloop11[5][5][5][5][5][5]; /* 1*1 internal loops */
+double iloop21[5][5][5][5][5][5][5]; /* 2*1 internal loops */
+double iloop22[5][5][5][5][5][5][5][5]; /* 2*2 internal looops */
+double iloop11[5][5][5][5][5][5]; /* 1*1 internal loops */
 
 //int coax[6][6][6][6];
 //int tstackcoax[6][6][6][6];
@@ -67,23 +67,24 @@ int iloop11[5][5][5][5][5][5]; /* 1*1 internal loops */
 //int tstack[6][6][6][6];
 //int tstkm[6][6][6][6];
 
-int tstackm[5][5][6][6];
-int tstacke[5][5][6][6];
-int tstacki23[5][5][5][5];
+double tstackm[5][5][6][6];
+double tstacke[5][5][6][6];
 
-int auend;
-int gubonus;
-int cint; /* cint, cslope, c3 are used for poly C hairpin loops */
-int cslope;
-int c3;
-int efn2a;
-int efn2b;
-int efn2c;
-int triloop[maxtloop + 1][2];
+double tstacki23[5][5][5][5];
+
+double auend;
+double gubonus;
+double cint; /* cint, cslope, c3 are used for poly C hairpin loops */
+double cslope;
+double c3;
+double efn2a;
+double efn2b;
+double efn2c;
+double triloop[maxtloop + 1][2];
 int numoftriloops;
-int init;
+double init;
 int gail; /* It is either 0 or 1. It is used for grosely asymmetric internal loops */
-float prelog;
+double prelog;
 
 void readThermodynamicParameters(const char *userdatadir) {
 	struct stat buf;
@@ -156,7 +157,7 @@ int initStackValues(const string& fileName, const string& dirPath)  {
 			j = cols/4;
 			l = cols%4; 		
 			if (!(val == "inf")) {
-				stack[fourBaseIndex(i,j,k,l)]  = (int) floor(100.0 * atof(val.c_str()) + .5);
+				stack[fourBaseIndex(i,j,k,l)]  = atof(val.c_str());
 			}
 		}	
 		++count;
@@ -184,17 +185,17 @@ int initMiscloopValues(const string& fileName, const string& dirpath) {
 	for (int index = 1; index < 13; index++) { // There are total 12 values to read in.
 		if (index == 1) {
 			cf >> currentWord;
-			prelog = 100 * atof(currentWord);
+			prelog = atof(currentWord);
 		}
 		if (index == 2) {
 			cf >> currentWord;
-			maxpen = int(atof(currentWord) * 100.0 + .5);
+			maxpen = atof(currentWord);
 		}
 		if (index == 3) {
 			for (int count = 1; count <= 4; count++) {
 				cf >> currentWord;
 				s = currentWord;
-				poppen[count] = (int) (atof(s.c_str()) * 100 + 0.5);
+				poppen[count] = atof(s.c_str());
 			}
 		}
 		if (index == 4) {
@@ -202,9 +203,9 @@ int initMiscloopValues(const string& fileName, const string& dirpath) {
 			eparam[2] = 0;
 			eparam[3] = 0;
 			eparam[4] = 0;
-			eparam[7] = 30;
-			eparam[8] = 30;
-			eparam[9] = -500;
+			eparam[7] = .30;
+			eparam[8] = .30;
+			eparam[9] = -5.00;
 			int table[4];
 			table[1] = 5;
 			table[2] = 6;
@@ -212,8 +213,8 @@ int initMiscloopValues(const string& fileName, const string& dirpath) {
 			for (int count = 1; count <= 3; count++) {
 				cf >> currentWord;
 				s = currentWord;
-				multConst[count - 1] = (int) (atof(s.c_str()) * 100 + 0.5);
-				eparam[table[count]] = (int) (atof(s.c_str()) * 100 + 0.5);
+				multConst[count - 1] = atof(s.c_str());
+				eparam[table[count]] = atof(s.c_str());
 			}
 		}
 		if (index == 5) {
@@ -221,35 +222,35 @@ int initMiscloopValues(const string& fileName, const string& dirpath) {
 			for (int count = 1; count <= 3; count++) {
 				cf >> currentWord;
 				s = currentWord;
-				table[count] = (int) (atof(s.c_str()) * 100 + 0.5);
+				table[count] = atof(s.c_str());
 			}
 			efn2a = table[1];
-			efn2b = table[2] - 1;
-			efn2c = table[3] - 1;
+			efn2b = table[2] - .01;
+			efn2c = table[3] - .01;
 		}
 		if (index == 6) {
 			cf >> currentWord;
-			auend = (int) (100 * atof(currentWord));
+			auend = atof(currentWord);
 		}
 		if (index == 7) {
 			cf >> currentWord;
-			gubonus = (int) (100 * atof(currentWord));
+			gubonus = atof(currentWord);
 		}
 		if (index == 8) {
 			cf >> currentWord;
-			cslope = (int) (100 * atof(currentWord)) + 1;
+			cslope = atof(currentWord) + .01;
 		}
 		if (index == 9) {
 			cf >> currentWord;
-			cint = (int) (100 * atof(currentWord));
+			cint = atof(currentWord);
 		}
 		if (index == 10) {
 			cf >> currentWord;
-			c3 = (int) (100 * atof(currentWord)) + 1;
+			c3 = atof(currentWord) + .01;
 		}
 		if (index == 11) {
 			cf >> currentWord;
-			init = (int) (100 * atof(currentWord)) + 1;
+			init = atof(currentWord) + .01;
 		}
 		if (index == 12) {
 			cf >> currentWord;
@@ -302,7 +303,7 @@ int initDangleValues(const std::string& fileName,
 			ss >> val;
 			k = cols%4; 		
 			if (!(val == "inf")) {
-				dangle[i][j][k][l] = (int) floor(100.0 * atof(val.c_str()) + .5);
+				dangle[i][j][k][l] = atof(val.c_str());
 			}
 		}	
 		++count;
@@ -323,7 +324,7 @@ int initLoopValues( const string& fileName, const string& dirPath) {
 	char currentWord[256];
 	string s;
 	int index= 0;
-	int tempValue = 0;
+	double tempValue = 0;
 
 	if (cf.fail()) {
 		cerr << "File open failed " << filePath << endl;
@@ -337,7 +338,7 @@ int initLoopValues( const string& fileName, const string& dirPath) {
 				index = atoi(currentWord);
 			if (j > 1) {
 				if (strcmp(currentWord, "inf")) {
-					tempValue = (int) (100 * atof(currentWord) + 0.5);
+					tempValue = atof(currentWord);
 				} else {
 					tempValue = INFINITY_;
 				}
@@ -385,7 +386,7 @@ int initTstk23Values(const std::string& fileName, const std::string& dirPath) {
 					else {
 						cf >> val;
 						tstacki23[i1][j1][i2][j2] = (val == "inf")? (INFINITY_): 
-							((int) floor(100.0 * atof(val.c_str()) + .5));
+							(atof(val.c_str()));
 					}
 	cf.close();
 
@@ -422,7 +423,7 @@ int initTstkeValues(const std::string& fileName, const std::string& dirPath) {
 					else { 
 						cf >> val;
 						tstacke[i1][j1][i2][j2] = (val == "inf")? (INFINITY_): 
-							((int) floor(100.0 * atof(val.c_str()) + .5));
+							(atof(val.c_str()));
 					}
 				}
 			}
@@ -461,7 +462,7 @@ int initTstkmValues(const std::string& fileName, const std::string& dirPath) {
 					else { 
 						cf >> val;
 						tstackm[i1][j1][i2][j2] = (val == "inf")? (INFINITY_): 
-							((int) floor(100.0 * atof(val.c_str()) + .5));
+							(atof(val.c_str()));
 					}
 				}
 			}
@@ -511,7 +512,7 @@ int initTstkhValues(const std::string& fileName, const std::string& dirPath) {
 			j = cols/4;
 			l = cols%4; 		
 			if (!(val == "inf")) {
-				tstkh[fourBaseIndex(i,j,k,l)]= (int) floor(100.0 * atof(val.c_str()) + .5);
+				tstkh[fourBaseIndex(i,j,k,l)]= atof(val.c_str());
 			}
 		}	
 		++count;
@@ -559,7 +560,7 @@ int initTstkiValues(const std::string& fileName, const std::string& dirPath) {
 			j = cols/4;
 			l = cols%4; 		
 			if (!(val == "inf")) {
-				tstki[fourBaseIndex(i,j,k,l)]= (int) floor(100.0 * atof(val.c_str()) + .5);
+				tstki[fourBaseIndex(i,j,k,l)]= atof(val.c_str());
 			}
 		}	
 		++count;
@@ -607,10 +608,10 @@ int initTloopValues(const std::string& fileName, const std::string& dirPath) {
 			count++;
 		}
 		
-		tloop[numoftloops][0] = (int) atoi(currentSeqNumbers);
+		tloop[numoftloops][0] = atoi(currentSeqNumbers);
 		
 		if (!(strcmp(currentValue,"inf")==0)) 
-			tloop[numoftloops][1] = (int) floor(100.0 * atof(currentValue) + 0.5);
+			tloop[numoftloops][1] = atof(currentValue);
 	}
 	cf.close();
 	return 0;
@@ -690,7 +691,7 @@ int initInt22Values(const std::string& fileName, const std::string& dirPath) {
 
 				if (!(strcmp(currentValue,"inf")==0)) 
 					iloop22[base[0]][base[1]][base[2]][base[3]][j][l][k][m] 
-						= (int) floor(100.0 * atof(currentValue) + 0.5);
+						= atof(currentValue);
 			}
 		}
 	}
@@ -771,7 +772,7 @@ int initInt21Values(const std::string& fileName, const std::string& dirPath) {
 				for (z = 1; z <=24 ; z++) {
 					char value[32];
 					ss >> value;
-					int temp = (int) floor(100.0 * atof(value) + .5);
+					double temp = atof(value);
 					a = base1[i];
 					b = base2[i];
 					f = base1[jj];
@@ -858,7 +859,7 @@ int initInt11Values(const std::string& fileName, const std::string& dirPath) {
 			for (int z=1; z <= 24; ++z) {
 				char value[32];
 				ss >> value;	
-				int temp = (int) floor(100.0 * atof(value) + .5);
+				double temp = atof(value);
 				a = base1[k];
 				d = base2[k];
 				c = base1[jj];

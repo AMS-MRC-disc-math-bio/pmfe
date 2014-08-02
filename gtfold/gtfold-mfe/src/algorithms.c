@@ -67,9 +67,9 @@ void prefilter(int len, int prefilter1, int prefilter2) {
   free(in);
 }
 
-int calcVBI(int i, int j) {
+double calcVBI(int i, int j) {
   int p=0, q=0;
-  int VBIij = INFINITY_;
+  double VBIij = INFINITY_;
 
   for (p = i+1; p <= MIN(j-2-TURN,i+MAXLOOP+1) ; p++) {
     int minq = j-i+p-MAXLOOP-2;
@@ -86,9 +86,9 @@ int calcVBI(int i, int j) {
   return VBIij;
 }
 
-int calcVBI1(int i, int j) {
+double calcVBI1(int i, int j) {
   int p=0, q=0;
-  int VBIij = INFINITY_;
+  double VBIij = INFINITY_;
 
   for (p = i+1; p <= MIN(j-2-TURN,i+MAXLOOP+1) ; p++) {
     int minq = j-i+p-MAXLOOP-2;
@@ -105,9 +105,9 @@ int calcVBI1(int i, int j) {
   return VBIij;
 }
 
-int calcVBI2(int i, int j, int  len) {
+double calcVBI2(int i, int j, int  len) {
   int d, ii, jj; 
-  int energy = INFINITY_;
+  double energy = INFINITY_;
 
   for (d = j-i-3; d >= TURN+1 && d >= j-i-2-MAXLOOP; --d) 
     for (ii = i + 1; ii < j - d && ii <= len; ++ii)
@@ -120,7 +120,7 @@ int calcVBI2(int i, int j, int  len) {
   return energy;
 }
 
-int calculate(int len) { 
+double calculate(int len) { 
   int b, i, j;
 #ifdef _OPENMP
   if (g_nthreads > 0) omp_set_num_threads(g_nthreads);
@@ -139,8 +139,8 @@ int calculate(int len) {
       j = i + b;
 
       if (PP[i][j] == 1) {
-        int eh = canHairpin(i,j)?eH(i,j):INFINITY_; //hair pin
-        int es = canStack(i,j)?eS(i,j)+V(i+1,j-1):INFINITY_; // stack
+        double eh = canHairpin(i,j)?eH(i,j):INFINITY_; //hair pin
+        double es = canStack(i,j)?eS(i,j)+V(i+1,j-1):INFINITY_; // stack
 
         // Internal Loop BEGIN
         if (g_unamode) 
@@ -150,8 +150,8 @@ int calculate(int len) {
         // Internal Loop END
 
         // Multi Loop BEGIN
-        int d3 = canSS(j-1)?Ed3(i,j,j-1):INFINITY_;
-        int d5 = canSS(i+1)?Ed5(i,j,i+1):INFINITY_;
+        double d3 = canSS(j-1)?Ed3(i,j,j-1):INFINITY_;
+        double d5 = canSS(i+1)?Ed5(i,j,i+1):INFINITY_;
 
         if (g_dangles == 2) { // -d2
           VM(i,j) = MIN(VM(i,j), WMPrime[i+1][j-1] + d3 + d5 + auPenalty(i,j) + Ea + Eb);
@@ -182,7 +182,7 @@ int calculate(int len) {
       }
 
       // WM begin
-      int newWM = INFINITY_; 
+      double newWM = INFINITY_; 
 
       //ZS: This sum corresponds to when i,j are NOT paired with each other.
       //So we need to make sure only terms where i,j aren't pairing are considered. 
@@ -195,7 +195,7 @@ int calculate(int len) {
         if (i<j-TURN-2)
           newWM = (canSS(i)&&canSS(j))?MIN(V(i+1,j-1) + Estackm(j-1,i+1) + auPenalty(i+1,j-1) + Eb + 2*Ec, newWM):newWM; 
       } else if (g_dangles == 2) {
-        int energy = V(i,j) + auPenalty(i,j) + Eb;
+        double energy = V(i,j) + auPenalty(i,j) + Eb;
         energy += (i==1)?Ed3(j,i,len):Ed3(j,i,i-1);
         /*if (j<len)*/ energy += Ed5(j,i,j+1);
         newWM = (canSS(i)&&canSS(j))?MIN(energy, newWM):newWM; //i,j dangle
@@ -217,7 +217,8 @@ int calculate(int len) {
 
   W[0] = 0;
   for (j = 1; j <= len; j++) {
-    int i, Wj, Widjd, Wijd, Widj, Wij, Wim1;
+    int i;
+    double Wj, Widjd, Wijd, Widj, Wij, Wim1;
     Wj = 0;
     for (i = 1; i < j-TURN; i++) {
       Wij = Widjd = Wijd = Widj = INFINITY_;
@@ -230,7 +231,7 @@ int calculate(int len) {
         Widjd = (canSS(i)&&canSS(j))?V(i+1,j-1) + auPenalty(i+1,j-1) + Estacke(j-1,i+1) + Wim1:Widjd;
         Wij = MIN4(Wij, Widjd, Wijd, Widj);
       } else if (g_dangles == 2) { // -d2 option
-        int energy = V(i,j) +	 auPenalty(i,j) + Wim1;
+        double energy = V(i,j) +	 auPenalty(i,j) + Wim1;
         if (i>1) energy +=  Ed3(j,i,i-1);
         if (j<len) energy += Ed5(j,i,j+1);
         Widjd = (canSS(i)&&canSS(j))? energy:Widjd;
@@ -263,7 +264,7 @@ int calculate(int len) {
   file = fopen("Eh.txt", "w");
   for (ii = 1; ii <= len; ++ii) {    
     for (jj = len; jj > ii; --jj) {
-      int eh = INFINITY_;
+      double eh = INFINITY_;
       if (PP[ii][jj])	eh = eH(ii,jj);
       fprintf(file, "%d %d %d\n",ii,jj,eh>=INFINITY_?INFINITY_:eh);
     }
@@ -273,7 +274,7 @@ int calculate(int len) {
   file = fopen("Es.txt", "w");
   for (ii = 1; ii <= len; ++ii) {    
     for (jj = len; jj > ii; --jj) {
-      int es = INFINITY_;
+      double es = INFINITY_;
       if (PP[ii][jj] && PP[ii+1][jj-1]) es = eS(ii,jj);
       fprintf(file, "%d %d %d\n",ii,jj,es>=INFINITY_?INFINITY_:es);
     }

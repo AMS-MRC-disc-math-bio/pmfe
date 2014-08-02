@@ -83,7 +83,7 @@ void free_fold(int len) {
 
 PolytopeVector mfe_main(string seq_file, string output_file, string param_dir, int dangle_model) {
         std::string seq;
-        int energy;
+        double energy;
 	
         dangles = dangle_model;
              
@@ -104,12 +104,12 @@ PolytopeVector mfe_main(string seq_file, string output_file, string param_dir, i
         readThermodynamicParameters(param_dir.c_str());
 
 	energy = calculate(seq.length()) ;
-        printf("%d", energy);
+        printf("%f", energy);
 
         struct PolytopeVector result;
         result = trace(seq.length(), 0, "");
-        result.energy = energy/100.0;
-        result.w = result.energy + (result.x * Ea + result.y * Eb + result.z * Ec)/100.0;
+        result.energy = energy;
+        result.w = result.energy + result.x * Ea + result.y * Eb + result.z * Ec;
 	
 	save_ct_file(outputFile, seq, energy);
 

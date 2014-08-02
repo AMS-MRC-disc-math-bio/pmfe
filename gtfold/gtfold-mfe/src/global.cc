@@ -147,12 +147,12 @@ void print_gtfold_usage_help() {
 }
 
 
-void save_ct_file(string outputFile, string seq, int energy) {
+void save_ct_file(string outputFile, string seq, double energy) {
 
 	ofstream outfile;
 	outfile.open(outputFile.c_str());
 
-	outfile << seq.length() << "\t  dG = " << energy/100.0 << endl;
+	outfile << seq.length() << "\t  dG = " << energy << endl;
 	//outfile << seq.length() << "\tdG = " << energy/100.0 << "\t" << seqfile << endl;
 
 	unsigned int i = 1;
@@ -162,11 +162,11 @@ void save_ct_file(string outputFile, string seq, int energy) {
 	outfile.close();
 }
 
-void save_ct_file(string outputFile, string seq, int energy, int *structure1) {
+void save_ct_file(string outputFile, string seq, double energy, int *structure1) {
         ofstream outfile;
         outfile.open(outputFile.c_str());
 
-        outfile << seq.length() << "\t  dG = " << energy/100.0 << endl;
+        outfile << seq.length() << "\t  dG = " << energy << endl;
         //outfile << seq.length() << "\tdG = " << energy/100.0 << "\t" << seqfile << endl;
 
         unsigned int i = 1;
