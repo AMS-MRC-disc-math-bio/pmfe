@@ -23,7 +23,7 @@
 #ifndef _TRACEBACK_H
 #define _TRACEBACK_H
 
-#include "PolytopeVector.h"
+#include "helper-structs.h"
 
 PolytopeVector trace(int len, int print_energy_decompose, const char* energy_decompose_output_file); //, int vv, int mode, int mismatch);
 

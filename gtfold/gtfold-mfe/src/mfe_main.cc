@@ -81,9 +81,10 @@ void free_fold(int len) {
 }
 
 
-PolytopeVector mfe_main(string seq_file, string output_file, string param_dir, int dangle_model) {
+PolytopeVector mfe_main(string seq_file, string output_file, string param_dir, double a, double b, double c, double d, int dangle_model) {
         std::string seq;
         double energy;
+        ParameterVector params;
 	
         dangles = dangle_model;
              
@@ -101,7 +102,11 @@ PolytopeVector mfe_main(string seq_file, string output_file, string param_dir, i
 	init_fold(seq.c_str());
 	
 	// Read in thermodynamic parameters. Always use Turner99 data (for now)
-        readThermodynamicParameters(param_dir.c_str());
+        params.a = a;
+        params.b = b;
+        params.c = c;
+        params.d = d;
+        readThermodynamicParameters(param_dir.c_str(), params);
 
 	energy = calculate(seq.length()) ;
         printf("%f", energy);

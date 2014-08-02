@@ -86,7 +86,7 @@ double init;
 int gail; /* It is either 0 or 1. It is used for grosely asymmetric internal loops */
 double prelog;
 
-void readThermodynamicParameters(const char *userdatadir) {
+void readThermodynamicParameters(const char *userdatadir, ParameterVector params) {
 	struct stat buf;
 
         EN_DATADIR.assign(userdatadir);
@@ -100,20 +100,20 @@ void readThermodynamicParameters(const char *userdatadir) {
 		EN_DATADIR += "/";
 	}
 
-	initMiscloopValues("miscloop.DAT", EN_DATADIR);
-	initDangleValues("dangle.DAT", EN_DATADIR);
-	initStackValues("stack.DAT", EN_DATADIR);
-	initLoopValues("loop.DAT", EN_DATADIR);
-	initTstkhValues("tstackh.DAT", EN_DATADIR);
-	initTstkiValues("tstacki.DAT", EN_DATADIR);
-	initTloopValues("tloop.DAT", EN_DATADIR);
+	initMiscloopValues("miscloop.DAT", EN_DATADIR, params);
+	initDangleValues("dangle.DAT", EN_DATADIR, params);
+	initStackValues("stack.DAT", EN_DATADIR, params);
+	initLoopValues("loop.DAT", EN_DATADIR, params);
+	initTstkhValues("tstackh.DAT", EN_DATADIR, params);
+	initTstkiValues("tstacki.DAT", EN_DATADIR, params);
+	initTloopValues("tloop.DAT", EN_DATADIR, params);
 
-        initInt21Values("int21.DAT", EN_DATADIR);
-        initInt22Values("int22.DAT", EN_DATADIR);
-        initInt11Values("int11.DAT", EN_DATADIR);
+        initInt21Values("int21.DAT", EN_DATADIR, params);
+        initInt22Values("int22.DAT", EN_DATADIR, params);
+        initInt11Values("int11.DAT", EN_DATADIR, params);
 }
 
-int initStackValues(const string& fileName, const string& dirPath)  { 
+int initStackValues(const string& fileName, const string& dirPath, ParameterVector params)  { 
 	std::string filePath;
 	std::ifstream cf;
 
@@ -157,7 +157,7 @@ int initStackValues(const string& fileName, const string& dirPath)  {
 			j = cols/4;
 			l = cols%4; 		
 			if (!(val == "inf")) {
-				stack[fourBaseIndex(i,j,k,l)]  = atof(val.c_str());
+				stack[fourBaseIndex(i,j,k,l)]  = params.d * atof(val.c_str());
 			}
 		}	
 		++count;
@@ -166,7 +166,7 @@ int initStackValues(const string& fileName, const string& dirPath)  {
 	return 0;
 }
 
-int initMiscloopValues(const string& fileName, const string& dirpath) {
+int initMiscloopValues(const string& fileName, const string& dirpath, ParameterVector params) {
 	std::string filePath;
 	std::ifstream cf;
 
@@ -185,27 +185,27 @@ int initMiscloopValues(const string& fileName, const string& dirpath) {
 	for (int index = 1; index < 13; index++) { // There are total 12 values to read in.
 		if (index == 1) {
 			cf >> currentWord;
-			prelog = atof(currentWord);
+			prelog = params.d * atof(currentWord);
 		}
 		if (index == 2) {
 			cf >> currentWord;
-			maxpen = atof(currentWord);
+			maxpen = params.d * atof(currentWord);
 		}
 		if (index == 3) {
 			for (int count = 1; count <= 4; count++) {
 				cf >> currentWord;
 				s = currentWord;
-				poppen[count] = atof(s.c_str());
+				poppen[count] = params.d * atof(s.c_str());
 			}
 		}
 		if (index == 4) {
-			eparam[1] = 0;
-			eparam[2] = 0;
-			eparam[3] = 0;
-			eparam[4] = 0;
-			eparam[7] = .30;
-			eparam[8] = .30;
-			eparam[9] = -5.00;
+			eparam[1] = params.d * 0;
+			eparam[2] = params.d * 0;
+			eparam[3] = params.d * 0;
+			eparam[4] = params.d * 0;
+			eparam[7] = params.d * .30;
+			eparam[8] = params.d * .30;
+			eparam[9] = params.d * -5.00;
 			int table[4];
 			table[1] = 5;
 			table[2] = 6;
@@ -213,8 +213,8 @@ int initMiscloopValues(const string& fileName, const string& dirpath) {
 			for (int count = 1; count <= 3; count++) {
 				cf >> currentWord;
 				s = currentWord;
-				multConst[count - 1] = atof(s.c_str());
-				eparam[table[count]] = atof(s.c_str());
+				multConst[count - 1] = params.d * atof(s.c_str());
+				eparam[table[count]] = params.d * atof(s.c_str());
 			}
 		}
 		if (index == 5) {
@@ -222,35 +222,35 @@ int initMiscloopValues(const string& fileName, const string& dirpath) {
 			for (int count = 1; count <= 3; count++) {
 				cf >> currentWord;
 				s = currentWord;
-				table[count] = atof(s.c_str());
+				table[count] = params.d * atof(s.c_str());
 			}
-			efn2a = table[1];
-			efn2b = table[2] - .01;
-			efn2c = table[3] - .01;
+			efn2a = params.d * table[1];
+			efn2b = params.d * (table[2] - .01);
+			efn2c = params.d * (table[3] - .01);
 		}
 		if (index == 6) {
 			cf >> currentWord;
-			auend = atof(currentWord);
+			auend = params.d * atof(currentWord);
 		}
 		if (index == 7) {
 			cf >> currentWord;
-			gubonus = atof(currentWord);
+			gubonus = params.d * atof(currentWord);
 		}
 		if (index == 8) {
 			cf >> currentWord;
-			cslope = atof(currentWord) + .01;
+			cslope = params.d * (atof(currentWord) + .01);
 		}
 		if (index == 9) {
 			cf >> currentWord;
-			cint = atof(currentWord);
+			cint = params.d * atof(currentWord);
 		}
 		if (index == 10) {
 			cf >> currentWord;
-			c3 = atof(currentWord) + .01;
+			c3 = params.d * (atof(currentWord) + .01);
 		}
 		if (index == 11) {
 			cf >> currentWord;
-			init = atof(currentWord) + .01;
+			init = params.d * (atof(currentWord) + .01);
 		}
 		if (index == 12) {
 			cf >> currentWord;
@@ -264,7 +264,7 @@ int initMiscloopValues(const string& fileName, const string& dirpath) {
 }
 
 int initDangleValues(const std::string& fileName, 
-					  const std::string& dirPath) { 
+					  const std::string& dirPath, ParameterVector params) { 
 	std::string filePath;
 	std::ifstream cf;
 
@@ -303,7 +303,7 @@ int initDangleValues(const std::string& fileName,
 			ss >> val;
 			k = cols%4; 		
 			if (!(val == "inf")) {
-				dangle[i][j][k][l] = atof(val.c_str());
+				dangle[i][j][k][l] = params.d * atof(val.c_str());
 			}
 		}	
 		++count;
@@ -312,7 +312,7 @@ int initDangleValues(const std::string& fileName,
 	return 0;
 }
 
-int initLoopValues( const string& fileName, const string& dirPath) {
+int initLoopValues( const string& fileName, const string& dirPath, ParameterVector params) {
 	// algorithm.c, line 2996
 	ifstream cf; // current file
 	std::string filePath;
@@ -338,7 +338,7 @@ int initLoopValues( const string& fileName, const string& dirPath) {
 				index = atoi(currentWord);
 			if (j > 1) {
 				if (strcmp(currentWord, "inf")) {
-					tempValue = atof(currentWord);
+					tempValue = params.d * atof(currentWord);
 				} else {
 					tempValue = INFINITY_;
 				}
@@ -361,7 +361,7 @@ int initLoopValues( const string& fileName, const string& dirPath) {
 	return 0;
 }
 
-int initTstk23Values(const std::string& fileName, const std::string& dirPath) {
+int initTstk23Values(const std::string& fileName, const std::string& dirPath, ParameterVector params) {
 	int i1, j1, i2, j2;                                                              
 	std::string filePath;
 	std::ifstream cf;
@@ -386,7 +386,7 @@ int initTstk23Values(const std::string& fileName, const std::string& dirPath) {
 					else {
 						cf >> val;
 						tstacki23[i1][j1][i2][j2] = (val == "inf")? (INFINITY_): 
-							(atof(val.c_str()));
+							(params.d * atof(val.c_str()));
 					}
 	cf.close();
 
@@ -396,7 +396,7 @@ int initTstk23Values(const std::string& fileName, const std::string& dirPath) {
 
 
 
-int initTstkeValues(const std::string& fileName, const std::string& dirPath) {
+int initTstkeValues(const std::string& fileName, const std::string& dirPath, ParameterVector params) {
 	int i1, j1, i2, j2;                                                              
 	std::string filePath;
 	std::ifstream cf;
@@ -423,7 +423,7 @@ int initTstkeValues(const std::string& fileName, const std::string& dirPath) {
 					else { 
 						cf >> val;
 						tstacke[i1][j1][i2][j2] = (val == "inf")? (INFINITY_): 
-							(atof(val.c_str()));
+							(params.d * atof(val.c_str()));
 					}
 				}
 			}
@@ -435,7 +435,7 @@ int initTstkeValues(const std::string& fileName, const std::string& dirPath) {
 	return 0;
 }
 
-int initTstkmValues(const std::string& fileName, const std::string& dirPath) {
+int initTstkmValues(const std::string& fileName, const std::string& dirPath, ParameterVector params) {
 	int i1, j1, i2, j2;                                                              
 	std::string filePath;
 	std::ifstream cf;
@@ -462,7 +462,7 @@ int initTstkmValues(const std::string& fileName, const std::string& dirPath) {
 					else { 
 						cf >> val;
 						tstackm[i1][j1][i2][j2] = (val == "inf")? (INFINITY_): 
-							(atof(val.c_str()));
+							(params.d * atof(val.c_str()));
 					}
 				}
 			}
@@ -474,7 +474,7 @@ int initTstkmValues(const std::string& fileName, const std::string& dirPath) {
 	return 0;
 }
 
-int initTstkhValues(const std::string& fileName, const std::string& dirPath) {
+int initTstkhValues(const std::string& fileName, const std::string& dirPath, ParameterVector params) {
 	std::string filePath;
 	std::ifstream cf;
 
@@ -512,7 +512,7 @@ int initTstkhValues(const std::string& fileName, const std::string& dirPath) {
 			j = cols/4;
 			l = cols%4; 		
 			if (!(val == "inf")) {
-				tstkh[fourBaseIndex(i,j,k,l)]= atof(val.c_str());
+				tstkh[fourBaseIndex(i,j,k,l)]= params.d * atof(val.c_str());
 			}
 		}	
 		++count;
@@ -522,7 +522,7 @@ int initTstkhValues(const std::string& fileName, const std::string& dirPath) {
 }
 
 
-int initTstkiValues(const std::string& fileName, const std::string& dirPath) {
+int initTstkiValues(const std::string& fileName, const std::string& dirPath, ParameterVector params) {
 	std::string filePath;
 	std::ifstream cf;
 
@@ -560,7 +560,7 @@ int initTstkiValues(const std::string& fileName, const std::string& dirPath) {
 			j = cols/4;
 			l = cols%4; 		
 			if (!(val == "inf")) {
-				tstki[fourBaseIndex(i,j,k,l)]= atof(val.c_str());
+				tstki[fourBaseIndex(i,j,k,l)]= params.d * atof(val.c_str());
 			}
 		}	
 		++count;
@@ -569,7 +569,7 @@ int initTstkiValues(const std::string& fileName, const std::string& dirPath) {
 	return 0;
 }
 
-int initTloopValues(const std::string& fileName, const std::string& dirPath) {
+int initTloopValues(const std::string& fileName, const std::string& dirPath, ParameterVector params) {
 	std::string filePath;
 	std::ifstream cf;
 
@@ -611,13 +611,13 @@ int initTloopValues(const std::string& fileName, const std::string& dirPath) {
 		tloop[numoftloops][0] = atoi(currentSeqNumbers);
 		
 		if (!(strcmp(currentValue,"inf")==0)) 
-			tloop[numoftloops][1] = atof(currentValue);
+			tloop[numoftloops][1] = params.d * atof(currentValue);
 	}
 	cf.close();
 	return 0;
 }
 
-int initInt22Values(const std::string& fileName, const std::string& dirPath) {
+int initInt22Values(const std::string& fileName, const std::string& dirPath, ParameterVector params) {
 	//Read the 2x2 internal loops
 	//key iloop22[a][b][c][d][j][l][k][m] =
 	//a j l b
@@ -691,7 +691,7 @@ int initInt22Values(const std::string& fileName, const std::string& dirPath) {
 
 				if (!(strcmp(currentValue,"inf")==0)) 
 					iloop22[base[0]][base[1]][base[2]][base[3]][j][l][k][m] 
-						= atof(currentValue);
+						= params.d * atof(currentValue);
 			}
 		}
 	}
@@ -700,7 +700,7 @@ int initInt22Values(const std::string& fileName, const std::string& dirPath) {
 	return 0;
 }
 
-int initInt21Values(const std::string& fileName, const std::string& dirPath) {
+int initInt21Values(const std::string& fileName, const std::string& dirPath, ParameterVector params) {
 	// 24x6 arrays of 4x4 values
 	//      c
 	//   a     f
@@ -772,7 +772,7 @@ int initInt21Values(const std::string& fileName, const std::string& dirPath) {
 				for (z = 1; z <=24 ; z++) {
 					char value[32];
 					ss >> value;
-					double temp = atof(value);
+					double temp = params.d * atof(value);
 					a = base1[i];
 					b = base2[i];
 					f = base1[jj];
@@ -798,7 +798,7 @@ int initInt21Values(const std::string& fileName, const std::string& dirPath) {
 }
 
 
-int initInt11Values(const std::string& fileName, const std::string& dirPath) {
+int initInt11Values(const std::string& fileName, const std::string& dirPath, ParameterVector params) {
 	int i, j, k, r, q, t;
 
 	for (i = 0; i < 4; i++)
@@ -859,7 +859,7 @@ int initInt11Values(const std::string& fileName, const std::string& dirPath) {
 			for (int z=1; z <= 24; ++z) {
 				char value[32];
 				ss >> value;	
-				double temp = atof(value);
+				double temp = params.d * atof(value);
 				a = base1[k];
 				d = base2[k];
 				c = base1[jj];
