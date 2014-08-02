@@ -361,10 +361,6 @@ inline double eH(int i, int j) {
 	else if (size < 3 && size != 0) {
 		/*  no terminal mismatch */
 		energy = hairpin[size] + eparam[4];
-		if ((RNA[i] == BASE_A && RNA[j] == BASE_U) || (RNA[i] == BASE_U
-													   && RNA[j] == BASE_A)) {
-			energy += .06; /*  Seems to be a penalty for terminal AU.  *//* Hairpin Loops of size 3 are not allowed, the term hairpin[size] will result in a very large value.  */
-		}
 	} else if (size == 0)
 		return INFINITY_;
 
