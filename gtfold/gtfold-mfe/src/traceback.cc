@@ -36,20 +36,8 @@ int count_multiloops;
 int count_unpaired;
 int count_branches;
 int length = 0;
-int print_energy_decompose = 0;
-FILE* energy_decompose_outfile;
 
-PolytopeVector trace(int len, int print_energy_decompose1, const char* energy_decompose_output_file) { 
-	print_energy_decompose = print_energy_decompose1;
-        if(print_energy_decompose==1){
-		energy_decompose_outfile = fopen(energy_decompose_output_file, "w");
-                if(energy_decompose_outfile==NULL){
-                        printf("Error in opening file: %s\n", energy_decompose_output_file);
-                        exit(-1);
-                }
-                printf("\nEnergy decomposition for MFE structure will be saved to %s\n", energy_decompose_output_file);
-	}
-	
+PolytopeVector trace(int len) { 
 	int i;
 	for (i = 0; i <= len; i++) structure[i] = 0;
 
@@ -58,8 +46,6 @@ PolytopeVector trace(int len, int print_energy_decompose1, const char* energy_de
 		printf("- No Structure \n");
                 exit(EXIT_FAILURE);
 	}
-
-	printf("\n");
 
         count_multiloops = 0;
         count_unpaired = 0;

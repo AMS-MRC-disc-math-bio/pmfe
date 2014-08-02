@@ -111,7 +111,7 @@ PolytopeVector mfe_main(string seq_file, string output_file, string param_dir, d
 	energy = calculate(seq.length()) ;
 
         struct PolytopeVector result;
-        result = trace(seq.length(), 0, "");
+        result = trace(seq.length());
         result.energy = energy;
         result.w = result.energy + result.x * Ea + result.y * Eb + result.z * Ec;
 	
