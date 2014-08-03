@@ -23,7 +23,7 @@ make
 
 For GTFold, you will need to decide whether to link against the [OpenMP][openmp] library.
 Using OpenMP will allow GTFold to take advantage of multiple cores or processors, speeding it up significantly.
-However, it is not supported natively by the compiler included in OSX.
+However, it is not supported natively by the cgit ompiler included in OSX.
 
 To link against OpenMP, run the following from the `iB4e-GTfold-parameterizer` directory:
 ```
