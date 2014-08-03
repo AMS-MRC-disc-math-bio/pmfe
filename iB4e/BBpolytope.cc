@@ -283,7 +283,7 @@ void BBPolytope::Build()
 
         cout << "1 ";
 
-        solution1->Print();
+        //solution1->Print();
 
         #ifdef DEBUG2
         cout << "\nCalling processhorizonridges...";
