@@ -27,13 +27,13 @@ However, it is not supported natively by the cgit ompiler included in OSX.
 
 To link against OpenMP, run the following from the `iB4e-GTfold-parameterizer` directory:
 ```
-cd ../gtfold/gtfold-mfe
+cd ../gtmfe
 python setup-with-openmp.py build_ext --inplace
 ```
 
 To build without linking against OpenMP, run the following from the `iB4e-GTfold-parameterizer` directory:
 ```
-cd ../gtfold/gtfold-mfe
+cd ../gtmfe
 python setup-without-openmp.py build_ext --inplace
 ```
 

@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 import os, sys, argparse, subprocess, shutil, logging
-sys.path.append("gtfold/gtfold-mfe")
-import gtmfe
+from gtmfe import gtmfe
 
 iB4e_path = "iB4e/iB4e-rna"
 
