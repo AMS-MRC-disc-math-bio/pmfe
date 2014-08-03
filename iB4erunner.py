@@ -75,6 +75,7 @@ def main(argv):
         scores = [result.x, result.y, result.z, result.w]
         points.append(scores)
         result = " ".join(map(str, scores)) + "\n"
+        logging.debug("Structure scores " + str(scores))
 
         # Send the score vector to iB4e
         iB4e.stdin.write(result)
