@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-import os, sys, argparse, subprocess, shutil, logging
+import os, sys, argparse, subprocess, shutil, logging, string
 from gtmfe import gtmfe
 
 iB4e_path = "iB4e/iB4e-rna"
@@ -86,18 +86,15 @@ def main(argv):
     build_sage_polytope_file(classical_scores, points, sagefile)
     
 def build_sage_polytope_file(classical_scores, points, sagefile):
-    pointstring = ", ".join(str(point) for point in points)
+    templatefile = open("output.template")
+    template = string.Template(templatefile.read())
+
+    results = {"points": points, "classical_scores": classical_scores}
+
+    sagecode = template.substitute(results)
+    
     file = open(sagefile, mode='w+')
-    file.write("points = [" + pointstring + "]\n")
-    file.write("classical_scores = " + str(classical_scores) + "\n")
-    file.write("poly = Polyhedron(points, base_ring=QQ)\n")
-    file.write("slice = Polyhedron(eqns=[(1,0,0,0,1)])\n")
-    file.write("fan = NormalFan(poly)\n")
-    file.write("regions4 = [slice.intersection(cone.polyhedron()) for cone in fan.cones()[-1]]\n")
-    file.write("regions4 = filter(lambda region: not region.is_empty(), regions4)\n")
-    file.write("vecprojector = lambda vec: vec[:-1]\n")
-    file.write("polyprojector = lambda polyslice: Polyhedron(ieqs = [vecprojector(ieq) for ieq in polyslice.Hrepresentation()[1:]])\n")
-    file.write("regions = [polyprojector(region) for region in regions4]\n")
+    file.write(sagecode)
     file.close()
 
     logging.info("Wrote Sage polytope file " + str(sagefile))
