@@ -26,7 +26,12 @@ def main(argv):
     paramdir = "Turner99"
     
     structdir = os.path.splitext(seqfile)[0]
-
+    try:
+        os.makedirs(structdir)
+    except OSError:
+        if not os.path.isdir(structdir):
+            raise
+            
     points = []
 
     logging.debug("Starting iB4e")
