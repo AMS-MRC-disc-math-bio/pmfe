@@ -24,7 +24,7 @@ def main(argv):
 def score_file(structfile):
     pairs, seqlength = parse_ct_file(structfile)
     tree = build_tree(pairs, seqlength)
-    scores = score_tree(tree)
+    scores = score_tree(tree, is_root=True)
     logging.debug("Tree scores: x = {0}, y = {1}, z = {2}".format(scores[0], scores[1], scores[2]))
     return scores
 
@@ -67,11 +67,11 @@ def build_tree(pairs, seqlength):
     tree.sort()
     return tree
 
-def score_tree(tree):
+def score_tree(tree, is_root=False):
     x = 0 # Multiloop counter
     y = 0 # Unpaired base counter
     z = 0 # Branched helix counter
-    if tree.valency() >= 2:
+    if tree.valency() >= 2 and not is_root:
         x = 1
         y = tree.end - tree.start - 1 - sum(child.end - child.start + 1 for child in tree.children)
         z = tree.valency() + 1
