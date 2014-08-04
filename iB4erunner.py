@@ -8,7 +8,7 @@ iB4e_path = "iB4e/iB4e-rna"
 def main(argv):    
     # Set up parameters
     parser = argparse.ArgumentParser(description="Run iB4e and GTFold to construct the structure polytope")
-    parser.add_argument("-s", "--sequence", nargs=1, help="Sequence to fold", required=True)
+    parser.add_argument("sequence", help="Sequence to fold")
     parser.add_argument("-v", "--verbose", help="Output debugging information", action="store_true")
 
     args = vars(parser.parse_args())

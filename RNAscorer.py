@@ -6,7 +6,7 @@ from tree import PartitionIntervalNode
 def main(argv):
     # Set up parameters
     parser = argparse.ArgumentParser(description="Score a specified RNA secondary structure")
-    parser.add_argument("-c", "--structure", nargs=1, help="Structure to score (in CT format)", required=True)
+    parser.add_argument("structure", help="Structure to score (in CT format)")
     parser.add_argument("-v", "--verbose", help="Output debugging information", action="store_true")
 
     args = vars(parser.parse_args())
