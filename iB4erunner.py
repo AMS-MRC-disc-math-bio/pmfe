@@ -52,7 +52,7 @@ def main(argv):
     classical_result = gtmfe.mfe_main(seqfile, classical_file, paramdir)
     classical_scores_gtmfe = score_parser(classical_result)
     classical_scores_python = RNAscorer.score_file(classical_file)
-    print classical_result.energy, classical_result.w
+
     list(classical_scores_python).append(find_w(classical_scores_python, classical_result.energy))
     
     logging.debug("Classical scores from Python: " + str(classical_scores_python))
