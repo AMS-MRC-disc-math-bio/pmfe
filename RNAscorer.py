@@ -25,7 +25,7 @@ def score_file(structfile):
     pairs, seqlength = parse_ct_file(structfile)
     tree = build_tree(pairs, seqlength)
     scores = score_tree(tree)
-    logging.info("Tree scores: x = {0}, y = {1}, z = {2}".format(scores[0], scores[1], scores[2]))
+    logging.debug("Tree scores: x = {0}, y = {1}, z = {2}".format(scores[0], scores[1], scores[2]))
     return scores
 
 # Read in a structure in CT format and produce a list of ordered pairs
@@ -59,8 +59,7 @@ def parse_ct_file(structfile):
     return pairs, seqlength
 
 def build_tree(pairs, seqlength):
-    logging.debug("Building tree from sequence of length " + str(seqlength))
-    tree = PartitionIntervalNode(1, seqlength)
+    tree = PartitionIntervalNode(0, seqlength+1)
     for pair in pairs:
         tree.insert(pair[0], pair[1])
 
@@ -69,7 +68,6 @@ def build_tree(pairs, seqlength):
     return tree
 
 def score_tree(tree):
-    logging.debug("Scoring tree")
     x = 0 # Multiloop counter
     y = 0 # Unpaired base counter
     z = 0 # Branched helix counter
@@ -83,8 +81,6 @@ def score_tree(tree):
     x += sum(scores[0] for scores in child_scores)
     y += sum(scores[1] for scores in child_scores)
     z += sum(scores[2] for scores in child_scores)
-
-    logging.debug("Tree scores: x = {0}, y = {1}, z = {2}".format(x, y, z))
 
     return x, y, z
 

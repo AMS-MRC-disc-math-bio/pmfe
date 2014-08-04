@@ -3038,6 +3038,16 @@ namespace swig {
 #include <string>
 
 
+#include <limits.h>
+#if !defined(SWIG_NO_LLONG_MAX)
+# if !defined(LLONG_MAX) && defined(__GNUC__) && defined (__LONG_LONG_MAX__)
+#   define LLONG_MAX __LONG_LONG_MAX__
+#   define LLONG_MIN (-LLONG_MAX - 1LL)
+#   define ULLONG_MAX (LLONG_MAX * 2ULL + 1ULL)
+# endif
+#endif
+
+
 SWIGINTERN int
 SWIG_AsVal_double (PyObject *obj, double *val)
 {
@@ -3079,6 +3089,104 @@ SWIG_AsVal_double (PyObject *obj, double *val)
   }
 #endif
   return res;
+}
+
+
+#include <float.h>
+
+
+#include <math.h>
+
+
+SWIGINTERNINLINE int
+SWIG_CanCastAsInteger(double *d, double min, double max) {
+  double x = *d;
+  if ((min <= x && x <= max)) {
+   double fx = floor(x);
+   double cx = ceil(x);
+   double rd =  ((x - fx) < 0.5) ? fx : cx; /* simple rint */
+   if ((errno == EDOM) || (errno == ERANGE)) {
+     errno = 0;
+   } else {
+     double summ, reps, diff;
+     if (rd < x) {
+       diff = x - rd;
+     } else if (rd > x) {
+       diff = rd - x;
+     } else {
+       return 1;
+     }
+     summ = rd + x;
+     reps = diff/summ;
+     if (reps < 8*DBL_EPSILON) {
+       *d = rd;
+       return 1;
+     }
+   }
+  }
+  return 0;
+}
+
+
+SWIGINTERN int
+SWIG_AsVal_long (PyObject *obj, long* val)
+{
+  if (PyInt_Check(obj)) {
+    if (val) *val = PyInt_AsLong(obj);
+    return SWIG_OK;
+  } else if (PyLong_Check(obj)) {
+    long v = PyLong_AsLong(obj);
+    if (!PyErr_Occurred()) {
+      if (val) *val = v;
+      return SWIG_OK;
+    } else {
+      PyErr_Clear();
+    }
+  }
+#ifdef SWIG_PYTHON_CAST_MODE
+  {
+    int dispatch = 0;
+    long v = PyInt_AsLong(obj);
+    if (!PyErr_Occurred()) {
+      if (val) *val = v;
+      return SWIG_AddCast(SWIG_OK);
+    } else {
+      PyErr_Clear();
+    }
+    if (!dispatch) {
+      double d;
+      int res = SWIG_AddCast(SWIG_AsVal_double (obj,&d));
+      if (SWIG_IsOK(res) && SWIG_CanCastAsInteger(&d, LONG_MIN, LONG_MAX)) {
+	if (val) *val = (long)(d);
+	return res;
+      }
+    }
+  }
+#endif
+  return SWIG_TypeError;
+}
+
+
+SWIGINTERN int
+SWIG_AsVal_int (PyObject * obj, int *val)
+{
+  long v;
+  int res = SWIG_AsVal_long (obj, &v);
+  if (SWIG_IsOK(res)) {
+    if ((v < INT_MIN || v > INT_MAX)) {
+      return SWIG_OverflowError;
+    } else {
+      if (val) *val = static_cast< int >(v);
+    }
+  }  
+  return res;
+}
+
+
+SWIGINTERNINLINE PyObject*
+  SWIG_From_int  (int value)
+{
+  return PyInt_FromLong((long) value);
 }
 
 
@@ -3217,133 +3325,32 @@ SWIG_AsPtr_std_string (PyObject * obj, std::string **val)
   return SWIG_ERROR;
 }
 
-
-#include <limits.h>
-#if !defined(SWIG_NO_LLONG_MAX)
-# if !defined(LLONG_MAX) && defined(__GNUC__) && defined (__LONG_LONG_MAX__)
-#   define LLONG_MAX __LONG_LONG_MAX__
-#   define LLONG_MIN (-LLONG_MAX - 1LL)
-#   define ULLONG_MAX (LLONG_MAX * 2ULL + 1ULL)
-# endif
-#endif
-
-
-#include <float.h>
-
-
-#include <math.h>
-
-
-SWIGINTERNINLINE int
-SWIG_CanCastAsInteger(double *d, double min, double max) {
-  double x = *d;
-  if ((min <= x && x <= max)) {
-   double fx = floor(x);
-   double cx = ceil(x);
-   double rd =  ((x - fx) < 0.5) ? fx : cx; /* simple rint */
-   if ((errno == EDOM) || (errno == ERANGE)) {
-     errno = 0;
-   } else {
-     double summ, reps, diff;
-     if (rd < x) {
-       diff = x - rd;
-     } else if (rd > x) {
-       diff = rd - x;
-     } else {
-       return 1;
-     }
-     summ = rd + x;
-     reps = diff/summ;
-     if (reps < 8*DBL_EPSILON) {
-       *d = rd;
-       return 1;
-     }
-   }
-  }
-  return 0;
-}
-
-
-SWIGINTERN int
-SWIG_AsVal_long (PyObject *obj, long* val)
-{
-  if (PyInt_Check(obj)) {
-    if (val) *val = PyInt_AsLong(obj);
-    return SWIG_OK;
-  } else if (PyLong_Check(obj)) {
-    long v = PyLong_AsLong(obj);
-    if (!PyErr_Occurred()) {
-      if (val) *val = v;
-      return SWIG_OK;
-    } else {
-      PyErr_Clear();
-    }
-  }
-#ifdef SWIG_PYTHON_CAST_MODE
-  {
-    int dispatch = 0;
-    long v = PyInt_AsLong(obj);
-    if (!PyErr_Occurred()) {
-      if (val) *val = v;
-      return SWIG_AddCast(SWIG_OK);
-    } else {
-      PyErr_Clear();
-    }
-    if (!dispatch) {
-      double d;
-      int res = SWIG_AddCast(SWIG_AsVal_double (obj,&d));
-      if (SWIG_IsOK(res) && SWIG_CanCastAsInteger(&d, LONG_MIN, LONG_MAX)) {
-	if (val) *val = (long)(d);
-	return res;
-      }
-    }
-  }
-#endif
-  return SWIG_TypeError;
-}
-
-
-SWIGINTERN int
-SWIG_AsVal_int (PyObject * obj, int *val)
-{
-  long v;
-  int res = SWIG_AsVal_long (obj, &v);
-  if (SWIG_IsOK(res)) {
-    if ((v < INT_MIN || v > INT_MAX)) {
-      return SWIG_OverflowError;
-    } else {
-      if (val) *val = static_cast< int >(v);
-    }
-  }  
-  return res;
-}
-
 #ifdef __cplusplus
 extern "C" {
 #endif
-SWIGINTERN PyObject *_wrap_PolytopeVector_x_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+SWIGINTERN PyObject *_wrap_PolytopeVector_multiloops_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   PolytopeVector *arg1 = (PolytopeVector *) 0 ;
-  double arg2 ;
+  int arg2 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
-  double val2 ;
+  int val2 ;
   int ecode2 = 0 ;
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
   
-  if (!PyArg_ParseTuple(args,(char *)"OO:PolytopeVector_x_set",&obj0,&obj1)) SWIG_fail;
+  if (!PyArg_ParseTuple(args,(char *)"OO:PolytopeVector_multiloops_set",&obj0,&obj1)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_PolytopeVector, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "PolytopeVector_x_set" "', argument " "1"" of type '" "PolytopeVector *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "PolytopeVector_multiloops_set" "', argument " "1"" of type '" "PolytopeVector *""'"); 
   }
   arg1 = reinterpret_cast< PolytopeVector * >(argp1);
-  ecode2 = SWIG_AsVal_double(obj1, &val2);
+  ecode2 = SWIG_AsVal_int(obj1, &val2);
   if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "PolytopeVector_x_set" "', argument " "2"" of type '" "double""'");
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "PolytopeVector_multiloops_set" "', argument " "2"" of type '" "int""'");
   } 
-  arg2 = static_cast< double >(val2);
-  if (arg1) (arg1)->x = arg2;
+  arg2 = static_cast< int >(val2);
+  if (arg1) (arg1)->multiloops = arg2;
   resultobj = SWIG_Py_Void();
   return resultobj;
 fail:
@@ -3351,51 +3358,51 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_PolytopeVector_x_get(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+SWIGINTERN PyObject *_wrap_PolytopeVector_multiloops_get(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   PolytopeVector *arg1 = (PolytopeVector *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
-  double result;
+  int result;
   
-  if (!PyArg_ParseTuple(args,(char *)"O:PolytopeVector_x_get",&obj0)) SWIG_fail;
+  if (!PyArg_ParseTuple(args,(char *)"O:PolytopeVector_multiloops_get",&obj0)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_PolytopeVector, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "PolytopeVector_x_get" "', argument " "1"" of type '" "PolytopeVector *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "PolytopeVector_multiloops_get" "', argument " "1"" of type '" "PolytopeVector *""'"); 
   }
   arg1 = reinterpret_cast< PolytopeVector * >(argp1);
-  result = (double) ((arg1)->x);
-  resultobj = SWIG_From_double(static_cast< double >(result));
+  result = (int) ((arg1)->multiloops);
+  resultobj = SWIG_From_int(static_cast< int >(result));
   return resultobj;
 fail:
   return NULL;
 }
 
 
-SWIGINTERN PyObject *_wrap_PolytopeVector_y_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+SWIGINTERN PyObject *_wrap_PolytopeVector_branches_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   PolytopeVector *arg1 = (PolytopeVector *) 0 ;
-  double arg2 ;
+  int arg2 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
-  double val2 ;
+  int val2 ;
   int ecode2 = 0 ;
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
   
-  if (!PyArg_ParseTuple(args,(char *)"OO:PolytopeVector_y_set",&obj0,&obj1)) SWIG_fail;
+  if (!PyArg_ParseTuple(args,(char *)"OO:PolytopeVector_branches_set",&obj0,&obj1)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_PolytopeVector, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "PolytopeVector_y_set" "', argument " "1"" of type '" "PolytopeVector *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "PolytopeVector_branches_set" "', argument " "1"" of type '" "PolytopeVector *""'"); 
   }
   arg1 = reinterpret_cast< PolytopeVector * >(argp1);
-  ecode2 = SWIG_AsVal_double(obj1, &val2);
+  ecode2 = SWIG_AsVal_int(obj1, &val2);
   if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "PolytopeVector_y_set" "', argument " "2"" of type '" "double""'");
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "PolytopeVector_branches_set" "', argument " "2"" of type '" "int""'");
   } 
-  arg2 = static_cast< double >(val2);
-  if (arg1) (arg1)->y = arg2;
+  arg2 = static_cast< int >(val2);
+  if (arg1) (arg1)->branches = arg2;
   resultobj = SWIG_Py_Void();
   return resultobj;
 fail:
@@ -3403,51 +3410,51 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_PolytopeVector_y_get(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+SWIGINTERN PyObject *_wrap_PolytopeVector_branches_get(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   PolytopeVector *arg1 = (PolytopeVector *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
-  double result;
+  int result;
   
-  if (!PyArg_ParseTuple(args,(char *)"O:PolytopeVector_y_get",&obj0)) SWIG_fail;
+  if (!PyArg_ParseTuple(args,(char *)"O:PolytopeVector_branches_get",&obj0)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_PolytopeVector, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "PolytopeVector_y_get" "', argument " "1"" of type '" "PolytopeVector *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "PolytopeVector_branches_get" "', argument " "1"" of type '" "PolytopeVector *""'"); 
   }
   arg1 = reinterpret_cast< PolytopeVector * >(argp1);
-  result = (double) ((arg1)->y);
-  resultobj = SWIG_From_double(static_cast< double >(result));
+  result = (int) ((arg1)->branches);
+  resultobj = SWIG_From_int(static_cast< int >(result));
   return resultobj;
 fail:
   return NULL;
 }
 
 
-SWIGINTERN PyObject *_wrap_PolytopeVector_z_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+SWIGINTERN PyObject *_wrap_PolytopeVector_unpaired_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   PolytopeVector *arg1 = (PolytopeVector *) 0 ;
-  double arg2 ;
+  int arg2 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
-  double val2 ;
+  int val2 ;
   int ecode2 = 0 ;
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
   
-  if (!PyArg_ParseTuple(args,(char *)"OO:PolytopeVector_z_set",&obj0,&obj1)) SWIG_fail;
+  if (!PyArg_ParseTuple(args,(char *)"OO:PolytopeVector_unpaired_set",&obj0,&obj1)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_PolytopeVector, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "PolytopeVector_z_set" "', argument " "1"" of type '" "PolytopeVector *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "PolytopeVector_unpaired_set" "', argument " "1"" of type '" "PolytopeVector *""'"); 
   }
   arg1 = reinterpret_cast< PolytopeVector * >(argp1);
-  ecode2 = SWIG_AsVal_double(obj1, &val2);
+  ecode2 = SWIG_AsVal_int(obj1, &val2);
   if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "PolytopeVector_z_set" "', argument " "2"" of type '" "double""'");
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "PolytopeVector_unpaired_set" "', argument " "2"" of type '" "int""'");
   } 
-  arg2 = static_cast< double >(val2);
-  if (arg1) (arg1)->z = arg2;
+  arg2 = static_cast< int >(val2);
+  if (arg1) (arg1)->unpaired = arg2;
   resultobj = SWIG_Py_Void();
   return resultobj;
 fail:
@@ -3455,22 +3462,22 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_PolytopeVector_z_get(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+SWIGINTERN PyObject *_wrap_PolytopeVector_unpaired_get(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   PolytopeVector *arg1 = (PolytopeVector *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
-  double result;
+  int result;
   
-  if (!PyArg_ParseTuple(args,(char *)"O:PolytopeVector_z_get",&obj0)) SWIG_fail;
+  if (!PyArg_ParseTuple(args,(char *)"O:PolytopeVector_unpaired_get",&obj0)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_PolytopeVector, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "PolytopeVector_z_get" "', argument " "1"" of type '" "PolytopeVector *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "PolytopeVector_unpaired_get" "', argument " "1"" of type '" "PolytopeVector *""'"); 
   }
   arg1 = reinterpret_cast< PolytopeVector * >(argp1);
-  result = (double) ((arg1)->z);
-  resultobj = SWIG_From_double(static_cast< double >(result));
+  result = (int) ((arg1)->unpaired);
+  resultobj = SWIG_From_int(static_cast< int >(result));
   return resultobj;
 fail:
   return NULL;
@@ -4494,12 +4501,12 @@ fail:
 
 static PyMethodDef SwigMethods[] = {
 	 { (char *)"SWIG_PyInstanceMethod_New", (PyCFunction)SWIG_PyInstanceMethod_New, METH_O, NULL},
-	 { (char *)"PolytopeVector_x_set", _wrap_PolytopeVector_x_set, METH_VARARGS, NULL},
-	 { (char *)"PolytopeVector_x_get", _wrap_PolytopeVector_x_get, METH_VARARGS, NULL},
-	 { (char *)"PolytopeVector_y_set", _wrap_PolytopeVector_y_set, METH_VARARGS, NULL},
-	 { (char *)"PolytopeVector_y_get", _wrap_PolytopeVector_y_get, METH_VARARGS, NULL},
-	 { (char *)"PolytopeVector_z_set", _wrap_PolytopeVector_z_set, METH_VARARGS, NULL},
-	 { (char *)"PolytopeVector_z_get", _wrap_PolytopeVector_z_get, METH_VARARGS, NULL},
+	 { (char *)"PolytopeVector_multiloops_set", _wrap_PolytopeVector_multiloops_set, METH_VARARGS, NULL},
+	 { (char *)"PolytopeVector_multiloops_get", _wrap_PolytopeVector_multiloops_get, METH_VARARGS, NULL},
+	 { (char *)"PolytopeVector_branches_set", _wrap_PolytopeVector_branches_set, METH_VARARGS, NULL},
+	 { (char *)"PolytopeVector_branches_get", _wrap_PolytopeVector_branches_get, METH_VARARGS, NULL},
+	 { (char *)"PolytopeVector_unpaired_set", _wrap_PolytopeVector_unpaired_set, METH_VARARGS, NULL},
+	 { (char *)"PolytopeVector_unpaired_get", _wrap_PolytopeVector_unpaired_get, METH_VARARGS, NULL},
 	 { (char *)"PolytopeVector_w_set", _wrap_PolytopeVector_w_set, METH_VARARGS, NULL},
 	 { (char *)"PolytopeVector_w_get", _wrap_PolytopeVector_w_get, METH_VARARGS, NULL},
 	 { (char *)"PolytopeVector_energy_set", _wrap_PolytopeVector_energy_set, METH_VARARGS, NULL},

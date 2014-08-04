@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import os, sys, argparse, subprocess, shutil, logging, string
+import RNAscorer
 from gtmfe import gtmfe
 
 iB4e_path = "iB4e/iB4e-rna"
@@ -42,10 +43,12 @@ def main(argv):
     logging.debug("Computing classical scores")
 
     # Compute classical scores for later reference
-    classical_result = gtmfe.mfe_main(seqfile, os.path.join(structdir, os.path.splitext(seqfile)[0] + ".classical.ct"), paramdir)
-    classical_scores = [classical_result.x, classical_result.y, classical_result.z, classical_result.w]
+    classical_file = os.path.join(structdir, os.path.splitext(seqfile)[0] + ".classical.ct")
+    classical_result = score_parser(gtmfe.mfe_main(seqfile, classical_file, paramdir))
+    classical_scores = RNAscorer.score_file(classical_file)
 
-    logging.debug("Classical scores: " + str(classical_scores))
+    logging.debug("Classical scores from Python: " + str(classical_scores))
+    logging.debug("Classical scores from gtmfe: " + str(classical_result))
 
     # Create storage directory for structures
     shutil.rmtree(structdir, ignore_errors=True)
@@ -67,11 +70,16 @@ def main(argv):
         # Find the MFE structure
         structname = os.path.splitext(os.path.basename(seqfile))[0] + "." + str(params) + ".ct"
         structtarget = os.path.join(structdir, structname)
-        result = gtmfe.mfe_main(seqfile, structtarget, paramdir, params[0], params[1], params[2], params[3])
+        result = score_parser(gtmfe.mfe_main(seqfile, structtarget, paramdir, params[0], params[1], params[2], params[3]))
         logging.debug("Stored structure as " + str(structtarget))
         
         # Store the scores
-        scores = (result.x, result.y, result.z, result.w)
+        scores = RNAscorer.score_file(structtarget)
+        if scores != (result[0], result[1], result[2]):
+            logging.warn("Score mismatch for parameters {0}!".format(params))
+            logging.warn("GTfold gives x={0}, y={1}, z={2}.".format(result[0], result[1], result[2]))
+            logging.warn("RNAscorer gives x={0}, y={1}, z={2}".format(scores[0], scores[1], scores[2]))
+            
         points.append(scores)
         result = " ".join(map(str, scores)) + "\n"
         logging.debug("Structure scores " + str(scores))
@@ -95,6 +103,9 @@ def build_sage_polytope_file(classical_scores, points, sagefile):
     file.close()
 
     logging.info("Wrote Sage polytope file " + str(sagefile))
+
+def score_parser(result):
+    return [int(result.multiloops), int(result.unpaired), int(result.branches), result.w]
 
 # Voodoo to make Python run the program
 if __name__ == "__main__":

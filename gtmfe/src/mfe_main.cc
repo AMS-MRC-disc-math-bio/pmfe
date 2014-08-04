@@ -113,7 +113,7 @@ PolytopeVector mfe_main(string seq_file, string output_file, string param_dir, d
         struct PolytopeVector result;
         result = trace(seq.length());
         result.energy = energy;
-        result.w = result.energy + result.x * Ea + result.y * Eb + result.z * Ec;
+        result.w = result.energy + result.multiloops * Ea + result.branches * Eb + result.unpaired * Ec;
 	
 	save_ct_file(outputFile, seq, energy);
 

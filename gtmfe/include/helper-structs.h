@@ -2,7 +2,8 @@
 #define _HELPER_STRUCTS_H_
 
 struct PolytopeVector {
-  double x, y, z, w, energy;
+  int multiloops, branches, unpaired;
+  double w, energy;
 };
 
 struct ParameterVector {
