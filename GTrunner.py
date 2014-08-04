@@ -7,6 +7,7 @@ def main(argv):
     parser = argparse.ArgumentParser(description="Run GTfold with specified a, b, c, d parameters")
     parser.add_argument("-s", "--sequence", nargs=1, help="Sequence to fold", required=True)
     parser.add_argument("-v", "--verbose", help="Output debugging information", action="store_true")
+    parser.add_argument("-o", "--structure", nargs=1, help="File to store structure result")
     parser.add_argument("-a", help="Value of a", type=float, default=10.1)
     parser.add_argument("-b", help="Value of b", type=float, default=0.3)
     parser.add_argument("-c", help="Value of c", type=float, default=0.3)
@@ -25,9 +26,13 @@ def main(argv):
         
     paramdir = "Turner99"
 
-    structdir = os.path.splitext(seqfile)[0]
-    structname = os.path.splitext(os.path.basename(seqfile))[0] + "." + str(params) + ".ct"
-    structtarget = os.path.join(structdir, structname)
+    # Use the supplied output file if applicable
+    try:
+        structtarget = args["structure"][0]
+    # Otherwise, generate one from the input filename
+    except TypeError:
+        structtarget = os.path.splitext(os.path.basename(seqfile))[0] + ".ct"
+
     result = gtmfe.mfe_main(seqfile, structtarget, paramdir, params[0], params[1], params[2], params[3])
 
     print "a = {0}, b = {1}, c = {2}, d = {3}".format(params[0], params[1], params[2], params[3])
