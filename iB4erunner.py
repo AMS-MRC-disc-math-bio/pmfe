@@ -49,11 +49,14 @@ def main(argv):
 
     # Compute classical scores for later reference
     classical_file = os.path.join(structdir, os.path.splitext(seqfile)[0] + ".classical.ct")
-    classical_result = score_parser(gtmfe.mfe_main(seqfile, classical_file, paramdir))
-    classical_scores = RNAscorer.score_file(classical_file)
-
-    logging.debug("Classical scores from Python: " + str(classical_scores))
-    logging.debug("Classical scores from gtmfe: " + str(classical_result))
+    classical_result = gtmfe.mfe_main(seqfile, classical_file, paramdir)
+    classical_scores_gtmfe = score_parser(classical_result)
+    classical_scores_python = RNAscorer.score_file(classical_file)
+    print classical_result.energy, classical_result.w
+    list(classical_scores_python).append(find_w(classical_scores_python, classical_result.energy))
+    
+    logging.debug("Classical scores from Python: " + str(classical_scores_python))
+    logging.debug("Classical scores from gtmfe: " + str(classical_scores_gtmfe))
 
     # Create storage directory for structures
     shutil.rmtree(structdir, ignore_errors=True)
@@ -75,25 +78,28 @@ def main(argv):
         # Find the MFE structure
         structname = os.path.splitext(os.path.basename(seqfile))[0] + "." + str(params) + ".ct"
         structtarget = os.path.join(structdir, structname)
-        result = score_parser(gtmfe.mfe_main(seqfile, structtarget, paramdir, params[0], params[1], params[2], params[3]))
+        result_gtmfe = gtmfe.mfe_main(seqfile, structtarget, paramdir, params[0], params[1], params[2], params[3])
+        scores_gtmfe = score_parser(result_gtmfe)
         logging.debug("Stored structure as " + str(structtarget))
         
         # Store the scores
-        scores = RNAscorer.score_file(structtarget)
-        if scores != (result[0], result[1], result[2]):
+        scores_python = RNAscorer.score_file(structtarget)
+        if scores_python != (scores_gtmfe[0], scores_gtmfe[1], scores_gtmfe[2]):
             logging.warn("Score mismatch for parameters {0}!".format(params))
-            logging.warn("GTfold gives x={0}, y={1}, z={2}.".format(result[0], result[1], result[2]))
-            logging.warn("RNAscorer gives x={0}, y={1}, z={2}".format(scores[0], scores[1], scores[2]))
+            logging.warn("GTfold gives x={0}, y={1}, z={2}.".format(scores_gtmfe[0], scores_gtmfe[1], scores_gtmfe[2]))
+            logging.warn("RNAscorer gives x={0}, y={1}, z={2}".format(scores_python[0], scores_python[1], scores_python[2]))
+        list(scores_python).append(find_w(scores_python, result_gtmfe.energy, params))
             
-        points.append(scores)
-        result = " ".join(map(str, scores)) + "\n"
-        logging.debug("Structure scores " + str(scores))
+        points.append(scores_python)
+        result = " ".join(map(str, scores_python)) + "\n"
+        logging.debug("Structure scores from Python: " + str(scores_python))
+        logging.debug("Structure scores from gtmfe: " + str(scores_gtmfe))
 
         # Send the score vector to iB4e
         iB4e.stdin.write(result)
 
     # Now build a Sage file encoding the desired data
-    build_sage_polytope_file(classical_scores, points, sagefile)
+    build_sage_polytope_file(classical_scores_python, points, sagefile)
     
 def build_sage_polytope_file(classical_scores, points, sagefile):
     templatefile = open("output.template")
@@ -112,6 +118,12 @@ def build_sage_polytope_file(classical_scores, points, sagefile):
 def score_parser(result):
     return [int(result.multiloops), int(result.unpaired), int(result.branches), result.w]
 
+def find_w(scores, energy, params=[10.1, 0.3, 0.3, 1]):
+    if params[3] == 0:
+        return 0
+    else:
+        return (scores[0]*params[0] + scores[1]*params[1] + scores[2]*params[2] + energy)/params[3]
+    
 # Voodoo to make Python run the program
 if __name__ == "__main__":
     main(sys.argv[1:])
