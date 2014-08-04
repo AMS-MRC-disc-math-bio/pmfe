@@ -40,7 +40,7 @@ class PartitionIntervalNode:
         """
         # If nestedness fails, raise an exception
         if start <= self.start or end >= self.end or start >= end:
-            raise ValueError("Bad start or end values")
+            raise ValueError("Nesting failure! Parent ({0}, {1}), child ({2}, {3})".format(self.start, self.end, start, end))
 
         assigned = False
         for child in self.children:
