@@ -53,10 +53,10 @@ def main(argv):
 
     # Now turn iB4e loose to compute the geometry
     while True:
-        # At the end of the file, we'll receive an EOF character, which makes eval() choke
+        # At the end of the file, we'll receive a blank line, which makes eval() choke
         try:
             params = eval(iB4e.stdout.readline())
-        except SyntaxError:
+        except (SyntaxError, TypeError):
             break
 
         # Things work more nicely if we reverse iB4e's vectors before using them 
