@@ -213,8 +213,8 @@ int initMiscloopValues(const string& fileName, const string& dirpath, ParameterV
 			for (int count = 1; count <= 3; count++) {
 				cf >> currentWord;
 				s = currentWord;
-				multConst[count - 1] = params.d * atof(s.c_str());
-				eparam[table[count]] = params.d * atof(s.c_str());
+				multConst[count - 1] = atof(s.c_str());
+				eparam[table[count]] = atof(s.c_str());
 			}
 		}
 		if (index == 5) {
