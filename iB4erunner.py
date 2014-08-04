@@ -59,10 +59,13 @@ def main(argv):
         except (SyntaxError, TypeError):
             break
 
+        logging.debug("iB4e requests vector " + str(params))
+
         # Things work more nicely if we reverse iB4e's vectors before using them 
         params.reverse()
 
-        logging.debug("iB4e requests vector " + str(params))
+        # iB4e is a maximizer, while gtmfe is a minimizer
+        params =[-p for p in params]
         
         # Find the MFE structure
         structname = os.path.splitext(os.path.basename(seqfile))[0] + "." + str(params) + ".ct"
