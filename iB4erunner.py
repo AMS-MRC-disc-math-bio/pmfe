@@ -11,10 +11,10 @@ def main(argv):
     parser.add_argument("sequence", help="Sequence to fold")
     parser.add_argument("-v", "--verbose", help="Output debugging information", action="store_true")
 
-    args = vars(parser.parse_args())
-    seqfile = args["sequence"][0]
+    args = parser.parse_args()
+    seqfile = args.sequence
     sagefile = os.path.splitext(seqfile)[0] + ".sage"
-    verbose = args["verbose"]
+    verbose = args.verbose
 
     logger = logging.getLogger()
     if verbose:

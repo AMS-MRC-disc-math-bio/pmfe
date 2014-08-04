@@ -13,10 +13,10 @@ def main(argv):
     parser.add_argument("-c", help="Value of c (branching helix parameter)", type=float, default=0.3)
     parser.add_argument("-d", help="Value of d (dummy scaling parameter)", type=float, default=1)
 
-    args = vars(parser.parse_args())
-    seqfile = args["sequence"][0]
-    verbose = args["verbose"]
-    params = (args["a"], args["b"], args["c"], args["d"])
+    args = parser.parse_args()
+    seqfile = args.sequence
+    verbose = args.verbose
+    params = (args.a, args.b, args.c, args.d)
 
     logger = logging.getLogger()
     if verbose:

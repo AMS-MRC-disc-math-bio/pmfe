@@ -9,9 +9,9 @@ def main(argv):
     parser.add_argument("structure", help="Structure to score (in CT format)")
     parser.add_argument("-v", "--verbose", help="Output debugging information", action="store_true")
 
-    args = vars(parser.parse_args())
-    structfile = args["structure"][0]
-    verbose = args["verbose"]
+    args = parser.parse_args()
+    structfile = args.structure
+    verbose = args.verbose
 
     logger = logging.getLogger()
     if verbose:
