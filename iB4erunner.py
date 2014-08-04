@@ -5,7 +5,7 @@ from gtmfe import gtmfe
 
 iB4e_path = "iB4e/iB4e-rna"
 
-def main(argv):    
+def main(argv):
     # Set up parameters
     parser = argparse.ArgumentParser(description="Run iB4e and GTFold to construct the structure polytope")
     parser.add_argument("sequence", help="Sequence to fold")
@@ -21,21 +21,21 @@ def main(argv):
         logger.setLevel(logging.DEBUG)
     else:
         logger.setLevel(logging.INFO)
-        
+
 
     paramdir = "Turner99"
-    
+
     structdir = os.path.splitext(seqfile)[0]
     try:
         os.makedirs(structdir)
     except OSError:
         if not os.path.isdir(structdir):
             raise
-            
+
     points = []
 
     logging.debug("Starting iB4e")
-    
+
     try:
         iB4e = subprocess.Popen([iB4e_path, '4'], # Our problem operates in 4 dimensions
                                 stdin=subprocess.PIPE,
@@ -51,10 +51,10 @@ def main(argv):
     classical_file = os.path.join(structdir, os.path.splitext(seqfile)[0] + ".classical.ct")
     classical_result = gtmfe.mfe_main(seqfile, classical_file, paramdir)
     classical_scores_gtmfe = score_parser(classical_result)
-    classical_scores_python = RNAscorer.score_file(classical_file)
-
-    list(classical_scores_python).append(find_w(classical_scores_python, classical_result.energy))
+    classical_scores_python = list(RNAscorer.score_file(classical_file))
     
+    classical_scores_python.append(find_w(classical_scores_python, classical_result.energy))
+
     logging.debug("Classical scores from Python: " + str(classical_scores_python))
     logging.debug("Classical scores from gtmfe: " + str(classical_scores_gtmfe))
 
@@ -74,22 +74,22 @@ def main(argv):
 
         # iB4e is a maximizer, while gtmfe is a minimizer
         params = tuple([-p for p in params])
-        
+
         # Find the MFE structure
         structname = os.path.splitext(os.path.basename(seqfile))[0] + "." + str(params) + ".ct"
         structtarget = os.path.join(structdir, structname)
         result_gtmfe = gtmfe.mfe_main(seqfile, structtarget, paramdir, params[0], params[1], params[2], params[3])
         scores_gtmfe = score_parser(result_gtmfe)
         logging.debug("Stored structure as " + str(structtarget))
-        
+
         # Store the scores
-        scores_python = RNAscorer.score_file(structtarget)
+        scores_python = list(RNAscorer.score_file(structtarget))
         if scores_python != (scores_gtmfe[0], scores_gtmfe[1], scores_gtmfe[2]):
             logging.warn("Score mismatch for parameters {0}!".format(params))
             logging.warn("GTfold gives x={0}, y={1}, z={2}.".format(scores_gtmfe[0], scores_gtmfe[1], scores_gtmfe[2]))
             logging.warn("RNAscorer gives x={0}, y={1}, z={2}".format(scores_python[0], scores_python[1], scores_python[2]))
-        list(scores_python).append(find_w(scores_python, result_gtmfe.energy, params))
-            
+        scores_python.append(find_w(scores_python, result_gtmfe.energy, params))
+
         points.append(scores_python)
         result = " ".join(map(str, scores_python)) + "\n"
         logging.debug("Structure scores from Python: " + str(scores_python))
@@ -100,7 +100,7 @@ def main(argv):
 
     # Now build a Sage file encoding the desired data
     build_sage_polytope_file(classical_scores_python, points, sagefile)
-    
+
 def build_sage_polytope_file(classical_scores, points, sagefile):
     templatefile = open("output.template")
     template = string.Template(templatefile.read())
@@ -108,7 +108,7 @@ def build_sage_polytope_file(classical_scores, points, sagefile):
     results = {"points": points, "classical_scores": classical_scores}
 
     sagecode = template.substitute(results)
-    
+
     file = open(sagefile, mode='w+')
     file.write(sagecode)
     file.close()
@@ -123,7 +123,7 @@ def find_w(scores, energy, params=[10.1, 0.3, 0.3, 1]):
         return 0
     else:
         return (scores[0]*params[0] + scores[1]*params[1] + scores[2]*params[2] + energy)/params[3]
-    
+
 # Voodoo to make Python run the program
 if __name__ == "__main__":
     main(sys.argv[1:])
