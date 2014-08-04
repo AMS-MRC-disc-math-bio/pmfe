@@ -62,7 +62,7 @@ def main(argv):
         logging.debug("iB4e requests vector " + str(params))
 
         # iB4e is a maximizer, while gtmfe is a minimizer
-        params =[-p for p in params]
+        params = tuple([-p for p in params])
         
         # Find the MFE structure
         structname = os.path.splitext(os.path.basename(seqfile))[0] + "." + str(params) + ".ct"
@@ -71,7 +71,7 @@ def main(argv):
         logging.debug("Stored structure as " + str(structtarget))
         
         # Store the scores
-        scores = [result.x, result.y, result.z, result.w]
+        scores = (result.x, result.y, result.z, result.w)
         points.append(scores)
         result = " ".join(map(str, scores)) + "\n"
         logging.debug("Structure scores " + str(scores))
