@@ -9,8 +9,8 @@ def main(argv):
     parser.add_argument("-v", "--verbose", help="Output debugging information", action="store_true")
     parser.add_argument("-o", "--structure", nargs=1, help="File to store structure result")
     parser.add_argument("-a", help="Value of a (multibranch loop parameter)", type=float, default=10.1)
-    parser.add_argument("-b", help="Value of b (unpaired nucleotide parameter)", type=float, default=0.3)
-    parser.add_argument("-c", help="Value of c (branching helix parameter)", type=float, default=0.3)
+    parser.add_argument("-b", help="Value of b (unpaired nucleotide parameter)", type=float, default=-0.3)
+    parser.add_argument("-c", help="Value of c (branching helix parameter)", type=float, default=-0.3)
     parser.add_argument("-d", help="Value of d (dummy scaling parameter)", type=float, default=1)
 
     args = parser.parse_args()
