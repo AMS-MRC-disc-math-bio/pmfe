@@ -84,7 +84,7 @@ def main(argv):
 
         # Store the scores
         scores_python = list(RNAscorer.score_file(structtarget))
-        if scores_python != (scores_gtmfe[0], scores_gtmfe[1], scores_gtmfe[2]):
+        if scores_python != scores_gtmfe[:3]:
             logging.warn("Score mismatch for parameters {0}!".format(params))
             logging.warn("GTfold gives x={0}, y={1}, z={2}.".format(scores_gtmfe[0], scores_gtmfe[1], scores_gtmfe[2]))
             logging.warn("RNAscorer gives x={0}, y={1}, z={2}".format(scores_python[0], scores_python[1], scores_python[2]))
