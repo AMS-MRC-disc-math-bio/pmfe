@@ -122,7 +122,7 @@ def find_w(scores, energy, params=[10.1, -0.3, -0.3, 1]):
     if params[3] == 0:
         return 0
     else:
-        return (scores[0]*params[0] + scores[1]*params[1] + scores[2]*params[2] + energy)/params[3]
+        return (-scores[0]*params[0] + -scores[1]*params[1] + -scores[2]*params[2] + energy)/params[3]
 
 # Voodoo to make Python run the program
 if __name__ == "__main__":
