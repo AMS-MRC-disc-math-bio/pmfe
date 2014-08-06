@@ -36,7 +36,7 @@ def main(argv):
     result = gtmfe.mfe_main(seqfile, structtarget, paramdir, params[0], params[1], params[2], params[3])
 
     print "a = {0}, b = {1}, c = {2}, d = {3}".format(params[0], params[1], params[2], params[3])
-    print "x = {0}, y = {1}, z = {2}, w = {3}".format(result.x, result.y, result.z, result.w)
+    print "x = {0}, y = {1}, z = {2}, w = {3}".format(result.multiloops, result.unpaired, result.branches, result.w)
     
 
 # Voodoo to make Python run the program
