@@ -28,7 +28,7 @@ def main(argv):
 
     # Use the supplied output file if applicable
     try:
-        structtarget = args["structure"][0]
+        structtarget = args.structure[0]
     # Otherwise, generate one from the input filename
     except TypeError:
         structtarget = os.path.splitext(os.path.basename(seqfile))[0] + ".ct"
