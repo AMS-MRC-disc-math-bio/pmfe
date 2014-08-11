@@ -26,6 +26,10 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 #include "algorithms.h"
 #include "constraints.h"
 #include "shapereader.h"
+
+#include <vector>
+#include <algorithm>
+
 #ifdef _OPENMP 
 #include "omp.h"
 #endif
@@ -98,7 +102,10 @@ double calcVBI1(int i, int j) {
     for (q = minq; q <= maxq; q++) {
       if (PP[p][q]==0) continue;
       if (!canILoop(i,j,p,q)) continue;
-      VBIij = MIN(eL1(i, j, p, q) + V(p,q), VBIij);
+      std::vector<double> vals;
+      vals.push_back(eL1(i, j, p, q) + V(p,q));
+      vals.push_back(VBIij);
+      VBIij = *std::min_element(vals.begin(), vals.end());
     }
   }
 
@@ -113,8 +120,12 @@ double calcVBI2(int i, int j, int  len) {
     for (ii = i + 1; ii < j - d && ii <= len; ++ii)
     {    
       jj = d + ii;
-      if (PP[ii][jj]==1)
-        energy = MIN(energy, eL1(i, j, ii, jj) + V(ii, jj));
+      if (PP[ii][jj]==1) {
+        std::vector<double> vals;
+        vals.push_back(energy);
+        vals.push_back(eL1(i, j, ii, jj) + V(ii, jj));
+        energy = *std::min_element(vals.begin(), vals.end());
+      }
     }    
 
   return energy;
@@ -154,22 +165,33 @@ double calculate(int len) {
         double d5 = canSS(i+1)?Ed5(i,j,i+1):INFINITY_;
 
         if (g_dangles == 2) { // -d2
-          VM(i,j) = MIN(VM(i,j), WMPrime[i+1][j-1] + d3 + d5 + auPenalty(i,j) + Ea + Eb);
+          std::vector<double> vals;
+          vals.push_back(VM(i, j));
+          vals.push_back(WMPrime[i+1][j-1] + d3 + d5 + auPenalty(i,j) + Ea + Eb);
+          VM(i,j) = *std::min_element(vals.begin(), vals.end());
         } else if (g_dangles == 0) { // -d0
-          VM(i,j) = MIN(VM(i,j), WMPrime[i+1][j-1] + auPenalty(i,j) + Ea + Eb);
-        }	else { // default 
-          VM(i,j) = MIN(VM(i,j), WMPrime[i+1][j-1] + auPenalty(i,j) + Ea + Eb);
-          VM(i,j) = MIN(VM(i,j), WMPrime[i+2][j-1] + d5 + auPenalty(i,j) + Ea + Eb + Ec);
-          VM(i,j) = MIN(VM(i,j), WMPrime[i+1][j-2] + d3 + auPenalty(i,j) + Ea + Eb + Ec);
-          VM(i,j) = MIN(VM(i,j), WMPrime[i+2][j-2] + d3 + d5 + auPenalty(i,j) + Ea + Eb + 2*Ec);
+          std::vector<double> vals;
+          vals.push_back(VM(i,j));
+          vals.push_back(WMPrime[i+1][j-1] + auPenalty(i,j) + Ea + Eb);
+          VM(i,j) = *std::min_element(vals.begin(), vals.end());
+        }	else { // default
+          std::vector<double> vals;
+          vals.push_back(VM(i,j));
+          vals.push_back(WMPrime[i+1][j-1] + auPenalty(i,j) + Ea + Eb);
+          vals.push_back(WMPrime[i+2][j-1] + d5 + auPenalty(i,j) + Ea + Eb + Ec);
+          vals.push_back(WMPrime[i+1][j-2] + d3 + auPenalty(i,j) + Ea + Eb + Ec);
+          vals.push_back(WMPrime[i+2][j-2] + d3 + d5 + auPenalty(i,j) + Ea + Eb + 2*Ec);
+          VM(i,j) = *std::min_element(vals.begin(), vals.end());
         }
         VM(i,j) = canStack(i,j)?VM(i,j):INFINITY_;
         // Multi Loop END
 
-        V(i,j) = MIN4(  eh,
-            es,
-            VBI(i,j),
-            VM(i,j));
+        std::vector<double> vals;
+        vals.push_back(eh);
+        vals.push_back(es);
+        vals.push_back(VBI(i,j));
+        vals.push_back(VM(i,j));
+        V(i,j) = *std::min_element(vals.begin(), vals.end());
       }
       else {
         V(i,j) = INFINITY_;
@@ -178,37 +200,66 @@ double calculate(int len) {
       // Added auxillary storage WMPrime to speedup multiloop calculations
       int h;
       for (h = i+TURN+1 ; h <= j-TURN-2; h++) {
-        WMPrime[i][j] = MIN(WMPrime[i][j], WMU(i,h-1) + WML(h,j)); 
+        std::vector<double> vals;
+        vals.push_back(WMPrime[i][j]);
+        vals.push_back(WMU(i,h-1) + WML(h,j));
+        WMPrime[i][j] = *std::min_element(vals.begin(), vals.end());
       }
 
       // WM begin
       double newWM = INFINITY_; 
 
       //ZS: This sum corresponds to when i,j are NOT paired with each other.
-      //So we need to make sure only terms where i,j aren't pairing are considered. 
-      newWM = (!forcePair(i,j))?MIN(newWM, WMPrime[i][j]):newWM;
+      //So we need to make sure only terms where i,j aren't pairing are considered.
+      if (!forcePair(i,j)) {
+          std::vector<double> vals;
+          vals.push_back(newWM);
+          vals.push_back(WMPrime[i][j]);
+          newWM = *std::min_element(vals.begin(), vals.end());
+        }
 
-      if (g_unamode || g_mismatch) { // unamode
-        newWM = MIN(V(i,j) + auPenalty(i,j) + Eb, newWM); 
-        newWM = canSS(i)?MIN(V(i+1,j) + Ed3(j,i+1,i) + auPenalty(i+1,j) + Eb + Ec, newWM):newWM; //i dangle
-        newWM = canSS(j)?MIN(V(i,j-1) + Ed5(j-1,i,j) + auPenalty(i,j-1) + Eb + Ec, newWM):newWM;  //j dangle
-        if (i<j-TURN-2)
-          newWM = (canSS(i)&&canSS(j))?MIN(V(i+1,j-1) + Estackm(j-1,i+1) + auPenalty(i+1,j-1) + Eb + 2*Ec, newWM):newWM; 
-      } else if (g_dangles == 2) {
+      if (g_dangles == 2) {
         double energy = V(i,j) + auPenalty(i,j) + Eb;
         energy += (i==1)?Ed3(j,i,len):Ed3(j,i,i-1);
         /*if (j<len)*/ energy += Ed5(j,i,j+1);
-        newWM = (canSS(i)&&canSS(j))?MIN(energy, newWM):newWM; //i,j dangle
+        if (canSS(i)&&canSS(j)){
+          std::vector<double> vals;
+          vals.push_back(energy);
+          vals.push_back(newWM);
+          newWM = *std::min_element(vals.begin(), vals.end());
+        }
       } else if (g_dangles == 0) {
-        newWM = MIN(V(i,j) + auPenalty(i,j) + Eb, newWM); 
+        std::vector<double> vals;
+        vals.push_back(V(i,j) + auPenalty(i,j) + Eb);
+        vals.push_back(newWM);
+        newWM = *std::min_element(vals.begin(), vals.end());
       } else { // default
-        newWM = MIN(V(i,j) + auPenalty(i,j) + Eb, newWM); 
-        newWM = canSS(i)?MIN(V(i+1,j) + Ed3(j,i+1,i) + auPenalty(i+1,j) + Eb + Ec, newWM):newWM; //i dangle
-        newWM = canSS(j)?MIN(V(i,j-1) + Ed5(j-1,i,j) + auPenalty(i,j-1) + Eb + Ec, newWM):newWM;  //j dangle
-        newWM = (canSS(i)&&canSS(j))?MIN(V(i+1,j-1) + Ed3(j-1,i+1,i) + Ed5(j-1,i+1,j) + auPenalty(i+1,j-1) + Eb + 2*Ec, newWM):newWM; //i,j dangle
+        std::vector<double> vals;
+        vals.push_back(newWM);
+        vals.push_back(V(i,j) + auPenalty(i,j) + Eb);
+
+        if (canSS(i))
+          vals.push_back(V(i+1,j) + Ed3(j,i+1,i) + auPenalty(i+1,j) + Eb + Ec); //i dangle
+
+        if (canSS(j))
+          vals.push_back(V(i,j-1) + Ed5(j-1,i,j) + auPenalty(i,j-1) + Eb + Ec);  //j dangle
+
+        if (canSS(i)&&canSS(j))
+          vals.push_back(V(i+1,j-1) + Ed3(j-1,i+1,i) + Ed5(j-1,i+1,j) + auPenalty(i+1,j-1) + Eb + 2*Ec); //i,j dangle
+
+        newWM = *std::min_element(vals.begin(), vals.end());
       }
-      newWM = canSS(i)?MIN(WMU(i+1,j) + Ec, newWM):newWM; //i dangle
-      newWM = canSS(j)?MIN(WML(i,j-1) + Ec, newWM):newWM; //j dangle
+      
+      std::vector<double> vals;
+      vals.push_back(newWM);
+
+      if (canSS(i))
+        vals.push_back(WMU(i+1,j) + Ec); //i dangle
+
+      if (canSS(j))
+        vals.push_back(WML(i,j-1) + Ec); //j dangle
+
+      newWM = *std::min_element(vals.begin(), vals.end());
 
       WMU(i,j) = WML(i,j) = newWM;
       // WM end
@@ -224,18 +275,17 @@ double calculate(int len) {
       Wij = Widjd = Wijd = Widj = INFINITY_;
       Wim1 = MIN(0, W[i-1]); 
 
-      if (g_unamode || g_mismatch) { // unafold option
-        Wij = V(i, j) + auPenalty(i, j) + Wim1;
-        Widj = canSS(i)?V(i+1, j) + auPenalty(i+1,j) + Ed3(j,i + 1,i) + Wim1:Widj;
-        Wijd = canSS(j)?V(i,j-1) + auPenalty(i,j-1) + Ed5(j-1,i,j) + Wim1:Wijd;
-        Widjd = (canSS(i)&&canSS(j))?V(i+1,j-1) + auPenalty(i+1,j-1) + Estacke(j-1,i+1) + Wim1:Widjd;
-        Wij = MIN4(Wij, Widjd, Wijd, Widj);
-      } else if (g_dangles == 2) { // -d2 option
+      if (g_dangles == 2) { // -d2 option
         double energy = V(i,j) +	 auPenalty(i,j) + Wim1;
         if (i>1) energy +=  Ed3(j,i,i-1);
         if (j<len) energy += Ed5(j,i,j+1);
         Widjd = (canSS(i)&&canSS(j))? energy:Widjd;
-        Wij = MIN(Wij, Widjd);
+
+        std::vector<double> vals;
+        vals.push_back(Wij);
+        vals.push_back(Widjd);
+        
+        Wij = *std::min_element(vals.begin(), vals.end());
       }	else if (g_dangles == 0) { // -d0 option
         Wij = V(i, j) + auPenalty(i, j) + Wim1;
       } else { // default
@@ -243,12 +293,29 @@ double calculate(int len) {
         Widj = canSS(i)?V(i+1, j) + auPenalty(i+1,j) + Ed3(j,i + 1,i) + Wim1:INFINITY_;
         Wijd = canSS(j)?V(i,j-1) + auPenalty(i,j-1) + Ed5(j-1,i,j) + Wim1:INFINITY_;
         Widjd = (canSS(i)&&canSS(j))?V(i+1,j-1) + auPenalty(i+1,j-1) + Ed3(j-1,i + 1,i) + Ed5(j-1,i+1,j) + Wim1:INFINITY_;
-        Wij = MIN4(Wij, Widjd, Wijd, Widj);
+
+        std::vector<double> vals;
+        vals.push_back(Wij);
+        vals.push_back(Widj);
+        vals.push_back(Wijd);
+        vals.push_back(Widjd);
+        
+        Wij = *std::min_element(vals.begin(), vals.end());
       }
 
-      Wj = MIN(Wj,Wij); 
+      std::vector<double> vals;
+      vals.push_back(Wj);
+      vals.push_back(Wij);
+
+      Wj = *std::min_element(vals.begin(), vals.end());
     }
-    W[j] = canSS(j)?MIN(Wj, W[j-1]):Wj;
+
+    std::vector<double> vals;
+    vals.push_back(Wj);
+    if (canSS(j))
+      vals.push_back(W[j-1]);
+
+    W[j] = *std::min_element(vals.begin(), vals.end());
   }
 
 #ifdef DEBUG
