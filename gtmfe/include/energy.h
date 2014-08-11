@@ -28,24 +28,24 @@ extern const float RT_;
 #ifdef __cplusplus
 extern "C" {
 #endif
-double Ed3(int i, int j, int k);
-double Ed5(int i, int j, int k);
-double auPenalty(int i, int j);
+  double Ed3(int i, int j, int k);
+  double Ed5(int i, int j, int k);
+  double auPenalty(int i, int j);
 
 #define Ec multConst[1]
 #define Eb multConst[2]
 #define Ea multConst[0] 
 
-double eS(int i, int j);
-double eH(int i, int j);
-double eL(int i, int j, int ip, int jp);
-double eL1(int i, int j, int ip, int jp);
-double Estackm(int i, int j);
-double Estacke(int i, int j);
+  double eS(int i, int j);
+  double eH(int i, int j);
+  double eL(int i, int j, int ip, int jp);
+  double eL1(int i, int j, int ip, int jp);
+  double Estackm(int i, int j);
+  double Estacke(int i, int j);
 
-void create_tables(int len);
-void init_tables(int len);
-void free_tables(int len);
+  void create_tables(int len);
+  void init_tables(int len);
+  void free_tables(int len);
 #ifdef __cplusplus
 }
 #endif

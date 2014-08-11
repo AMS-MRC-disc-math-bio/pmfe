@@ -14,7 +14,7 @@ double shapeModel(double SHAPE_value);
 extern "C"{
 #endif
 
-int getShapeEnergy(int position);
+  int getShapeEnergy(int position);
 
 #ifdef __cplusplus
 }

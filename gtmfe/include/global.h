@@ -33,13 +33,13 @@ extern int g_contactDistance;
 #ifdef __cplusplus
 extern "C" {
 #endif
-int canPair(int a, int b);
-void init_global_params(int len);
-void free_global_params();
-void print_sequence(int len); 
-void print_structure(int len); 
-void print_header() ;
-void print_gtfold_usage_help();
+  int canPair(int a, int b);
+  void init_global_params(int len);
+  void free_global_params();
+  void print_sequence(int len); 
+  void print_structure(int len); 
+  void print_header() ;
+  void print_gtfold_usage_help();
 #ifdef __cplusplus
 }
 #endif

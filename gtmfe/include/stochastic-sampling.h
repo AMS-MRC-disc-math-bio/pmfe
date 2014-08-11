@@ -45,20 +45,20 @@ struct base_pair
   int j;
   int t;
 
-  base_pair(int i_, int j_, int t_) : i(i_), j(j_), t(t_) {}
-  base_pair(const base_pair& bp) :i(bp.i), j(bp.j), t(bp.t) { }
+base_pair(int i_, int j_, int t_) : i(i_), j(j_), t(t_) {}
+base_pair(const base_pair& bp) :i(bp.i), j(bp.j), t(bp.t) { }
   base_pair& operator = (const base_pair& bp)  
   {
     if (this != &bp) 
-    {
-      i = bp.i;
-      j = bp.j;
-      t = bp.t;
-    }
+      {
+        i = bp.i;
+        j = bp.j;
+        t = bp.t;
+      }
     return *this;
   }
 
-  int type() const { return t ;} 
+    int type() const { return t ;} 
   
   bool isPaired() const 
   {
