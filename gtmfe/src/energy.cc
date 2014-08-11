@@ -142,11 +142,11 @@ void free_tables(int len) {
 }
 
 
-inline double Ed3(int i, int j, int k) { return dangle[RNA[i]][RNA[j]][RNA[k]][1];}
-inline double Ed5(int i, int j, int k) { return dangle[RNA[i]][RNA[j]][RNA[k]][0]; }
-inline double auPenalty(int i, int j) { return auPen(RNA[i], RNA[j]);}
+double Ed3(int i, int j, int k) { return dangle[RNA[i]][RNA[j]][RNA[k]][1];}
+double Ed5(int i, int j, int k) { return dangle[RNA[i]][RNA[j]][RNA[k]][0]; }
+double auPenalty(int i, int j) { return auPen(RNA[i], RNA[j]);}
 
-inline double eL1(int i, int j, int ip, int jp) {
+double eL1(int i, int j, int ip, int jp) {
 	double energy;
 	int size1, size2, size;
 	double loginc; /* SH: Originally unassiged, but needs to be set to 0 so it doesn't throw off later calculations. */
@@ -217,7 +217,7 @@ inline double eL1(int i, int j, int ip, int jp) {
 	return energy;
 }
 
-inline double eL(int i, int j, int ip, int jp) {
+double eL(int i, int j, int ip, int jp) {
 	double energy;
 	int size1, size2, size;
 	double loginc; /* SH: Originally unassiged, but needs to be set to 0 so it doesn't throw off later calculations. */
@@ -289,7 +289,7 @@ inline double eL(int i, int j, int ip, int jp) {
 	return energy;
 }
 
-inline double eH(int i, int j) {
+double eH(int i, int j) {
 	/*  Hairpin loop for all the bases between i and j */
 	/*  size for size of the loop, energy is the result, loginc is for the extrapolation for loops bigger than 30 */
 	int size;
@@ -391,7 +391,7 @@ inline double eH(int i, int j) {
 	return energy;
 }
 
-inline double eS(int i, int j) {
+double eS(int i, int j) {
 	double energy;
 	/*  not sure about eparam[1], come from MFold.. = 0 */
 	energy = stack[fourBaseIndex(RNA[i], RNA[j], RNA[i+1], RNA[j-1])] + eparam[1] 
@@ -400,10 +400,10 @@ inline double eS(int i, int j) {
 	return energy;
 }
 
-inline double Estackm(int i, int j) {
+double Estackm(int i, int j) {
 	return tstackm[RNA[i]][RNA[j]][RNA[i + 1]][RNA[j - 1]];
 }
 
-inline double Estacke(int i, int j) {
+double Estacke(int i, int j) {
 	return tstacke[RNA[i]][RNA[j]][RNA[i + 1]][RNA[j - 1]];
 }
