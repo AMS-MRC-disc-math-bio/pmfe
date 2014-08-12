@@ -83,7 +83,10 @@ double calcVBI(int i, int j) {
     for (q = minq; q <= maxq; q++) {
       if (PP[p][q]==0) continue;
       if (!canILoop(i,j,p,q)) continue;
-      VBIij = MIN(eL(i, j, p, q) + V(p,q), VBIij);
+      std::vector<double> vals;
+      vals.push_back(eL(i, j, p, q) + V(p,q));
+      vals.push_back(VBIij);
+      VBIij = *std::min_element(vals.begin(), vals.end());
     }
   }
 
