@@ -29,15 +29,12 @@
 #include <string.h>
 #include <cassert>
 
-#include "main.h"
 #include "mfe_main.h"
 #include "utils.h"
 #include "loader.h"
-//#include "options.h"
 #include "global.h"
 #include "energy.h"
 #include "algorithms.h"
-#include "constraints.h"
 #include "traceback.h"
 #include "shapereader.h"
 

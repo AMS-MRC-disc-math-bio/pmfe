@@ -7,7 +7,6 @@
 
 #include "shapereader.h"
 #include "global.h"
-#include "options.h"
 
 using namespace std;
 

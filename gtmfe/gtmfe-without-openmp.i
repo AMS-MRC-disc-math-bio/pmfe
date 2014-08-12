@@ -11,8 +11,8 @@
 #include "global.h"
 #include "energy.h"
 #include "algorithms.h"
-#include "constraints.h"
 #include "traceback.h"
+#include "constraints.h"
 #include "shapereader.h"
 %}
 

@@ -9,7 +9,6 @@
 #include <iterator>
 
 #include "global.h"
-#include "options.h"
 #include "constraints.h"
 
 int* BP;

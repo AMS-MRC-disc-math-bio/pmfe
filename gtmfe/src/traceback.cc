@@ -23,12 +23,12 @@
 #include <assert.h>
 #include "data.h"
 #include "constants.h"
-#include "constraints.h"
 #include "energy.h"
 #include "global.h"
 #include "traceback.h"
-#include "utils.h"
+#include "constraints.h"
 #include "shapereader.h"
+#include "utils.h"
 
 double total_en = 0;
 double total_ex = 0;
