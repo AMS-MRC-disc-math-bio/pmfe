@@ -19,7 +19,8 @@ def main(argv):
     else:
         logger.setLevel(logging.INFO)
 
-    score_file(structfile)
+    scores = score_file(structfile)
+    print "Tree scores: x = {0}, y = {1}, z = {2}".format(scores[0], scores[1], scores[2])
 
 def score_file(structfile):
     pairs, seqlength = parse_ct_file(structfile)
