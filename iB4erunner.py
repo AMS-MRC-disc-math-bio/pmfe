@@ -27,7 +27,7 @@ def main(argv):
 
     run_iB4e(seqfile, sagefile, paramdir, structdir, verbose=False)
 
-def run_iB4e(structdir, sagefile, paramdir, structdir, verbose=False):
+def run_iB4e(seqfile, sagefile, paramdir, structdir, verbose=False):
     logger = logging.getLogger()
     if verbose:
         logger.setLevel(logging.DEBUG)
@@ -35,6 +35,8 @@ def run_iB4e(structdir, sagefile, paramdir, structdir, verbose=False):
         logger.setLevel(logging.INFO)
 
     points = []
+
+    seqfilebase = os.path.splitext(os.path.basename(seqfile))[0]
 
     logging.debug("Starting iB4e")
 
@@ -50,7 +52,7 @@ def run_iB4e(structdir, sagefile, paramdir, structdir, verbose=False):
     logging.debug("Computing classical scores")
 
     # Compute classical scores for later reference
-    classical_file = os.path.join(structdir, os.path.splitext(seqfile)[0] + ".classical.ct")
+    classical_file = os.path.join(structdir, seqfilebase + ".classical.ct")
     classical_result = gtmfe.mfe_main(seqfile, classical_file, paramdir)
     classical_scores_gtmfe = score_parser(classical_result)
     classical_scores_python = list(RNAscorer.score_file(classical_file))
@@ -78,14 +80,13 @@ def run_iB4e(structdir, sagefile, paramdir, structdir, verbose=False):
         params = tuple([-p for p in params])
 
         # Find the MFE structure
-        structname = os.path.splitext(os.path.basename(seqfile))[0] + "." + str(params) + ".ct"
-        structtarget = os.path.join(structdir, structname)
-        result_gtmfe = gtmfe.mfe_main(seqfile, structtarget, paramdir, params[0], params[1], params[2], params[3])
+        result_file =  os.path.join(structdir, seqfilebase) + "." + str(params) + ".ct"
+        result_gtmfe = gtmfe.mfe_main(seqfile, result_file, paramdir, params[0], params[1], params[2], params[3])
         scores_gtmfe = score_parser(result_gtmfe)
-        logging.debug("Stored structure as " + str(structtarget))
+        logging.debug("Stored structure as " + str(result_file))
 
         # Store the scores
-        scores_python = list(RNAscorer.score_file(structtarget))
+        scores_python = list(RNAscorer.score_file(result_file))
         if scores_python != scores_gtmfe[:3]:
             logging.warn("Score mismatch for parameters {0}!".format(params))
             logging.warn("GTfold gives x={0}, y={1}, z={2}.".format(scores_gtmfe[0], scores_gtmfe[1], scores_gtmfe[2]))
