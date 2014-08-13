@@ -73,7 +73,7 @@ void prefilter(int len, int prefilter1, int prefilter2) {
 
 double calcVBI(int i, int j) {
   int p=0, q=0;
-  double VBIij = INFINITY_;
+  double VBIij = INFINITY;
 
   for (p = i+1; p <= MIN(j-2-TURN,i+MAXLOOP+1) ; p++) {
     int minq = j-i+p-MAXLOOP-2;
@@ -95,7 +95,7 @@ double calcVBI(int i, int j) {
 
 double calcVBI1(int i, int j) {
   int p=0, q=0;
-  double VBIij = INFINITY_;
+  double VBIij = INFINITY;
 
   for (p = i+1; p <= MIN(j-2-TURN,i+MAXLOOP+1) ; p++) {
     int minq = j-i+p-MAXLOOP-2;
@@ -117,7 +117,7 @@ double calcVBI1(int i, int j) {
 
 double calcVBI2(int i, int j, int  len) {
   int d, ii, jj; 
-  double energy = INFINITY_;
+  double energy = INFINITY;
 
   for (d = j-i-3; d >= TURN+1 && d >= j-i-2-MAXLOOP; --d) 
     for (ii = i + 1; ii < j - d && ii <= len; ++ii)
@@ -153,8 +153,8 @@ double calculate(int len) {
       j = i + b;
 
       if (PP[i][j] == 1) {
-        double eh = canHairpin(i,j)?eH(i,j):INFINITY_; //hair pin
-        double es = canStack(i,j)?eS(i,j)+V(i+1,j-1):INFINITY_; // stack
+        double eh = canHairpin(i,j)?eH(i,j):INFINITY; //hair pin
+        double es = canStack(i,j)?eS(i,j)+V(i+1,j-1):INFINITY; // stack
 
         // Internal Loop BEGIN
         if (g_unamode) 
@@ -164,8 +164,8 @@ double calculate(int len) {
         // Internal Loop END
 
         // Multi Loop BEGIN
-        double d3 = canSS(j-1)?Ed3(i,j,j-1):INFINITY_;
-        double d5 = canSS(i+1)?Ed5(i,j,i+1):INFINITY_;
+        double d3 = canSS(j-1)?Ed3(i,j,j-1):INFINITY;
+        double d5 = canSS(i+1)?Ed5(i,j,i+1):INFINITY;
 
         if (g_dangles == 2) { // -d2
           std::vector<double> vals;
@@ -186,7 +186,7 @@ double calculate(int len) {
           vals.push_back(WMPrime[i+2][j-2] + d3 + d5 + auPenalty(i,j) + Ea + Eb + 2*Ec);
           VM(i,j) = *std::min_element(vals.begin(), vals.end());
         }
-        VM(i,j) = canStack(i,j)?VM(i,j):INFINITY_;
+        VM(i,j) = canStack(i,j)?VM(i,j):INFINITY;
         // Multi Loop END
 
         std::vector<double> vals;
@@ -197,7 +197,7 @@ double calculate(int len) {
         V(i,j) = *std::min_element(vals.begin(), vals.end());
       }
       else {
-        V(i,j) = INFINITY_;
+        V(i,j) = INFINITY;
       }
 
       // Added auxillary storage WMPrime to speedup multiloop calculations
@@ -210,7 +210,7 @@ double calculate(int len) {
       }
 
       // WM begin
-      double newWM = INFINITY_; 
+      double newWM = INFINITY; 
 
       //ZS: This sum corresponds to when i,j are NOT paired with each other.
       //So we need to make sure only terms where i,j aren't pairing are considered.
@@ -275,7 +275,7 @@ double calculate(int len) {
     double Wj, Widjd, Wijd, Widj, Wij, Wim1;
     Wj = 0;
     for (i = 1; i < j-TURN; i++) {
-      Wij = Widjd = Wijd = Widj = INFINITY_;
+      Wij = Widjd = Wijd = Widj = INFINITY;
       Wim1 = MIN(0, W[i-1]); 
 
       if (g_dangles == 2) { // -d2 option
@@ -293,9 +293,9 @@ double calculate(int len) {
         Wij = V(i, j) + auPenalty(i, j) + Wim1;
       } else { // default
         Wij = V(i, j) + auPenalty(i, j) + Wim1;
-        Widj = canSS(i)?V(i+1, j) + auPenalty(i+1,j) + Ed3(j,i + 1,i) + Wim1:INFINITY_;
-        Wijd = canSS(j)?V(i,j-1) + auPenalty(i,j-1) + Ed5(j-1,i,j) + Wim1:INFINITY_;
-        Widjd = (canSS(i)&&canSS(j))?V(i+1,j-1) + auPenalty(i+1,j-1) + Ed3(j-1,i + 1,i) + Ed5(j-1,i+1,j) + Wim1:INFINITY_;
+        Widj = canSS(i)?V(i+1, j) + auPenalty(i+1,j) + Ed3(j,i + 1,i) + Wim1:INFINITY;
+        Wijd = canSS(j)?V(i,j-1) + auPenalty(i,j-1) + Ed5(j-1,i,j) + Wim1:INFINITY;
+        Widjd = (canSS(i)&&canSS(j))?V(i+1,j-1) + auPenalty(i+1,j-1) + Ed3(j-1,i + 1,i) + Ed5(j-1,i+1,j) + Wim1:INFINITY;
 
         std::vector<double> vals;
         vals.push_back(Wij);
@@ -334,9 +334,9 @@ double calculate(int len) {
   file = fopen("Eh.txt", "w");
   for (ii = 1; ii <= len; ++ii) {    
     for (jj = len; jj > ii; --jj) {
-      double eh = INFINITY_;
+      double eh = INFINITY;
       if (PP[ii][jj])	eh = eH(ii,jj);
-      fprintf(file, "%d %d %d\n",ii,jj,eh>=INFINITY_?INFINITY_:eh);
+      fprintf(file, "%d %d %d\n",ii,jj,eh>=INFINITY?INFINITY:eh);
     }
   }    
   fclose(file);
@@ -344,9 +344,9 @@ double calculate(int len) {
   file = fopen("Es.txt", "w");
   for (ii = 1; ii <= len; ++ii) {    
     for (jj = len; jj > ii; --jj) {
-      double es = INFINITY_;
+      double es = INFINITY;
       if (PP[ii][jj] && PP[ii+1][jj-1]) es = eS(ii,jj);
-      fprintf(file, "%d %d %d\n",ii,jj,es>=INFINITY_?INFINITY_:es);
+      fprintf(file, "%d %d %d\n",ii,jj,es>=INFINITY?INFINITY:es);
     }
   }    
   fclose(file);

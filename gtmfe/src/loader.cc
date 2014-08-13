@@ -130,7 +130,7 @@ int initStackValues(const string& fileName, const string& dirPath, ParameterVect
     for (int j = 0; j < 4; j++) {
       for (int k = 0; k < 4; k++) {
         for (int l = 0; l < 4; l++) {
-          stack[fourBaseIndex(i,j,k,l)] = INFINITY_;
+          stack[fourBaseIndex(i,j,k,l)] = INFINITY;
         }
       }
     }
@@ -275,7 +275,7 @@ int initDangleValues(const std::string& fileName,
     for (int j = 0; j < 4; j++) {
       for (int k = 0; k < 4; k++) {
         for (int l = 0; l < 2; l++) {
-          dangle[i][j][k][l] = INFINITY_;
+          dangle[i][j][k][l] = INFINITY;
         }
       }
     }
@@ -340,7 +340,7 @@ int initLoopValues( const string& fileName, const string& dirPath, ParameterVect
         if (strcmp(currentWord, "inf")) {
           tempValue = params.d * atof(currentWord);
         } else {
-          tempValue = INFINITY_;
+          tempValue = INFINITY;
         }
       }
       switch (j) {
@@ -380,12 +380,12 @@ int initTstk23Values(const std::string& fileName, const std::string& dirPath, Pa
       for (j1 = 0; j1 < 5; ++j1)
         for (j2 = 0; j2 < 5; ++j2)
           if (i1 == 4 || j1 == 4)
-            tstacki23[i1][j1][i2][j2] = INFINITY_;
+            tstacki23[i1][j1][i2][j2] = INFINITY;
           else if (i2 == 4 || j2 == 4)
             tstacki23[i1][j1][i2][j2] = 0;
           else {
             cf >> val;
-            tstacki23[i1][j1][i2][j2] = (val == "inf")? (INFINITY_): 
+            tstacki23[i1][j1][i2][j2] = (val == "inf")? (INFINITY): 
               (params.d * atof(val.c_str()));
           }
   cf.close();
@@ -415,14 +415,14 @@ int initTstkeValues(const std::string& fileName, const std::string& dirPath, Par
       for (j1 = 0; j1 < 5; ++j1) {                                                   
         for (j2 = 0; j2 < 6; ++j2) {                                                      
           if (i1 == 4 || j1 == 4)                                                       
-            tstacke[i1][j1][i2][j2] = INFINITY_;                                         
+            tstacke[i1][j1][i2][j2] = INFINITY;                                         
           else if (i2 == 5 || j2 == 5)                                                  
-            tstacke[i1][j1][i2][j2] = INFINITY_;                                         
+            tstacke[i1][j1][i2][j2] = INFINITY;                                         
           else if (i2 == 4 || j2 == 4)                                                  
             tstacke[i1][j1][i2][j2] = 0;                                                
           else { 
             cf >> val;
-            tstacke[i1][j1][i2][j2] = (val == "inf")? (INFINITY_): 
+            tstacke[i1][j1][i2][j2] = (val == "inf")? (INFINITY): 
               (params.d * atof(val.c_str()));
           }
         }
@@ -454,14 +454,14 @@ int initTstkmValues(const std::string& fileName, const std::string& dirPath, Par
       for (j1 = 0; j1 < 5; ++j1) {                                                   
         for (j2 = 0; j2 < 6; ++j2) {                                                      
           if (i1 == 4 || j1 == 4)                                                       
-            tstackm[i1][j1][i2][j2] = INFINITY_;                                         
+            tstackm[i1][j1][i2][j2] = INFINITY;                                         
           else if (i2 == 5 || j2 == 5)                                                  
-            tstackm[i1][j1][i2][j2] = INFINITY_;                                         
+            tstackm[i1][j1][i2][j2] = INFINITY;                                         
           else if (i2 == 4 || j2 == 4)                                                  
             tstackm[i1][j1][i2][j2] = 0;                                                
           else { 
             cf >> val;
-            tstackm[i1][j1][i2][j2] = (val == "inf")? (INFINITY_): 
+            tstackm[i1][j1][i2][j2] = (val == "inf")? (INFINITY): 
               (params.d * atof(val.c_str()));
           }
         }
@@ -485,7 +485,7 @@ int initTstkhValues(const std::string& fileName, const std::string& dirPath, Par
     for (int j = 0; j < 4; j++) {
       for (int k = 0; k < 4; k++) {
         for (int l = 0; l < 2; l++) {
-          tstkh[fourBaseIndex(i,j,k,l)] = INFINITY_;
+          tstkh[fourBaseIndex(i,j,k,l)] = INFINITY;
         }
       }
     }
@@ -533,7 +533,7 @@ int initTstkiValues(const std::string& fileName, const std::string& dirPath, Par
     for (int j = 0; j < 4; j++) {
       for (int k = 0; k < 4; k++) {
         for (int l = 0; l < 2; l++) {
-          tstki[fourBaseIndex(i,j,k,l)] = INFINITY_;
+          tstki[fourBaseIndex(i,j,k,l)] = INFINITY;
         }
       }
     }
@@ -632,7 +632,7 @@ int initInt22Values(const std::string& fileName, const std::string& dirPath, Par
             for (t = 0; t < 4; t++)
               for (y = 0; y < 4; y++)
                 for (z = 0; z < 4; z++)
-                  iloop22[i][j][k][r][q][t][y][z] = INFINITY_;
+                  iloop22[i][j][k][r][q][t][y][z] = INFINITY;
 
   ifstream cf;
   char currentLine[256], currentValue[6];
@@ -722,7 +722,7 @@ int initInt21Values(const std::string& fileName, const std::string& dirPath, Par
           for (q = 0; q < 4; q++)
             for (t = 0; t < 4; t++)
               for (y = 0; y < 4; y++)
-                iloop21[i][j][k][r][q][t][y] = INFINITY_;
+                iloop21[i][j][k][r][q][t][y] = INFINITY;
   a = 0;
   b = 0;
   c = 0;
@@ -807,7 +807,7 @@ int initInt11Values(const std::string& fileName, const std::string& dirPath, Par
         for (r = 0; r < 4; r++)
           for (q = 0; q < 4; q++)
             for (t = 0; t < 4; t++)
-              iloop11[i][j][k][r][q][t] = INFINITY_;
+              iloop11[i][j][k][r][q][t] = INFINITY;
 
   ifstream cf;
   char currentLine[256];

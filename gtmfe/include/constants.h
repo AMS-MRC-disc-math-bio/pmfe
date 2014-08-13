@@ -21,8 +21,6 @@
 #define _CONSTANTS_H
 
 #define maxfil 100    /* maximum length of file names */
-#define INFINITY_ 9999999  /* an arbitrary value given to infinity */
-#define SMALLINFTY_ 99999 /*an arbitray value to determine safe range from infinity */
 #define maxtloop 100 /* maximum tetraloops allowed (info read from tloop) */
 #define maxstructures 1010 /* maximum number of structures in ct file */
 #define maxbases 10000   /* maximum number of bases in a structure */

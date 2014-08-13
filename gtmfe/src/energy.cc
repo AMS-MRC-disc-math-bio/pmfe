@@ -102,19 +102,19 @@ void init_tables(int len) {
   int i, j, LLL;
 	
   for (i = 0; i <= len; i++) {
-    W[i] = INFINITY_; 
+    W[i] = INFINITY; 
     for (j = 0; j <= len; j++) {
-      WM[i][j] = INFINITY_;
-      WMPrime[i][j] = INFINITY_;
+      WM[i][j] = INFINITY;
+      WMPrime[i][j] = INFINITY;
       PP[i][j] = 0;
     }
   }
 	
   LLL = (len)*(len+1)/2 + 1;
   for (i = 0; i < LLL; i++) {
-    V[i] = INFINITY_;
-    VM[i] = INFINITY_;
-    VBI[i] = INFINITY_;
+    V[i] = INFINITY;
+    VM[i] = INFINITY;
+    VBI[i] = INFINITY;
   }
 
   for (i = 1; i <= (unsigned) len; i++) 
@@ -152,7 +152,7 @@ double eL1(int i, int j, int ip, int jp) {
   double loginc; /* SH: Originally unassiged, but needs to be set to 0 so it doesn't throw off later calculations. */
   int lopsided; /* define the asymmetry of an interior loop */
 
-  energy = INFINITY_;
+  energy = INFINITY;
   loginc = 0;
 
   /*SH: These calculations used to incorrectly be within the bulge loop code, moved out here. */
@@ -223,7 +223,7 @@ double eL(int i, int j, int ip, int jp) {
   double loginc; /* SH: Originally unassiged, but needs to be set to 0 so it doesn't throw off later calculations. */
   int lopsided; /* define the asymmetry of an interior loop */
 
-  energy = INFINITY_;
+  energy = INFINITY;
   loginc = 0;
 
   /*SH: These calculations used to incorrectly be within the bulge loop code, moved out here. */
@@ -294,7 +294,7 @@ double eH(int i, int j) {
   /*  size for size of the loop, energy is the result, loginc is for the extrapolation for loops bigger than 30 */
   int size;
   double loginc;
-  double energy = INFINITY_;
+  double energy = INFINITY;
   int key, index, count, kmult;
   double tlink;
 
@@ -362,7 +362,7 @@ double eH(int i, int j) {
     /*  no terminal mismatch */
     energy = hairpin[size] + eparam[4];
   } else if (size == 0)
-    return INFINITY_;
+    return INFINITY;
 
   /*  GGG Bonus => GU closure preceded by GG */
   /*  i-2 = i-1 = i = G, and j = U; i < j */

@@ -132,12 +132,12 @@ void traceW(int j) {
 double traceV(int i, int j) {
   double a, b, c, d;
   double Vij;
-  if (j-i < TURN)  return INFINITY_;
+  if (j-i < TURN)  return INFINITY;
 
-  a = canHairpin(i,j)?eH(i, j):INFINITY_;
-  b = canStack(i,j)?eS(i, j) + V(i + 1, j - 1):INFINITY_;
-  c = canStack(i,j)?VBI(i,j):INFINITY_;
-  d = canStack(i,j)?VM(i,j):INFINITY_;
+  a = canHairpin(i,j)?eH(i, j):INFINITY;
+  b = canStack(i,j)?eS(i, j) + V(i + 1, j - 1):INFINITY;
+  c = canStack(i,j)?VBI(i,j):INFINITY;
+  d = canStack(i,j)?VM(i,j):INFINITY;
 
   Vij = V(i,j);
   structure[i] = j;
