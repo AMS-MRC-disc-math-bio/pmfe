@@ -34,6 +34,9 @@ def run_iB4e(seqfile, sagefile, paramdir, structdir, verbose=False):
     else:
         logger.setLevel(logging.INFO)
 
+    if not (os.path.isfile(seqfile) and os.access(seqfile, os.R_OK)):
+        raise IOError("Could not locate sequence file " + seqfile + ".")
+
     points = []
 
     seqfilebase = os.path.splitext(os.path.basename(seqfile))[0]
