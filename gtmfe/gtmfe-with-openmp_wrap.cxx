@@ -2937,8 +2937,9 @@ SWIG_Python_NonDynamicSetAttr(PyObject *obj, PyObject *name, PyObject *value) {
 #define SWIGTYPE_p_ParameterVector swig_types[0]
 #define SWIGTYPE_p_PolytopeVector swig_types[1]
 #define SWIGTYPE_p_char swig_types[2]
-static swig_type_info *swig_types[4];
-static swig_module_info swig_module = {swig_types, 3, 0, 0, 0, 0};
+#define SWIGTYPE_p_long_double swig_types[3]
+static swig_type_info *swig_types[5];
+static swig_module_info swig_module = {swig_types, 4, 0, 0, 0, 0};
 #define SWIG_TypeQuery(name) SWIG_TypeQueryModule(&swig_module, &swig_module, name)
 #define SWIG_MangledTypeQuery(name) SWIG_MangledTypeQueryModule(&swig_module, &swig_module, name)
 
@@ -3187,53 +3188,6 @@ SWIGINTERNINLINE PyObject*
   SWIG_From_int  (int value)
 {
   return PyInt_FromLong((long) value);
-}
-
-
-/* Getting isfinite working pre C99 across multiple platforms is non-trivial. Users can provide SWIG_isfinite on older platforms. */
-#ifndef SWIG_isfinite
-# if defined(isfinite)
-#  define SWIG_isfinite(X) (isfinite(X))
-# elif defined(_MSC_VER)
-#  define SWIG_isfinite(X) (_finite(X))
-# elif defined(__sun) && defined(__SVR4)
-#  include <ieeefp.h>
-#  define SWIG_isfinite(X) (finite(X))
-# endif
-#endif
-
-
-/* Accept infinite as a valid float value unless we are unable to check if a value is finite */
-#ifdef SWIG_isfinite
-# define SWIG_Float_Overflow_Check(X) ((X < -FLT_MAX || X > FLT_MAX) && SWIG_isfinite(X))
-#else
-# define SWIG_Float_Overflow_Check(X) ((X < -FLT_MAX || X > FLT_MAX))
-#endif
-
-
-SWIGINTERN int
-SWIG_AsVal_float (PyObject * obj, float *val)
-{
-  double v;
-  int res = SWIG_AsVal_double (obj, &v);
-  if (SWIG_IsOK(res)) {
-    if (SWIG_Float_Overflow_Check(v)) {
-      return SWIG_OverflowError;
-    } else {
-      if (val) *val = static_cast< float >(v);
-    }
-  }  
-  return res;
-}
-
-
-  #define SWIG_From_double   PyFloat_FromDouble 
-
-
-SWIGINTERNINLINE PyObject *
-SWIG_From_float  (float value)
-{    
-  return SWIG_From_double  (value);
 }
 
 
@@ -3531,11 +3485,11 @@ fail:
 SWIGINTERN PyObject *_wrap_PolytopeVector_w_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   PolytopeVector *arg1 = (PolytopeVector *) 0 ;
-  float arg2 ;
+  long double arg2 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
-  float val2 ;
-  int ecode2 = 0 ;
+  void *argp2 ;
+  int res2 = 0 ;
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
   
@@ -3545,11 +3499,19 @@ SWIGINTERN PyObject *_wrap_PolytopeVector_w_set(PyObject *SWIGUNUSEDPARM(self), 
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "PolytopeVector_w_set" "', argument " "1"" of type '" "PolytopeVector *""'"); 
   }
   arg1 = reinterpret_cast< PolytopeVector * >(argp1);
-  ecode2 = SWIG_AsVal_float(obj1, &val2);
-  if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "PolytopeVector_w_set" "', argument " "2"" of type '" "float""'");
-  } 
-  arg2 = static_cast< float >(val2);
+  {
+    res2 = SWIG_ConvertPtr(obj1, &argp2, SWIGTYPE_p_long_double,  0  | 0);
+    if (!SWIG_IsOK(res2)) {
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "PolytopeVector_w_set" "', argument " "2"" of type '" "long double""'"); 
+    }  
+    if (!argp2) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "PolytopeVector_w_set" "', argument " "2"" of type '" "long double""'");
+    } else {
+      long double * temp = reinterpret_cast< long double * >(argp2);
+      arg2 = *temp;
+      if (SWIG_IsNewObj(res2)) delete temp;
+    }
+  }
   if (arg1) (arg1)->w = arg2;
   resultobj = SWIG_Py_Void();
   return resultobj;
@@ -3564,7 +3526,7 @@ SWIGINTERN PyObject *_wrap_PolytopeVector_w_get(PyObject *SWIGUNUSEDPARM(self), 
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
-  float result;
+  long double result;
   
   if (!PyArg_ParseTuple(args,(char *)"O:PolytopeVector_w_get",&obj0)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_PolytopeVector, 0 |  0 );
@@ -3572,8 +3534,8 @@ SWIGINTERN PyObject *_wrap_PolytopeVector_w_get(PyObject *SWIGUNUSEDPARM(self), 
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "PolytopeVector_w_get" "', argument " "1"" of type '" "PolytopeVector *""'"); 
   }
   arg1 = reinterpret_cast< PolytopeVector * >(argp1);
-  result = (float) ((arg1)->w);
-  resultobj = SWIG_From_float(static_cast< float >(result));
+  result = (long double) ((arg1)->w);
+  resultobj = SWIG_NewPointerObj((new long double(static_cast< const long double& >(result))), SWIGTYPE_p_long_double, SWIG_POINTER_OWN |  0 );
   return resultobj;
 fail:
   return NULL;
@@ -3583,11 +3545,11 @@ fail:
 SWIGINTERN PyObject *_wrap_PolytopeVector_energy_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   PolytopeVector *arg1 = (PolytopeVector *) 0 ;
-  float arg2 ;
+  long double arg2 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
-  float val2 ;
-  int ecode2 = 0 ;
+  void *argp2 ;
+  int res2 = 0 ;
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
   
@@ -3597,11 +3559,19 @@ SWIGINTERN PyObject *_wrap_PolytopeVector_energy_set(PyObject *SWIGUNUSEDPARM(se
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "PolytopeVector_energy_set" "', argument " "1"" of type '" "PolytopeVector *""'"); 
   }
   arg1 = reinterpret_cast< PolytopeVector * >(argp1);
-  ecode2 = SWIG_AsVal_float(obj1, &val2);
-  if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "PolytopeVector_energy_set" "', argument " "2"" of type '" "float""'");
-  } 
-  arg2 = static_cast< float >(val2);
+  {
+    res2 = SWIG_ConvertPtr(obj1, &argp2, SWIGTYPE_p_long_double,  0  | 0);
+    if (!SWIG_IsOK(res2)) {
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "PolytopeVector_energy_set" "', argument " "2"" of type '" "long double""'"); 
+    }  
+    if (!argp2) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "PolytopeVector_energy_set" "', argument " "2"" of type '" "long double""'");
+    } else {
+      long double * temp = reinterpret_cast< long double * >(argp2);
+      arg2 = *temp;
+      if (SWIG_IsNewObj(res2)) delete temp;
+    }
+  }
   if (arg1) (arg1)->energy = arg2;
   resultobj = SWIG_Py_Void();
   return resultobj;
@@ -3616,7 +3586,7 @@ SWIGINTERN PyObject *_wrap_PolytopeVector_energy_get(PyObject *SWIGUNUSEDPARM(se
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
-  float result;
+  long double result;
   
   if (!PyArg_ParseTuple(args,(char *)"O:PolytopeVector_energy_get",&obj0)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_PolytopeVector, 0 |  0 );
@@ -3624,8 +3594,8 @@ SWIGINTERN PyObject *_wrap_PolytopeVector_energy_get(PyObject *SWIGUNUSEDPARM(se
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "PolytopeVector_energy_get" "', argument " "1"" of type '" "PolytopeVector *""'"); 
   }
   arg1 = reinterpret_cast< PolytopeVector * >(argp1);
-  result = (float) ((arg1)->energy);
-  resultobj = SWIG_From_float(static_cast< float >(result));
+  result = (long double) ((arg1)->energy);
+  resultobj = SWIG_NewPointerObj((new long double(static_cast< const long double& >(result))), SWIGTYPE_p_long_double, SWIG_POINTER_OWN |  0 );
   return resultobj;
 fail:
   return NULL;
@@ -3676,11 +3646,11 @@ SWIGINTERN PyObject *PolytopeVector_swigregister(PyObject *SWIGUNUSEDPARM(self),
 SWIGINTERN PyObject *_wrap_ParameterVector_a_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   ParameterVector *arg1 = (ParameterVector *) 0 ;
-  float arg2 ;
+  long double arg2 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
-  float val2 ;
-  int ecode2 = 0 ;
+  void *argp2 ;
+  int res2 = 0 ;
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
   
@@ -3690,11 +3660,19 @@ SWIGINTERN PyObject *_wrap_ParameterVector_a_set(PyObject *SWIGUNUSEDPARM(self),
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ParameterVector_a_set" "', argument " "1"" of type '" "ParameterVector *""'"); 
   }
   arg1 = reinterpret_cast< ParameterVector * >(argp1);
-  ecode2 = SWIG_AsVal_float(obj1, &val2);
-  if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "ParameterVector_a_set" "', argument " "2"" of type '" "float""'");
-  } 
-  arg2 = static_cast< float >(val2);
+  {
+    res2 = SWIG_ConvertPtr(obj1, &argp2, SWIGTYPE_p_long_double,  0  | 0);
+    if (!SWIG_IsOK(res2)) {
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "ParameterVector_a_set" "', argument " "2"" of type '" "long double""'"); 
+    }  
+    if (!argp2) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "ParameterVector_a_set" "', argument " "2"" of type '" "long double""'");
+    } else {
+      long double * temp = reinterpret_cast< long double * >(argp2);
+      arg2 = *temp;
+      if (SWIG_IsNewObj(res2)) delete temp;
+    }
+  }
   if (arg1) (arg1)->a = arg2;
   resultobj = SWIG_Py_Void();
   return resultobj;
@@ -3709,7 +3687,7 @@ SWIGINTERN PyObject *_wrap_ParameterVector_a_get(PyObject *SWIGUNUSEDPARM(self),
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
-  float result;
+  long double result;
   
   if (!PyArg_ParseTuple(args,(char *)"O:ParameterVector_a_get",&obj0)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_ParameterVector, 0 |  0 );
@@ -3717,8 +3695,8 @@ SWIGINTERN PyObject *_wrap_ParameterVector_a_get(PyObject *SWIGUNUSEDPARM(self),
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ParameterVector_a_get" "', argument " "1"" of type '" "ParameterVector *""'"); 
   }
   arg1 = reinterpret_cast< ParameterVector * >(argp1);
-  result = (float) ((arg1)->a);
-  resultobj = SWIG_From_float(static_cast< float >(result));
+  result = (long double) ((arg1)->a);
+  resultobj = SWIG_NewPointerObj((new long double(static_cast< const long double& >(result))), SWIGTYPE_p_long_double, SWIG_POINTER_OWN |  0 );
   return resultobj;
 fail:
   return NULL;
@@ -3728,11 +3706,11 @@ fail:
 SWIGINTERN PyObject *_wrap_ParameterVector_b_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   ParameterVector *arg1 = (ParameterVector *) 0 ;
-  float arg2 ;
+  long double arg2 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
-  float val2 ;
-  int ecode2 = 0 ;
+  void *argp2 ;
+  int res2 = 0 ;
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
   
@@ -3742,11 +3720,19 @@ SWIGINTERN PyObject *_wrap_ParameterVector_b_set(PyObject *SWIGUNUSEDPARM(self),
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ParameterVector_b_set" "', argument " "1"" of type '" "ParameterVector *""'"); 
   }
   arg1 = reinterpret_cast< ParameterVector * >(argp1);
-  ecode2 = SWIG_AsVal_float(obj1, &val2);
-  if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "ParameterVector_b_set" "', argument " "2"" of type '" "float""'");
-  } 
-  arg2 = static_cast< float >(val2);
+  {
+    res2 = SWIG_ConvertPtr(obj1, &argp2, SWIGTYPE_p_long_double,  0  | 0);
+    if (!SWIG_IsOK(res2)) {
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "ParameterVector_b_set" "', argument " "2"" of type '" "long double""'"); 
+    }  
+    if (!argp2) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "ParameterVector_b_set" "', argument " "2"" of type '" "long double""'");
+    } else {
+      long double * temp = reinterpret_cast< long double * >(argp2);
+      arg2 = *temp;
+      if (SWIG_IsNewObj(res2)) delete temp;
+    }
+  }
   if (arg1) (arg1)->b = arg2;
   resultobj = SWIG_Py_Void();
   return resultobj;
@@ -3761,7 +3747,7 @@ SWIGINTERN PyObject *_wrap_ParameterVector_b_get(PyObject *SWIGUNUSEDPARM(self),
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
-  float result;
+  long double result;
   
   if (!PyArg_ParseTuple(args,(char *)"O:ParameterVector_b_get",&obj0)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_ParameterVector, 0 |  0 );
@@ -3769,8 +3755,8 @@ SWIGINTERN PyObject *_wrap_ParameterVector_b_get(PyObject *SWIGUNUSEDPARM(self),
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ParameterVector_b_get" "', argument " "1"" of type '" "ParameterVector *""'"); 
   }
   arg1 = reinterpret_cast< ParameterVector * >(argp1);
-  result = (float) ((arg1)->b);
-  resultobj = SWIG_From_float(static_cast< float >(result));
+  result = (long double) ((arg1)->b);
+  resultobj = SWIG_NewPointerObj((new long double(static_cast< const long double& >(result))), SWIGTYPE_p_long_double, SWIG_POINTER_OWN |  0 );
   return resultobj;
 fail:
   return NULL;
@@ -3780,11 +3766,11 @@ fail:
 SWIGINTERN PyObject *_wrap_ParameterVector_c_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   ParameterVector *arg1 = (ParameterVector *) 0 ;
-  float arg2 ;
+  long double arg2 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
-  float val2 ;
-  int ecode2 = 0 ;
+  void *argp2 ;
+  int res2 = 0 ;
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
   
@@ -3794,11 +3780,19 @@ SWIGINTERN PyObject *_wrap_ParameterVector_c_set(PyObject *SWIGUNUSEDPARM(self),
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ParameterVector_c_set" "', argument " "1"" of type '" "ParameterVector *""'"); 
   }
   arg1 = reinterpret_cast< ParameterVector * >(argp1);
-  ecode2 = SWIG_AsVal_float(obj1, &val2);
-  if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "ParameterVector_c_set" "', argument " "2"" of type '" "float""'");
-  } 
-  arg2 = static_cast< float >(val2);
+  {
+    res2 = SWIG_ConvertPtr(obj1, &argp2, SWIGTYPE_p_long_double,  0  | 0);
+    if (!SWIG_IsOK(res2)) {
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "ParameterVector_c_set" "', argument " "2"" of type '" "long double""'"); 
+    }  
+    if (!argp2) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "ParameterVector_c_set" "', argument " "2"" of type '" "long double""'");
+    } else {
+      long double * temp = reinterpret_cast< long double * >(argp2);
+      arg2 = *temp;
+      if (SWIG_IsNewObj(res2)) delete temp;
+    }
+  }
   if (arg1) (arg1)->c = arg2;
   resultobj = SWIG_Py_Void();
   return resultobj;
@@ -3813,7 +3807,7 @@ SWIGINTERN PyObject *_wrap_ParameterVector_c_get(PyObject *SWIGUNUSEDPARM(self),
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
-  float result;
+  long double result;
   
   if (!PyArg_ParseTuple(args,(char *)"O:ParameterVector_c_get",&obj0)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_ParameterVector, 0 |  0 );
@@ -3821,8 +3815,8 @@ SWIGINTERN PyObject *_wrap_ParameterVector_c_get(PyObject *SWIGUNUSEDPARM(self),
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ParameterVector_c_get" "', argument " "1"" of type '" "ParameterVector *""'"); 
   }
   arg1 = reinterpret_cast< ParameterVector * >(argp1);
-  result = (float) ((arg1)->c);
-  resultobj = SWIG_From_float(static_cast< float >(result));
+  result = (long double) ((arg1)->c);
+  resultobj = SWIG_NewPointerObj((new long double(static_cast< const long double& >(result))), SWIGTYPE_p_long_double, SWIG_POINTER_OWN |  0 );
   return resultobj;
 fail:
   return NULL;
@@ -3832,11 +3826,11 @@ fail:
 SWIGINTERN PyObject *_wrap_ParameterVector_d_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   ParameterVector *arg1 = (ParameterVector *) 0 ;
-  float arg2 ;
+  long double arg2 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
-  float val2 ;
-  int ecode2 = 0 ;
+  void *argp2 ;
+  int res2 = 0 ;
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
   
@@ -3846,11 +3840,19 @@ SWIGINTERN PyObject *_wrap_ParameterVector_d_set(PyObject *SWIGUNUSEDPARM(self),
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ParameterVector_d_set" "', argument " "1"" of type '" "ParameterVector *""'"); 
   }
   arg1 = reinterpret_cast< ParameterVector * >(argp1);
-  ecode2 = SWIG_AsVal_float(obj1, &val2);
-  if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "ParameterVector_d_set" "', argument " "2"" of type '" "float""'");
-  } 
-  arg2 = static_cast< float >(val2);
+  {
+    res2 = SWIG_ConvertPtr(obj1, &argp2, SWIGTYPE_p_long_double,  0  | 0);
+    if (!SWIG_IsOK(res2)) {
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "ParameterVector_d_set" "', argument " "2"" of type '" "long double""'"); 
+    }  
+    if (!argp2) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "ParameterVector_d_set" "', argument " "2"" of type '" "long double""'");
+    } else {
+      long double * temp = reinterpret_cast< long double * >(argp2);
+      arg2 = *temp;
+      if (SWIG_IsNewObj(res2)) delete temp;
+    }
+  }
   if (arg1) (arg1)->d = arg2;
   resultobj = SWIG_Py_Void();
   return resultobj;
@@ -3865,7 +3867,7 @@ SWIGINTERN PyObject *_wrap_ParameterVector_d_get(PyObject *SWIGUNUSEDPARM(self),
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
-  float result;
+  long double result;
   
   if (!PyArg_ParseTuple(args,(char *)"O:ParameterVector_d_get",&obj0)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_ParameterVector, 0 |  0 );
@@ -3873,8 +3875,8 @@ SWIGINTERN PyObject *_wrap_ParameterVector_d_get(PyObject *SWIGUNUSEDPARM(self),
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ParameterVector_d_get" "', argument " "1"" of type '" "ParameterVector *""'"); 
   }
   arg1 = reinterpret_cast< ParameterVector * >(argp1);
-  result = (float) ((arg1)->d);
-  resultobj = SWIG_From_float(static_cast< float >(result));
+  result = (long double) ((arg1)->d);
+  resultobj = SWIG_NewPointerObj((new long double(static_cast< const long double& >(result))), SWIGTYPE_p_long_double, SWIG_POINTER_OWN |  0 );
   return resultobj;
 fail:
   return NULL;
@@ -4579,21 +4581,25 @@ static PyMethodDef SwigMethods[] = {
 static swig_type_info _swigt__p_ParameterVector = {"_p_ParameterVector", "ParameterVector *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_PolytopeVector = {"_p_PolytopeVector", "PolytopeVector *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_char = {"_p_char", "char *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_long_double = {"_p_long_double", "long double *", 0, 0, (void*)0, 0};
 
 static swig_type_info *swig_type_initial[] = {
   &_swigt__p_ParameterVector,
   &_swigt__p_PolytopeVector,
   &_swigt__p_char,
+  &_swigt__p_long_double,
 };
 
 static swig_cast_info _swigc__p_ParameterVector[] = {  {&_swigt__p_ParameterVector, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_PolytopeVector[] = {  {&_swigt__p_PolytopeVector, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_char[] = {  {&_swigt__p_char, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_long_double[] = {  {&_swigt__p_long_double, 0, 0, 0},{0, 0, 0, 0}};
 
 static swig_cast_info *swig_cast_initial[] = {
   _swigc__p_ParameterVector,
   _swigc__p_PolytopeVector,
   _swigc__p_char,
+  _swigc__p_long_double,
 };
 
 

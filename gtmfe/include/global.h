@@ -47,8 +47,8 @@ extern "C" {
 #ifdef __cplusplus
 int read_sequence_file(const char* filename, std::string& seq);
 bool encodeSequence(string seq);
-void save_ct_file(string outputFile, string seq, float energy) ;
-void save_ct_file(string outputFile, string seq, float energy, int *structure1); 
+void save_ct_file(string outputFile, string seq, long double energy) ;
+void save_ct_file(string outputFile, string seq, long double energy, int *structure1); 
 #endif
 
 void init_checkPair(); 

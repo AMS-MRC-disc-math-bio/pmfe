@@ -13,12 +13,12 @@ const int PRINT_DIGITS_AFTER_DECIMAL = 20;
 
 class AdvancedDouble_Native{
  private:
-  double value;
+  long double value;
  public:
   AdvancedDouble_Native(){
     value=0.0;
   }
-  AdvancedDouble_Native(double val){
+  AdvancedDouble_Native(long double val){
     value=val;
   }
   AdvancedDouble_Native(const AdvancedDouble_Native &obj1) {
@@ -53,35 +53,35 @@ class AdvancedDouble_Native{
   AdvancedDouble_Native operator*(const AdvancedDouble_Native &obj1) const {
     return (AdvancedDouble_Native)(value*obj1.value);
   }
-  AdvancedDouble_Native operator*(const double &obj1_double) const {
-    return (AdvancedDouble_Native)(value*obj1_double);
+  AdvancedDouble_Native operator*(const long double &obj1_long_double) const {
+    return (AdvancedDouble_Native)(value*obj1_long_double);
   }
   AdvancedDouble_Native operator+(const AdvancedDouble_Native &obj1) const {
     return (AdvancedDouble_Native)(value+obj1.value);
   }
-  AdvancedDouble_Native operator+(const double &obj1_double) const {
-    return (AdvancedDouble_Native)(value+obj1_double);
+  AdvancedDouble_Native operator+(const long double &obj1_long_double) const {
+    return (AdvancedDouble_Native)(value+obj1_long_double);
   }
   AdvancedDouble_Native operator-(const AdvancedDouble_Native &obj1) const {
     return (AdvancedDouble_Native)(value-obj1.value);
   }
-  AdvancedDouble_Native operator-(const double &obj1_double) const {
-    return (AdvancedDouble_Native)(value-obj1_double);
+  AdvancedDouble_Native operator-(const long double &obj1_long_double) const {
+    return (AdvancedDouble_Native)(value-obj1_long_double);
   }
   AdvancedDouble_Native operator/(const AdvancedDouble_Native &obj1) const {
     return (AdvancedDouble_Native)(value/obj1.value);
   }
-  AdvancedDouble_Native operator/(const double &obj1_double) const {
-    return (AdvancedDouble_Native)(value/obj1_double);
+  AdvancedDouble_Native operator/(const long double &obj1_long_double) const {
+    return (AdvancedDouble_Native)(value/obj1_long_double);
   }
   /*int compare(const AdvancedDouble_Native &obj1) const{
-    double cmp = value-obj1.value;
+    long double cmp = value-obj1.value;
     if(cmp>0) return 1;
     else if(cmp<0) return -1;
     else return 0;
     }
-    int compare(const double &obj1) const{
-    double cmp = value-obj1;
+    int compare(const long double &obj1) const{
+    long double cmp = value-obj1;
     if(cmp>0) return 1;
     else if(cmp<0) return -1;
     else return 0;
@@ -90,74 +90,74 @@ class AdvancedDouble_Native{
     bool operator==(const AdvancedDouble_Native &obj1) const {
     return compare(obj1)==0;
     }
-    bool operator==(const double &obj1) const {
+    bool operator==(const long double &obj1) const {
     return compare(obj1)==0;
     }
     bool operator!=(const AdvancedDouble_Native &obj1) const {
     return compare(obj1)!=0;
     }
-    bool operator!=(const double &obj1) const {
+    bool operator!=(const long double &obj1) const {
     return compare(obj1)!=0;
     }
     bool operator<(const AdvancedDouble_Native &obj1) const {
     return compare(obj1)<0;
     }
-    bool operator<(const double &obj1) const {
+    bool operator<(const long double &obj1) const {
     return compare(obj1)<0;
     }
     bool operator>(const AdvancedDouble_Native &obj1) const {
     return compare(obj1)>0;
     }
-    bool operator>(const double &obj1) const {
+    bool operator>(const long double &obj1) const {
     return compare(obj1)>0;
     }
     bool operator<=(const AdvancedDouble_Native &obj1) const {
     return compare(obj1)<=0;
     }
-    bool operator<=(const double &obj1) const {
+    bool operator<=(const long double &obj1) const {
     return compare(obj1)<=0;
     }
     bool operator>=(const AdvancedDouble_Native &obj1) const {
     return compare(obj1)>=0;
     }
-    bool operator>=(const double &obj1) const {
+    bool operator>=(const long double &obj1) const {
     return compare(obj1)>=0;
     }*/
 
   bool operator==(const AdvancedDouble_Native &obj1) const {
     return value==obj1.value;
   }
-  bool operator==(const double &obj1) const {
+  bool operator==(const long double &obj1) const {
     return value==obj1;
   }
   bool operator!=(const AdvancedDouble_Native &obj1) const {
     return value!=obj1.value;
   }
-  bool operator!=(const double &obj1) const {
+  bool operator!=(const long double &obj1) const {
     return value!=obj1;
   }
   bool operator<(const AdvancedDouble_Native &obj1) const {
     return value<obj1.value;
   }
-  bool operator<(const double &obj1) const {
+  bool operator<(const long double &obj1) const {
     return value<obj1;
   }
   bool operator>(const AdvancedDouble_Native &obj1) const {
     return value>obj1.value;
   }
-  bool operator>(const double &obj1) const {
+  bool operator>(const long double &obj1) const {
     return value>obj1;
   }
   bool operator<=(const AdvancedDouble_Native &obj1) const {
     return value<=obj1.value;
   }
-  bool operator<=(const double &obj1) const {
+  bool operator<=(const long double &obj1) const {
     return value<=obj1;
   }
   bool operator>=(const AdvancedDouble_Native &obj1) const {
     return value>=obj1.value;
   }
-  bool operator>=(const double &obj1) const {
+  bool operator>=(const long double &obj1) const {
     return value>=obj1;
   }
 
@@ -168,7 +168,7 @@ class AdvancedDouble_Native{
     value=obj1.value;
     return *this;
   }
-  AdvancedDouble_Native& operator=(const double &obj1) {
+  AdvancedDouble_Native& operator=(const long double &obj1) {
     //if(isInitialized())this->deallocate();//TODO
     //else {bigValue=0; smallValue=0;}
     value=obj1;
@@ -188,7 +188,7 @@ class AdvancedDouble_BigNum{
     bigValue=0;
     createBigNum(val2);
   }
-  AdvancedDouble_BigNum(double val){
+  AdvancedDouble_BigNum(long double val){
     bigValue=0;
     createBigNum(val);
   }
@@ -210,7 +210,7 @@ class AdvancedDouble_BigNum{
     createBigNum();
     mpf_set(*bigValue, val2);
   }
-  void createBigNum(double val2){
+  void createBigNum(long double val2){
     mpf_t op2; mpf_init2(op2,g_bignumprecision); mpf_set_d(op2, val2);
     createBigNum(op2);
     mpf_clear(op2);
@@ -243,8 +243,8 @@ class AdvancedDouble_BigNum{
     mpf_mul(*(res.bigValue),*(this->bigValue), *(obj1.bigValue));
     return res;
   }
-  AdvancedDouble_BigNum operator*(const double &obj1_double) const {
-    const AdvancedDouble_BigNum obj1(obj1_double);
+  AdvancedDouble_BigNum operator*(const long double &obj1_long_double) const {
+    const AdvancedDouble_BigNum obj1(obj1_long_double);
     AdvancedDouble_BigNum res;
     res.createBigNum();
     mpf_mul(*(res.bigValue),*(this->bigValue), *(obj1.bigValue));
@@ -256,8 +256,8 @@ class AdvancedDouble_BigNum{
     mpf_add(*(res.bigValue),*(this->bigValue), *(obj1.bigValue));
     return res;
   }
-  AdvancedDouble_BigNum operator+(const double &obj1_double) const {
-    const AdvancedDouble_BigNum obj1(obj1_double);
+  AdvancedDouble_BigNum operator+(const long double &obj1_long_double) const {
+    const AdvancedDouble_BigNum obj1(obj1_long_double);
     AdvancedDouble_BigNum res;
     res.createBigNum();
     mpf_add(*(res.bigValue),*(this->bigValue), *(obj1.bigValue));
@@ -269,8 +269,8 @@ class AdvancedDouble_BigNum{
     mpf_sub(*(res.bigValue),*(this->bigValue), *(obj1.bigValue));
     return res;
   }
-  AdvancedDouble_BigNum operator-(const double &obj1_double) const {
-    const AdvancedDouble_BigNum obj1(obj1_double);
+  AdvancedDouble_BigNum operator-(const long double &obj1_long_double) const {
+    const AdvancedDouble_BigNum obj1(obj1_long_double);
     AdvancedDouble_BigNum res;
     res.createBigNum();
     mpf_sub(*(res.bigValue),*(this->bigValue), *(obj1.bigValue));
@@ -282,8 +282,8 @@ class AdvancedDouble_BigNum{
     mpf_div(*(res.bigValue),*(this->bigValue), *(obj1.bigValue));
     return res;
   }
-  AdvancedDouble_BigNum operator/(const double &obj1_double) const {
-    const AdvancedDouble_BigNum obj1(obj1_double);
+  AdvancedDouble_BigNum operator/(const long double &obj1_long_double) const {
+    const AdvancedDouble_BigNum obj1(obj1_long_double);
     AdvancedDouble_BigNum res;
     res.createBigNum();
     mpf_div(*(res.bigValue),*(this->bigValue), *(obj1.bigValue));
@@ -292,43 +292,43 @@ class AdvancedDouble_BigNum{
   int compare(const AdvancedDouble_BigNum &obj1) const{
     return mpf_cmp(*(this->bigValue), *(obj1.bigValue));
   }
-  int compare(const double &obj1) const{
+  int compare(const long double &obj1) const{
     return mpf_cmp_d(*(this->bigValue), obj1);
   }
   bool operator==(const AdvancedDouble_BigNum &obj1) const {
     return compare(obj1)==0;
   }
-  bool operator==(const double &obj1) const {
+  bool operator==(const long double &obj1) const {
     return compare(obj1)==0;
   }
   bool operator!=(const AdvancedDouble_BigNum &obj1) const {
     return compare(obj1)!=0;
   }
-  bool operator!=(const double &obj1) const {
+  bool operator!=(const long double &obj1) const {
     return compare(obj1)!=0;
   }
   bool operator<(const AdvancedDouble_BigNum &obj1) const {
     return compare(obj1)<0;
   }
-  bool operator<(const double &obj1) const {
+  bool operator<(const long double &obj1) const {
     return compare(obj1)<0;
   }
   bool operator>(const AdvancedDouble_BigNum &obj1) const {
     return compare(obj1)>0;
   }
-  bool operator>(const double &obj1) const {
+  bool operator>(const long double &obj1) const {
     return compare(obj1)>0;
   }
   bool operator<=(const AdvancedDouble_BigNum &obj1) const {
     return compare(obj1)<=0;
   }
-  bool operator<=(const double &obj1) const {
+  bool operator<=(const long double &obj1) const {
     return compare(obj1)<=0;
   }
   bool operator>=(const AdvancedDouble_BigNum &obj1) const {
     return compare(obj1)>=0;
   }
-  bool operator>=(const double &obj1) const {
+  bool operator>=(const long double &obj1) const {
     return compare(obj1)>=0;
   }
   AdvancedDouble_BigNum& operator=(const AdvancedDouble_BigNum &obj1) {
@@ -338,7 +338,7 @@ class AdvancedDouble_BigNum{
     createBigNum(*(obj1.bigValue));
     return *this;
   }
-  AdvancedDouble_BigNum& operator=(const double &obj1) {
+  AdvancedDouble_BigNum& operator=(const long double &obj1) {
     //if(isInitialized())this->deallocate();//TODO
     //else {bigValue=0; smallValue=0;}
     createBigNum(obj1);
@@ -356,7 +356,7 @@ class AdvancedDouble_BigNumOptimized{
   AdvancedDouble_BigNumOptimized(mpf_t val2){
     mpf_init_set(bigValue, val2);
   }
-  AdvancedDouble_BigNumOptimized(double val){
+  AdvancedDouble_BigNumOptimized(long double val){
     mpf_init_set_d(bigValue, val);
   }
   AdvancedDouble_BigNumOptimized(const AdvancedDouble_BigNumOptimized &obj1) {
@@ -376,7 +376,7 @@ class AdvancedDouble_BigNumOptimized{
     createBigNum();
     mpf_set(bigValue, val2);
     }
-    void createBigNum(double val2){
+    void createBigNum(long double val2){
     mpf_init2(bigValue,g_bignumprecision); mpf_set_d(bigValue, val2);
     }*/
   void deallocate(){
@@ -411,8 +411,8 @@ class AdvancedDouble_BigNumOptimized{
     mpf_mul(res.bigValue,this->bigValue, obj1.bigValue);
     return res;
   }
-  AdvancedDouble_BigNumOptimized operator*(const double &obj1_double) const {
-    AdvancedDouble_BigNumOptimized res(obj1_double);
+  AdvancedDouble_BigNumOptimized operator*(const long double &obj1_long_double) const {
+    AdvancedDouble_BigNumOptimized res(obj1_long_double);
     mpf_mul(res.bigValue,this->bigValue, res.bigValue);
     return res;
   }
@@ -421,8 +421,8 @@ class AdvancedDouble_BigNumOptimized{
     mpf_add(res.bigValue,this->bigValue, obj1.bigValue);
     return res;
   }
-  AdvancedDouble_BigNumOptimized operator+(const double &obj1_double) const {
-    AdvancedDouble_BigNumOptimized res(obj1_double);
+  AdvancedDouble_BigNumOptimized operator+(const long double &obj1_long_double) const {
+    AdvancedDouble_BigNumOptimized res(obj1_long_double);
     mpf_add(res.bigValue,this->bigValue, res.bigValue);
     return res;
   }
@@ -431,8 +431,8 @@ class AdvancedDouble_BigNumOptimized{
     mpf_sub(res.bigValue,this->bigValue, obj1.bigValue);
     return res;
   }
-  AdvancedDouble_BigNumOptimized operator-(const double &obj1_double) const {
-    AdvancedDouble_BigNumOptimized res(obj1_double);
+  AdvancedDouble_BigNumOptimized operator-(const long double &obj1_long_double) const {
+    AdvancedDouble_BigNumOptimized res(obj1_long_double);
     mpf_sub(res.bigValue,this->bigValue, res.bigValue);
     return res;
   }
@@ -441,8 +441,8 @@ class AdvancedDouble_BigNumOptimized{
     mpf_div(res.bigValue,this->bigValue, obj1.bigValue);
     return res;
   }
-  AdvancedDouble_BigNumOptimized operator/(const double &obj1_double) const {
-    AdvancedDouble_BigNumOptimized res(obj1_double);
+  AdvancedDouble_BigNumOptimized operator/(const long double &obj1_long_double) const {
+    AdvancedDouble_BigNumOptimized res(obj1_long_double);
     mpf_div(res.bigValue,this->bigValue, res.bigValue);
     return res;
   }
@@ -450,80 +450,80 @@ class AdvancedDouble_BigNumOptimized{
   /*int compare(const AdvancedDouble_BigNumOptimized &obj1) const{
     return mpf_cmp(this->bigValue, obj1.bigValue);
     }
-    int compare(const double &obj1) const{
+    int compare(const long double &obj1) const{
     return mpf_cmp_d(this->bigValue, obj1);
     }
     bool operator==(const AdvancedDouble_BigNumOptimized &obj1) const {
     return compare(obj1)==0;
     }
-    bool operator==(const double &obj1) const {
+    bool operator==(const long double &obj1) const {
     return compare(obj1)==0;
     }
     bool operator!=(const AdvancedDouble_BigNumOptimized &obj1) const {
     return compare(obj1)!=0;
     }
-    bool operator!=(const double &obj1) const {
+    bool operator!=(const long double &obj1) const {
     return compare(obj1)!=0;
     }
     bool operator<(const AdvancedDouble_BigNumOptimized &obj1) const {
     return compare(obj1)<0;
     }
-    bool operator<(const double &obj1) const {
+    bool operator<(const long double &obj1) const {
     return compare(obj1)<0;
     }
     bool operator>(const AdvancedDouble_BigNumOptimized &obj1) const {
     return compare(obj1)>0;
     }
-    bool operator>(const double &obj1) const {
+    bool operator>(const long double &obj1) const {
     return compare(obj1)>0;
     }
     bool operator<=(const AdvancedDouble_BigNumOptimized &obj1) const {
     return compare(obj1)<=0;
     }
-    bool operator<=(const double &obj1) const {
+    bool operator<=(const long double &obj1) const {
     return compare(obj1)<=0;
     }
     bool operator>=(const AdvancedDouble_BigNumOptimized &obj1) const {
     return compare(obj1)>=0;
     }
-    bool operator>=(const double &obj1) const {
+    bool operator>=(const long double &obj1) const {
     return compare(obj1)>=0;
     }*/
 
   bool operator==(const AdvancedDouble_BigNumOptimized &obj1) const {
     return mpf_cmp(this->bigValue, obj1.bigValue)==0;
   }
-  bool operator==(const double &obj1) const {
+  bool operator==(const long double &obj1) const {
     return mpf_cmp_d(this->bigValue, obj1)==0;
   }
   bool operator!=(const AdvancedDouble_BigNumOptimized &obj1) const {
     return mpf_cmp(this->bigValue, obj1.bigValue)!=0;
   }
-  bool operator!=(const double &obj1) const {
+  bool operator!=(const long double &obj1) const {
     return mpf_cmp_d(this->bigValue, obj1)!=0;
   }
   bool operator<(const AdvancedDouble_BigNumOptimized &obj1) const {
     return mpf_cmp(this->bigValue, obj1.bigValue)<0;
   }
-  bool operator<(const double &obj1) const {
+  bool operator<(const long double &obj1) const {
     return mpf_cmp_d(this->bigValue, obj1)<0;
   }
   bool operator>(const AdvancedDouble_BigNumOptimized &obj1) const {
     return mpf_cmp(this->bigValue, obj1.bigValue)>0;
   }
-  bool operator>(const double &obj1) const {
+  bool operator>(const long double &obj1) const {
     return mpf_cmp_d(this->bigValue, obj1)>0;
   }
   bool operator<=(const AdvancedDouble_BigNumOptimized &obj1) const {
     return mpf_cmp(this->bigValue, obj1.bigValue)<=0;
   }
-  bool operator<=(const double &obj1) const {
+  bool operator<=(const long double &obj1) const {
     return mpf_cmp_d(this->bigValue, obj1)<=0;
   }
   bool operator>=(const AdvancedDouble_BigNumOptimized &obj1) const {
     return mpf_cmp(this->bigValue, obj1.bigValue)>=0;
   }
-  bool operator>=(const double &obj1) const {
+  bool operator>=(const long double &obj1) const {
     return mpf_cmp_d(this->bigValue, obj1)>=0;
   }
 
@@ -536,7 +536,7 @@ class AdvancedDouble_BigNumOptimized{
     mpf_set(bigValue, obj1.bigValue);
     return *this;
   }
-  AdvancedDouble_BigNumOptimized& operator=(const double &obj1) {
+  AdvancedDouble_BigNumOptimized& operator=(const long double &obj1) {
     //if(isInitialized())this->deallocate();//TODO
     //else {bigValue=0; smallValue=0;}
     //createBigNum(obj1);
@@ -552,11 +552,11 @@ class AdvancedDouble_BigNumOptimized{
 class AdvancedDouble_Hybrid{
  private: 
   mpf_t* bigValue;
-  double* smallValue;
-  char isBig;//'y' means it is already BigNum, 'n' means it is native double
+  long double* smallValue;
+  char isBig;//'y' means it is already BigNum, 'n' means it is native long double
  public:
   AdvancedDouble_Hybrid(){//if(verbose==1)printf("Default constructor called\n");
-    //this((double)0.0);
+    //this((long double)0.0);
     bigValue=0;smallValue=0;isBig='n';
     createDouble();			
   }
@@ -580,8 +580,8 @@ class AdvancedDouble_Hybrid{
     bigValue=0;smallValue=0;isBig='y';
     createBigNum(val2);	
   }
-  AdvancedDouble_Hybrid(double val2){
-    //if(verbose==1){cout<<"Constructor with input double val2="<<val2<<endl;}
+  AdvancedDouble_Hybrid(long double val2){
+    //if(verbose==1){cout<<"Constructor with input long double val2="<<val2<<endl;}
     bigValue=0;smallValue=0;isBig='n';
     createDouble(val2);	
   }
@@ -598,7 +598,7 @@ class AdvancedDouble_Hybrid{
     }
   }
   void createDouble(){
-    double val2 =0.0;
+    long double val2 =0.0;
     createDouble(val2);
   }
   void createBigNum(mpf_t val2){
@@ -618,7 +618,7 @@ class AdvancedDouble_Hybrid{
     mpf_set(*bigValue, val2);//value=val2;
     //mpf_clear(val2);//Do not un-comment this line, this line will cause errors
   }
-  void createDouble(double val2){
+  void createDouble(long double val2){
     //bigValue = 0;
     /*if(BIGNUM_ONLY==1){
       mpf_t op2; mpf_init2(op2,g_bignumprecision); mpf_set_d(op2, val2);
@@ -628,8 +628,8 @@ class AdvancedDouble_Hybrid{
       }*/
     if(bigValue!=0){ mpf_clear(*bigValue); delete bigValue; bigValue=0;}
     if(smallValue==0){
-      //if(verbose==1)printf("Allocation double for %f\n",val2);
-      smallValue = new double;
+      //if(verbose==1)printf("Allocation long double for %f\n",val2);
+      smallValue = new long double;
     }
     *smallValue = val2;
     isBig='n';
@@ -641,7 +641,7 @@ class AdvancedDouble_Hybrid{
     }
     else if(isBig=='n'){ 
       if(smallValue!=0){ 
-        //if(verbose==1) printf("Deallocation double for %f\n",*smallValue); 
+        //if(verbose==1) printf("Deallocation long double for %f\n",*smallValue); 
         delete(smallValue); smallValue=0;
       }
       isBig='X';}
@@ -665,21 +665,21 @@ class AdvancedDouble_Hybrid{
   void print()const{
     //if(isBig=='y') gmp_printf("fixed point mpf %.*Ff with %d digits\n", 5, *bigValue, 5);
     if(isBig=='y') gmp_printf("mpf %.*Ff", PRINT_DIGITS_AFTER_DECIMAL, *bigValue);
-    //else if(isBig=='n') printf("double %f", *smallValue);//TODO uncomment it
+    //else if(isBig=='n') printf("long double %f", *smallValue);//TODO uncomment it
     else if(isBig=='n') printf("%f", *smallValue);
     else printf("Unknown isBig = %c\n", isBig);
   }
   void printInt()const{
     //if(isBig=='y') gmp_printf("fixed point mpf %.*Ff with %d digits\n", 5, *bigValue, 5);
     if(isBig=='y') gmp_printf("mpf %.*Ff", 1, *bigValue);
-    //else if(isBig=='n') printf("double %f", *smallValue);//TODO uncomment it
+    //else if(isBig=='n') printf("long double %f", *smallValue);//TODO uncomment it
     else if(isBig=='n') printf("%d", (int)(*smallValue));
     else printf("Unknown isBig = %c\n", isBig);
   }
   void print(FILE* outFile)const{
     //if(isBig=='y') gmp_printf("fixed point mpf %.*Ff with %d digits\n", 5, *bigValue, 5);
     if(isBig=='y') gmp_fprintf(outFile, "%.*Ff", PRINT_DIGITS_AFTER_DECIMAL, *bigValue);
-    //else if(isBig=='n') printf("double %f", *smallValue);//TODO uncomment it
+    //else if(isBig=='n') printf("long double %f", *smallValue);//TODO uncomment it
     else if(isBig=='n') fprintf(outFile, "%f", *smallValue);
     else fprintf(outFile, "Unknown isBig = %c\n", isBig);
   }
@@ -714,7 +714,7 @@ class AdvancedDouble_Hybrid{
       }
       //case 4: this object is smallValue and obj2 is smallValue -- result can be smallValue or bigValue, we need to check
       else {
-        double a = (*(this->smallValue)) * (*(obj1.smallValue));
+        long double a = (*(this->smallValue)) * (*(obj1.smallValue));
         if(isfinite(a)){
           AdvancedDouble_Hybrid res;
           res.createDouble(a);
@@ -733,8 +733,8 @@ class AdvancedDouble_Hybrid{
       }
     }
   }
-  AdvancedDouble_Hybrid operator*(const double &obj1_double) const {
-    const AdvancedDouble_Hybrid obj1(obj1_double);
+  AdvancedDouble_Hybrid operator*(const long double &obj1_long_double) const {
+    const AdvancedDouble_Hybrid obj1(obj1_long_double);
 
     //case 2: this object is bigValue and obj1 is smallValue -- result is bigValue
     if(this->isBig=='y'){
@@ -747,7 +747,7 @@ class AdvancedDouble_Hybrid{
     }
     //case 4: this object is smallValue and obj2 is smallValue -- result can be smallValue or bigValue, we need to check
     else {
-      double a = (*(this->smallValue)) * (*(obj1.smallValue));
+      long double a = (*(this->smallValue)) * (*(obj1.smallValue));
       //check if a is finite
       if(isfinite(a)){
         AdvancedDouble_Hybrid res;
@@ -799,7 +799,7 @@ class AdvancedDouble_Hybrid{
       }
       //case 4: this object is smallValue and obj2 is smallValue -- result can be smallValue or bigValue, we need to check
       else{//if(verbose==1)printf("operator+ AdvancedDouble_Hybrid obj1 this->isBig=='n' && obj1.isBig=='n'\n");
-        double a = (*(this->smallValue)) + (*(obj1.smallValue));
+        long double a = (*(this->smallValue)) + (*(obj1.smallValue));
         //check if a is finite
         if(isfinite(a)){
           AdvancedDouble_Hybrid res;
@@ -821,8 +821,8 @@ class AdvancedDouble_Hybrid{
     }
   }
 
-  AdvancedDouble_Hybrid operator+(const double &obj1_double) const {
-    const AdvancedDouble_Hybrid obj1(obj1_double);
+  AdvancedDouble_Hybrid operator+(const long double &obj1_long_double) const {
+    const AdvancedDouble_Hybrid obj1(obj1_long_double);
 
     //case 2: this object is bigValue and obj1 is smallValue -- result is bigValue
     if(this->isBig=='y'){
@@ -835,7 +835,7 @@ class AdvancedDouble_Hybrid{
     }
     //case 4: this object is smallValue and obj2 is smallValue -- result can be smallValue or bigValue, we need to check
     else {
-      double a = (*(this->smallValue)) + (*(obj1.smallValue));
+      long double a = (*(this->smallValue)) + (*(obj1.smallValue));
       //check if a is finite
       if(isfinite(a)){
         AdvancedDouble_Hybrid res;
@@ -887,7 +887,7 @@ class AdvancedDouble_Hybrid{
       }
       //case 4: this object is smallValue and obj2 is smallValue -- result can be smallValue or bigValue, we need to check
       else{
-        double a = (*(this->smallValue)) - (*(obj1.smallValue));
+        long double a = (*(this->smallValue)) - (*(obj1.smallValue));
         //check if a is finite
         if(isfinite(a)){
           AdvancedDouble_Hybrid res;
@@ -908,8 +908,8 @@ class AdvancedDouble_Hybrid{
       }
     }
   }
-  AdvancedDouble_Hybrid operator-(const double &obj1_double) const {
-    const AdvancedDouble_Hybrid obj1(obj1_double);
+  AdvancedDouble_Hybrid operator-(const long double &obj1_long_double) const {
+    const AdvancedDouble_Hybrid obj1(obj1_long_double);
 
     //case 2: this object is bigValue and obj1 is smallValue -- result is bigValue
     if(this->isBig=='y'){
@@ -922,7 +922,7 @@ class AdvancedDouble_Hybrid{
     }
     //case 4: this object is smallValue and obj2 is smallValue -- result can be smallValue or bigValue, we need to check
     else{
-      double a = (*(this->smallValue)) - (*(obj1.smallValue));
+      long double a = (*(this->smallValue)) - (*(obj1.smallValue));
       //check if a is finite
       if(isfinite(a)){
         AdvancedDouble_Hybrid res;
@@ -973,7 +973,7 @@ class AdvancedDouble_Hybrid{
       }
       //case 4: this object is smallValue and obj2 is smallValue -- result can be smallValue or bigValue, we need to check
       else{
-        double a = (*(this->smallValue)) / (*(obj1.smallValue));
+        long double a = (*(this->smallValue)) / (*(obj1.smallValue));
         //check if a is finite
         if(isfinite(a)){
           AdvancedDouble_Hybrid res;
@@ -994,8 +994,8 @@ class AdvancedDouble_Hybrid{
       }
     }
   }
-  AdvancedDouble_Hybrid operator/(const double &obj1_double) const {
-    const AdvancedDouble_Hybrid obj1(obj1_double);
+  AdvancedDouble_Hybrid operator/(const long double &obj1_long_double) const {
+    const AdvancedDouble_Hybrid obj1(obj1_long_double);
 
     //case 2: this object is bigValue and obj1 is smallValue -- result is bigValue
     if(this->isBig=='y'){
@@ -1008,7 +1008,7 @@ class AdvancedDouble_Hybrid{
     }
     //case 4: this object is smallValue and obj2 is smallValue -- result can be smallValue or bigValue, we need to check
     else{
-      double a = (*(this->smallValue)) / (*(obj1.smallValue));
+      long double a = (*(this->smallValue)) / (*(obj1.smallValue));
       //check if a is finite
       if(isfinite(a)){
         AdvancedDouble_Hybrid res;
@@ -1030,7 +1030,7 @@ class AdvancedDouble_Hybrid{
   }
   int compare(const AdvancedDouble_Hybrid &obj1) const{
     //Function: int mpf_cmp (mpf_t op1, mpf_t op2)
-    //Function: int mpf_cmp_d (mpf_t op1, double op2)
+    //Function: int mpf_cmp_d (mpf_t op1, long double op2)
     //case 1: this object is bigValue and obj1 is also bigValue 
     int result=100;
     if(this->isBig=='y'){
@@ -1055,7 +1055,7 @@ class AdvancedDouble_Hybrid{
       //case 4: this object is smallValue and obj2 is smallValue
       else{
         //return (*(this->smallValue)) - (*(obj1.smallValue));
-        double result1 = (*(this->smallValue)) - (*(obj1.smallValue));
+        long double result1 = (*(this->smallValue)) - (*(obj1.smallValue));
         if(result1==0) result=0;
         else if(result1<0) result=-1;
         else result=+1;
@@ -1064,9 +1064,9 @@ class AdvancedDouble_Hybrid{
     //printf("comparing: ");print();printf(" and ");obj1.print();printf(" and result is %d\n",result);
     return result;
   }
-  int compare(const double &obj1) const{
+  int compare(const long double &obj1) const{
     //Function: int mpf_cmp (mpf_t op1, mpf_t op2)
-    //Function: int mpf_cmp_d (mpf_t op1, double op2)
+    //Function: int mpf_cmp_d (mpf_t op1, long double op2)
     //case 2: this object is bigValue
     int result = 200;
     if(this->isBig=='y'){
@@ -1076,7 +1076,7 @@ class AdvancedDouble_Hybrid{
     //case 4: this object is smallValue
     else{
       //return (*(this->smallValue)) - obj1;
-      double result1 = (*(this->smallValue)) - obj1;
+      long double result1 = (*(this->smallValue)) - obj1;
       if(result1==0.0) result=0;
       else if(result1<0.0) result=-1;
       else result=+1;
@@ -1088,37 +1088,37 @@ class AdvancedDouble_Hybrid{
   bool operator==(const AdvancedDouble_Hybrid &obj1) const {
     return compare(obj1)==0;
   }
-  bool operator==(const double &obj1) const {
+  bool operator==(const long double &obj1) const {
     return compare(obj1)==0;
   }
   bool operator!=(const AdvancedDouble_Hybrid &obj1) const {
     return compare(obj1)!=0;
   }
-  bool operator!=(const double &obj1) const {
+  bool operator!=(const long double &obj1) const {
     return compare(obj1)!=0;
   }
   bool operator<(const AdvancedDouble_Hybrid &obj1) const {
     return compare(obj1)<0;
   }
-  bool operator<(const double &obj1) const {
+  bool operator<(const long double &obj1) const {
     return compare(obj1)<0;
   }
   bool operator>(const AdvancedDouble_Hybrid &obj1) const {
     return compare(obj1)>0;
   }
-  bool operator>(const double &obj1) const {
+  bool operator>(const long double &obj1) const {
     return compare(obj1)>0;
   }
   bool operator<=(const AdvancedDouble_Hybrid &obj1) const {
     return compare(obj1)<=0;
   }
-  bool operator<=(const double &obj1) const {
+  bool operator<=(const long double &obj1) const {
     return compare(obj1)<=0;
   }
   bool operator>=(const AdvancedDouble_Hybrid &obj1) const {
     return compare(obj1)>=0;
   }
-  bool operator>=(const double &obj1) const {
+  bool operator>=(const long double &obj1) const {
     return compare(obj1)>=0;
   }
 
@@ -1133,7 +1133,7 @@ class AdvancedDouble_Hybrid{
     else if(obj1.isBig=='y'){isBig='y'; createBigNum(*(obj1.bigValue));}
     return *this;
   }
-  AdvancedDouble_Hybrid& operator=(const double &obj1) {
+  AdvancedDouble_Hybrid& operator=(const long double &obj1) {
     //if(verbose==1){ cout<<"operator= called: obj1="<<obj1;cout<<", this=";this->print();cout<<endl;}
     //printf("operator overload= starts\n");obj1.print();//printf("operator overload= ends\n");
     //if(this==&obj1) return *this;

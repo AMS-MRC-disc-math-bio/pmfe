@@ -3,14 +3,14 @@
 
 #include "data.h"
 
-extern float *V; 
-extern float *W; 
-extern float *VBI; 
-extern float *VM; 
-extern float **WM; 
-extern float **WMPrime; 
+extern long double *V; 
+extern long double *W; 
+extern long double *VBI; 
+extern long double *VM; 
+extern long double **WM; 
+extern long double **WMPrime; 
 extern int *indx; 
-extern float **PP; 
+extern long double **PP; 
 
 #define V(i,j) V[indx[j]+i]
 #define VM(i,j) VM[indx[j]+i]
@@ -28,20 +28,20 @@ extern const float RT_;
 #ifdef __cplusplus
 extern "C" {
 #endif
-  float Ed3(int i, int j, int k);
-  float Ed5(int i, int j, int k);
-  float auPenalty(int i, int j);
+  long double Ed3(int i, int j, int k);
+  long double Ed5(int i, int j, int k);
+  long double auPenalty(int i, int j);
 
 #define Ec multConst[1]
 #define Eb multConst[2]
 #define Ea multConst[0] 
 
-  float eS(int i, int j);
-  float eH(int i, int j);
-  float eL(int i, int j, int ip, int jp);
-  float eL1(int i, int j, int ip, int jp);
-  float Estackm(int i, int j);
-  float Estacke(int i, int j);
+  long double eS(int i, int j);
+  long double eH(int i, int j);
+  long double eL(int i, int j, int ip, int jp);
+  long double eL1(int i, int j, int ip, int jp);
+  long double Estackm(int i, int j);
+  long double Estacke(int i, int j);
 
   void create_tables(int len);
   void init_tables(int len);

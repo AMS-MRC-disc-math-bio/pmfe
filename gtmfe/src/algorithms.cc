@@ -71,9 +71,9 @@ void prefilter(int len, int prefilter1, int prefilter2) {
   free(in);
 }
 
-float calcVBI(int i, int j) {
+long double calcVBI(int i, int j) {
   int p=0, q=0;
-  float VBIij = INFINITY;
+  long double VBIij = INFINITY;
 
   for (p = i+1; p <= MIN(j-2-TURN,i+MAXLOOP+1) ; p++) {
     int minq = j-i+p-MAXLOOP-2;
@@ -83,7 +83,7 @@ float calcVBI(int i, int j) {
     for (q = minq; q <= maxq; q++) {
       if (PP[p][q]==0) continue;
       if (!canILoop(i,j,p,q)) continue;
-      std::vector<float> vals;
+      std::vector<long double> vals;
       vals.push_back(eL(i, j, p, q) + V(p,q));
       vals.push_back(VBIij);
       VBIij = *std::min_element(vals.begin(), vals.end());
@@ -93,9 +93,9 @@ float calcVBI(int i, int j) {
   return VBIij;
 }
 
-float calcVBI1(int i, int j) {
+long double calcVBI1(int i, int j) {
   int p=0, q=0;
-  float VBIij = INFINITY;
+  long double VBIij = INFINITY;
 
   for (p = i+1; p <= MIN(j-2-TURN,i+MAXLOOP+1) ; p++) {
     int minq = j-i+p-MAXLOOP-2;
@@ -105,7 +105,7 @@ float calcVBI1(int i, int j) {
     for (q = minq; q <= maxq; q++) {
       if (PP[p][q]==0) continue;
       if (!canILoop(i,j,p,q)) continue;
-      std::vector<float> vals;
+      std::vector<long double> vals;
       vals.push_back(eL1(i, j, p, q) + V(p,q));
       vals.push_back(VBIij);
       VBIij = *std::min_element(vals.begin(), vals.end());
@@ -115,16 +115,16 @@ float calcVBI1(int i, int j) {
   return VBIij;
 }
 
-float calcVBI2(int i, int j, int  len) {
+long double calcVBI2(int i, int j, int  len) {
   int d, ii, jj; 
-  float energy = INFINITY;
+  long double energy = INFINITY;
 
   for (d = j-i-3; d >= TURN+1 && d >= j-i-2-MAXLOOP; --d) 
     for (ii = i + 1; ii < j - d && ii <= len; ++ii)
     {    
       jj = d + ii;
       if (PP[ii][jj]==1) {
-        std::vector<float> vals;
+        std::vector<long double> vals;
         vals.push_back(energy);
         vals.push_back(eL1(i, j, ii, jj) + V(ii, jj));
         energy = *std::min_element(vals.begin(), vals.end());
@@ -134,7 +134,7 @@ float calcVBI2(int i, int j, int  len) {
   return energy;
 }
 
-float calculate(int len) { 
+long double calculate(int len) { 
   int b, i, j;
 #ifdef _OPENMP
   if (g_nthreads > 0) omp_set_num_threads(g_nthreads);
@@ -153,8 +153,8 @@ float calculate(int len) {
       j = i + b;
 
       if (PP[i][j] == 1) {
-        float eh = canHairpin(i,j)?eH(i,j):INFINITY; //hair pin
-        float es = canStack(i,j)?eS(i,j)+V(i+1,j-1):INFINITY; // stack
+        long double eh = canHairpin(i,j)?eH(i,j):INFINITY; //hair pin
+        long double es = canStack(i,j)?eS(i,j)+V(i+1,j-1):INFINITY; // stack
 
         // Internal Loop BEGIN
         if (g_unamode) 
@@ -164,21 +164,21 @@ float calculate(int len) {
         // Internal Loop END
 
         // Multi Loop BEGIN
-        float d3 = canSS(j-1)?Ed3(i,j,j-1):INFINITY;
-        float d5 = canSS(i+1)?Ed5(i,j,i+1):INFINITY;
+        long double d3 = canSS(j-1)?Ed3(i,j,j-1):INFINITY;
+        long double d5 = canSS(i+1)?Ed5(i,j,i+1):INFINITY;
 
         if (g_dangles == 2) { // -d2
-          std::vector<float> vals;
+          std::vector<long double> vals;
           vals.push_back(VM(i, j));
           vals.push_back(WMPrime[i+1][j-1] + d3 + d5 + auPenalty(i,j) + Ea + Eb);
           VM(i,j) = *std::min_element(vals.begin(), vals.end());
         } else if (g_dangles == 0) { // -d0
-          std::vector<float> vals;
+          std::vector<long double> vals;
           vals.push_back(VM(i,j));
           vals.push_back(WMPrime[i+1][j-1] + auPenalty(i,j) + Ea + Eb);
           VM(i,j) = *std::min_element(vals.begin(), vals.end());
         }	else { // default
-          std::vector<float> vals;
+          std::vector<long double> vals;
           vals.push_back(VM(i,j));
           vals.push_back(WMPrime[i+1][j-1] + auPenalty(i,j) + Ea + Eb);
           vals.push_back(WMPrime[i+2][j-1] + d5 + auPenalty(i,j) + Ea + Eb + Ec);
@@ -189,7 +189,7 @@ float calculate(int len) {
         VM(i,j) = canStack(i,j)?VM(i,j):INFINITY;
         // Multi Loop END
 
-        std::vector<float> vals;
+        std::vector<long double> vals;
         vals.push_back(eh);
         vals.push_back(es);
         vals.push_back(VBI(i,j));
@@ -203,41 +203,41 @@ float calculate(int len) {
       // Added auxillary storage WMPrime to speedup multiloop calculations
       int h;
       for (h = i+TURN+1 ; h <= j-TURN-2; h++) {
-        std::vector<float> vals;
+        std::vector<long double> vals;
         vals.push_back(WMPrime[i][j]);
         vals.push_back(WMU(i,h-1) + WML(h,j));
         WMPrime[i][j] = *std::min_element(vals.begin(), vals.end());
       }
 
       // WM begin
-      float newWM = INFINITY; 
+      long double newWM = INFINITY; 
 
       //ZS: This sum corresponds to when i,j are NOT paired with each other.
       //So we need to make sure only terms where i,j aren't pairing are considered.
       if (!forcePair(i,j)) {
-          std::vector<float> vals;
+          std::vector<long double> vals;
           vals.push_back(newWM);
           vals.push_back(WMPrime[i][j]);
           newWM = *std::min_element(vals.begin(), vals.end());
         }
 
       if (g_dangles == 2) {
-        float energy = V(i,j) + auPenalty(i,j) + Eb;
+        long double energy = V(i,j) + auPenalty(i,j) + Eb;
         energy += (i==1)?Ed3(j,i,len):Ed3(j,i,i-1);
         /*if (j<len)*/ energy += Ed5(j,i,j+1);
         if (canSS(i)&&canSS(j)){
-          std::vector<float> vals;
+          std::vector<long double> vals;
           vals.push_back(energy);
           vals.push_back(newWM);
           newWM = *std::min_element(vals.begin(), vals.end());
         }
       } else if (g_dangles == 0) {
-        std::vector<float> vals;
+        std::vector<long double> vals;
         vals.push_back(V(i,j) + auPenalty(i,j) + Eb);
         vals.push_back(newWM);
         newWM = *std::min_element(vals.begin(), vals.end());
       } else { // default
-        std::vector<float> vals;
+        std::vector<long double> vals;
         vals.push_back(newWM);
         vals.push_back(V(i,j) + auPenalty(i,j) + Eb);
 
@@ -253,7 +253,7 @@ float calculate(int len) {
         newWM = *std::min_element(vals.begin(), vals.end());
       }
       
-      std::vector<float> vals;
+      std::vector<long double> vals;
       vals.push_back(newWM);
 
       if (canSS(i))
@@ -272,19 +272,19 @@ float calculate(int len) {
   W[0] = 0;
   for (j = 1; j <= len; j++) {
     int i;
-    float Wj, Widjd, Wijd, Widj, Wij, Wim1;
+    long double Wj, Widjd, Wijd, Widj, Wij, Wim1;
     Wj = 0;
     for (i = 1; i < j-TURN; i++) {
       Wij = Widjd = Wijd = Widj = INFINITY;
       Wim1 = MIN(0, W[i-1]); 
 
       if (g_dangles == 2) { // -d2 option
-        float energy = V(i,j) +	 auPenalty(i,j) + Wim1;
+        long double energy = V(i,j) +	 auPenalty(i,j) + Wim1;
         if (i>1) energy +=  Ed3(j,i,i-1);
         if (j<len) energy += Ed5(j,i,j+1);
         Widjd = (canSS(i)&&canSS(j))? energy:Widjd;
 
-        std::vector<float> vals;
+        std::vector<long double> vals;
         vals.push_back(Wij);
         vals.push_back(Widjd);
         
@@ -297,7 +297,7 @@ float calculate(int len) {
         Wijd = canSS(j)?V(i,j-1) + auPenalty(i,j-1) + Ed5(j-1,i,j) + Wim1:INFINITY;
         Widjd = (canSS(i)&&canSS(j))?V(i+1,j-1) + auPenalty(i+1,j-1) + Ed3(j-1,i + 1,i) + Ed5(j-1,i+1,j) + Wim1:INFINITY;
 
-        std::vector<float> vals;
+        std::vector<long double> vals;
         vals.push_back(Wij);
         vals.push_back(Widj);
         vals.push_back(Wijd);
@@ -306,14 +306,14 @@ float calculate(int len) {
         Wij = *std::min_element(vals.begin(), vals.end());
       }
 
-      std::vector<float> vals;
+      std::vector<long double> vals;
       vals.push_back(Wj);
       vals.push_back(Wij);
 
       Wj = *std::min_element(vals.begin(), vals.end());
     }
 
-    std::vector<float> vals;
+    std::vector<long double> vals;
     vals.push_back(Wj);
     if (canSS(j))
       vals.push_back(W[j-1]);
@@ -334,7 +334,7 @@ float calculate(int len) {
   file = fopen("Eh.txt", "w");
   for (ii = 1; ii <= len; ++ii) {    
     for (jj = len; jj > ii; --jj) {
-      float eh = INFINITY;
+      long double eh = INFINITY;
       if (PP[ii][jj])	eh = eH(ii,jj);
       fprintf(file, "%d %d %d\n",ii,jj,eh>=INFINITY?INFINITY:eh);
     }
@@ -344,7 +344,7 @@ float calculate(int len) {
   file = fopen("Es.txt", "w");
   for (ii = 1; ii <= len; ++ii) {    
     for (jj = len; jj > ii; --jj) {
-      float es = INFINITY;
+      long double es = INFINITY;
       if (PP[ii][jj] && PP[ii+1][jj-1]) es = eS(ii,jj);
       fprintf(file, "%d %d %d\n",ii,jj,es>=INFINITY?INFINITY:es);
     }

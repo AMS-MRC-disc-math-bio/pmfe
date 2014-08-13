@@ -8,79 +8,79 @@
 #include "constants.h"
 #include "shapereader.h"
 
-float *V; 
-float *W; 
-float *VBI; 
-float *VM; 
-float **WM; 
-float **WMPrime; 
+long double *V; 
+long double *W; 
+long double *VBI; 
+long double *VM; 
+long double **WM; 
+long double **WMPrime; 
 int *indx; 
-float **PP; 
+long double **PP; 
 
 int alloc_flag = 0;
 const float RT = (0.00198721 * 310.15); //* 100.00);
 const float RT_ = (0.00198721 * 310.15);
 
 void create_tables(int len) {	
-  V = (float *) malloc(((len+1)*len/2 + 1) * sizeof(float));
+  V = (long double *) malloc(((len+1)*len/2 + 1) * sizeof(long double));
   if (V == NULL) {
     perror("Cannot allocate variable 'V'");
     exit(-1);
   }
 
   int i;
-  WM = (float **) malloc((len+1)* sizeof(float *));
+  WM = (long double **) malloc((len+1)* sizeof(long double *));
   if (WM == NULL) {
     perror("Cannot allocate variable 'WM'");
     exit(-1);
   }   
   for (i = 0; i <= len; i++) {
-    WM[i] = (float *)malloc((len+1)* sizeof(float));
+    WM[i] = (long double *)malloc((len+1)* sizeof(long double));
     if (WM[i] == NULL) {
       perror("Cannot allocate variable 'WM[i]'");
       exit(-1);
     }   
   }
 
-  PP = (float **) malloc((len+1)* sizeof(float *));
+  PP = (long double **) malloc((len+1)* sizeof(long double *));
   if (PP == NULL) {
     perror("Cannot allocate variable 'WM'");
     exit(-1);
   }   
   for (i = 0; i <= len; i++) {
-    PP[i] = (float *)malloc((len+1)* sizeof(float));
+    PP[i] = (long double *)malloc((len+1)* sizeof(long double));
     if (PP[i] == NULL) {
       perror("Cannot allocate variable 'WM[i]'");
       exit(-1);
     }   
   }
 
-  WMPrime = (float **) malloc((len+1)* sizeof(float *));
+  WMPrime = (long double **) malloc((len+1)* sizeof(long double *));
   if (WMPrime == NULL) {
     perror("Cannot allocate variable 'WM'");
     exit(-1);
   }   
   for (i = 0; i <= len; i++) {
-    WMPrime[i] = (float *)malloc((len+1)* sizeof(float));
+    WMPrime[i] = (long double *)malloc((len+1)* sizeof(long double));
     if (WMPrime[i] == NULL) {
       perror("Cannot allocate variable 'WM[i]'");
       exit(-1);
     }   
   }
 
-  VM = (float *) malloc(((len+1)*len/2 + 1) * sizeof(float));
+  VM = (long double *) malloc(((len+1)*len/2 + 1) * sizeof(long double));
   if (VM == NULL) {
     perror("Cannot allocate variable 'V'");
     exit(-1);
   }
 
-  VBI = (float *) malloc(((len+1)*len/2 + 1) * sizeof(float));
+  VBI = (long double *) malloc(((len+1)*len/2 + 1) * sizeof(long double));
   if (VBI == NULL) {
     perror("Cannot allocate variable 'V'");
     exit(-1);
   }
 
-  W = (float *) malloc((len+1) * sizeof(float));
+  W = (long double *) malloc((len+1) * sizeof(long double));
   if (W == NULL) {
     perror("Cannot allocate variable 'W'");
     exit(-1);
@@ -142,14 +142,14 @@ void free_tables(int len) {
 }
 
 
-float Ed3(int i, int j, int k) { return dangle[RNA[i]][RNA[j]][RNA[k]][1];}
-float Ed5(int i, int j, int k) { return dangle[RNA[i]][RNA[j]][RNA[k]][0]; }
-float auPenalty(int i, int j) { return auPen(RNA[i], RNA[j]);}
+long double Ed3(int i, int j, int k) { return dangle[RNA[i]][RNA[j]][RNA[k]][1];}
+long double Ed5(int i, int j, int k) { return dangle[RNA[i]][RNA[j]][RNA[k]][0]; }
+long double auPenalty(int i, int j) { return auPen(RNA[i], RNA[j]);}
 
-float eL1(int i, int j, int ip, int jp) {
-  float energy;
+long double eL1(int i, int j, int ip, int jp) {
+  long double energy;
   int size1, size2, size;
-  float loginc; /* SH: Originally unassiged, but needs to be set to 0 so it doesn't throw off later calculations. */
+  long double loginc; /* SH: Originally unassiged, but needs to be set to 0 so it doesn't throw off later calculations. */
   int lopsided; /* define the asymmetry of an interior loop */
 
   energy = INFINITY;
@@ -163,7 +163,7 @@ float eL1(int i, int j, int ip, int jp) {
   if (size1 == 0 || size2 == 0) {
     if (size > 30) {
       /* AM: Does not depend upon i and j and ip and jp - Stacking Energies */
-      loginc = prelog * log((float) size / 30.0);
+      loginc = prelog * log((long double) size / 30.0);
       energy = bulge[30] + eparam[2] + loginc + auPen(RNA[i], RNA[j])
         + auPen(RNA[ip], RNA[jp]);
     } else if (size <= 30 && size != 1) {
@@ -180,7 +180,7 @@ float eL1(int i, int j, int ip, int jp) {
     lopsided = abs(size1 - size2);
 
     if (size > 30) {
-      loginc = prelog * log((float) size / 30.0);
+      loginc = prelog * log((long double) size / 30.0);
 
       if (!((size1 == 1 || size2 == 1) && gail)) { /* normal internal loop with size > 30*/
 
@@ -217,10 +217,10 @@ float eL1(int i, int j, int ip, int jp) {
   return energy;
 }
 
-float eL(int i, int j, int ip, int jp) {
-  float energy;
+long double eL(int i, int j, int ip, int jp) {
+  long double energy;
   int size1, size2, size;
-  float loginc; /* SH: Originally unassiged, but needs to be set to 0 so it doesn't throw off later calculations. */
+  long double loginc; /* SH: Originally unassiged, but needs to be set to 0 so it doesn't throw off later calculations. */
   int lopsided; /* define the asymmetry of an interior loop */
 
   energy = INFINITY;
@@ -234,7 +234,7 @@ float eL(int i, int j, int ip, int jp) {
   if (size1 == 0 || size2 == 0) {
     if (size > 30) {
       /* AM: Does not depend upon i and j and ip and jp - Stacking Energies */
-      loginc = prelog * log((float) size / 30.0);
+      loginc = prelog * log((long double) size / 30.0);
       energy = bulge[30] + eparam[2] + loginc + auPen(RNA[i], RNA[j])
         + auPen(RNA[ip], RNA[jp]);
     } else if (size <= 30 && size != 1) {
@@ -251,7 +251,7 @@ float eL(int i, int j, int ip, int jp) {
     lopsided = abs(size1 - size2);
 
     if (size > 30) {
-      loginc = prelog * log((float) size / 30.0);
+      loginc = prelog * log((long double) size / 30.0);
 
       if (!((size1 == 1 || size2 == 1) && gail)) { /* normal internal loop with size > 30*/
 
@@ -289,21 +289,21 @@ float eL(int i, int j, int ip, int jp) {
   return energy;
 }
 
-float eH(int i, int j) {
+long double eH(int i, int j) {
   /*  Hairpin loop for all the bases between i and j */
   /*  size for size of the loop, energy is the result, loginc is for the extrapolation for loops bigger than 30 */
   int size;
-  float loginc;
-  float energy = INFINITY;
+  long double loginc;
+  long double energy = INFINITY;
   int key, index, count, kmult;
-  float tlink;
+  long double tlink;
 
   size = j - i - 1; /*  size is the number of bases in the loop, when the closing pair is excluded */
 
   /*  look in hairpin, and be careful that there is only 30 values */
 
   if (size > 30) {
-    loginc = prelog * log(((float) size) / 30.0);
+    loginc = prelog * log(((long double) size) / 30.0);
     energy = hairpin[30] + loginc + tstkh[fourBaseIndex(RNA[i], RNA[j],
                                                         RNA[i + 1], RNA[j - 1])] + eparam[4]; /* size penalty + terminal mismatch stacking energy*/
   }
@@ -391,8 +391,8 @@ float eH(int i, int j) {
   return energy;
 }
 
-float eS(int i, int j) {
-  float energy;
+long double eS(int i, int j) {
+  long double energy;
   /*  not sure about eparam[1], come from MFold.. = 0 */
   energy = stack[fourBaseIndex(RNA[i], RNA[j], RNA[i+1], RNA[j-1])] + eparam[1] 
     + getShapeEnergy(i) + getShapeEnergy(j) + getShapeEnergy(i+1) + getShapeEnergy(j-1) ;
@@ -400,10 +400,10 @@ float eS(int i, int j) {
   return energy;
 }
 
-float Estackm(int i, int j) {
+long double Estackm(int i, int j) {
   return tstackm[RNA[i]][RNA[j]][RNA[i + 1]][RNA[j - 1]];
 }
 
-float Estacke(int i, int j) {
+long double Estacke(int i, int j) {
   return tstacke[RNA[i]][RNA[j]][RNA[i + 1]][RNA[j - 1]];
 }
