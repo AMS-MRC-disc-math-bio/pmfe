@@ -16,13 +16,6 @@ def main(argv):
     sagefile = os.path.splitext(seqfile)[0] + ".sage"
     verbose = args.verbose
 
-    logger = logging.getLogger()
-    if verbose:
-        logger.setLevel(logging.DEBUG)
-    else:
-        logger.setLevel(logging.INFO)
-
-
     paramdir = "Turner99"
 
     structdir = os.path.splitext(seqfile)[0]
@@ -31,6 +24,15 @@ def main(argv):
     except OSError:
         if not os.path.isdir(structdir):
             raise
+
+    run_iB4e(seqfile, sagefile, paramdir, structdir, verbose=False)
+
+def run_iB4e(structdir, sagefile, paramdir, structdir, verbose=False):
+    logger = logging.getLogger()
+    if verbose:
+        logger.setLevel(logging.DEBUG)
+    else:
+        logger.setLevel(logging.INFO)
 
     points = []
 
