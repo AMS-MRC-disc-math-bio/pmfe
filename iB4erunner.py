@@ -107,6 +107,9 @@ def run_iB4e(seqfile, sagefile, paramdir, structdir, verbose=False):
     # Now build a Sage file encoding the desired data
     build_sage_polytope_file(classical_scores_python, points, sagefile)
 
+    # Finally, return the points for testing
+    return points
+
 def build_sage_polytope_file(classical_scores, points, sagefile):
     templatefile = open("output.template")
     template = string.Template(templatefile.read())
