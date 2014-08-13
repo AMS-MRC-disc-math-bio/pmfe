@@ -206,19 +206,20 @@ int initMiscloopValues(const string& fileName, const string& dirpath, ParameterV
       eparam[7] = params.d * .30;
       eparam[8] = params.d * .30;
       eparam[9] = params.d * -5.00;
-      int table[4];
-      table[1] = 5;
-      table[2] = 6;
-      table[3] = 10;
-      for (int count = 1; count <= 3; count++) {
-        cf >> currentWord;
-        s = currentWord;
-        multConst[count - 1] = atof(s.c_str());
-        eparam[table[count]] = atof(s.c_str());
-      }
+
+      multConst[0] = eparam[5] = params.a;
+      multConst[1] = eparam[6] = params.c;
+      multConst[2] = eparam[10] = params.b;
+
+      // This loader code is really fiddly!
+      // It breaks if we don't read these three words from the file,
+      // even though we never use their values.
+      cf >> currentWord; // Original a
+      cf >> currentWord; // Original c
+      cf >> currentWord; // Original b
     }
     if (index == 5) {
-      int table[4];
+      float table[4];
       for (int count = 1; count <= 3; count++) {
         cf >> currentWord;
         s = currentWord;
