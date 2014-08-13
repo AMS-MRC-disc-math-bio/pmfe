@@ -13,8 +13,8 @@ def main(argv):
     parser.add_argument("-v", "--verbose", help="Output debugging information", action="store_true")
     parser.add_argument("-o", "--structure", nargs=1, help="File to store structure result")
     parser.add_argument("-a", help="Value of a (multibranch loop parameter)", type=float, default=3.4)
-    parser.add_argument("-b", help="Value of b (unpaired nucleotide parameter)", type=float, default=0.4)
-    parser.add_argument("-c", help="Value of c (branching helix parameter)", type=float, default=0.0)
+    parser.add_argument("-b", help="Value of b (unpaired nucleotide parameter)", type=float, default=0.0)
+    parser.add_argument("-c", help="Value of c (branching helix parameter)", type=float, default=0.4)
     parser.add_argument("-d", help="Value of d (dummy scaling parameter)", type=float, default=1)
 
     args = parser.parse_args()
@@ -42,7 +42,7 @@ def main(argv):
     print "a = {0}, b = {1}, c = {2}, d = {3}".format(params[0], params[1], params[2], params[3])
     print "x = {0}, y = {1}, z = {2}, w = {3}".format(result.multiloops, result.unpaired, result.branches, result.w)
 
-def run_gtmfe(seqfile, structtarget, paramdir, params=[3.4,0.4,0.0,1]):
+def run_gtmfe(seqfile, structtarget, paramdir, params=[3.4, 0.0, 0.4, 1]):
     result = gtmfe.mfe_main(seqfile, structtarget, paramdir, params[0], params[1], params[2], params[3])
     return result
 

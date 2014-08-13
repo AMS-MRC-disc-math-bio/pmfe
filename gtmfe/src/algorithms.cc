@@ -170,20 +170,20 @@ long double calculate(int len) {
         if (g_dangles == 2) { // -d2
           std::vector<long double> vals;
           vals.push_back(VM(i, j));
-          vals.push_back(WMPrime[i+1][j-1] + d3 + d5 + auPenalty(i,j) + Ea + Eb);
+          vals.push_back(WMPrime[i+1][j-1] + d3 + d5 + auPenalty(i,j) + multConst[0] + multConst[2]);
           VM(i,j) = *std::min_element(vals.begin(), vals.end());
         } else if (g_dangles == 0) { // -d0
           std::vector<long double> vals;
           vals.push_back(VM(i,j));
-          vals.push_back(WMPrime[i+1][j-1] + auPenalty(i,j) + Ea + Eb);
+          vals.push_back(WMPrime[i+1][j-1] + auPenalty(i,j) + multConst[0] + multConst[2]);
           VM(i,j) = *std::min_element(vals.begin(), vals.end());
         }	else { // default
           std::vector<long double> vals;
           vals.push_back(VM(i,j));
-          vals.push_back(WMPrime[i+1][j-1] + auPenalty(i,j) + Ea + Eb);
-          vals.push_back(WMPrime[i+2][j-1] + d5 + auPenalty(i,j) + Ea + Eb + Ec);
-          vals.push_back(WMPrime[i+1][j-2] + d3 + auPenalty(i,j) + Ea + Eb + Ec);
-          vals.push_back(WMPrime[i+2][j-2] + d3 + d5 + auPenalty(i,j) + Ea + Eb + 2*Ec);
+          vals.push_back(WMPrime[i+1][j-1] + auPenalty(i,j) + multConst[0] + multConst[2]);
+          vals.push_back(WMPrime[i+2][j-1] + d5 + auPenalty(i,j) + multConst[0] + multConst[2] + multConst[1]);
+          vals.push_back(WMPrime[i+1][j-2] + d3 + auPenalty(i,j) + multConst[0] + multConst[2] + multConst[1]);
+          vals.push_back(WMPrime[i+2][j-2] + d3 + d5 + auPenalty(i,j) + multConst[0] + multConst[2] + 2*multConst[1]);
           VM(i,j) = *std::min_element(vals.begin(), vals.end());
         }
         VM(i,j) = canStack(i,j)?VM(i,j):INFINITY;
@@ -222,7 +222,7 @@ long double calculate(int len) {
         }
 
       if (g_dangles == 2) {
-        long double energy = V(i,j) + auPenalty(i,j) + Eb;
+        long double energy = V(i,j) + auPenalty(i,j) + multConst[2];
         energy += (i==1)?Ed3(j,i,len):Ed3(j,i,i-1);
         /*if (j<len)*/ energy += Ed5(j,i,j+1);
         if (canSS(i)&&canSS(j)){
@@ -233,22 +233,22 @@ long double calculate(int len) {
         }
       } else if (g_dangles == 0) {
         std::vector<long double> vals;
-        vals.push_back(V(i,j) + auPenalty(i,j) + Eb);
+        vals.push_back(V(i,j) + auPenalty(i,j) + multConst[2]);
         vals.push_back(newWM);
         newWM = *std::min_element(vals.begin(), vals.end());
       } else { // default
         std::vector<long double> vals;
         vals.push_back(newWM);
-        vals.push_back(V(i,j) + auPenalty(i,j) + Eb);
+        vals.push_back(V(i,j) + auPenalty(i,j) + multConst[2]);
 
         if (canSS(i))
-          vals.push_back(V(i+1,j) + Ed3(j,i+1,i) + auPenalty(i+1,j) + Eb + Ec); //i dangle
+          vals.push_back(V(i+1,j) + Ed3(j,i+1,i) + auPenalty(i+1,j) + multConst[2] + multConst[1]); //i dangle
 
         if (canSS(j))
-          vals.push_back(V(i,j-1) + Ed5(j-1,i,j) + auPenalty(i,j-1) + Eb + Ec);  //j dangle
+          vals.push_back(V(i,j-1) + Ed5(j-1,i,j) + auPenalty(i,j-1) + multConst[2] + multConst[1]);  //j dangle
 
         if (canSS(i)&&canSS(j))
-          vals.push_back(V(i+1,j-1) + Ed3(j-1,i+1,i) + Ed5(j-1,i+1,j) + auPenalty(i+1,j-1) + Eb + 2*Ec); //i,j dangle
+          vals.push_back(V(i+1,j-1) + Ed3(j-1,i+1,i) + Ed5(j-1,i+1,j) + auPenalty(i+1,j-1) + multConst[2] + 2*multConst[1]); //i,j dangle
 
         newWM = *std::min_element(vals.begin(), vals.end());
       }
@@ -257,10 +257,10 @@ long double calculate(int len) {
       vals.push_back(newWM);
 
       if (canSS(i))
-        vals.push_back(WMU(i+1,j) + Ec); //i dangle
+        vals.push_back(WMU(i+1,j) + multConst[1]); //i dangle
 
       if (canSS(j))
-        vals.push_back(WML(i,j-1) + Ec); //j dangle
+        vals.push_back(WML(i,j-1) + multConst[1]); //j dangle
 
       newWM = *std::min_element(vals.begin(), vals.end());
 

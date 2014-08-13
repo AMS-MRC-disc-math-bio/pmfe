@@ -32,10 +32,6 @@ extern "C" {
   long double Ed5(int i, int j, int k);
   long double auPenalty(int i, int j);
 
-#define Ec multConst[1]
-#define Eb multConst[2]
-#define Ea multConst[0] 
-
   long double eS(int i, int j);
   long double eH(int i, int j);
   long double eL(int i, int j, int ip, int jp);

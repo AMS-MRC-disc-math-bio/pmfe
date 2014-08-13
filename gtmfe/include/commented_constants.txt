@@ -10,8 +10,8 @@ typedef struct{
 			Perhaps they should simply be local variables -Anderson*/
 	int mult_const[3];/*Multiloop constants
 		mult_const[0] = a, the penalty for starting a multiloop
-		mult_const[1] = c, the free base penalty for a multiloop
-		mult_const[2] = b, the helix penalty for a multiloop*/
+		mult_const[1] = b, the free base penalty for a multiloop
+		mult_const[2] = c, the helix penalty for a multiloop*/
 	int dangle[4][4][4][2]; /* Dangling energies */
 	int inter[31]; /* Size penalty for internal loops */
 	int bulge[31]; /* Size penalty for bulges*/
