@@ -2,6 +2,10 @@
 import os, sys, argparse, logging
 from gtmfe import gtmfe
 
+'''
+Wrapper script to run gtmfe folding algorithm.
+'''
+
 def main(argv):
     # Set up parameters
     parser = argparse.ArgumentParser(description="Run GTfold with specified a, b, c, d parameters")
@@ -33,11 +37,14 @@ def main(argv):
     except TypeError:
         structtarget = os.path.splitext(os.path.basename(seqfile))[0] + ".ct"
 
-    result = gtmfe.mfe_main(seqfile, structtarget, paramdir, params[0], params[1], params[2], params[3])
+    result = run_gtmfe(seqfile, structtarget, paramdir, params)    
 
     print "a = {0}, b = {1}, c = {2}, d = {3}".format(params[0], params[1], params[2], params[3])
     print "x = {0}, y = {1}, z = {2}, w = {3}".format(result.multiloops, result.unpaired, result.branches, result.w)
-    
+
+def run_gtmfe(seqfile, structtarget, paramdir, params=[3.4,0.4,0.0,1]):
+    result = gtmfe.mfe_main(seqfile, structtarget, paramdir, params[0], params[1], params[2], params[3])
+    return result
 
 # Voodoo to make Python run the program
 if __name__ == "__main__":
