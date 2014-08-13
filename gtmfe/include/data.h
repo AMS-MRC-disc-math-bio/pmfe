@@ -24,44 +24,44 @@
 
 #include "constants.h"
 
-extern double poppen[5];
-extern double maxpen;
-extern double eparam[11];
-extern double multConst[3]; /* for multiloop penalties. */
-extern double dangle[4][4][4][2]; /* Contain dangling energy values */
-extern double inter[31]; /* Contains size penalty for internal loops */
-extern double bulge[31]; /* Contain the size penalty for bulges */
-extern double hairpin[31]; /* Contains the size penalty for hairpin loops */
-extern double stack[256]; /* Stacking energy used to calculate energy of stack loops */
-extern double tstkh[256]; /* Terminal mismatch energy used in the calculations of hairpin loops */
-extern double tstki[256]; /* Terminal mismatch energy used in the calculations of internal loops */
-extern double tloop[maxtloop + 1][2];
+extern float poppen[5];
+extern float maxpen;
+extern float eparam[11];
+extern float multConst[3]; /* for multiloop penalties. */
+extern float dangle[4][4][4][2]; /* Contain dangling energy values */
+extern float inter[31]; /* Contains size penalty for internal loops */
+extern float bulge[31]; /* Contain the size penalty for bulges */
+extern float hairpin[31]; /* Contains the size penalty for hairpin loops */
+extern float stack[256]; /* Stacking energy used to calculate energy of stack loops */
+extern float tstkh[256]; /* Terminal mismatch energy used in the calculations of hairpin loops */
+extern float tstki[256]; /* Terminal mismatch energy used in the calculations of internal loops */
+extern float tloop[maxtloop + 1][2];
 extern int numoftloops;
-extern double iloop22[5][5][5][5][5][5][5][5]; /* 2*2 internal looops */
-extern double iloop21[5][5][5][5][5][5][5]; /* 2*1 internal loops */
-extern double iloop11[5][5][5][5][5][5]; /* 1*1 internal loops */
-extern double coax[6][6][6][6];
-extern double tstackcoax[6][6][6][6];
-extern double coaxstack[6][6][6][6];
-extern double tstack[6][6][6][6];
-extern double tstkm[6][6][6][6];
-extern double auend;
-extern double gubonus;
-extern double cint; /* cint, cslope, c3 are used for poly C hairpin loops */
-extern double cslope;
-extern double c3;
-extern double efn2a;
-extern double efn2b;
-extern double efn2c;
-extern double triloop[maxtloop + 1][2];
+extern float iloop22[5][5][5][5][5][5][5][5]; /* 2*2 internal looops */
+extern float iloop21[5][5][5][5][5][5][5]; /* 2*1 internal loops */
+extern float iloop11[5][5][5][5][5][5]; /* 1*1 internal loops */
+extern float coax[6][6][6][6];
+extern float tstackcoax[6][6][6][6];
+extern float coaxstack[6][6][6][6];
+extern float tstack[6][6][6][6];
+extern float tstkm[6][6][6][6];
+extern float auend;
+extern float gubonus;
+extern float cint; /* cint, cslope, c3 are used for poly C hairpin loops */
+extern float cslope;
+extern float c3;
+extern float efn2a;
+extern float efn2b;
+extern float efn2c;
+extern float triloop[maxtloop + 1][2];
 extern int numoftriloops;
-extern double init;
+extern float init;
 extern int gail; /* It is either 0 or 1. It is used for grosely asymmetric internal loops */
-extern double prelog;
+extern float prelog;
 
-extern double tstackm[5][5][6][6];
-extern double tstacke[5][5][6][6];
-extern double tstacki23[5][5][5][5];
+extern float tstackm[5][5][6][6];
+extern float tstacke[5][5][6][6];
+extern float tstacki23[5][5][5][5];
 
 
 #define fourBaseIndex(a, b, c, d) (((a) << 6) + ((b) << 4) + ((c) << 2) + (d))

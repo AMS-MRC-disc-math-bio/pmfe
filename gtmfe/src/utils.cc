@@ -4,10 +4,10 @@
 #include <time.h>
 #include <sys/time.h>
 
-double get_seconds() {
+float get_seconds() {
   struct timeval tv;
   gettimeofday(&tv, NULL);
-  return (double) tv.tv_sec + (double) tv.tv_usec / 1000000.0;
+  return (float) tv.tv_sec + (float) tv.tv_usec / 1000000.0;
 }
 
 int is_valid_base(char c) {	

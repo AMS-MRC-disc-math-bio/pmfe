@@ -10,7 +10,7 @@
 
 using namespace std;
 
-double* SHAPEarray;
+float* SHAPEarray;
 int* SHAPEenergies;
 
 //static bool SHAPE_ENABLED = false;
@@ -34,7 +34,7 @@ void free_shapeArray(int len){
 
 void print_shapeArray(int len){
   for(int i=0; i<len; i++){
-    printf("SHAPE value for position %d: %f, energy contribution: %f kcal/mol \n", i, SHAPEarray[i], (double)SHAPEenergies[i]/100);
+    printf("SHAPE value for position %d: %f, energy contribution: %f kcal/mol \n", i, SHAPEarray[i], (float)SHAPEenergies[i]/100);
   }
 
 }
@@ -42,7 +42,7 @@ void print_shapeArray(int len){
 void readSHAPEarray(const char* filename, int seqlength){
 
   ifstream infile(filename);
-  SHAPEarray = (double*)malloc(sizeof(double)*(seqlength+1));	
+  SHAPEarray = (float*)malloc(sizeof(float)*(seqlength+1));	
   SHAPEenergies = (int*)malloc(sizeof(int)*(seqlength+1));
 
   for(int i = 0; i<seqlength; i++){
@@ -52,7 +52,7 @@ void readSHAPEarray(const char* filename, int seqlength){
 
   string line;
   int position;
-  double  SHAPEnumber;
+  float  SHAPEnumber;
 	
   while(getline(infile,line)>0){
     if(sscanf(line.c_str(), "%d %lf", &position, &SHAPEnumber)==2){
@@ -79,22 +79,22 @@ int getShapeEnergy(int position){
   }
 }
 
-int calcShapeEnergy(double shapeNumber){
+int calcShapeEnergy(float shapeNumber){
   //ZS: This function returns the free energy contribution as an integer. 
-  if(shapeNumber<(double)0){
+  if(shapeNumber<(float)0){
     return 0;
   }
   else{
-    double energy = shapeModel(shapeNumber);
+    float energy = shapeModel(shapeNumber);
     return (int)floor(100.0*energy+ .5);
   }
 }
 
 
-double shapeModel(double SHAPE_value){
+float shapeModel(float SHAPE_value){
   //ZS: This function calculates the free energy contribution due to SHAPE. 
-  double m = 2.6;
-  double b = -0.8;
+  float m = 2.6;
+  float b = -0.8;
   return m*log(SHAPE_value+1)+b;
 }
 

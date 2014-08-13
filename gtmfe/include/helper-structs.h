@@ -3,11 +3,11 @@
 
 struct PolytopeVector {
   int multiloops, branches, unpaired;
-  double w, energy;
+  float w, energy;
 };
 
 struct ParameterVector {
-  double a, b, c, d;
+  float a, b, c, d;
 };
 
 #endif

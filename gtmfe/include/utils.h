@@ -11,7 +11,7 @@
 char baseToDigit(const char* base) ;
 unsigned char encode(char base);
 int isWatsonCrickBase(char base);
-double get_seconds();
+float get_seconds();
 
 #ifdef __cplusplus
 extern "C"

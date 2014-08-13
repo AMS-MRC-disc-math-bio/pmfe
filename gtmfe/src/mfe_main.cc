@@ -78,9 +78,9 @@ void free_fold(int len) {
 }
 
 
-PolytopeVector mfe_main(string seq_file, string output_file, string param_dir, double a, double b, double c, double d, int dangle_model) {
+PolytopeVector mfe_main(string seq_file, string output_file, string param_dir, float a, float b, float c, float d, int dangle_model) {
         std::string seq;
-        double energy;
+        float energy;
         ParameterVector params;
 	
         dangles = dangle_model;

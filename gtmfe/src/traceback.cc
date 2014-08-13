@@ -30,8 +30,8 @@
 #include "shapereader.h"
 #include "utils.h"
 
-double total_en = 0;
-double total_ex = 0;
+float total_en = 0;
+float total_ex = 0;
 int count_multiloops;
 int count_unpaired;
 int count_branches;
@@ -64,7 +64,7 @@ PolytopeVector trace(int len) {
 void traceW(int j) {
   int done = 0, i;
   int flag = 1;
-  double wim1;
+  float wim1;
 	
   if (j == 0 || j == 1)
     return;
@@ -77,7 +77,7 @@ void traceW(int j) {
     if ( wim1 != W[i-1] && canSSregion(0,i)) flag = 0;
 
     if (g_dangles == 2) {
-      double e_dangles = 0;
+      float e_dangles = 0;
       if (i>1) e_dangles +=  Ed3(j,i,i-1);
       if (j<length) e_dangles += Ed5(j,i,j+1);
       if ((W[j] == V(i,j) + auPenalty(i, j) + e_dangles + wim1 && canSS(i) && canSS(j) && canStack(i+1,j-1)) || forcePair(i+1,j-1)) { 
@@ -129,9 +129,9 @@ void traceW(int j) {
   return;
 }
 
-double traceV(int i, int j) {
-  double a, b, c, d;
-  double Vij;
+float traceV(int i, int j) {
+  float a, b, c, d;
+  float Vij;
   if (j-i < TURN)  return INFINITY;
 
   a = canHairpin(i,j)?eH(i, j):INFINITY;
@@ -155,7 +155,7 @@ double traceV(int i, int j) {
     traceVBI(i, j);
     return Vij;
   } else if (Vij == d) { 
-    double eVM = traceVM(i, j);
+    float eVM = traceVM(i, j);
     total_en += (Vij-eVM);
     return Vij;
   }
@@ -163,8 +163,8 @@ double traceV(int i, int j) {
   return 0;
 }
 
-double traceVBI(int i, int j) {
-  double VBIij;
+float traceVBI(int i, int j) {
+  float VBIij;
   int ip, jp;
   int ifinal, jfinal;
 
@@ -188,9 +188,9 @@ double traceVBI(int i, int j) {
   return traceV(ifinal, jfinal);
 }
 
-double traceVM(int i, int j) {
+float traceVM(int i, int j) {
   int done = 0;
-  double eVM = 0;
+  float eVM = 0;
 
   if (g_dangles == 2) {
     if (V(i,j) ==  WMPrime[i + 1][j - 1] + Ea + Eb + auPenalty(i,j) + Ed5(i,j,i + 1) + Ed3(i,j,j - 1) && canSS(i+1) && canSS(j-1) ) {
@@ -237,9 +237,9 @@ double traceVM(int i, int j) {
   return eVM;
 }
 
-double traceWMPrime(int i, int j) {
+float traceWMPrime(int i, int j) {
   int done=0, h;
-  double energy=0;
+  float energy=0;
 	
   for (h = i; h < j && !done; h++) {
     if (WM(i,h) + WM(h + 1,j) == WMPrime(i,j)) {
@@ -252,10 +252,10 @@ double traceWMPrime(int i, int j) {
   return energy;
 }
 
-double traceWM(int i, int j) {
+float traceWM(int i, int j) {
   assert(i < j);
   int done=0;
-  double eWM=0;
+  float eWM=0;
 
   if (!done && WM(i,j) == WMPrime[i][j]) {
     eWM += traceWMPrime(i,j);
@@ -264,7 +264,7 @@ double traceWM(int i, int j) {
 
   if (!done){
     if (g_dangles == 2) {
-      double energy = V(i,j) + auPenalty(i, j) + Eb;				
+      float energy = V(i,j) + auPenalty(i, j) + Eb;				
       energy += (i==1)?Ed3(j,i,length):Ed3(j,i,i-1);
       /*if (j<len)*/ energy += Ed5(j,i,j+1);
       if (WM(i,j) ==  energy && canSS(i) && canSS(j) && canStack(i+1,j-1)) {

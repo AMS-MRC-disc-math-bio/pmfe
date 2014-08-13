@@ -28,10 +28,10 @@
 PolytopeVector trace(int len);
 
 void traceW(int i);
-double traceV(int i, int j);
-double traceVM(int i, int j);
-double traceVBI(int i, int j);
-double traceWM(int i, int j);
-double traceWMPrime(int i, int j);
+float traceV(int i, int j);
+float traceVM(int i, int j);
+float traceVBI(int i, int j);
+float traceWM(int i, int j);
+float traceWMPrime(int i, int j);
 
 #endif

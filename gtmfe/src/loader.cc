@@ -44,22 +44,22 @@ using namespace std;
 
 std::string EN_DATADIR;
 
-double poppen[5];
-double maxpen;
-double eparam[11];
-double multConst[3]; /* for multiloop penalties. */
-double dangle[4][4][4][2]; /* Contain dangling energy values */
-double inter[31]; /* Contains size penalty for internal loops */
-double bulge[31]; /* Contain the size penalty for bulges */
-double hairpin[31]; /* Contains the size penalty for hairpin loops */
-double stack[256]; /* Stacking energy used to calculate energy of stack loops */
-double tstkh[256]; /* Terminal mismatch energy used in the calculations of hairpin loops */
-double tstki[256]; /* Terminal mismatch energy used in the calculations of internal loops */
-double tloop[maxtloop + 1][2];
+float poppen[5];
+float maxpen;
+float eparam[11];
+float multConst[3]; /* for multiloop penalties. */
+float dangle[4][4][4][2]; /* Contain dangling energy values */
+float inter[31]; /* Contains size penalty for internal loops */
+float bulge[31]; /* Contain the size penalty for bulges */
+float hairpin[31]; /* Contains the size penalty for hairpin loops */
+float stack[256]; /* Stacking energy used to calculate energy of stack loops */
+float tstkh[256]; /* Terminal mismatch energy used in the calculations of hairpin loops */
+float tstki[256]; /* Terminal mismatch energy used in the calculations of internal loops */
+float tloop[maxtloop + 1][2];
 int numoftloops;
-double iloop21[5][5][5][5][5][5][5]; /* 2*1 internal loops */
-double iloop22[5][5][5][5][5][5][5][5]; /* 2*2 internal looops */
-double iloop11[5][5][5][5][5][5]; /* 1*1 internal loops */
+float iloop21[5][5][5][5][5][5][5]; /* 2*1 internal loops */
+float iloop22[5][5][5][5][5][5][5][5]; /* 2*2 internal looops */
+float iloop11[5][5][5][5][5][5]; /* 1*1 internal loops */
 
 //int coax[6][6][6][6];
 //int tstackcoax[6][6][6][6];
@@ -67,24 +67,24 @@ double iloop11[5][5][5][5][5][5]; /* 1*1 internal loops */
 //int tstack[6][6][6][6];
 //int tstkm[6][6][6][6];
 
-double tstackm[5][5][6][6];
-double tstacke[5][5][6][6];
+float tstackm[5][5][6][6];
+float tstacke[5][5][6][6];
 
-double tstacki23[5][5][5][5];
+float tstacki23[5][5][5][5];
 
-double auend;
-double gubonus;
-double cint; /* cint, cslope, c3 are used for poly C hairpin loops */
-double cslope;
-double c3;
-double efn2a;
-double efn2b;
-double efn2c;
-double triloop[maxtloop + 1][2];
+float auend;
+float gubonus;
+float cint; /* cint, cslope, c3 are used for poly C hairpin loops */
+float cslope;
+float c3;
+float efn2a;
+float efn2b;
+float efn2c;
+float triloop[maxtloop + 1][2];
 int numoftriloops;
-double init;
+float init;
 int gail; /* It is either 0 or 1. It is used for grosely asymmetric internal loops */
-double prelog;
+float prelog;
 
 void readThermodynamicParameters(const char *userdatadir, ParameterVector params) {
   struct stat buf;
@@ -324,7 +324,7 @@ int initLoopValues( const string& fileName, const string& dirPath, ParameterVect
   char currentWord[256];
   string s;
   int index= 0;
-  double tempValue = 0;
+  float tempValue = 0;
 
   if (cf.fail()) {
     cerr << "File open failed " << filePath << endl;
@@ -772,7 +772,7 @@ int initInt21Values(const std::string& fileName, const std::string& dirPath, Par
         for (z = 1; z <=24 ; z++) {
           char value[32];
           ss >> value;
-          double temp = params.d * atof(value);
+          float temp = params.d * atof(value);
           a = base1[i];
           b = base2[i];
           f = base1[jj];
@@ -859,7 +859,7 @@ int initInt11Values(const std::string& fileName, const std::string& dirPath, Par
       for (int z=1; z <= 24; ++z) {
         char value[32];
         ss >> value;	
-        double temp = params.d * atof(value);
+        float temp = params.d * atof(value);
         a = base1[k];
         d = base2[k];
         c = base1[jj];

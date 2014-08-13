@@ -147,7 +147,7 @@ void print_gtfold_usage_help() {
 }
 
 
-void save_ct_file(string outputFile, string seq, double energy) {
+void save_ct_file(string outputFile, string seq, float energy) {
 
   ofstream outfile;
   outfile.open(outputFile.c_str());
@@ -162,7 +162,7 @@ void save_ct_file(string outputFile, string seq, double energy) {
   outfile.close();
 }
 
-void save_ct_file(string outputFile, string seq, double energy, int *structure1) {
+void save_ct_file(string outputFile, string seq, float energy, int *structure1) {
   ofstream outfile;
   outfile.open(outputFile.c_str());
 
