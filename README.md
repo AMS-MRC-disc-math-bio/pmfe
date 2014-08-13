@@ -53,6 +53,12 @@ To run the calculation on the sequence in `testseq.fasta`, type
 
 The result will be a file `testseq.sage` containing the required Sage commands.
 
+## Testing
+
+This project includes unit tests in the files `test_GTrunner.py`, `test_RNAscorer.py`, and `test_iB4erunner.py`.
+Simply run each of these scripts from your shell to test the functionality of the associated program.
+If any of the tests fail, please be sure your build of the C code in `iB4e/` and `gtmfe/` is up to date; if the tests continue to fail, please contact the author with information about your computer architecture, operating system, and compiler.
+
 ## License
 
 The source for iB4e-GTfold-parametrizer is released under the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
