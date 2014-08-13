@@ -118,7 +118,7 @@ def build_sage_polytope_file(classical_scores, points, sagefile):
 def score_parser(result):
     return [int(result.multiloops), int(result.unpaired), int(result.branches), result.w]
 
-def find_w(scores, energy, params=[10.1, -0.3, -0.3, 1]):
+def find_w(scores, energy, params=[3.4, 0.4, 0.0, 1]):
     if params[3] == 0:
         return 0
     else:
