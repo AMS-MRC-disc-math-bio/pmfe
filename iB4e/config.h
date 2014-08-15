@@ -35,7 +35,7 @@
   **  to be GMP_RATIONALS, GMP_INTS, or LONGLONG_INTS               **
   **                                                                **
   ********************************************************************/
-  #define NUMBER_TYPE LONGLONG_INTS
+  #define NUMBER_TYPE GMP_RATIONALS
 
 
 

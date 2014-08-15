@@ -1,13 +1,13 @@
 CC=g++
 CFLAGS=-c
-LDFLAGS=
+LDFLAGS=-lgmp
 SOURCES=main.cc BBpolytope.cc euclideanvector.cc faces.cc linalg.cc stack.cc
 OBJECTS=$(SOURCES:.cc=.o)
 EXECUTABLE=iB4e-rna
 
 all: $(SOURCES) $(EXECUTABLE)
 
-$(EXECUTABLE): $(OBJECTS) 
+$(EXECUTABLE): $(OBJECTS)
 	$(CC) $(LDFLAGS) $(OBJECTS) -o $@
 
 .cc.o:
