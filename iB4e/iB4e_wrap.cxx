@@ -3422,11 +3422,11 @@ namespace Swig {
 #define SWIGTYPE_p_BBPolytope swig_types[0]
 #define SWIGTYPE_p_EuclideanVector swig_types[1]
 #define SWIGTYPE_p_Face swig_types[2]
-#define SWIGTYPE_p_NUMBER swig_types[3]
-#define SWIGTYPE_p_Stack swig_types[4]
-#define SWIGTYPE_p_char swig_types[5]
-#define SWIGTYPE_p_int swig_types[6]
-#define SWIGTYPE_p_p_NUMBER swig_types[7]
+#define SWIGTYPE_p_Stack swig_types[3]
+#define SWIGTYPE_p_char swig_types[4]
+#define SWIGTYPE_p_int swig_types[5]
+#define SWIGTYPE_p_mpq_class swig_types[6]
+#define SWIGTYPE_p_p_mpq_class swig_types[7]
 #define SWIGTYPE_p_p_vertexnode swig_types[8]
 #define SWIGTYPE_p_vertexnode swig_types[9]
 static swig_type_info *swig_types[11];
@@ -3803,7 +3803,7 @@ fail:
 SWIGINTERN PyObject *_wrap_EuclideanVector_data_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   EuclideanVector *arg1 = (EuclideanVector *) 0 ;
-  NUMBER *arg2 = (NUMBER *) 0 ;
+  mpq_class *arg2 = (mpq_class *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   void *argp2 = 0 ;
@@ -3817,11 +3817,11 @@ SWIGINTERN PyObject *_wrap_EuclideanVector_data_set(PyObject *SWIGUNUSEDPARM(sel
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "EuclideanVector_data_set" "', argument " "1"" of type '" "EuclideanVector *""'"); 
   }
   arg1 = reinterpret_cast< EuclideanVector * >(argp1);
-  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_NUMBER, SWIG_POINTER_DISOWN |  0 );
+  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_mpq_class, SWIG_POINTER_DISOWN |  0 );
   if (!SWIG_IsOK(res2)) {
-    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "EuclideanVector_data_set" "', argument " "2"" of type '" "NUMBER *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "EuclideanVector_data_set" "', argument " "2"" of type '" "mpq_class *""'"); 
   }
-  arg2 = reinterpret_cast< NUMBER * >(argp2);
+  arg2 = reinterpret_cast< mpq_class * >(argp2);
   if (arg1) (arg1)->data = arg2;
   resultobj = SWIG_Py_Void();
   return resultobj;
@@ -3836,7 +3836,7 @@ SWIGINTERN PyObject *_wrap_EuclideanVector_data_get(PyObject *SWIGUNUSEDPARM(sel
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
-  NUMBER *result = 0 ;
+  mpq_class *result = 0 ;
   
   if (!PyArg_ParseTuple(args,(char *)"O:EuclideanVector_data_get",&obj0)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_EuclideanVector, 0 |  0 );
@@ -3844,8 +3844,8 @@ SWIGINTERN PyObject *_wrap_EuclideanVector_data_get(PyObject *SWIGUNUSEDPARM(sel
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "EuclideanVector_data_get" "', argument " "1"" of type '" "EuclideanVector *""'"); 
   }
   arg1 = reinterpret_cast< EuclideanVector * >(argp1);
-  result = (NUMBER *) ((arg1)->data);
-  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_NUMBER, 0 |  0 );
+  result = (mpq_class *) ((arg1)->data);
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_mpq_class, 0 |  0 );
   return resultobj;
 fail:
   return NULL;
@@ -4197,7 +4197,7 @@ fail:
 SWIGINTERN PyObject *_wrap_EuclideanVector_timesequals(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   EuclideanVector *arg1 = (EuclideanVector *) 0 ;
-  NUMBER arg2 ;
+  mpq_class arg2 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   void *argp2 ;
@@ -4212,14 +4212,14 @@ SWIGINTERN PyObject *_wrap_EuclideanVector_timesequals(PyObject *SWIGUNUSEDPARM(
   }
   arg1 = reinterpret_cast< EuclideanVector * >(argp1);
   {
-    res2 = SWIG_ConvertPtr(obj1, &argp2, SWIGTYPE_p_NUMBER,  0  | 0);
+    res2 = SWIG_ConvertPtr(obj1, &argp2, SWIGTYPE_p_mpq_class,  0  | 0);
     if (!SWIG_IsOK(res2)) {
-      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "EuclideanVector_timesequals" "', argument " "2"" of type '" "NUMBER""'"); 
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "EuclideanVector_timesequals" "', argument " "2"" of type '" "mpq_class""'"); 
     }  
     if (!argp2) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "EuclideanVector_timesequals" "', argument " "2"" of type '" "NUMBER""'");
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "EuclideanVector_timesequals" "', argument " "2"" of type '" "mpq_class""'");
     } else {
-      NUMBER * temp = reinterpret_cast< NUMBER * >(argp2);
+      mpq_class * temp = reinterpret_cast< mpq_class * >(argp2);
       arg2 = *temp;
       if (SWIG_IsNewObj(res2)) delete temp;
     }
@@ -4280,7 +4280,7 @@ SWIGINTERN PyObject *_wrap_dotproduct(PyObject *SWIGUNUSEDPARM(self), PyObject *
   int res2 = 0 ;
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
-  NUMBER result;
+  mpq_class result;
   
   if (!PyArg_ParseTuple(args,(char *)"OO:dotproduct",&obj0,&obj1)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_EuclideanVector, 0 |  0 );
@@ -4294,7 +4294,7 @@ SWIGINTERN PyObject *_wrap_dotproduct(PyObject *SWIGUNUSEDPARM(self), PyObject *
   }
   arg2 = reinterpret_cast< EuclideanVector * >(argp2);
   result = dotproduct(arg1,arg2);
-  resultobj = SWIG_NewPointerObj((new NUMBER(static_cast< const NUMBER& >(result))), SWIGTYPE_p_NUMBER, SWIG_POINTER_OWN |  0 );
+  resultobj = SWIG_NewPointerObj((new mpq_class(static_cast< const mpq_class& >(result))), SWIGTYPE_p_mpq_class, SWIG_POINTER_OWN |  0 );
   return resultobj;
 fail:
   return NULL;
@@ -4303,22 +4303,22 @@ fail:
 
 SWIGINTERN PyObject *_wrap_fourbyfourdet(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  NUMBER arg1 ;
-  NUMBER arg2 ;
-  NUMBER arg3 ;
-  NUMBER arg4 ;
-  NUMBER arg5 ;
-  NUMBER arg6 ;
-  NUMBER arg7 ;
-  NUMBER arg8 ;
-  NUMBER arg9 ;
-  NUMBER arg10 ;
-  NUMBER arg11 ;
-  NUMBER arg12 ;
-  NUMBER arg13 ;
-  NUMBER arg14 ;
-  NUMBER arg15 ;
-  NUMBER arg16 ;
+  mpq_class arg1 ;
+  mpq_class arg2 ;
+  mpq_class arg3 ;
+  mpq_class arg4 ;
+  mpq_class arg5 ;
+  mpq_class arg6 ;
+  mpq_class arg7 ;
+  mpq_class arg8 ;
+  mpq_class arg9 ;
+  mpq_class arg10 ;
+  mpq_class arg11 ;
+  mpq_class arg12 ;
+  mpq_class arg13 ;
+  mpq_class arg14 ;
+  mpq_class arg15 ;
+  mpq_class arg16 ;
   void *argp1 ;
   int res1 = 0 ;
   void *argp2 ;
@@ -4367,219 +4367,219 @@ SWIGINTERN PyObject *_wrap_fourbyfourdet(PyObject *SWIGUNUSEDPARM(self), PyObjec
   PyObject * obj13 = 0 ;
   PyObject * obj14 = 0 ;
   PyObject * obj15 = 0 ;
-  NUMBER result;
+  mpq_class result;
   
   if (!PyArg_ParseTuple(args,(char *)"OOOOOOOOOOOOOOOO:fourbyfourdet",&obj0,&obj1,&obj2,&obj3,&obj4,&obj5,&obj6,&obj7,&obj8,&obj9,&obj10,&obj11,&obj12,&obj13,&obj14,&obj15)) SWIG_fail;
   {
-    res1 = SWIG_ConvertPtr(obj0, &argp1, SWIGTYPE_p_NUMBER,  0  | 0);
+    res1 = SWIG_ConvertPtr(obj0, &argp1, SWIGTYPE_p_mpq_class,  0  | 0);
     if (!SWIG_IsOK(res1)) {
-      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "fourbyfourdet" "', argument " "1"" of type '" "NUMBER""'"); 
+      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "fourbyfourdet" "', argument " "1"" of type '" "mpq_class""'"); 
     }  
     if (!argp1) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "fourbyfourdet" "', argument " "1"" of type '" "NUMBER""'");
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "fourbyfourdet" "', argument " "1"" of type '" "mpq_class""'");
     } else {
-      NUMBER * temp = reinterpret_cast< NUMBER * >(argp1);
+      mpq_class * temp = reinterpret_cast< mpq_class * >(argp1);
       arg1 = *temp;
       if (SWIG_IsNewObj(res1)) delete temp;
     }
   }
   {
-    res2 = SWIG_ConvertPtr(obj1, &argp2, SWIGTYPE_p_NUMBER,  0  | 0);
+    res2 = SWIG_ConvertPtr(obj1, &argp2, SWIGTYPE_p_mpq_class,  0  | 0);
     if (!SWIG_IsOK(res2)) {
-      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "fourbyfourdet" "', argument " "2"" of type '" "NUMBER""'"); 
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "fourbyfourdet" "', argument " "2"" of type '" "mpq_class""'"); 
     }  
     if (!argp2) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "fourbyfourdet" "', argument " "2"" of type '" "NUMBER""'");
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "fourbyfourdet" "', argument " "2"" of type '" "mpq_class""'");
     } else {
-      NUMBER * temp = reinterpret_cast< NUMBER * >(argp2);
+      mpq_class * temp = reinterpret_cast< mpq_class * >(argp2);
       arg2 = *temp;
       if (SWIG_IsNewObj(res2)) delete temp;
     }
   }
   {
-    res3 = SWIG_ConvertPtr(obj2, &argp3, SWIGTYPE_p_NUMBER,  0  | 0);
+    res3 = SWIG_ConvertPtr(obj2, &argp3, SWIGTYPE_p_mpq_class,  0  | 0);
     if (!SWIG_IsOK(res3)) {
-      SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "fourbyfourdet" "', argument " "3"" of type '" "NUMBER""'"); 
+      SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "fourbyfourdet" "', argument " "3"" of type '" "mpq_class""'"); 
     }  
     if (!argp3) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "fourbyfourdet" "', argument " "3"" of type '" "NUMBER""'");
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "fourbyfourdet" "', argument " "3"" of type '" "mpq_class""'");
     } else {
-      NUMBER * temp = reinterpret_cast< NUMBER * >(argp3);
+      mpq_class * temp = reinterpret_cast< mpq_class * >(argp3);
       arg3 = *temp;
       if (SWIG_IsNewObj(res3)) delete temp;
     }
   }
   {
-    res4 = SWIG_ConvertPtr(obj3, &argp4, SWIGTYPE_p_NUMBER,  0  | 0);
+    res4 = SWIG_ConvertPtr(obj3, &argp4, SWIGTYPE_p_mpq_class,  0  | 0);
     if (!SWIG_IsOK(res4)) {
-      SWIG_exception_fail(SWIG_ArgError(res4), "in method '" "fourbyfourdet" "', argument " "4"" of type '" "NUMBER""'"); 
+      SWIG_exception_fail(SWIG_ArgError(res4), "in method '" "fourbyfourdet" "', argument " "4"" of type '" "mpq_class""'"); 
     }  
     if (!argp4) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "fourbyfourdet" "', argument " "4"" of type '" "NUMBER""'");
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "fourbyfourdet" "', argument " "4"" of type '" "mpq_class""'");
     } else {
-      NUMBER * temp = reinterpret_cast< NUMBER * >(argp4);
+      mpq_class * temp = reinterpret_cast< mpq_class * >(argp4);
       arg4 = *temp;
       if (SWIG_IsNewObj(res4)) delete temp;
     }
   }
   {
-    res5 = SWIG_ConvertPtr(obj4, &argp5, SWIGTYPE_p_NUMBER,  0  | 0);
+    res5 = SWIG_ConvertPtr(obj4, &argp5, SWIGTYPE_p_mpq_class,  0  | 0);
     if (!SWIG_IsOK(res5)) {
-      SWIG_exception_fail(SWIG_ArgError(res5), "in method '" "fourbyfourdet" "', argument " "5"" of type '" "NUMBER""'"); 
+      SWIG_exception_fail(SWIG_ArgError(res5), "in method '" "fourbyfourdet" "', argument " "5"" of type '" "mpq_class""'"); 
     }  
     if (!argp5) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "fourbyfourdet" "', argument " "5"" of type '" "NUMBER""'");
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "fourbyfourdet" "', argument " "5"" of type '" "mpq_class""'");
     } else {
-      NUMBER * temp = reinterpret_cast< NUMBER * >(argp5);
+      mpq_class * temp = reinterpret_cast< mpq_class * >(argp5);
       arg5 = *temp;
       if (SWIG_IsNewObj(res5)) delete temp;
     }
   }
   {
-    res6 = SWIG_ConvertPtr(obj5, &argp6, SWIGTYPE_p_NUMBER,  0  | 0);
+    res6 = SWIG_ConvertPtr(obj5, &argp6, SWIGTYPE_p_mpq_class,  0  | 0);
     if (!SWIG_IsOK(res6)) {
-      SWIG_exception_fail(SWIG_ArgError(res6), "in method '" "fourbyfourdet" "', argument " "6"" of type '" "NUMBER""'"); 
+      SWIG_exception_fail(SWIG_ArgError(res6), "in method '" "fourbyfourdet" "', argument " "6"" of type '" "mpq_class""'"); 
     }  
     if (!argp6) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "fourbyfourdet" "', argument " "6"" of type '" "NUMBER""'");
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "fourbyfourdet" "', argument " "6"" of type '" "mpq_class""'");
     } else {
-      NUMBER * temp = reinterpret_cast< NUMBER * >(argp6);
+      mpq_class * temp = reinterpret_cast< mpq_class * >(argp6);
       arg6 = *temp;
       if (SWIG_IsNewObj(res6)) delete temp;
     }
   }
   {
-    res7 = SWIG_ConvertPtr(obj6, &argp7, SWIGTYPE_p_NUMBER,  0  | 0);
+    res7 = SWIG_ConvertPtr(obj6, &argp7, SWIGTYPE_p_mpq_class,  0  | 0);
     if (!SWIG_IsOK(res7)) {
-      SWIG_exception_fail(SWIG_ArgError(res7), "in method '" "fourbyfourdet" "', argument " "7"" of type '" "NUMBER""'"); 
+      SWIG_exception_fail(SWIG_ArgError(res7), "in method '" "fourbyfourdet" "', argument " "7"" of type '" "mpq_class""'"); 
     }  
     if (!argp7) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "fourbyfourdet" "', argument " "7"" of type '" "NUMBER""'");
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "fourbyfourdet" "', argument " "7"" of type '" "mpq_class""'");
     } else {
-      NUMBER * temp = reinterpret_cast< NUMBER * >(argp7);
+      mpq_class * temp = reinterpret_cast< mpq_class * >(argp7);
       arg7 = *temp;
       if (SWIG_IsNewObj(res7)) delete temp;
     }
   }
   {
-    res8 = SWIG_ConvertPtr(obj7, &argp8, SWIGTYPE_p_NUMBER,  0  | 0);
+    res8 = SWIG_ConvertPtr(obj7, &argp8, SWIGTYPE_p_mpq_class,  0  | 0);
     if (!SWIG_IsOK(res8)) {
-      SWIG_exception_fail(SWIG_ArgError(res8), "in method '" "fourbyfourdet" "', argument " "8"" of type '" "NUMBER""'"); 
+      SWIG_exception_fail(SWIG_ArgError(res8), "in method '" "fourbyfourdet" "', argument " "8"" of type '" "mpq_class""'"); 
     }  
     if (!argp8) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "fourbyfourdet" "', argument " "8"" of type '" "NUMBER""'");
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "fourbyfourdet" "', argument " "8"" of type '" "mpq_class""'");
     } else {
-      NUMBER * temp = reinterpret_cast< NUMBER * >(argp8);
+      mpq_class * temp = reinterpret_cast< mpq_class * >(argp8);
       arg8 = *temp;
       if (SWIG_IsNewObj(res8)) delete temp;
     }
   }
   {
-    res9 = SWIG_ConvertPtr(obj8, &argp9, SWIGTYPE_p_NUMBER,  0  | 0);
+    res9 = SWIG_ConvertPtr(obj8, &argp9, SWIGTYPE_p_mpq_class,  0  | 0);
     if (!SWIG_IsOK(res9)) {
-      SWIG_exception_fail(SWIG_ArgError(res9), "in method '" "fourbyfourdet" "', argument " "9"" of type '" "NUMBER""'"); 
+      SWIG_exception_fail(SWIG_ArgError(res9), "in method '" "fourbyfourdet" "', argument " "9"" of type '" "mpq_class""'"); 
     }  
     if (!argp9) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "fourbyfourdet" "', argument " "9"" of type '" "NUMBER""'");
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "fourbyfourdet" "', argument " "9"" of type '" "mpq_class""'");
     } else {
-      NUMBER * temp = reinterpret_cast< NUMBER * >(argp9);
+      mpq_class * temp = reinterpret_cast< mpq_class * >(argp9);
       arg9 = *temp;
       if (SWIG_IsNewObj(res9)) delete temp;
     }
   }
   {
-    res10 = SWIG_ConvertPtr(obj9, &argp10, SWIGTYPE_p_NUMBER,  0  | 0);
+    res10 = SWIG_ConvertPtr(obj9, &argp10, SWIGTYPE_p_mpq_class,  0  | 0);
     if (!SWIG_IsOK(res10)) {
-      SWIG_exception_fail(SWIG_ArgError(res10), "in method '" "fourbyfourdet" "', argument " "10"" of type '" "NUMBER""'"); 
+      SWIG_exception_fail(SWIG_ArgError(res10), "in method '" "fourbyfourdet" "', argument " "10"" of type '" "mpq_class""'"); 
     }  
     if (!argp10) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "fourbyfourdet" "', argument " "10"" of type '" "NUMBER""'");
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "fourbyfourdet" "', argument " "10"" of type '" "mpq_class""'");
     } else {
-      NUMBER * temp = reinterpret_cast< NUMBER * >(argp10);
+      mpq_class * temp = reinterpret_cast< mpq_class * >(argp10);
       arg10 = *temp;
       if (SWIG_IsNewObj(res10)) delete temp;
     }
   }
   {
-    res11 = SWIG_ConvertPtr(obj10, &argp11, SWIGTYPE_p_NUMBER,  0  | 0);
+    res11 = SWIG_ConvertPtr(obj10, &argp11, SWIGTYPE_p_mpq_class,  0  | 0);
     if (!SWIG_IsOK(res11)) {
-      SWIG_exception_fail(SWIG_ArgError(res11), "in method '" "fourbyfourdet" "', argument " "11"" of type '" "NUMBER""'"); 
+      SWIG_exception_fail(SWIG_ArgError(res11), "in method '" "fourbyfourdet" "', argument " "11"" of type '" "mpq_class""'"); 
     }  
     if (!argp11) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "fourbyfourdet" "', argument " "11"" of type '" "NUMBER""'");
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "fourbyfourdet" "', argument " "11"" of type '" "mpq_class""'");
     } else {
-      NUMBER * temp = reinterpret_cast< NUMBER * >(argp11);
+      mpq_class * temp = reinterpret_cast< mpq_class * >(argp11);
       arg11 = *temp;
       if (SWIG_IsNewObj(res11)) delete temp;
     }
   }
   {
-    res12 = SWIG_ConvertPtr(obj11, &argp12, SWIGTYPE_p_NUMBER,  0  | 0);
+    res12 = SWIG_ConvertPtr(obj11, &argp12, SWIGTYPE_p_mpq_class,  0  | 0);
     if (!SWIG_IsOK(res12)) {
-      SWIG_exception_fail(SWIG_ArgError(res12), "in method '" "fourbyfourdet" "', argument " "12"" of type '" "NUMBER""'"); 
+      SWIG_exception_fail(SWIG_ArgError(res12), "in method '" "fourbyfourdet" "', argument " "12"" of type '" "mpq_class""'"); 
     }  
     if (!argp12) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "fourbyfourdet" "', argument " "12"" of type '" "NUMBER""'");
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "fourbyfourdet" "', argument " "12"" of type '" "mpq_class""'");
     } else {
-      NUMBER * temp = reinterpret_cast< NUMBER * >(argp12);
+      mpq_class * temp = reinterpret_cast< mpq_class * >(argp12);
       arg12 = *temp;
       if (SWIG_IsNewObj(res12)) delete temp;
     }
   }
   {
-    res13 = SWIG_ConvertPtr(obj12, &argp13, SWIGTYPE_p_NUMBER,  0  | 0);
+    res13 = SWIG_ConvertPtr(obj12, &argp13, SWIGTYPE_p_mpq_class,  0  | 0);
     if (!SWIG_IsOK(res13)) {
-      SWIG_exception_fail(SWIG_ArgError(res13), "in method '" "fourbyfourdet" "', argument " "13"" of type '" "NUMBER""'"); 
+      SWIG_exception_fail(SWIG_ArgError(res13), "in method '" "fourbyfourdet" "', argument " "13"" of type '" "mpq_class""'"); 
     }  
     if (!argp13) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "fourbyfourdet" "', argument " "13"" of type '" "NUMBER""'");
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "fourbyfourdet" "', argument " "13"" of type '" "mpq_class""'");
     } else {
-      NUMBER * temp = reinterpret_cast< NUMBER * >(argp13);
+      mpq_class * temp = reinterpret_cast< mpq_class * >(argp13);
       arg13 = *temp;
       if (SWIG_IsNewObj(res13)) delete temp;
     }
   }
   {
-    res14 = SWIG_ConvertPtr(obj13, &argp14, SWIGTYPE_p_NUMBER,  0  | 0);
+    res14 = SWIG_ConvertPtr(obj13, &argp14, SWIGTYPE_p_mpq_class,  0  | 0);
     if (!SWIG_IsOK(res14)) {
-      SWIG_exception_fail(SWIG_ArgError(res14), "in method '" "fourbyfourdet" "', argument " "14"" of type '" "NUMBER""'"); 
+      SWIG_exception_fail(SWIG_ArgError(res14), "in method '" "fourbyfourdet" "', argument " "14"" of type '" "mpq_class""'"); 
     }  
     if (!argp14) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "fourbyfourdet" "', argument " "14"" of type '" "NUMBER""'");
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "fourbyfourdet" "', argument " "14"" of type '" "mpq_class""'");
     } else {
-      NUMBER * temp = reinterpret_cast< NUMBER * >(argp14);
+      mpq_class * temp = reinterpret_cast< mpq_class * >(argp14);
       arg14 = *temp;
       if (SWIG_IsNewObj(res14)) delete temp;
     }
   }
   {
-    res15 = SWIG_ConvertPtr(obj14, &argp15, SWIGTYPE_p_NUMBER,  0  | 0);
+    res15 = SWIG_ConvertPtr(obj14, &argp15, SWIGTYPE_p_mpq_class,  0  | 0);
     if (!SWIG_IsOK(res15)) {
-      SWIG_exception_fail(SWIG_ArgError(res15), "in method '" "fourbyfourdet" "', argument " "15"" of type '" "NUMBER""'"); 
+      SWIG_exception_fail(SWIG_ArgError(res15), "in method '" "fourbyfourdet" "', argument " "15"" of type '" "mpq_class""'"); 
     }  
     if (!argp15) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "fourbyfourdet" "', argument " "15"" of type '" "NUMBER""'");
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "fourbyfourdet" "', argument " "15"" of type '" "mpq_class""'");
     } else {
-      NUMBER * temp = reinterpret_cast< NUMBER * >(argp15);
+      mpq_class * temp = reinterpret_cast< mpq_class * >(argp15);
       arg15 = *temp;
       if (SWIG_IsNewObj(res15)) delete temp;
     }
   }
   {
-    res16 = SWIG_ConvertPtr(obj15, &argp16, SWIGTYPE_p_NUMBER,  0  | 0);
+    res16 = SWIG_ConvertPtr(obj15, &argp16, SWIGTYPE_p_mpq_class,  0  | 0);
     if (!SWIG_IsOK(res16)) {
-      SWIG_exception_fail(SWIG_ArgError(res16), "in method '" "fourbyfourdet" "', argument " "16"" of type '" "NUMBER""'"); 
+      SWIG_exception_fail(SWIG_ArgError(res16), "in method '" "fourbyfourdet" "', argument " "16"" of type '" "mpq_class""'"); 
     }  
     if (!argp16) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "fourbyfourdet" "', argument " "16"" of type '" "NUMBER""'");
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "fourbyfourdet" "', argument " "16"" of type '" "mpq_class""'");
     } else {
-      NUMBER * temp = reinterpret_cast< NUMBER * >(argp16);
+      mpq_class * temp = reinterpret_cast< mpq_class * >(argp16);
       arg16 = *temp;
       if (SWIG_IsNewObj(res16)) delete temp;
     }
   }
   result = fourbyfourdet(arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9,arg10,arg11,arg12,arg13,arg14,arg15,arg16);
-  resultobj = SWIG_NewPointerObj((new NUMBER(static_cast< const NUMBER& >(result))), SWIGTYPE_p_NUMBER, SWIG_POINTER_OWN |  0 );
+  resultobj = SWIG_NewPointerObj((new mpq_class(static_cast< const mpq_class& >(result))), SWIGTYPE_p_mpq_class, SWIG_POINTER_OWN |  0 );
   return resultobj;
 fail:
   return NULL;
@@ -4588,7 +4588,7 @@ fail:
 
 SWIGINTERN PyObject *_wrap_gcd(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  NUMBER *arg1 = (NUMBER *) 0 ;
+  mpq_class *arg1 = (mpq_class *) 0 ;
   int arg2 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
@@ -4596,21 +4596,21 @@ SWIGINTERN PyObject *_wrap_gcd(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   int ecode2 = 0 ;
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
-  NUMBER result;
+  mpq_class result;
   
   if (!PyArg_ParseTuple(args,(char *)"OO:gcd",&obj0,&obj1)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_NUMBER, 0 |  0 );
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_mpq_class, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "gcd" "', argument " "1"" of type '" "NUMBER *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "gcd" "', argument " "1"" of type '" "mpq_class *""'"); 
   }
-  arg1 = reinterpret_cast< NUMBER * >(argp1);
+  arg1 = reinterpret_cast< mpq_class * >(argp1);
   ecode2 = SWIG_AsVal_int(obj1, &val2);
   if (!SWIG_IsOK(ecode2)) {
     SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "gcd" "', argument " "2"" of type '" "int""'");
   } 
   arg2 = static_cast< int >(val2);
   result = gcd(arg1,arg2);
-  resultobj = SWIG_NewPointerObj((new NUMBER(static_cast< const NUMBER& >(result))), SWIGTYPE_p_NUMBER, SWIG_POINTER_OWN |  0 );
+  resultobj = SWIG_NewPointerObj((new mpq_class(static_cast< const mpq_class& >(result))), SWIGTYPE_p_mpq_class, SWIG_POINTER_OWN |  0 );
   return resultobj;
 fail:
   return NULL;
@@ -4619,45 +4619,45 @@ fail:
 
 SWIGINTERN PyObject *_wrap_gcd2(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  NUMBER arg1 ;
-  NUMBER arg2 ;
+  mpq_class arg1 ;
+  mpq_class arg2 ;
   void *argp1 ;
   int res1 = 0 ;
   void *argp2 ;
   int res2 = 0 ;
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
-  NUMBER result;
+  mpq_class result;
   
   if (!PyArg_ParseTuple(args,(char *)"OO:gcd2",&obj0,&obj1)) SWIG_fail;
   {
-    res1 = SWIG_ConvertPtr(obj0, &argp1, SWIGTYPE_p_NUMBER,  0  | 0);
+    res1 = SWIG_ConvertPtr(obj0, &argp1, SWIGTYPE_p_mpq_class,  0  | 0);
     if (!SWIG_IsOK(res1)) {
-      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "gcd2" "', argument " "1"" of type '" "NUMBER""'"); 
+      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "gcd2" "', argument " "1"" of type '" "mpq_class""'"); 
     }  
     if (!argp1) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "gcd2" "', argument " "1"" of type '" "NUMBER""'");
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "gcd2" "', argument " "1"" of type '" "mpq_class""'");
     } else {
-      NUMBER * temp = reinterpret_cast< NUMBER * >(argp1);
+      mpq_class * temp = reinterpret_cast< mpq_class * >(argp1);
       arg1 = *temp;
       if (SWIG_IsNewObj(res1)) delete temp;
     }
   }
   {
-    res2 = SWIG_ConvertPtr(obj1, &argp2, SWIGTYPE_p_NUMBER,  0  | 0);
+    res2 = SWIG_ConvertPtr(obj1, &argp2, SWIGTYPE_p_mpq_class,  0  | 0);
     if (!SWIG_IsOK(res2)) {
-      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "gcd2" "', argument " "2"" of type '" "NUMBER""'"); 
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "gcd2" "', argument " "2"" of type '" "mpq_class""'"); 
     }  
     if (!argp2) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "gcd2" "', argument " "2"" of type '" "NUMBER""'");
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "gcd2" "', argument " "2"" of type '" "mpq_class""'");
     } else {
-      NUMBER * temp = reinterpret_cast< NUMBER * >(argp2);
+      mpq_class * temp = reinterpret_cast< mpq_class * >(argp2);
       arg2 = *temp;
       if (SWIG_IsNewObj(res2)) delete temp;
     }
   }
   result = gcd2(arg1,arg2);
-  resultobj = SWIG_NewPointerObj((new NUMBER(static_cast< const NUMBER& >(result))), SWIGTYPE_p_NUMBER, SWIG_POINTER_OWN |  0 );
+  resultobj = SWIG_NewPointerObj((new mpq_class(static_cast< const mpq_class& >(result))), SWIGTYPE_p_mpq_class, SWIG_POINTER_OWN |  0 );
   return resultobj;
 fail:
   return NULL;
@@ -5129,7 +5129,7 @@ fail:
 SWIGINTERN PyObject *_wrap_BBPolytope_hash(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   BBPolytope *arg1 = (BBPolytope *) 0 ;
-  NUMBER *arg2 = (NUMBER *) 0 ;
+  mpq_class *arg2 = (mpq_class *) 0 ;
   Face *arg3 = (Face *) 0 ;
   int arg4 ;
   void *argp1 = 0 ;
@@ -5152,11 +5152,11 @@ SWIGINTERN PyObject *_wrap_BBPolytope_hash(PyObject *SWIGUNUSEDPARM(self), PyObj
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "BBPolytope_hash" "', argument " "1"" of type '" "BBPolytope *""'"); 
   }
   arg1 = reinterpret_cast< BBPolytope * >(argp1);
-  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_NUMBER, 0 |  0 );
+  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_mpq_class, 0 |  0 );
   if (!SWIG_IsOK(res2)) {
-    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "BBPolytope_hash" "', argument " "2"" of type '" "NUMBER *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "BBPolytope_hash" "', argument " "2"" of type '" "mpq_class *""'"); 
   }
-  arg2 = reinterpret_cast< NUMBER * >(argp2);
+  arg2 = reinterpret_cast< mpq_class * >(argp2);
   res3 = SWIG_ConvertPtr(obj2, &argp3,SWIGTYPE_p_Face, 0 |  0 );
   if (!SWIG_IsOK(res3)) {
     SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "BBPolytope_hash" "', argument " "3"" of type '" "Face *""'"); 
@@ -5178,7 +5178,7 @@ fail:
 SWIGINTERN PyObject *_wrap_BBPolytope_hashtable_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   BBPolytope *arg1 = (BBPolytope *) 0 ;
-  NUMBER **arg2 = (NUMBER **) 0 ;
+  mpq_class **arg2 = (mpq_class **) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   void *argp2 = 0 ;
@@ -5192,11 +5192,11 @@ SWIGINTERN PyObject *_wrap_BBPolytope_hashtable_set(PyObject *SWIGUNUSEDPARM(sel
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "BBPolytope_hashtable_set" "', argument " "1"" of type '" "BBPolytope *""'"); 
   }
   arg1 = reinterpret_cast< BBPolytope * >(argp1);
-  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_p_NUMBER, 0 |  0 );
+  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_p_mpq_class, 0 |  0 );
   if (!SWIG_IsOK(res2)) {
-    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "BBPolytope_hashtable_set" "', argument " "2"" of type '" "NUMBER **""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "BBPolytope_hashtable_set" "', argument " "2"" of type '" "mpq_class **""'"); 
   }
-  arg2 = reinterpret_cast< NUMBER ** >(argp2);
+  arg2 = reinterpret_cast< mpq_class ** >(argp2);
   if (arg1) (arg1)->hashtable = arg2;
   resultobj = SWIG_Py_Void();
   return resultobj;
@@ -5211,7 +5211,7 @@ SWIGINTERN PyObject *_wrap_BBPolytope_hashtable_get(PyObject *SWIGUNUSEDPARM(sel
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
-  NUMBER **result = 0 ;
+  mpq_class **result = 0 ;
   
   if (!PyArg_ParseTuple(args,(char *)"O:BBPolytope_hashtable_get",&obj0)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_BBPolytope, 0 |  0 );
@@ -5219,8 +5219,8 @@ SWIGINTERN PyObject *_wrap_BBPolytope_hashtable_get(PyObject *SWIGUNUSEDPARM(sel
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "BBPolytope_hashtable_get" "', argument " "1"" of type '" "BBPolytope *""'"); 
   }
   arg1 = reinterpret_cast< BBPolytope * >(argp1);
-  result = (NUMBER **) ((arg1)->hashtable);
-  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_p_NUMBER, 0 |  0 );
+  result = (mpq_class **) ((arg1)->hashtable);
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_p_mpq_class, 0 |  0 );
   return resultobj;
 fail:
   return NULL;
@@ -6014,11 +6014,11 @@ static PyMethodDef SwigMethods[] = {
 static swig_type_info _swigt__p_BBPolytope = {"_p_BBPolytope", "BBPolytope *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_EuclideanVector = {"_p_EuclideanVector", "EuclideanVector *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_Face = {"_p_Face", "Face *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p_NUMBER = {"_p_NUMBER", "NUMBER *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_Stack = {"_p_Stack", "Stack *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_char = {"_p_char", "char *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_int = {"_p_int", "int *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p_p_NUMBER = {"_p_p_NUMBER", "NUMBER **", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_mpq_class = {"_p_mpq_class", "mpq_class *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_p_mpq_class = {"_p_p_mpq_class", "mpq_class **", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_p_vertexnode = {"_p_p_vertexnode", "vertexnode **", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_vertexnode = {"_p_vertexnode", "vertexnode *", 0, 0, (void*)0, 0};
 
@@ -6026,11 +6026,11 @@ static swig_type_info *swig_type_initial[] = {
   &_swigt__p_BBPolytope,
   &_swigt__p_EuclideanVector,
   &_swigt__p_Face,
-  &_swigt__p_NUMBER,
   &_swigt__p_Stack,
   &_swigt__p_char,
   &_swigt__p_int,
-  &_swigt__p_p_NUMBER,
+  &_swigt__p_mpq_class,
+  &_swigt__p_p_mpq_class,
   &_swigt__p_p_vertexnode,
   &_swigt__p_vertexnode,
 };
@@ -6038,11 +6038,11 @@ static swig_type_info *swig_type_initial[] = {
 static swig_cast_info _swigc__p_BBPolytope[] = {  {&_swigt__p_BBPolytope, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_EuclideanVector[] = {  {&_swigt__p_EuclideanVector, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_Face[] = {  {&_swigt__p_Face, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_NUMBER[] = {  {&_swigt__p_NUMBER, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_Stack[] = {  {&_swigt__p_Stack, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_char[] = {  {&_swigt__p_char, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_int[] = {  {&_swigt__p_int, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_p_NUMBER[] = {  {&_swigt__p_p_NUMBER, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_mpq_class[] = {  {&_swigt__p_mpq_class, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_p_mpq_class[] = {  {&_swigt__p_p_mpq_class, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_p_vertexnode[] = {  {&_swigt__p_p_vertexnode, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_vertexnode[] = {  {&_swigt__p_vertexnode, 0, 0, 0},{0, 0, 0, 0}};
 
@@ -6050,11 +6050,11 @@ static swig_cast_info *swig_cast_initial[] = {
   _swigc__p_BBPolytope,
   _swigc__p_EuclideanVector,
   _swigc__p_Face,
-  _swigc__p_NUMBER,
   _swigc__p_Stack,
   _swigc__p_char,
   _swigc__p_int,
-  _swigc__p_p_NUMBER,
+  _swigc__p_mpq_class,
+  _swigc__p_p_mpq_class,
   _swigc__p_p_vertexnode,
   _swigc__p_vertexnode,
 };

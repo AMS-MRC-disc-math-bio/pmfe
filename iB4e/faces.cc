@@ -72,13 +72,13 @@ void Face::InitializeDimensions(int dim, int ambientdim)
   if(ambientdim > dim) {
     if(dim > -1) {
       normalvectors = new EuclideanVector *[ambientdim - dim];
-      rhs = new NUMBER[ambientdim - dim];
+      rhs = new mpq_class[ambientdim - dim];
       for(int i = 0; i < ambientdim - dim; i++)
         normalvectors[i] = NULL;
     }
     else { 
       normalvectors = new EuclideanVector *[ambientdim];
-      rhs = new NUMBER[ambientdim];
+      rhs = new mpq_class[ambientdim];
       for(int i = 0; i < ambientdim; i++)
         normalvectors[i] = NULL;
     }
@@ -399,7 +399,7 @@ void Face::ComputeNormalVectorAwayFromPoint(EuclideanVector *p)
   for(int i = 0; i < ambientdimension; i++)
     normalvectors[0]->data[i] = orthobasis[ambientdimension - 1].data[i];
 
-  rhs = new NUMBER[1];
+  rhs = new mpq_class[1];
   *rhs = dotproduct(normalvectors[0], vertices[0]);
 
   if((ambientdimension+1)*(*rhs) < dotproduct(p, normalvectors[0])) {

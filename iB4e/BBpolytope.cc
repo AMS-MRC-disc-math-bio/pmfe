@@ -28,9 +28,7 @@
 
 #include "BBpolytope.h"
 
-#ifdef GMP
-  #include <gmpxx.h>
-#endif
+#include <gmpxx.h>
 
 using namespace std;
 
@@ -46,11 +44,7 @@ using namespace std;
 
 
 
-#ifdef GMP
-void printNumber(NUMBER a) { cout << a.get_str(10);};
-#else
-void printNumber(NUMBER a) { cout << a;};
-#endif
+void printNumber(mpq_class a) { cout << a.get_str(10);};
 
 BBPolytope::BBPolytope(int dim) {
   dimension = dim;
@@ -59,7 +53,7 @@ BBPolytope::BBPolytope(int dim) {
 void BBPolytope::Build()
 {
 
-  hashtable = new NUMBER *[HASHTABLESIZE];
+  hashtable = new mpq_class *[HASHTABLESIZE];
   facetvertextable = new vertexnode *[HASHTABLESIZE];
 
   ghostvertices = new int[dimension];
@@ -398,8 +392,8 @@ void BBPolytope::printNormals(Face *myface)
 
   myface->deleted = true;
 
-  NUMBER paramValues[myface->ambientdimension];
-  NUMBER paramValues2[myface->ambientdimension];  //because paramValues is going to be normalized
+  mpq_class paramValues[myface->ambientdimension];
+  mpq_class paramValues2[myface->ambientdimension];  //because paramValues is going to be normalized
   
   /* comment out only for debug */
 
@@ -413,14 +407,13 @@ void BBPolytope::printNormals(Face *myface)
   //debug
   //alreadythere = true;
 
-  //NUMBER tmp;
+  //mpq_class tmp;
    // cout << tmp;
 
   if(!alreadythere) {
     // tmp = myface->rhs[0];
 
     //new
-    #if NUMBER_TYPE == GMP_RATIONALS
       mpz_class normalization;
       normalization = myface->rhs[0].get_den();
       //normalization = 1;
@@ -428,23 +421,14 @@ void BBPolytope::printNormals(Face *myface)
         normalization *= paramValues2[i].get_den();
       if(normalization < 0)
         normalization *= -1;
-    #endif
 
-    #if NUMBER_TYPE == GMP_RATIONALS
     printNumber(normalization * myface->rhs[0]);
-    #else
-    printNumber(myface->rhs[0]);
-    #endif
 
     //cout << tmp.get_str(10);
     for(int i = 0; i < myface->normalvectors[0]->dimension; i++) {
       cout << " "; 
       // tmp = -1 * paramValues2[i];
-      #if NUMBER_TYPE == GMP_RATIONALS
       printNumber(-1 * normalization * paramValues2[i]);
-      #else
-      printNumber(-1 * paramValues2[i]);
-      #endif
     }
     cout << "\n";
   }
@@ -535,7 +519,7 @@ bool operator<(vertexnode a, vertexnode b)
 bool BBPolytope::newdirection(Face *myface)
 {
 
-  NUMBER paramValues[myface->ambientdimension];
+  mpq_class paramValues[myface->ambientdimension];
 
   bool ismultiple;
 
@@ -560,15 +544,11 @@ bool BBPolytope::newdirection(Face *myface)
 }
 
 
-bool BBPolytope::hash(NUMBER *myvector, Face *myface, int recordvertices)
+bool BBPolytope::hash(mpq_class *myvector, Face *myface, int recordvertices)
 {
 
-  #ifdef GMP
     mpz_class tmp;
     tmp = 0;
-  #else
-    long long unsigned int tmp;
-  #endif
 
   static unsigned int *weights = NULL;
 
@@ -582,7 +562,7 @@ bool BBPolytope::hash(NUMBER *myvector, Face *myface, int recordvertices)
       weights[i] = rand() * rand();
   }
 
-  NUMBER divisor;
+  mpq_class divisor;
   divisor = gcd(myvector, size);
  
   #ifdef DEBUG
@@ -599,17 +579,9 @@ bool BBPolytope::hash(NUMBER *myvector, Face *myface, int recordvertices)
 
   for(int i = 0; i < size; i++) {
  
-    #if NUMBER_TYPE == GMP_RATIONALS
     tmp = (weights[i] * (23*myvector[i].get_num() + 17*myvector[i].get_den())) % HASHTABLESIZE;
-    #else
-    tmp = (weights[i] * myvector[i]) % HASHTABLESIZE;
-    #endif
 
-    #ifdef GMP
     hashvalue += tmp.get_si();
-    #else
-    hashvalue += tmp;
-    #endif
     
   }
 
@@ -649,7 +621,7 @@ bool BBPolytope::hash(NUMBER *myvector, Face *myface, int recordvertices)
         cout << "Hashed to empty bucket " << hashvalue << "\n";
       #endif
 
-      hashtable[hashvalue] = new NUMBER[size];
+      hashtable[hashvalue] = new mpq_class[size];
 
       for(int i = 0; i < size; i++)
         (hashtable[hashvalue])[i] = myvector[i];
@@ -708,16 +680,16 @@ void BBPolytope::pushvertexintoincidence(int location, EuclideanVector *vertex)
 
 }
 
-NUMBER gcd(NUMBER *myvector, int size)
+mpq_class gcd(mpq_class *myvector, int size)
 {
-  NUMBER ans, abs;
+  mpq_class ans, abs;
 
   int j;
 
   // test to see if there are non-units
   for(j = 0; j < size; j++)
     if(myvector[j] != 0)
-      if(((NUMBER)(1 / myvector[j])) * myvector[j] != 1)
+      if(((mpq_class)(1 / myvector[j])) * myvector[j] != 1)
         break;
 
   if(j == size) { // ie we didnt break, so everything's a unit
@@ -745,23 +717,12 @@ NUMBER gcd(NUMBER *myvector, int size)
   return ans;
 }
 
-#if NUMBER_TYPE != GMP_RATIONALS
-NUMBER gcd2(NUMBER a, NUMBER b) 
-{
-  if(b == 0)
-    return a;
-
-  return gcd2(b, a%b);
-}
-
-#else
-NUMBER gcd2(NUMBER a, NUMBER b) 
+mpq_class gcd2(mpq_class a, mpq_class b) 
 {
   if(a > 0)
     return a;
   else return -1 * a;
 }
-#endif
 
 Face * BBPolytope::vertexandridge(EuclideanVector *v, Face *r)
 {

@@ -24,33 +24,6 @@
 #define CONFIG_H
 
 
-/*****************************************************************************/
-  #define GMP_RATIONALS 100
-  #define GMP_INTS 101
-  #define LONGLONG_INTS 102
-
-  /*******************************************************************
-  **                                                                **
-  **  Choose desired numerical data type, by defining NUMBER_TYPE   **
-  **  to be GMP_RATIONALS, GMP_INTS, or LONGLONG_INTS               **
-  **                                                                **
-  ********************************************************************/
-  #define NUMBER_TYPE GMP_RATIONALS
-
-
-
-/*****************************************************************************/ 
-
-
-
-
-
-
-
-
-
-
-
   /****************************/
 
   //#define DEBUG
@@ -61,25 +34,9 @@
   #define MAXSTACKBLOCKS 10000
   #define STACKBLOCKSIZE 500000
 
-  #if NUMBER_TYPE == GMP_RATIONALS
-    #define NUMBER mpq_class
-    #define GMP
-  #endif
-  
-  #if NUMBER_TYPE == GMP_INTS
-    #define NUMBER mpz_class
-    #define GMP
-  #endif
+  #include <gmpxx.h>
 
-  #if NUMBER_TYPE == LONGLONG_INTS
-    #define NUMBER long long int
-  #endif
-
-  #ifdef GMP
-    #include <gmpxx.h>
-  #endif
-
-  void printNumber(NUMBER a);
+  void printNumber(mpq_class a);
 
 
 #endif

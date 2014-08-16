@@ -44,7 +44,7 @@ class Face {
   int maxfacets;
   int numfacets;
   EuclideanVector **normalvectors;
-  NUMBER *rhs;
+  mpq_class *rhs;
   Face **incidents;
   EuclideanVector **vertices;
   bool deleted;

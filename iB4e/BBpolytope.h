@@ -26,8 +26,8 @@
 #include "config.h"
 
 
-NUMBER gcd(NUMBER *myvector, int size);
-NUMBER gcd2(NUMBER a, NUMBER b);
+mpq_class gcd(mpq_class *myvector, int size);
+mpq_class gcd2(mpq_class a, mpq_class b);
 
 
 class vertexnode {
@@ -43,7 +43,7 @@ class BBPolytope {
   BBPolytope(int dim);
   void Build();
   virtual EuclideanVector* BlackBoxOptimize(EuclideanVector *objective) = 0;
-  //virtual void printNumber(NUMBER a) = 0;
+  //virtual void printNumber(mpq_class a) = 0;
   void processhorizonridges(EuclideanVector *, Face *, Stack *, Stack *); //recursively adds new faces for all horizon ridges, and also marks visible faces as deleted
   Face * vertexandridge(EuclideanVector *v, Face *r);
 
@@ -51,9 +51,9 @@ class BBPolytope {
   void printNormals(Face *myface); 
   void printIncidences(); 
   bool newdirection(Face *myface);
-  bool hash(NUMBER *myvector, Face *myface, int recordvertices);
+  bool hash(mpq_class *myvector, Face *myface, int recordvertices);
 
-  NUMBER **hashtable;
+  mpq_class **hashtable;
   int numvertices;
   Stack stack, stack2, stack3, tobedeletedstack;
   Face *dequeue, *dequeue2, *neighbor;

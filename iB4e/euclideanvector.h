@@ -14,16 +14,16 @@ class EuclideanVector {
 
  public:
   int dimension;
-  NUMBER *data;
+  mpq_class *data;
 
   int id;
 
   EuclideanVector() {dimension=-1;};
-  //EuclideanVector(int d) { dimension = d; data = new NUMBER[d]; for(int i=0; i<d; i++) data[i] = 0;};
+  //EuclideanVector(int d) { dimension = d; data = new mpq_class[d]; for(int i=0; i<d; i++) data[i] = 0;};
   EuclideanVector(int d) { Constructor(d);};
   EuclideanVector(EuclideanVector *v) {
     dimension = v->dimension;
-    data = new NUMBER[dimension];
+    data = new mpq_class[dimension];
     for(int i =0; i < dimension; i++)
       data[i] = v->data[i];
   };
@@ -40,16 +40,16 @@ class EuclideanVector {
   void Negation();
   void plusequals(EuclideanVector w);
   void minusequals(EuclideanVector w);
-  void timesequals(NUMBER c);
+  void timesequals(mpq_class c);
   
 };
 
 bool computesubfactors(EuclideanVector *orthobasis, int ambientdimension);
-NUMBER dotproduct(EuclideanVector *a, EuclideanVector *b);
+mpq_class dotproduct(EuclideanVector *a, EuclideanVector *b);
 
-NUMBER fourbyfourdet(NUMBER a, NUMBER b, NUMBER c, NUMBER d, NUMBER e, NUMBER f, NUMBER g, NUMBER h, NUMBER i, NUMBER j, NUMBER k, NUMBER l, NUMBER m, NUMBER n, NUMBER o, NUMBER p);
+mpq_class fourbyfourdet(mpq_class a, mpq_class b, mpq_class c, mpq_class d, mpq_class e, mpq_class f, mpq_class g, mpq_class h, mpq_class i, mpq_class j, mpq_class k, mpq_class l, mpq_class m, mpq_class n, mpq_class o, mpq_class p);
 
-//NUMBER threebythreedet(NUMBER a, NUMBER b, NUMBER c, NUMBER d, NUMBER e, NUMBER f, NUMBER g, NUMBER h, NUMBER i); 
+//mpq_class threebythreedet(mpq_class a, mpq_class b, mpq_class c, mpq_class d, mpq_class e, mpq_class f, mpq_class g, mpq_class h, mpq_class i); 
 
 
 #endif
