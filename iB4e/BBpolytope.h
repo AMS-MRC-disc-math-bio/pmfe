@@ -39,11 +39,10 @@ class vertexnode {
 
 
 class BBPolytope {
-
  public:
+  BBPolytope(int dim);
   void Build();
-  BBPolytope(int dim) {dimension = dim;};
-  virtual void BlackBoxOptimize(EuclideanVector *objective, EuclideanVector *solution) = 0;
+  virtual EuclideanVector* BlackBoxOptimize(EuclideanVector *objective) = 0;
   //virtual void printNumber(NUMBER a) = 0;
   void processhorizonridges(EuclideanVector *, Face *, Stack *, Stack *); //recursively adds new faces for all horizon ridges, and also marks visible faces as deleted
   Face * vertexandridge(EuclideanVector *v, Face *r);

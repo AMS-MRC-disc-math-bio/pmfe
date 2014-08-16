@@ -42,14 +42,19 @@ using namespace std;
 
 //#define PROFILING
 
-//#define DEBUG
-//#define DEBUG2
+//#define DEBUG 
+
+
 
 #ifdef GMP
 void printNumber(NUMBER a) { cout << a.get_str(10);};
 #else
 void printNumber(NUMBER a) { cout << a;};
 #endif
+
+BBPolytope::BBPolytope(int dim) {
+  dimension = dim;
+}
 
 void BBPolytope::Build()
 {
@@ -82,15 +87,18 @@ void BBPolytope::Build()
 
   solution1 = new EuclideanVector(dimension);
 
-  solution1->id = 1;
+  //solution1->id = 1;
 
-  BlackBoxOptimize(&e1, (solution1));
+  cout << "\nPOINTS\n";
+  solution1 = BlackBoxOptimize(&e1);
 
   #ifdef DEBUG2
   cout << "\nGoing to add vertex:  ";
   //solution1->Print();
   #endif
  
+  cout << "1 ";
+  solution1->Print();
   numvertices++;
 
   startface.AddLIVertexToLowDim((solution1));
@@ -112,7 +120,7 @@ void BBPolytope::Build()
 
       solution1 = new EuclideanVector(dimension);
       solution1->id = startface.dimension + 2;
-      BlackBoxOptimize(startface.normalvectors[i], (solution1));
+      solution1 = BlackBoxOptimize(startface.normalvectors[i]);
 
       #ifdef DEBUG2
       cout << "new direction under consideration is:  ";
@@ -131,8 +139,7 @@ void BBPolytope::Build()
 
       solution2 = new EuclideanVector(dimension);
       solution2->id = startface.dimension + 2;
-      BlackBoxOptimize(startface.normalvectors[i], (solution2));
-
+      solution2 = BlackBoxOptimize(startface.normalvectors[i]);
       #ifdef DEBUG2
       cout << "point in minus direction:  ";
       solution2->Print();
@@ -154,6 +161,9 @@ void BBPolytope::Build()
         //solution1->Print();
         #endif
         
+        cout << "1 ";
+
+        solution1->Print();
         numvertices++;
       }
       else if(dotproduct((solution2), startface.normalvectors[i]) < startface.rhs[i]) {
@@ -170,6 +180,9 @@ void BBPolytope::Build()
        // solution2->Print();
         #endif
 
+        cout << "1 ";
+
+        solution2->Print();
         numvertices++;
       }
       else {
@@ -247,7 +260,7 @@ void BBPolytope::Build()
       solution1->Print();
       #endif
 
-      BlackBoxOptimize(dequeue->normalvectors[0], (solution1));
+      solution1 = BlackBoxOptimize(dequeue->normalvectors[0]);
 
       #ifdef DEBUG2
       cout << "\n";
@@ -283,7 +296,7 @@ void BBPolytope::Build()
 
         cout << "1 ";
 
-        //solution1->Print();
+        solution1->Print();
 
         #ifdef DEBUG2
         cout << "\nCalling processhorizonridges...";
@@ -370,6 +383,148 @@ void BBPolytope::Build()
   for(int i = 0; i < HASHTABLESIZE; i++)
     hashtable[i] = NULL;
 
+  cout << "\nFACETS\n";
+  printNormals(footinthedoor);  
+  printIncidences();
+
+}
+
+
+
+void BBPolytope::printNormals(Face *myface) 
+{ 
+  Face *neighbor;
+  bool alreadythere;
+
+  myface->deleted = true;
+
+  NUMBER paramValues[myface->ambientdimension];
+  NUMBER paramValues2[myface->ambientdimension];  //because paramValues is going to be normalized
+  
+  /* comment out only for debug */
+
+  for(int i = 0; i < myface->ambientdimension; i++) {
+      paramValues[i] = myface->normalvectors[0]->data[i];
+      paramValues2[i] = myface->normalvectors[0]->data[i];
+  }
+
+  alreadythere = hash(paramValues, myface, 1);
+
+  //debug
+  //alreadythere = true;
+
+  //NUMBER tmp;
+   // cout << tmp;
+
+  if(!alreadythere) {
+    // tmp = myface->rhs[0];
+
+    //new
+    #if NUMBER_TYPE == GMP_RATIONALS
+      mpz_class normalization;
+      normalization = myface->rhs[0].get_den();
+      //normalization = 1;
+      for(int i = 0; i < myface->normalvectors[0]->dimension; i++)
+        normalization *= paramValues2[i].get_den();
+      if(normalization < 0)
+        normalization *= -1;
+    #endif
+
+    #if NUMBER_TYPE == GMP_RATIONALS
+    printNumber(normalization * myface->rhs[0]);
+    #else
+    printNumber(myface->rhs[0]);
+    #endif
+
+    //cout << tmp.get_str(10);
+    for(int i = 0; i < myface->normalvectors[0]->dimension; i++) {
+      cout << " "; 
+      // tmp = -1 * paramValues2[i];
+      #if NUMBER_TYPE == GMP_RATIONALS
+      printNumber(-1 * normalization * paramValues2[i]);
+      #else
+      printNumber(-1 * paramValues2[i]);
+      #endif
+    }
+    cout << "\n";
+  }
+
+  for(int i = 0; i < myface->numfacets; i++) {
+
+    if(myface->facets[i]->incidents[0] == myface) 
+      neighbor = myface->facets[i]->incidents[1];
+    else { 
+      if(myface->facets[i]->incidents[1] == myface) 
+        neighbor = myface->facets[i]->incidents[0];
+
+      else {
+        cerr << "\nFace not incident to its facet!!";
+        exit(0);
+      }
+    }
+
+    if(neighbor->deleted == false)
+      printNormals(neighbor);
+  }
+
+  //printIncidences();
+
+}
+
+void BBPolytope::printIncidences() 
+{
+  cout << "\nPOINTS_IN_FACETS\n";
+  
+  vertexnode *current;
+  vector<vertexnode> mylist;
+
+  for(int i=0; i < HASHTABLESIZE; i++) {
+    if(facetvertextable[i] != NULL) {
+      //current = facetvertextable[i];
+      mylist.push_back(*(facetvertextable[i]));
+
+      //cout << current->item << ": ";
+      
+      //current = current->next;
+
+      //while(current != NULL) {
+      //  cout << current->item << " ";
+      //  current = current->next;
+      //}
+
+      //cout << "\n";
+    }
+  }
+
+  sort(mylist.begin(), mylist.end());
+  
+  vector<vertexnode>::iterator i2;
+
+  for (i2 = mylist.begin(); i2 != mylist.end(); i2++) {
+    current = (*i2).next;
+    cout << "{";
+
+    vector<int> vertexidlist;
+    while(current != NULL) {
+      vertexidlist.push_back(current->item-1);
+      current = current->next;
+    }
+
+    vector<int>::iterator i3;
+    //vector<int>::iterator i3next;
+    sort(vertexidlist.begin(), vertexidlist.end());
+
+    for (i3 = vertexidlist.begin(); i3 != vertexidlist.end(); i3++) {
+      if(*i3 >= 0)
+        cout << *i3;
+      if(i3+1 != vertexidlist.end())
+        cout << " ";
+    }
+
+    cout << "}\n";
+  }
+
+  return;
 }
 
 bool operator<(vertexnode a, vertexnode b)

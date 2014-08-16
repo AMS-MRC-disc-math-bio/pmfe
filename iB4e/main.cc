@@ -42,7 +42,7 @@ int main(const int argc, const char * argv[])
 
 void general_Polytope::BlackBoxOptimize(EuclideanVector *objective, EuclideanVector *solution) 
 {
-  cout << "[";
+  cout << "get_result([";
   for(int i = 0; i < dimension; i++) {
     #ifdef GMP
       cout << objective->data[i].get_str(10) << ",";
@@ -50,7 +50,7 @@ void general_Polytope::BlackBoxOptimize(EuclideanVector *objective, EuclideanVec
       cout << objective->data[i] << ",";
     #endif
   }
-  cout << "]\n";
+  cout << "])\n";
 
   string line;
   getline(cin, line);
