@@ -25,6 +25,8 @@
 #include <string>
 #include <vector>
 #include <algorithm>
+#include <vector>
+#include <set>
 
 #include "BBpolytope.h"
 
@@ -42,7 +44,7 @@ using namespace std;
 
 //#define DEBUG 
 
-
+std::vector<EuclideanVector> vertices;
 
 void printNumber(mpq_class a) { cout << a.get_str(10);};
 
@@ -118,7 +120,7 @@ void BBPolytope::Build()
 
       #ifdef DEBUG2
       cout << "new direction under consideration is:  ";
-      startface.normalvectors[i]->Print();
+       startface.normalvectors[i]->Print();
       cout << "point in plus direction:  ";
       solution1->Print();
       // printf("and RHS for it is:  %.15f ", startface.rhs[i]);
@@ -381,9 +383,57 @@ void BBPolytope::Build()
   //printNormals(footinthedoor);  
   //printIncidences();
 
+  populateVertices(footinthedoor);
 }
 
+void BBPolytope::populateVertices(Face *myface)
+{
+  std::set<EuclideanVector> * vertexset;
+  vertexset = new std::set<EuclideanVector>;
+  populateVertexSet(myface, vertexset);
+  std::copy(vertexset->begin(), vertexset->end(), inserter(vertices, vertices.begin()));}
 
+void BBPolytope::populateVertexSet(Face *myface, std::set<EuclideanVector> *vertexset)
+{
+  Face *neighbor;
+  bool alreadythere;
+
+  myface->deleted = true;
+
+  mpq_class paramValues[myface->ambientdimension];
+  
+  /* comment out only for debug */
+
+  for(int i = 0; i < myface->ambientdimension; i++) {
+    paramValues[i] = myface->normalvectors[0]->data[i];
+  }
+
+  alreadythere = hash(paramValues, myface, 1);
+
+  if(!alreadythere) {
+    for(int i = 0; i < myface->numvertices; i++) {
+      vertexset->insert(*myface->vertices[i]);
+    }
+  }
+
+  for(int i = 0; i < myface->numfacets; i++) {
+
+    if(myface->facets[i]->incidents[0] == myface) 
+      neighbor = myface->facets[i]->incidents[1];
+    else { 
+      if(myface->facets[i]->incidents[1] == myface) 
+        neighbor = myface->facets[i]->incidents[0];
+
+      else {
+        cerr << "\nFace not incident to its facet!!";
+        exit(0);
+      }
+    }
+
+    if(neighbor->deleted == false)
+      populateVertexSet(neighbor, vertexset);
+  }
+}
 
 void BBPolytope::printNormals(Face *myface) 
 { 

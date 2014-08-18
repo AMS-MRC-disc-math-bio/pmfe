@@ -24,6 +24,8 @@
 #include "faces.h"
 #include "stack.h"
 #include "config.h"
+#include <vector>
+#include <set>
 
 
 mpq_class gcd(mpq_class *myvector, int size);
@@ -43,6 +45,7 @@ class BBPolytope {
   BBPolytope(int dim);
   void Build();
   virtual EuclideanVector* BlackBoxOptimize(EuclideanVector *objective) = 0;
+  std::vector<EuclideanVector> vertices;
 
  private:
   //virtual void printNumber(mpq_class a) = 0;
@@ -50,7 +53,9 @@ class BBPolytope {
   Face * vertexandridge(EuclideanVector *v, Face *r);
 
   void pushvertexintoincidence(int location, EuclideanVector *vertex);
-  void printNormals(Face *myface); 
+  void printNormals(Face *myface);
+  void populateVertices(Face *myface);
+  void populateVertexSet(Face *myface, std::set<EuclideanVector> *vertexset);
   void printIncidences(); 
   bool newdirection(Face *myface);
   bool hash(mpq_class *myvector, Face *myface, int recordvertices);

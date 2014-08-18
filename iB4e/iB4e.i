@@ -5,6 +5,7 @@
 %include "euclideanvector.h"
 %include "BBpolytope.h"
 %include "std_pair.i"
+%include "std_vector.i"
 
 %{
 #define SWIG_FILE_WITH_INIT
@@ -18,6 +19,7 @@
 %}
 
 %template(pairll) std::pair<long, long>;
+%template(vecEV) std::vector<EuclideanVector>;
 
 // This is easier than writing a TypeMap
 %extend EuclideanVector{
@@ -41,4 +43,15 @@
             val = split_values[index]
             self.set_split_value(index, val[0], val[1])
    }
+ }
+
+
+%extend BBPolytope{
+  %pythoncode{
+    def get_split_vertices(self):
+        return [vertex.get_split_values() for vertex in self.vertices]
+
+    def get_mpq_vertices(self):
+        return [vertex.get_mpq_values() for vertex in self.vertices]
+  }
  }

@@ -5,6 +5,7 @@
 #include <iostream>
 #include <stdlib.h>
 #include <vector>
+#include "gmpxx.h"
 
 #ifndef EUCLIDEANVECTOR_H
 #define EUCLIDEANVECTOR_H
@@ -32,6 +33,30 @@ class EuclideanVector {
   void deletedata() { 
      delete[] data;
     return; 
+  };
+
+  const bool operator== (const EuclideanVector& othervec) const {
+    if (dimension != othervec.dimension) return false;
+    for (int i = 0; i < dimension; i++){
+      if (data[i] != othervec.data[i]) return false;
+    };
+    return true;
+  };
+
+  const bool operator< (const EuclideanVector& othervec) const {
+    if (dimension == othervec.dimension) {
+      // lex order
+      for (int i = 0; i < dimension; i++){
+        if (data[i] < othervec.data[i]) {
+          return true;
+        } else if (data[i] == othervec.data[i] && i < dimension - 1) {
+          continue;
+        } else {
+          break;
+        }
+      };
+    };
+    return false;
   };
 
   // I sure wish I could use a real data structure here…

@@ -96,6 +96,8 @@ class EuclideanVector(_object):
         try: self.this.append(this)
         except: self.this = this
     def deletedata(self): return _iB4e.EuclideanVector_deletedata(self)
+    def __eq__(self, *args): return _iB4e.EuclideanVector___eq__(self, *args)
+    def __lt__(self, *args): return _iB4e.EuclideanVector___lt__(self, *args)
     def get_split_value(self, *args): return _iB4e.EuclideanVector_get_split_value(self, *args)
     def set_split_value(self, *args): return _iB4e.EuclideanVector_set_split_value(self, *args)
     __swig_destroy__ = _iB4e.delete_EuclideanVector
@@ -185,6 +187,15 @@ class BBPolytope(_object):
         except: self.this = this
     def Build(self): return _iB4e.BBPolytope_Build(self)
     def BlackBoxOptimize(self, *args): return _iB4e.BBPolytope_BlackBoxOptimize(self, *args)
+    __swig_setmethods__["vertices"] = _iB4e.BBPolytope_vertices_set
+    __swig_getmethods__["vertices"] = _iB4e.BBPolytope_vertices_get
+    if _newclass:vertices = _swig_property(_iB4e.BBPolytope_vertices_get, _iB4e.BBPolytope_vertices_set)
+    def get_split_vertices(self):
+        return [vertex.get_split_values() for vertex in self.vertices]
+
+    def get_mpq_vertices(self):
+        return [vertex.get_mpq_values() for vertex in self.vertices]
+
     __swig_destroy__ = _iB4e.delete_BBPolytope
     __del__ = lambda self : None;
     def __disown__(self):
@@ -193,6 +204,35 @@ class BBPolytope(_object):
         return weakref_proxy(self)
 BBPolytope_swigregister = _iB4e.BBPolytope_swigregister
 BBPolytope_swigregister(BBPolytope)
+
+class SwigPyIterator(_object):
+    __swig_setmethods__ = {}
+    __setattr__ = lambda self, name, value: _swig_setattr(self, SwigPyIterator, name, value)
+    __swig_getmethods__ = {}
+    __getattr__ = lambda self, name: _swig_getattr(self, SwigPyIterator, name)
+    def __init__(self, *args, **kwargs): raise AttributeError("No constructor defined - class is abstract")
+    __repr__ = _swig_repr
+    __swig_destroy__ = _iB4e.delete_SwigPyIterator
+    __del__ = lambda self : None;
+    def value(self): return _iB4e.SwigPyIterator_value(self)
+    def incr(self, n=1): return _iB4e.SwigPyIterator_incr(self, n)
+    def decr(self, n=1): return _iB4e.SwigPyIterator_decr(self, n)
+    def distance(self, *args): return _iB4e.SwigPyIterator_distance(self, *args)
+    def equal(self, *args): return _iB4e.SwigPyIterator_equal(self, *args)
+    def copy(self): return _iB4e.SwigPyIterator_copy(self)
+    def next(self): return _iB4e.SwigPyIterator_next(self)
+    def __next__(self): return _iB4e.SwigPyIterator___next__(self)
+    def previous(self): return _iB4e.SwigPyIterator_previous(self)
+    def advance(self, *args): return _iB4e.SwigPyIterator_advance(self, *args)
+    def __eq__(self, *args): return _iB4e.SwigPyIterator___eq__(self, *args)
+    def __ne__(self, *args): return _iB4e.SwigPyIterator___ne__(self, *args)
+    def __iadd__(self, *args): return _iB4e.SwigPyIterator___iadd__(self, *args)
+    def __isub__(self, *args): return _iB4e.SwigPyIterator___isub__(self, *args)
+    def __add__(self, *args): return _iB4e.SwigPyIterator___add__(self, *args)
+    def __sub__(self, *args): return _iB4e.SwigPyIterator___sub__(self, *args)
+    def __iter__(self): return self
+SwigPyIterator_swigregister = _iB4e.SwigPyIterator_swigregister
+SwigPyIterator_swigregister(SwigPyIterator)
 
 class pairll(_object):
     __swig_setmethods__ = {}
@@ -226,6 +266,53 @@ class pairll(_object):
     __del__ = lambda self : None;
 pairll_swigregister = _iB4e.pairll_swigregister
 pairll_swigregister(pairll)
+
+class vecEV(_object):
+    __swig_setmethods__ = {}
+    __setattr__ = lambda self, name, value: _swig_setattr(self, vecEV, name, value)
+    __swig_getmethods__ = {}
+    __getattr__ = lambda self, name: _swig_getattr(self, vecEV, name)
+    __repr__ = _swig_repr
+    def iterator(self): return _iB4e.vecEV_iterator(self)
+    def __iter__(self): return self.iterator()
+    def __nonzero__(self): return _iB4e.vecEV___nonzero__(self)
+    def __bool__(self): return _iB4e.vecEV___bool__(self)
+    def __len__(self): return _iB4e.vecEV___len__(self)
+    def pop(self): return _iB4e.vecEV_pop(self)
+    def __getslice__(self, *args): return _iB4e.vecEV___getslice__(self, *args)
+    def __setslice__(self, *args): return _iB4e.vecEV___setslice__(self, *args)
+    def __delslice__(self, *args): return _iB4e.vecEV___delslice__(self, *args)
+    def __delitem__(self, *args): return _iB4e.vecEV___delitem__(self, *args)
+    def __getitem__(self, *args): return _iB4e.vecEV___getitem__(self, *args)
+    def __setitem__(self, *args): return _iB4e.vecEV___setitem__(self, *args)
+    def append(self, *args): return _iB4e.vecEV_append(self, *args)
+    def empty(self): return _iB4e.vecEV_empty(self)
+    def size(self): return _iB4e.vecEV_size(self)
+    def clear(self): return _iB4e.vecEV_clear(self)
+    def swap(self, *args): return _iB4e.vecEV_swap(self, *args)
+    def get_allocator(self): return _iB4e.vecEV_get_allocator(self)
+    def begin(self): return _iB4e.vecEV_begin(self)
+    def end(self): return _iB4e.vecEV_end(self)
+    def rbegin(self): return _iB4e.vecEV_rbegin(self)
+    def rend(self): return _iB4e.vecEV_rend(self)
+    def pop_back(self): return _iB4e.vecEV_pop_back(self)
+    def erase(self, *args): return _iB4e.vecEV_erase(self, *args)
+    def __init__(self, *args): 
+        this = _iB4e.new_vecEV(*args)
+        try: self.this.append(this)
+        except: self.this = this
+    def push_back(self, *args): return _iB4e.vecEV_push_back(self, *args)
+    def front(self): return _iB4e.vecEV_front(self)
+    def back(self): return _iB4e.vecEV_back(self)
+    def assign(self, *args): return _iB4e.vecEV_assign(self, *args)
+    def resize(self, *args): return _iB4e.vecEV_resize(self, *args)
+    def insert(self, *args): return _iB4e.vecEV_insert(self, *args)
+    def reserve(self, *args): return _iB4e.vecEV_reserve(self, *args)
+    def capacity(self): return _iB4e.vecEV_capacity(self)
+    __swig_destroy__ = _iB4e.delete_vecEV
+    __del__ = lambda self : None;
+vecEV_swigregister = _iB4e.vecEV_swigregister
+vecEV_swigregister(vecEV)
 
 # This file is compatible with both classic and new-style classes.
 
