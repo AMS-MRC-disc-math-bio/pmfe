@@ -185,52 +185,6 @@ class BBPolytope(_object):
         except: self.this = this
     def Build(self): return _iB4e.BBPolytope_Build(self)
     def BlackBoxOptimize(self, *args): return _iB4e.BBPolytope_BlackBoxOptimize(self, *args)
-    def processhorizonridges(self, *args): return _iB4e.BBPolytope_processhorizonridges(self, *args)
-    def vertexandridge(self, *args): return _iB4e.BBPolytope_vertexandridge(self, *args)
-    def pushvertexintoincidence(self, *args): return _iB4e.BBPolytope_pushvertexintoincidence(self, *args)
-    def printNormals(self, *args): return _iB4e.BBPolytope_printNormals(self, *args)
-    def printIncidences(self): return _iB4e.BBPolytope_printIncidences(self)
-    def newdirection(self, *args): return _iB4e.BBPolytope_newdirection(self, *args)
-    def hash(self, *args): return _iB4e.BBPolytope_hash(self, *args)
-    __swig_setmethods__["hashtable"] = _iB4e.BBPolytope_hashtable_set
-    __swig_getmethods__["hashtable"] = _iB4e.BBPolytope_hashtable_get
-    if _newclass:hashtable = _swig_property(_iB4e.BBPolytope_hashtable_get, _iB4e.BBPolytope_hashtable_set)
-    __swig_setmethods__["numvertices"] = _iB4e.BBPolytope_numvertices_set
-    __swig_getmethods__["numvertices"] = _iB4e.BBPolytope_numvertices_get
-    if _newclass:numvertices = _swig_property(_iB4e.BBPolytope_numvertices_get, _iB4e.BBPolytope_numvertices_set)
-    __swig_setmethods__["stack"] = _iB4e.BBPolytope_stack_set
-    __swig_getmethods__["stack"] = _iB4e.BBPolytope_stack_get
-    if _newclass:stack = _swig_property(_iB4e.BBPolytope_stack_get, _iB4e.BBPolytope_stack_set)
-    __swig_setmethods__["stack2"] = _iB4e.BBPolytope_stack2_set
-    __swig_getmethods__["stack2"] = _iB4e.BBPolytope_stack2_get
-    if _newclass:stack2 = _swig_property(_iB4e.BBPolytope_stack2_get, _iB4e.BBPolytope_stack2_set)
-    __swig_setmethods__["stack3"] = _iB4e.BBPolytope_stack3_set
-    __swig_getmethods__["stack3"] = _iB4e.BBPolytope_stack3_get
-    if _newclass:stack3 = _swig_property(_iB4e.BBPolytope_stack3_get, _iB4e.BBPolytope_stack3_set)
-    __swig_setmethods__["tobedeletedstack"] = _iB4e.BBPolytope_tobedeletedstack_set
-    __swig_getmethods__["tobedeletedstack"] = _iB4e.BBPolytope_tobedeletedstack_get
-    if _newclass:tobedeletedstack = _swig_property(_iB4e.BBPolytope_tobedeletedstack_get, _iB4e.BBPolytope_tobedeletedstack_set)
-    __swig_setmethods__["dequeue"] = _iB4e.BBPolytope_dequeue_set
-    __swig_getmethods__["dequeue"] = _iB4e.BBPolytope_dequeue_get
-    if _newclass:dequeue = _swig_property(_iB4e.BBPolytope_dequeue_get, _iB4e.BBPolytope_dequeue_set)
-    __swig_setmethods__["dequeue2"] = _iB4e.BBPolytope_dequeue2_set
-    __swig_getmethods__["dequeue2"] = _iB4e.BBPolytope_dequeue2_get
-    if _newclass:dequeue2 = _swig_property(_iB4e.BBPolytope_dequeue2_get, _iB4e.BBPolytope_dequeue2_set)
-    __swig_setmethods__["neighbor"] = _iB4e.BBPolytope_neighbor_set
-    __swig_getmethods__["neighbor"] = _iB4e.BBPolytope_neighbor_get
-    if _newclass:neighbor = _swig_property(_iB4e.BBPolytope_neighbor_get, _iB4e.BBPolytope_neighbor_set)
-    __swig_setmethods__["dimension"] = _iB4e.BBPolytope_dimension_set
-    __swig_getmethods__["dimension"] = _iB4e.BBPolytope_dimension_get
-    if _newclass:dimension = _swig_property(_iB4e.BBPolytope_dimension_get, _iB4e.BBPolytope_dimension_set)
-    __swig_setmethods__["facetvertextable"] = _iB4e.BBPolytope_facetvertextable_set
-    __swig_getmethods__["facetvertextable"] = _iB4e.BBPolytope_facetvertextable_get
-    if _newclass:facetvertextable = _swig_property(_iB4e.BBPolytope_facetvertextable_get, _iB4e.BBPolytope_facetvertextable_set)
-    __swig_setmethods__["linealitydim"] = _iB4e.BBPolytope_linealitydim_set
-    __swig_getmethods__["linealitydim"] = _iB4e.BBPolytope_linealitydim_get
-    if _newclass:linealitydim = _swig_property(_iB4e.BBPolytope_linealitydim_get, _iB4e.BBPolytope_linealitydim_set)
-    __swig_setmethods__["ghostvertices"] = _iB4e.BBPolytope_ghostvertices_set
-    __swig_getmethods__["ghostvertices"] = _iB4e.BBPolytope_ghostvertices_get
-    if _newclass:ghostvertices = _swig_property(_iB4e.BBPolytope_ghostvertices_get, _iB4e.BBPolytope_ghostvertices_set)
     __swig_destroy__ = _iB4e.delete_BBPolytope
     __del__ = lambda self : None;
     def __disown__(self):

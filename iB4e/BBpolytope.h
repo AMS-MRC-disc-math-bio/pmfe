@@ -43,6 +43,8 @@ class BBPolytope {
   BBPolytope(int dim);
   void Build();
   virtual EuclideanVector* BlackBoxOptimize(EuclideanVector *objective) = 0;
+
+ private:
   //virtual void printNumber(mpq_class a) = 0;
   void processhorizonridges(EuclideanVector *, Face *, Stack *, Stack *); //recursively adds new faces for all horizon ridges, and also marks visible faces as deleted
   Face * vertexandridge(EuclideanVector *v, Face *r);
