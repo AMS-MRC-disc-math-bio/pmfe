@@ -13,7 +13,6 @@
 #include "algorithms.h"
 #include "traceback.h"
 #include "constraints.h"
-#include "shapereader.h"
 #include "omp.h"
 %}
 

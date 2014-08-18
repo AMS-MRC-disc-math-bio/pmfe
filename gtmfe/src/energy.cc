@@ -6,7 +6,6 @@
 #include "utils.h"
 #include "global.h"
 #include "constants.h"
-#include "shapereader.h"
 
 long double *V; 
 long double *W; 
@@ -172,8 +171,7 @@ long double eL1(int i, int j, int ip, int jp) {
       energy += auPen(RNA[i], RNA[j]) + auPen(RNA[ip], RNA[jp]);
     } else if (size == 1) {
       energy = stack[fourBaseIndex(RNA[i], RNA[j], RNA[ip], RNA[jp])]
-        + bulge[size] + eparam[2] +
-        + getShapeEnergy(i) + getShapeEnergy(j) + getShapeEnergy(ip) + getShapeEnergy(jp);
+        + bulge[size] + eparam[2];
     }
   } else {
     /* Internal loop */
@@ -243,8 +241,7 @@ long double eL(int i, int j, int ip, int jp) {
       energy += auPen(RNA[i], RNA[j]) + auPen(RNA[ip], RNA[jp]);
     } else if (size == 1) {
       energy = stack[fourBaseIndex(RNA[i], RNA[j], RNA[ip], RNA[jp])]
-        + bulge[size] + eparam[2] +
-        + getShapeEnergy(i) + getShapeEnergy(j) + getShapeEnergy(ip) + getShapeEnergy(jp);
+        + bulge[size] + eparam[2];
     }
   } else {
     /* Internal loop */
@@ -394,8 +391,7 @@ long double eH(int i, int j) {
 long double eS(int i, int j) {
   long double energy;
   /*  not sure about eparam[1], come from MFold.. = 0 */
-  energy = stack[fourBaseIndex(RNA[i], RNA[j], RNA[i+1], RNA[j-1])] + eparam[1] 
-    + getShapeEnergy(i) + getShapeEnergy(j) + getShapeEnergy(i+1) + getShapeEnergy(j-1) ;
+  energy = stack[fourBaseIndex(RNA[i], RNA[j], RNA[i+1], RNA[j-1])] + eparam[1];
 
   return energy;
 }

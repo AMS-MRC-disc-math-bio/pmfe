@@ -27,7 +27,6 @@
 #include "global.h"
 #include "traceback.h"
 #include "constraints.h"
-#include "shapereader.h"
 #include "utils.h"
 
 long double total_en = 0;

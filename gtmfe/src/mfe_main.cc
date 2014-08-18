@@ -36,7 +36,6 @@
 #include "energy.h"
 #include "algorithms.h"
 #include "traceback.h"
-#include "shapereader.h"
 
 using namespace std;
 
