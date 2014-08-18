@@ -1,13 +1,15 @@
 #ifndef _HELPER_STRUCTS_H_
 #define _HELPER_STRUCTS_H_
 
+#include <gmpxx.h>
+
 struct PolytopeVector {
   int multiloops, branches, unpaired;
-  long double w, energy;
+  mpq_class w, energy;
 };
 
 struct ParameterVector {
-  long double a, b, c, d;
+  mpq_class a, b, c, d;
 };
 
 #endif

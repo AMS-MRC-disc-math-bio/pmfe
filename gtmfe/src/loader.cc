@@ -36,6 +36,7 @@
 #include "constants.h"
 #include "global.h"
 #include "loader.h"
+#include <gmpxx.h>
 
 #define xstr(s) str(s)
 #define str(s) #s
@@ -44,22 +45,22 @@ using namespace std;
 
 std::string EN_DATADIR;
 
-long double poppen[5];
-long double maxpen;
-long double eparam[11];
-long double multConst[3]; /* for multiloop penalties. */
-long double dangle[4][4][4][2]; /* Contain dangling energy values */
-long double inter[31]; /* Contains size penalty for internal loops */
-long double bulge[31]; /* Contain the size penalty for bulges */
-long double hairpin[31]; /* Contains the size penalty for hairpin loops */
-long double stack[256]; /* Stacking energy used to calculate energy of stack loops */
-long double tstkh[256]; /* Terminal mismatch energy used in the calculations of hairpin loops */
-long double tstki[256]; /* Terminal mismatch energy used in the calculations of internal loops */
-long double tloop[maxtloop + 1][2];
+mpq_class poppen[5];
+mpq_class maxpen;
+mpq_class eparam[11];
+mpq_class multConst[3]; /* for multiloop penalties. */
+mpq_class dangle[4][4][4][2]; /* Contain dangling energy values */
+mpq_class inter[31]; /* Contains size penalty for internal loops */
+mpq_class bulge[31]; /* Contain the size penalty for bulges */
+mpq_class hairpin[31]; /* Contains the size penalty for hairpin loops */
+mpq_class stack[256]; /* Stacking energy used to calculate energy of stack loops */
+mpq_class tstkh[256]; /* Terminal mismatch energy used in the calculations of hairpin loops */
+mpq_class tstki[256]; /* Terminal mismatch energy used in the calculations of internal loops */
+mpq_class tloop[maxtloop + 1][2];
 int numoftloops;
-long double iloop21[5][5][5][5][5][5][5]; /* 2*1 internal loops */
-long double iloop22[5][5][5][5][5][5][5][5]; /* 2*2 internal looops */
-long double iloop11[5][5][5][5][5][5]; /* 1*1 internal loops */
+mpq_class iloop21[5][5][5][5][5][5][5]; /* 2*1 internal loops */
+mpq_class iloop22[5][5][5][5][5][5][5][5]; /* 2*2 internal looops */
+mpq_class iloop11[5][5][5][5][5][5]; /* 1*1 internal loops */
 
 //int coax[6][6][6][6];
 //int tstackcoax[6][6][6][6];
@@ -67,24 +68,24 @@ long double iloop11[5][5][5][5][5][5]; /* 1*1 internal loops */
 //int tstack[6][6][6][6];
 //int tstkm[6][6][6][6];
 
-long double tstackm[5][5][6][6];
-long double tstacke[5][5][6][6];
+mpq_class tstackm[5][5][6][6];
+mpq_class tstacke[5][5][6][6];
 
-long double tstacki23[5][5][5][5];
+mpq_class tstacki23[5][5][5][5];
 
-long double auend;
-long double gubonus;
-long double cint; /* cint, cslope, c3 are used for poly C hairpin loops */
-long double cslope;
-long double c3;
-long double efn2a;
-long double efn2b;
-long double efn2c;
-long double triloop[maxtloop + 1][2];
+mpq_class auend;
+mpq_class gubonus;
+mpq_class cint; /* cint, cslope, c3 are used for poly C hairpin loops */
+mpq_class cslope;
+mpq_class c3;
+mpq_class efn2a;
+mpq_class efn2b;
+mpq_class efn2c;
+mpq_class triloop[maxtloop + 1][2];
 int numoftriloops;
-long double init;
+mpq_class init;
 int gail; /* It is either 0 or 1. It is used for grosely asymmetric internal loops */
-long double prelog;
+mpq_class prelog;
 
 void readThermodynamicParameters(const char *userdatadir, ParameterVector params) {
   struct stat buf;
@@ -130,7 +131,7 @@ int initStackValues(const string& fileName, const string& dirPath, ParameterVect
     for (int j = 0; j < 4; j++) {
       for (int k = 0; k < 4; k++) {
         for (int l = 0; l < 4; l++) {
-          stack[fourBaseIndex(i,j,k,l)] = INFINITY;
+          stack[fourBaseIndex(i,j,k,l)] = INFINITY_;
         }
       }
     }
@@ -219,7 +220,7 @@ int initMiscloopValues(const string& fileName, const string& dirpath, ParameterV
       cf >> currentWord; // Original c
     }
     if (index == 5) {
-      float table[4];
+      mpq_class table[4];
       for (int count = 1; count <= 3; count++) {
         cf >> currentWord;
         s = currentWord;
@@ -276,7 +277,7 @@ int initDangleValues(const std::string& fileName,
     for (int j = 0; j < 4; j++) {
       for (int k = 0; k < 4; k++) {
         for (int l = 0; l < 2; l++) {
-          dangle[i][j][k][l] = INFINITY;
+          dangle[i][j][k][l] = INFINITY_;
         }
       }
     }
@@ -325,7 +326,7 @@ int initLoopValues( const string& fileName, const string& dirPath, ParameterVect
   char currentWord[256];
   string s;
   int index= 0;
-  long double tempValue = 0;
+  mpq_class tempValue = 0;
 
   if (cf.fail()) {
     cerr << "File open failed " << filePath << endl;
@@ -341,7 +342,7 @@ int initLoopValues( const string& fileName, const string& dirPath, ParameterVect
         if (strcmp(currentWord, "inf")) {
           tempValue = params.d * atof(currentWord);
         } else {
-          tempValue = INFINITY;
+          tempValue = INFINITY_;
         }
       }
       switch (j) {
@@ -381,12 +382,12 @@ int initTstk23Values(const std::string& fileName, const std::string& dirPath, Pa
       for (j1 = 0; j1 < 5; ++j1)
         for (j2 = 0; j2 < 5; ++j2)
           if (i1 == 4 || j1 == 4)
-            tstacki23[i1][j1][i2][j2] = INFINITY;
+            tstacki23[i1][j1][i2][j2] = INFINITY_;
           else if (i2 == 4 || j2 == 4)
             tstacki23[i1][j1][i2][j2] = 0;
           else {
             cf >> val;
-            tstacki23[i1][j1][i2][j2] = (val == "inf")? (INFINITY): 
+            tstacki23[i1][j1][i2][j2] = (val == "inf")? (INFINITY_): 
               (params.d * atof(val.c_str()));
           }
   cf.close();
@@ -416,14 +417,14 @@ int initTstkeValues(const std::string& fileName, const std::string& dirPath, Par
       for (j1 = 0; j1 < 5; ++j1) {                                                   
         for (j2 = 0; j2 < 6; ++j2) {                                                      
           if (i1 == 4 || j1 == 4)                                                       
-            tstacke[i1][j1][i2][j2] = INFINITY;                                         
+            tstacke[i1][j1][i2][j2] = INFINITY_;                                         
           else if (i2 == 5 || j2 == 5)                                                  
-            tstacke[i1][j1][i2][j2] = INFINITY;                                         
+            tstacke[i1][j1][i2][j2] = INFINITY_;                                         
           else if (i2 == 4 || j2 == 4)                                                  
             tstacke[i1][j1][i2][j2] = 0;                                                
           else { 
             cf >> val;
-            tstacke[i1][j1][i2][j2] = (val == "inf")? (INFINITY): 
+            tstacke[i1][j1][i2][j2] = (val == "inf")? (INFINITY_): 
               (params.d * atof(val.c_str()));
           }
         }
@@ -455,14 +456,14 @@ int initTstkmValues(const std::string& fileName, const std::string& dirPath, Par
       for (j1 = 0; j1 < 5; ++j1) {                                                   
         for (j2 = 0; j2 < 6; ++j2) {                                                      
           if (i1 == 4 || j1 == 4)                                                       
-            tstackm[i1][j1][i2][j2] = INFINITY;                                         
+            tstackm[i1][j1][i2][j2] = INFINITY_;                                         
           else if (i2 == 5 || j2 == 5)                                                  
-            tstackm[i1][j1][i2][j2] = INFINITY;                                         
+            tstackm[i1][j1][i2][j2] = INFINITY_;                                         
           else if (i2 == 4 || j2 == 4)                                                  
             tstackm[i1][j1][i2][j2] = 0;                                                
           else { 
             cf >> val;
-            tstackm[i1][j1][i2][j2] = (val == "inf")? (INFINITY): 
+            tstackm[i1][j1][i2][j2] = (val == "inf")? (INFINITY_): 
               (params.d * atof(val.c_str()));
           }
         }
@@ -486,7 +487,7 @@ int initTstkhValues(const std::string& fileName, const std::string& dirPath, Par
     for (int j = 0; j < 4; j++) {
       for (int k = 0; k < 4; k++) {
         for (int l = 0; l < 2; l++) {
-          tstkh[fourBaseIndex(i,j,k,l)] = INFINITY;
+          tstkh[fourBaseIndex(i,j,k,l)] = INFINITY_;
         }
       }
     }
@@ -534,7 +535,7 @@ int initTstkiValues(const std::string& fileName, const std::string& dirPath, Par
     for (int j = 0; j < 4; j++) {
       for (int k = 0; k < 4; k++) {
         for (int l = 0; l < 2; l++) {
-          tstki[fourBaseIndex(i,j,k,l)] = INFINITY;
+          tstki[fourBaseIndex(i,j,k,l)] = INFINITY_;
         }
       }
     }
@@ -633,7 +634,7 @@ int initInt22Values(const std::string& fileName, const std::string& dirPath, Par
             for (t = 0; t < 4; t++)
               for (y = 0; y < 4; y++)
                 for (z = 0; z < 4; z++)
-                  iloop22[i][j][k][r][q][t][y][z] = INFINITY;
+                  iloop22[i][j][k][r][q][t][y][z] = INFINITY_;
 
   ifstream cf;
   char currentLine[256], currentValue[6];
@@ -723,7 +724,7 @@ int initInt21Values(const std::string& fileName, const std::string& dirPath, Par
           for (q = 0; q < 4; q++)
             for (t = 0; t < 4; t++)
               for (y = 0; y < 4; y++)
-                iloop21[i][j][k][r][q][t][y] = INFINITY;
+                iloop21[i][j][k][r][q][t][y] = INFINITY_;
   a = 0;
   b = 0;
   c = 0;
@@ -773,7 +774,7 @@ int initInt21Values(const std::string& fileName, const std::string& dirPath, Par
         for (z = 1; z <=24 ; z++) {
           char value[32];
           ss >> value;
-          long double temp = params.d * atof(value);
+          mpq_class temp = params.d * atof(value);
           a = base1[i];
           b = base2[i];
           f = base1[jj];
@@ -808,7 +809,7 @@ int initInt11Values(const std::string& fileName, const std::string& dirPath, Par
         for (r = 0; r < 4; r++)
           for (q = 0; q < 4; q++)
             for (t = 0; t < 4; t++)
-              iloop11[i][j][k][r][q][t] = INFINITY;
+              iloop11[i][j][k][r][q][t] = INFINITY_;
 
   ifstream cf;
   char currentLine[256];
@@ -860,7 +861,7 @@ int initInt11Values(const std::string& fileName, const std::string& dirPath, Par
       for (int z=1; z <= 24; ++z) {
         char value[32];
         ss >> value;	
-        long double temp = params.d * atof(value);
+        mpq_class temp = params.d * atof(value);
         a = base1[k];
         d = base2[k];
         c = base1[jj];

@@ -36,6 +36,7 @@
 #include "energy.h"
 #include "algorithms.h"
 #include "traceback.h"
+#include <gmpxx.h>
 
 using namespace std;
 
@@ -77,9 +78,9 @@ void free_fold(int len) {
 }
 
 
-PolytopeVector mfe_main(string seq_file, string output_file, string param_dir, long double a, long double b, long double c, long double d, int dangle_model) {
+PolytopeVector mfe_main(string seq_file, string output_file, string param_dir, mpq_class a, mpq_class b, mpq_class c, mpq_class d, int dangle_model) {
         std::string seq;
-        long double energy;
+        mpq_class energy;
         ParameterVector params;
 	
         dangles = dangle_model;
@@ -109,8 +110,12 @@ PolytopeVector mfe_main(string seq_file, string output_file, string param_dir, l
         struct PolytopeVector result;
         result = trace(seq.length());
         result.energy = energy;
-        result.w = d==0 ? 0 : (result.energy - result.multiloops * a - result.branches * b - result.unpaired * c)/d;
-	
+        if (d==0) {
+          result.w = 0;
+        } else {
+          result.w = (result.energy - result.multiloops * a - result.branches * b - result.unpaired * c)/d;
+	};
+        
 	save_ct_file(outputFile, seq, energy);
 
 	free_fold(seq.length());

@@ -25,6 +25,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 #include "global.h"
 #include "algorithms.h"
 #include "constraints.h"
+#include <gmpxx.h>
 
 #include <vector>
 #include <algorithm>
@@ -70,9 +71,9 @@ void prefilter(int len, int prefilter1, int prefilter2) {
   free(in);
 }
 
-long double calcVBI(int i, int j) {
+mpq_class calcVBI(int i, int j) {
   int p=0, q=0;
-  long double VBIij = INFINITY;
+  mpq_class VBIij = INFINITY_;
 
   for (p = i+1; p <= MIN(j-2-TURN,i+MAXLOOP+1) ; p++) {
     int minq = j-i+p-MAXLOOP-2;
@@ -82,7 +83,7 @@ long double calcVBI(int i, int j) {
     for (q = minq; q <= maxq; q++) {
       if (PP[p][q]==0) continue;
       if (!canILoop(i,j,p,q)) continue;
-      std::vector<long double> vals;
+      std::vector<mpq_class> vals;
       vals.push_back(eL(i, j, p, q) + V(p,q));
       vals.push_back(VBIij);
       VBIij = *std::min_element(vals.begin(), vals.end());
@@ -92,9 +93,9 @@ long double calcVBI(int i, int j) {
   return VBIij;
 }
 
-long double calcVBI1(int i, int j) {
+mpq_class calcVBI1(int i, int j) {
   int p=0, q=0;
-  long double VBIij = INFINITY;
+  mpq_class VBIij = INFINITY_;
 
   for (p = i+1; p <= MIN(j-2-TURN,i+MAXLOOP+1) ; p++) {
     int minq = j-i+p-MAXLOOP-2;
@@ -104,7 +105,7 @@ long double calcVBI1(int i, int j) {
     for (q = minq; q <= maxq; q++) {
       if (PP[p][q]==0) continue;
       if (!canILoop(i,j,p,q)) continue;
-      std::vector<long double> vals;
+      std::vector<mpq_class> vals;
       vals.push_back(eL1(i, j, p, q) + V(p,q));
       vals.push_back(VBIij);
       VBIij = *std::min_element(vals.begin(), vals.end());
@@ -114,16 +115,16 @@ long double calcVBI1(int i, int j) {
   return VBIij;
 }
 
-long double calcVBI2(int i, int j, int  len) {
+mpq_class calcVBI2(int i, int j, int  len) {
   int d, ii, jj; 
-  long double energy = INFINITY;
+  mpq_class energy = INFINITY_;
 
   for (d = j-i-3; d >= TURN+1 && d >= j-i-2-MAXLOOP; --d) 
     for (ii = i + 1; ii < j - d && ii <= len; ++ii)
     {    
       jj = d + ii;
       if (PP[ii][jj]==1) {
-        std::vector<long double> vals;
+        std::vector<mpq_class> vals;
         vals.push_back(energy);
         vals.push_back(eL1(i, j, ii, jj) + V(ii, jj));
         energy = *std::min_element(vals.begin(), vals.end());
@@ -133,7 +134,7 @@ long double calcVBI2(int i, int j, int  len) {
   return energy;
 }
 
-long double calculate(int len) { 
+mpq_class calculate(int len) { 
   int b, i, j;
 #ifdef _OPENMP
   if (g_nthreads > 0) omp_set_num_threads(g_nthreads);
@@ -152,8 +153,8 @@ long double calculate(int len) {
       j = i + b;
 
       if (PP[i][j] == 1) {
-        long double eh = canHairpin(i,j)?eH(i,j):INFINITY; //hair pin
-        long double es = canStack(i,j)?eS(i,j)+V(i+1,j-1):INFINITY; // stack
+        mpq_class eh = canHairpin(i,j)?eH(i,j):INFINITY_; //hair pin
+        mpq_class es = canStack(i,j)?eS(i,j)+V(i+1,j-1):INFINITY_; // stack
 
         // Internal Loop BEGIN
         if (g_unamode) 
@@ -163,21 +164,21 @@ long double calculate(int len) {
         // Internal Loop END
 
         // Multi Loop BEGIN
-        long double d3 = canSS(j-1)?Ed3(i,j,j-1):INFINITY;
-        long double d5 = canSS(i+1)?Ed5(i,j,i+1):INFINITY;
+        mpq_class d3 = canSS(j-1)?Ed3(i,j,j-1):INFINITY_;
+        mpq_class d5 = canSS(i+1)?Ed5(i,j,i+1):INFINITY_;
 
         if (g_dangles == 2) { // -d2
-          std::vector<long double> vals;
+          std::vector<mpq_class> vals;
           vals.push_back(VM(i, j));
           vals.push_back(WMPrime[i+1][j-1] + d3 + d5 + auPenalty(i,j) + multConst[0] + multConst[2]);
           VM(i,j) = *std::min_element(vals.begin(), vals.end());
         } else if (g_dangles == 0) { // -d0
-          std::vector<long double> vals;
+          std::vector<mpq_class> vals;
           vals.push_back(VM(i,j));
           vals.push_back(WMPrime[i+1][j-1] + auPenalty(i,j) + multConst[0] + multConst[2]);
           VM(i,j) = *std::min_element(vals.begin(), vals.end());
         }	else { // default
-          std::vector<long double> vals;
+          std::vector<mpq_class> vals;
           vals.push_back(VM(i,j));
           vals.push_back(WMPrime[i+1][j-1] + auPenalty(i,j) + multConst[0] + multConst[2]);
           vals.push_back(WMPrime[i+2][j-1] + d5 + auPenalty(i,j) + multConst[0] + multConst[2] + multConst[1]);
@@ -185,10 +186,10 @@ long double calculate(int len) {
           vals.push_back(WMPrime[i+2][j-2] + d3 + d5 + auPenalty(i,j) + multConst[0] + multConst[2] + 2*multConst[1]);
           VM(i,j) = *std::min_element(vals.begin(), vals.end());
         }
-        VM(i,j) = canStack(i,j)?VM(i,j):INFINITY;
+        VM(i,j) = canStack(i,j)?VM(i,j):INFINITY_;
         // Multi Loop END
 
-        std::vector<long double> vals;
+        std::vector<mpq_class> vals;
         vals.push_back(eh);
         vals.push_back(es);
         vals.push_back(VBI(i,j));
@@ -196,47 +197,47 @@ long double calculate(int len) {
         V(i,j) = *std::min_element(vals.begin(), vals.end());
       }
       else {
-        V(i,j) = INFINITY;
+        V(i,j) = INFINITY_;
       }
 
       // Added auxillary storage WMPrime to speedup multiloop calculations
       int h;
       for (h = i+TURN+1 ; h <= j-TURN-2; h++) {
-        std::vector<long double> vals;
+        std::vector<mpq_class> vals;
         vals.push_back(WMPrime[i][j]);
         vals.push_back(WMU(i,h-1) + WML(h,j));
         WMPrime[i][j] = *std::min_element(vals.begin(), vals.end());
       }
 
       // WM begin
-      long double newWM = INFINITY; 
+      mpq_class newWM = INFINITY_; 
 
       //ZS: This sum corresponds to when i,j are NOT paired with each other.
       //So we need to make sure only terms where i,j aren't pairing are considered.
       if (!forcePair(i,j)) {
-          std::vector<long double> vals;
+          std::vector<mpq_class> vals;
           vals.push_back(newWM);
           vals.push_back(WMPrime[i][j]);
           newWM = *std::min_element(vals.begin(), vals.end());
         }
 
       if (g_dangles == 2) {
-        long double energy = V(i,j) + auPenalty(i,j) + multConst[2];
+        mpq_class energy = V(i,j) + auPenalty(i,j) + multConst[2];
         energy += (i==1)?Ed3(j,i,len):Ed3(j,i,i-1);
         /*if (j<len)*/ energy += Ed5(j,i,j+1);
         if (canSS(i)&&canSS(j)){
-          std::vector<long double> vals;
+          std::vector<mpq_class> vals;
           vals.push_back(energy);
           vals.push_back(newWM);
           newWM = *std::min_element(vals.begin(), vals.end());
         }
       } else if (g_dangles == 0) {
-        std::vector<long double> vals;
+        std::vector<mpq_class> vals;
         vals.push_back(V(i,j) + auPenalty(i,j) + multConst[2]);
         vals.push_back(newWM);
         newWM = *std::min_element(vals.begin(), vals.end());
       } else { // default
-        std::vector<long double> vals;
+        std::vector<mpq_class> vals;
         vals.push_back(newWM);
         vals.push_back(V(i,j) + auPenalty(i,j) + multConst[2]);
 
@@ -252,7 +253,7 @@ long double calculate(int len) {
         newWM = *std::min_element(vals.begin(), vals.end());
       }
       
-      std::vector<long double> vals;
+      std::vector<mpq_class> vals;
       vals.push_back(newWM);
 
       if (canSS(i))
@@ -271,19 +272,19 @@ long double calculate(int len) {
   W[0] = 0;
   for (j = 1; j <= len; j++) {
     int i;
-    long double Wj, Widjd, Wijd, Widj, Wij, Wim1;
+    mpq_class Wj, Widjd, Wijd, Widj, Wij, Wim1;
     Wj = 0;
     for (i = 1; i < j-TURN; i++) {
-      Wij = Widjd = Wijd = Widj = INFINITY;
+      Wij = Widjd = Wijd = Widj = INFINITY_;
       Wim1 = MIN(0, W[i-1]); 
 
       if (g_dangles == 2) { // -d2 option
-        long double energy = V(i,j) +	 auPenalty(i,j) + Wim1;
+        mpq_class energy = V(i,j) +	 auPenalty(i,j) + Wim1;
         if (i>1) energy +=  Ed3(j,i,i-1);
         if (j<len) energy += Ed5(j,i,j+1);
         Widjd = (canSS(i)&&canSS(j))? energy:Widjd;
 
-        std::vector<long double> vals;
+        std::vector<mpq_class> vals;
         vals.push_back(Wij);
         vals.push_back(Widjd);
         
@@ -292,11 +293,11 @@ long double calculate(int len) {
         Wij = V(i, j) + auPenalty(i, j) + Wim1;
       } else { // default
         Wij = V(i, j) + auPenalty(i, j) + Wim1;
-        Widj = canSS(i)?V(i+1, j) + auPenalty(i+1,j) + Ed3(j,i + 1,i) + Wim1:INFINITY;
-        Wijd = canSS(j)?V(i,j-1) + auPenalty(i,j-1) + Ed5(j-1,i,j) + Wim1:INFINITY;
-        Widjd = (canSS(i)&&canSS(j))?V(i+1,j-1) + auPenalty(i+1,j-1) + Ed3(j-1,i + 1,i) + Ed5(j-1,i+1,j) + Wim1:INFINITY;
+        Widj = canSS(i)?V(i+1, j) + auPenalty(i+1,j) + Ed3(j,i + 1,i) + Wim1:INFINITY_;
+        Wijd = canSS(j)?V(i,j-1) + auPenalty(i,j-1) + Ed5(j-1,i,j) + Wim1:INFINITY_;
+        Widjd = (canSS(i)&&canSS(j))?V(i+1,j-1) + auPenalty(i+1,j-1) + Ed3(j-1,i + 1,i) + Ed5(j-1,i+1,j) + Wim1:INFINITY_;
 
-        std::vector<long double> vals;
+        std::vector<mpq_class> vals;
         vals.push_back(Wij);
         vals.push_back(Widj);
         vals.push_back(Wijd);
@@ -305,14 +306,14 @@ long double calculate(int len) {
         Wij = *std::min_element(vals.begin(), vals.end());
       }
 
-      std::vector<long double> vals;
+      std::vector<mpq_class> vals;
       vals.push_back(Wj);
       vals.push_back(Wij);
 
       Wj = *std::min_element(vals.begin(), vals.end());
     }
 
-    std::vector<long double> vals;
+    std::vector<mpq_class> vals;
     vals.push_back(Wj);
     if (canSS(j))
       vals.push_back(W[j-1]);
@@ -333,9 +334,9 @@ long double calculate(int len) {
   file = fopen("Eh.txt", "w");
   for (ii = 1; ii <= len; ++ii) {    
     for (jj = len; jj > ii; --jj) {
-      long double eh = INFINITY;
+      mpq_class eh = INFINITY_;
       if (PP[ii][jj])	eh = eH(ii,jj);
-      fprintf(file, "%d %d %d\n",ii,jj,eh>=INFINITY?INFINITY:eh);
+      fprintf(file, "%d %d %d\n",ii,jj,eh>=INFINITY_?INFINITY_:eh);
     }
   }    
   fclose(file);
@@ -343,9 +344,9 @@ long double calculate(int len) {
   file = fopen("Es.txt", "w");
   for (ii = 1; ii <= len; ++ii) {    
     for (jj = len; jj > ii; --jj) {
-      long double es = INFINITY;
+      mpq_class es = INFINITY_;
       if (PP[ii][jj] && PP[ii+1][jj-1]) es = eS(ii,jj);
-      fprintf(file, "%d %d %d\n",ii,jj,es>=INFINITY?INFINITY:es);
+      fprintf(file, "%d %d %d\n",ii,jj,es>=INFINITY_?INFINITY_:es);
     }
   }    
   fclose(file);

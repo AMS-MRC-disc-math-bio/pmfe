@@ -2,6 +2,7 @@
 import unittest
 import os
 import GTrunner
+import gmpy2
 
 class gtmfeTest(unittest.TestCase):
     def setUp(self):

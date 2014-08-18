@@ -2937,7 +2937,7 @@ SWIG_Python_NonDynamicSetAttr(PyObject *obj, PyObject *name, PyObject *value) {
 #define SWIGTYPE_p_ParameterVector swig_types[0]
 #define SWIGTYPE_p_PolytopeVector swig_types[1]
 #define SWIGTYPE_p_char swig_types[2]
-#define SWIGTYPE_p_long_double swig_types[3]
+#define SWIGTYPE_p_mpq_class swig_types[3]
 static swig_type_info *swig_types[5];
 static swig_module_info swig_module = {swig_types, 4, 0, 0, 0, 0};
 #define SWIG_TypeQuery(name) SWIG_TypeQueryModule(&swig_module, &swig_module, name)
@@ -3200,6 +3200,7 @@ SWIGINTERNINLINE PyObject*
 #include "algorithms.h"
 #include "traceback.h"
 #include "constraints.h"
+#include <gmpxx.h>
 #include "omp.h"
 
 
@@ -3484,7 +3485,7 @@ fail:
 SWIGINTERN PyObject *_wrap_PolytopeVector_w_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   PolytopeVector *arg1 = (PolytopeVector *) 0 ;
-  long double arg2 ;
+  mpq_class arg2 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   void *argp2 ;
@@ -3499,14 +3500,14 @@ SWIGINTERN PyObject *_wrap_PolytopeVector_w_set(PyObject *SWIGUNUSEDPARM(self), 
   }
   arg1 = reinterpret_cast< PolytopeVector * >(argp1);
   {
-    res2 = SWIG_ConvertPtr(obj1, &argp2, SWIGTYPE_p_long_double,  0  | 0);
+    res2 = SWIG_ConvertPtr(obj1, &argp2, SWIGTYPE_p_mpq_class,  0  | 0);
     if (!SWIG_IsOK(res2)) {
-      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "PolytopeVector_w_set" "', argument " "2"" of type '" "long double""'"); 
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "PolytopeVector_w_set" "', argument " "2"" of type '" "mpq_class""'"); 
     }  
     if (!argp2) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "PolytopeVector_w_set" "', argument " "2"" of type '" "long double""'");
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "PolytopeVector_w_set" "', argument " "2"" of type '" "mpq_class""'");
     } else {
-      long double * temp = reinterpret_cast< long double * >(argp2);
+      mpq_class * temp = reinterpret_cast< mpq_class * >(argp2);
       arg2 = *temp;
       if (SWIG_IsNewObj(res2)) delete temp;
     }
@@ -3525,7 +3526,7 @@ SWIGINTERN PyObject *_wrap_PolytopeVector_w_get(PyObject *SWIGUNUSEDPARM(self), 
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
-  long double result;
+  mpq_class result;
   
   if (!PyArg_ParseTuple(args,(char *)"O:PolytopeVector_w_get",&obj0)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_PolytopeVector, 0 |  0 );
@@ -3533,8 +3534,8 @@ SWIGINTERN PyObject *_wrap_PolytopeVector_w_get(PyObject *SWIGUNUSEDPARM(self), 
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "PolytopeVector_w_get" "', argument " "1"" of type '" "PolytopeVector *""'"); 
   }
   arg1 = reinterpret_cast< PolytopeVector * >(argp1);
-  result = (long double) ((arg1)->w);
-  resultobj = SWIG_NewPointerObj((new long double(static_cast< const long double& >(result))), SWIGTYPE_p_long_double, SWIG_POINTER_OWN |  0 );
+  result =  ((arg1)->w);
+  resultobj = SWIG_NewPointerObj((new mpq_class(static_cast< const mpq_class& >(result))), SWIGTYPE_p_mpq_class, SWIG_POINTER_OWN |  0 );
   return resultobj;
 fail:
   return NULL;
@@ -3544,7 +3545,7 @@ fail:
 SWIGINTERN PyObject *_wrap_PolytopeVector_energy_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   PolytopeVector *arg1 = (PolytopeVector *) 0 ;
-  long double arg2 ;
+  mpq_class arg2 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   void *argp2 ;
@@ -3559,14 +3560,14 @@ SWIGINTERN PyObject *_wrap_PolytopeVector_energy_set(PyObject *SWIGUNUSEDPARM(se
   }
   arg1 = reinterpret_cast< PolytopeVector * >(argp1);
   {
-    res2 = SWIG_ConvertPtr(obj1, &argp2, SWIGTYPE_p_long_double,  0  | 0);
+    res2 = SWIG_ConvertPtr(obj1, &argp2, SWIGTYPE_p_mpq_class,  0  | 0);
     if (!SWIG_IsOK(res2)) {
-      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "PolytopeVector_energy_set" "', argument " "2"" of type '" "long double""'"); 
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "PolytopeVector_energy_set" "', argument " "2"" of type '" "mpq_class""'"); 
     }  
     if (!argp2) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "PolytopeVector_energy_set" "', argument " "2"" of type '" "long double""'");
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "PolytopeVector_energy_set" "', argument " "2"" of type '" "mpq_class""'");
     } else {
-      long double * temp = reinterpret_cast< long double * >(argp2);
+      mpq_class * temp = reinterpret_cast< mpq_class * >(argp2);
       arg2 = *temp;
       if (SWIG_IsNewObj(res2)) delete temp;
     }
@@ -3585,7 +3586,7 @@ SWIGINTERN PyObject *_wrap_PolytopeVector_energy_get(PyObject *SWIGUNUSEDPARM(se
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
-  long double result;
+  mpq_class result;
   
   if (!PyArg_ParseTuple(args,(char *)"O:PolytopeVector_energy_get",&obj0)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_PolytopeVector, 0 |  0 );
@@ -3593,8 +3594,8 @@ SWIGINTERN PyObject *_wrap_PolytopeVector_energy_get(PyObject *SWIGUNUSEDPARM(se
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "PolytopeVector_energy_get" "', argument " "1"" of type '" "PolytopeVector *""'"); 
   }
   arg1 = reinterpret_cast< PolytopeVector * >(argp1);
-  result = (long double) ((arg1)->energy);
-  resultobj = SWIG_NewPointerObj((new long double(static_cast< const long double& >(result))), SWIGTYPE_p_long_double, SWIG_POINTER_OWN |  0 );
+  result =  ((arg1)->energy);
+  resultobj = SWIG_NewPointerObj((new mpq_class(static_cast< const mpq_class& >(result))), SWIGTYPE_p_mpq_class, SWIG_POINTER_OWN |  0 );
   return resultobj;
 fail:
   return NULL;
@@ -3645,7 +3646,7 @@ SWIGINTERN PyObject *PolytopeVector_swigregister(PyObject *SWIGUNUSEDPARM(self),
 SWIGINTERN PyObject *_wrap_ParameterVector_a_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   ParameterVector *arg1 = (ParameterVector *) 0 ;
-  long double arg2 ;
+  mpq_class arg2 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   void *argp2 ;
@@ -3660,14 +3661,14 @@ SWIGINTERN PyObject *_wrap_ParameterVector_a_set(PyObject *SWIGUNUSEDPARM(self),
   }
   arg1 = reinterpret_cast< ParameterVector * >(argp1);
   {
-    res2 = SWIG_ConvertPtr(obj1, &argp2, SWIGTYPE_p_long_double,  0  | 0);
+    res2 = SWIG_ConvertPtr(obj1, &argp2, SWIGTYPE_p_mpq_class,  0  | 0);
     if (!SWIG_IsOK(res2)) {
-      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "ParameterVector_a_set" "', argument " "2"" of type '" "long double""'"); 
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "ParameterVector_a_set" "', argument " "2"" of type '" "mpq_class""'"); 
     }  
     if (!argp2) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "ParameterVector_a_set" "', argument " "2"" of type '" "long double""'");
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "ParameterVector_a_set" "', argument " "2"" of type '" "mpq_class""'");
     } else {
-      long double * temp = reinterpret_cast< long double * >(argp2);
+      mpq_class * temp = reinterpret_cast< mpq_class * >(argp2);
       arg2 = *temp;
       if (SWIG_IsNewObj(res2)) delete temp;
     }
@@ -3686,7 +3687,7 @@ SWIGINTERN PyObject *_wrap_ParameterVector_a_get(PyObject *SWIGUNUSEDPARM(self),
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
-  long double result;
+  mpq_class result;
   
   if (!PyArg_ParseTuple(args,(char *)"O:ParameterVector_a_get",&obj0)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_ParameterVector, 0 |  0 );
@@ -3694,8 +3695,8 @@ SWIGINTERN PyObject *_wrap_ParameterVector_a_get(PyObject *SWIGUNUSEDPARM(self),
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ParameterVector_a_get" "', argument " "1"" of type '" "ParameterVector *""'"); 
   }
   arg1 = reinterpret_cast< ParameterVector * >(argp1);
-  result = (long double) ((arg1)->a);
-  resultobj = SWIG_NewPointerObj((new long double(static_cast< const long double& >(result))), SWIGTYPE_p_long_double, SWIG_POINTER_OWN |  0 );
+  result =  ((arg1)->a);
+  resultobj = SWIG_NewPointerObj((new mpq_class(static_cast< const mpq_class& >(result))), SWIGTYPE_p_mpq_class, SWIG_POINTER_OWN |  0 );
   return resultobj;
 fail:
   return NULL;
@@ -3705,7 +3706,7 @@ fail:
 SWIGINTERN PyObject *_wrap_ParameterVector_b_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   ParameterVector *arg1 = (ParameterVector *) 0 ;
-  long double arg2 ;
+  mpq_class arg2 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   void *argp2 ;
@@ -3720,14 +3721,14 @@ SWIGINTERN PyObject *_wrap_ParameterVector_b_set(PyObject *SWIGUNUSEDPARM(self),
   }
   arg1 = reinterpret_cast< ParameterVector * >(argp1);
   {
-    res2 = SWIG_ConvertPtr(obj1, &argp2, SWIGTYPE_p_long_double,  0  | 0);
+    res2 = SWIG_ConvertPtr(obj1, &argp2, SWIGTYPE_p_mpq_class,  0  | 0);
     if (!SWIG_IsOK(res2)) {
-      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "ParameterVector_b_set" "', argument " "2"" of type '" "long double""'"); 
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "ParameterVector_b_set" "', argument " "2"" of type '" "mpq_class""'"); 
     }  
     if (!argp2) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "ParameterVector_b_set" "', argument " "2"" of type '" "long double""'");
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "ParameterVector_b_set" "', argument " "2"" of type '" "mpq_class""'");
     } else {
-      long double * temp = reinterpret_cast< long double * >(argp2);
+      mpq_class * temp = reinterpret_cast< mpq_class * >(argp2);
       arg2 = *temp;
       if (SWIG_IsNewObj(res2)) delete temp;
     }
@@ -3746,7 +3747,7 @@ SWIGINTERN PyObject *_wrap_ParameterVector_b_get(PyObject *SWIGUNUSEDPARM(self),
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
-  long double result;
+  mpq_class result;
   
   if (!PyArg_ParseTuple(args,(char *)"O:ParameterVector_b_get",&obj0)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_ParameterVector, 0 |  0 );
@@ -3754,8 +3755,8 @@ SWIGINTERN PyObject *_wrap_ParameterVector_b_get(PyObject *SWIGUNUSEDPARM(self),
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ParameterVector_b_get" "', argument " "1"" of type '" "ParameterVector *""'"); 
   }
   arg1 = reinterpret_cast< ParameterVector * >(argp1);
-  result = (long double) ((arg1)->b);
-  resultobj = SWIG_NewPointerObj((new long double(static_cast< const long double& >(result))), SWIGTYPE_p_long_double, SWIG_POINTER_OWN |  0 );
+  result =  ((arg1)->b);
+  resultobj = SWIG_NewPointerObj((new mpq_class(static_cast< const mpq_class& >(result))), SWIGTYPE_p_mpq_class, SWIG_POINTER_OWN |  0 );
   return resultobj;
 fail:
   return NULL;
@@ -3765,7 +3766,7 @@ fail:
 SWIGINTERN PyObject *_wrap_ParameterVector_c_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   ParameterVector *arg1 = (ParameterVector *) 0 ;
-  long double arg2 ;
+  mpq_class arg2 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   void *argp2 ;
@@ -3780,14 +3781,14 @@ SWIGINTERN PyObject *_wrap_ParameterVector_c_set(PyObject *SWIGUNUSEDPARM(self),
   }
   arg1 = reinterpret_cast< ParameterVector * >(argp1);
   {
-    res2 = SWIG_ConvertPtr(obj1, &argp2, SWIGTYPE_p_long_double,  0  | 0);
+    res2 = SWIG_ConvertPtr(obj1, &argp2, SWIGTYPE_p_mpq_class,  0  | 0);
     if (!SWIG_IsOK(res2)) {
-      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "ParameterVector_c_set" "', argument " "2"" of type '" "long double""'"); 
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "ParameterVector_c_set" "', argument " "2"" of type '" "mpq_class""'"); 
     }  
     if (!argp2) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "ParameterVector_c_set" "', argument " "2"" of type '" "long double""'");
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "ParameterVector_c_set" "', argument " "2"" of type '" "mpq_class""'");
     } else {
-      long double * temp = reinterpret_cast< long double * >(argp2);
+      mpq_class * temp = reinterpret_cast< mpq_class * >(argp2);
       arg2 = *temp;
       if (SWIG_IsNewObj(res2)) delete temp;
     }
@@ -3806,7 +3807,7 @@ SWIGINTERN PyObject *_wrap_ParameterVector_c_get(PyObject *SWIGUNUSEDPARM(self),
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
-  long double result;
+  mpq_class result;
   
   if (!PyArg_ParseTuple(args,(char *)"O:ParameterVector_c_get",&obj0)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_ParameterVector, 0 |  0 );
@@ -3814,8 +3815,8 @@ SWIGINTERN PyObject *_wrap_ParameterVector_c_get(PyObject *SWIGUNUSEDPARM(self),
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ParameterVector_c_get" "', argument " "1"" of type '" "ParameterVector *""'"); 
   }
   arg1 = reinterpret_cast< ParameterVector * >(argp1);
-  result = (long double) ((arg1)->c);
-  resultobj = SWIG_NewPointerObj((new long double(static_cast< const long double& >(result))), SWIGTYPE_p_long_double, SWIG_POINTER_OWN |  0 );
+  result =  ((arg1)->c);
+  resultobj = SWIG_NewPointerObj((new mpq_class(static_cast< const mpq_class& >(result))), SWIGTYPE_p_mpq_class, SWIG_POINTER_OWN |  0 );
   return resultobj;
 fail:
   return NULL;
@@ -3825,7 +3826,7 @@ fail:
 SWIGINTERN PyObject *_wrap_ParameterVector_d_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   ParameterVector *arg1 = (ParameterVector *) 0 ;
-  long double arg2 ;
+  mpq_class arg2 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   void *argp2 ;
@@ -3840,14 +3841,14 @@ SWIGINTERN PyObject *_wrap_ParameterVector_d_set(PyObject *SWIGUNUSEDPARM(self),
   }
   arg1 = reinterpret_cast< ParameterVector * >(argp1);
   {
-    res2 = SWIG_ConvertPtr(obj1, &argp2, SWIGTYPE_p_long_double,  0  | 0);
+    res2 = SWIG_ConvertPtr(obj1, &argp2, SWIGTYPE_p_mpq_class,  0  | 0);
     if (!SWIG_IsOK(res2)) {
-      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "ParameterVector_d_set" "', argument " "2"" of type '" "long double""'"); 
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "ParameterVector_d_set" "', argument " "2"" of type '" "mpq_class""'"); 
     }  
     if (!argp2) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "ParameterVector_d_set" "', argument " "2"" of type '" "long double""'");
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "ParameterVector_d_set" "', argument " "2"" of type '" "mpq_class""'");
     } else {
-      long double * temp = reinterpret_cast< long double * >(argp2);
+      mpq_class * temp = reinterpret_cast< mpq_class * >(argp2);
       arg2 = *temp;
       if (SWIG_IsNewObj(res2)) delete temp;
     }
@@ -3866,7 +3867,7 @@ SWIGINTERN PyObject *_wrap_ParameterVector_d_get(PyObject *SWIGUNUSEDPARM(self),
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
-  long double result;
+  mpq_class result;
   
   if (!PyArg_ParseTuple(args,(char *)"O:ParameterVector_d_get",&obj0)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_ParameterVector, 0 |  0 );
@@ -3874,8 +3875,8 @@ SWIGINTERN PyObject *_wrap_ParameterVector_d_get(PyObject *SWIGUNUSEDPARM(self),
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ParameterVector_d_get" "', argument " "1"" of type '" "ParameterVector *""'"); 
   }
   arg1 = reinterpret_cast< ParameterVector * >(argp1);
-  result = (long double) ((arg1)->d);
-  resultobj = SWIG_NewPointerObj((new long double(static_cast< const long double& >(result))), SWIGTYPE_p_long_double, SWIG_POINTER_OWN |  0 );
+  result =  ((arg1)->d);
+  resultobj = SWIG_NewPointerObj((new mpq_class(static_cast< const mpq_class& >(result))), SWIGTYPE_p_mpq_class, SWIG_POINTER_OWN |  0 );
   return resultobj;
 fail:
   return NULL;
@@ -3928,19 +3929,19 @@ SWIGINTERN PyObject *_wrap_mfe_main__SWIG_0(PyObject *SWIGUNUSEDPARM(self), PyOb
   std::string arg1 ;
   std::string arg2 ;
   std::string arg3 ;
-  double arg4 ;
-  double arg5 ;
-  double arg6 ;
-  double arg7 ;
+  mpq_class arg4 ;
+  mpq_class arg5 ;
+  mpq_class arg6 ;
+  mpq_class arg7 ;
   int arg8 ;
-  double val4 ;
-  int ecode4 = 0 ;
-  double val5 ;
-  int ecode5 = 0 ;
-  double val6 ;
-  int ecode6 = 0 ;
-  double val7 ;
-  int ecode7 = 0 ;
+  void *argp4 ;
+  int res4 = 0 ;
+  void *argp5 ;
+  int res5 = 0 ;
+  void *argp6 ;
+  int res6 = 0 ;
+  void *argp7 ;
+  int res7 = 0 ;
   int val8 ;
   int ecode8 = 0 ;
   PyObject * obj0 = 0 ;
@@ -3981,26 +3982,58 @@ SWIGINTERN PyObject *_wrap_mfe_main__SWIG_0(PyObject *SWIGUNUSEDPARM(self), PyOb
     arg3 = *ptr;
     if (SWIG_IsNewObj(res)) delete ptr;
   }
-  ecode4 = SWIG_AsVal_double(obj3, &val4);
-  if (!SWIG_IsOK(ecode4)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode4), "in method '" "mfe_main" "', argument " "4"" of type '" "double""'");
-  } 
-  arg4 = static_cast< double >(val4);
-  ecode5 = SWIG_AsVal_double(obj4, &val5);
-  if (!SWIG_IsOK(ecode5)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode5), "in method '" "mfe_main" "', argument " "5"" of type '" "double""'");
-  } 
-  arg5 = static_cast< double >(val5);
-  ecode6 = SWIG_AsVal_double(obj5, &val6);
-  if (!SWIG_IsOK(ecode6)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode6), "in method '" "mfe_main" "', argument " "6"" of type '" "double""'");
-  } 
-  arg6 = static_cast< double >(val6);
-  ecode7 = SWIG_AsVal_double(obj6, &val7);
-  if (!SWIG_IsOK(ecode7)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode7), "in method '" "mfe_main" "', argument " "7"" of type '" "double""'");
-  } 
-  arg7 = static_cast< double >(val7);
+  {
+    res4 = SWIG_ConvertPtr(obj3, &argp4, SWIGTYPE_p_mpq_class,  0  | 0);
+    if (!SWIG_IsOK(res4)) {
+      SWIG_exception_fail(SWIG_ArgError(res4), "in method '" "mfe_main" "', argument " "4"" of type '" "mpq_class""'"); 
+    }  
+    if (!argp4) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "mfe_main" "', argument " "4"" of type '" "mpq_class""'");
+    } else {
+      mpq_class * temp = reinterpret_cast< mpq_class * >(argp4);
+      arg4 = *temp;
+      if (SWIG_IsNewObj(res4)) delete temp;
+    }
+  }
+  {
+    res5 = SWIG_ConvertPtr(obj4, &argp5, SWIGTYPE_p_mpq_class,  0  | 0);
+    if (!SWIG_IsOK(res5)) {
+      SWIG_exception_fail(SWIG_ArgError(res5), "in method '" "mfe_main" "', argument " "5"" of type '" "mpq_class""'"); 
+    }  
+    if (!argp5) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "mfe_main" "', argument " "5"" of type '" "mpq_class""'");
+    } else {
+      mpq_class * temp = reinterpret_cast< mpq_class * >(argp5);
+      arg5 = *temp;
+      if (SWIG_IsNewObj(res5)) delete temp;
+    }
+  }
+  {
+    res6 = SWIG_ConvertPtr(obj5, &argp6, SWIGTYPE_p_mpq_class,  0  | 0);
+    if (!SWIG_IsOK(res6)) {
+      SWIG_exception_fail(SWIG_ArgError(res6), "in method '" "mfe_main" "', argument " "6"" of type '" "mpq_class""'"); 
+    }  
+    if (!argp6) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "mfe_main" "', argument " "6"" of type '" "mpq_class""'");
+    } else {
+      mpq_class * temp = reinterpret_cast< mpq_class * >(argp6);
+      arg6 = *temp;
+      if (SWIG_IsNewObj(res6)) delete temp;
+    }
+  }
+  {
+    res7 = SWIG_ConvertPtr(obj6, &argp7, SWIGTYPE_p_mpq_class,  0  | 0);
+    if (!SWIG_IsOK(res7)) {
+      SWIG_exception_fail(SWIG_ArgError(res7), "in method '" "mfe_main" "', argument " "7"" of type '" "mpq_class""'"); 
+    }  
+    if (!argp7) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "mfe_main" "', argument " "7"" of type '" "mpq_class""'");
+    } else {
+      mpq_class * temp = reinterpret_cast< mpq_class * >(argp7);
+      arg7 = *temp;
+      if (SWIG_IsNewObj(res7)) delete temp;
+    }
+  }
   ecode8 = SWIG_AsVal_int(obj7, &val8);
   if (!SWIG_IsOK(ecode8)) {
     SWIG_exception_fail(SWIG_ArgError(ecode8), "in method '" "mfe_main" "', argument " "8"" of type '" "int""'");
@@ -4019,18 +4052,18 @@ SWIGINTERN PyObject *_wrap_mfe_main__SWIG_1(PyObject *SWIGUNUSEDPARM(self), PyOb
   std::string arg1 ;
   std::string arg2 ;
   std::string arg3 ;
-  double arg4 ;
-  double arg5 ;
-  double arg6 ;
-  double arg7 ;
-  double val4 ;
-  int ecode4 = 0 ;
-  double val5 ;
-  int ecode5 = 0 ;
-  double val6 ;
-  int ecode6 = 0 ;
-  double val7 ;
-  int ecode7 = 0 ;
+  mpq_class arg4 ;
+  mpq_class arg5 ;
+  mpq_class arg6 ;
+  mpq_class arg7 ;
+  void *argp4 ;
+  int res4 = 0 ;
+  void *argp5 ;
+  int res5 = 0 ;
+  void *argp6 ;
+  int res6 = 0 ;
+  void *argp7 ;
+  int res7 = 0 ;
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
   PyObject * obj2 = 0 ;
@@ -4068,26 +4101,58 @@ SWIGINTERN PyObject *_wrap_mfe_main__SWIG_1(PyObject *SWIGUNUSEDPARM(self), PyOb
     arg3 = *ptr;
     if (SWIG_IsNewObj(res)) delete ptr;
   }
-  ecode4 = SWIG_AsVal_double(obj3, &val4);
-  if (!SWIG_IsOK(ecode4)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode4), "in method '" "mfe_main" "', argument " "4"" of type '" "double""'");
-  } 
-  arg4 = static_cast< double >(val4);
-  ecode5 = SWIG_AsVal_double(obj4, &val5);
-  if (!SWIG_IsOK(ecode5)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode5), "in method '" "mfe_main" "', argument " "5"" of type '" "double""'");
-  } 
-  arg5 = static_cast< double >(val5);
-  ecode6 = SWIG_AsVal_double(obj5, &val6);
-  if (!SWIG_IsOK(ecode6)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode6), "in method '" "mfe_main" "', argument " "6"" of type '" "double""'");
-  } 
-  arg6 = static_cast< double >(val6);
-  ecode7 = SWIG_AsVal_double(obj6, &val7);
-  if (!SWIG_IsOK(ecode7)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode7), "in method '" "mfe_main" "', argument " "7"" of type '" "double""'");
-  } 
-  arg7 = static_cast< double >(val7);
+  {
+    res4 = SWIG_ConvertPtr(obj3, &argp4, SWIGTYPE_p_mpq_class,  0  | 0);
+    if (!SWIG_IsOK(res4)) {
+      SWIG_exception_fail(SWIG_ArgError(res4), "in method '" "mfe_main" "', argument " "4"" of type '" "mpq_class""'"); 
+    }  
+    if (!argp4) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "mfe_main" "', argument " "4"" of type '" "mpq_class""'");
+    } else {
+      mpq_class * temp = reinterpret_cast< mpq_class * >(argp4);
+      arg4 = *temp;
+      if (SWIG_IsNewObj(res4)) delete temp;
+    }
+  }
+  {
+    res5 = SWIG_ConvertPtr(obj4, &argp5, SWIGTYPE_p_mpq_class,  0  | 0);
+    if (!SWIG_IsOK(res5)) {
+      SWIG_exception_fail(SWIG_ArgError(res5), "in method '" "mfe_main" "', argument " "5"" of type '" "mpq_class""'"); 
+    }  
+    if (!argp5) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "mfe_main" "', argument " "5"" of type '" "mpq_class""'");
+    } else {
+      mpq_class * temp = reinterpret_cast< mpq_class * >(argp5);
+      arg5 = *temp;
+      if (SWIG_IsNewObj(res5)) delete temp;
+    }
+  }
+  {
+    res6 = SWIG_ConvertPtr(obj5, &argp6, SWIGTYPE_p_mpq_class,  0  | 0);
+    if (!SWIG_IsOK(res6)) {
+      SWIG_exception_fail(SWIG_ArgError(res6), "in method '" "mfe_main" "', argument " "6"" of type '" "mpq_class""'"); 
+    }  
+    if (!argp6) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "mfe_main" "', argument " "6"" of type '" "mpq_class""'");
+    } else {
+      mpq_class * temp = reinterpret_cast< mpq_class * >(argp6);
+      arg6 = *temp;
+      if (SWIG_IsNewObj(res6)) delete temp;
+    }
+  }
+  {
+    res7 = SWIG_ConvertPtr(obj6, &argp7, SWIGTYPE_p_mpq_class,  0  | 0);
+    if (!SWIG_IsOK(res7)) {
+      SWIG_exception_fail(SWIG_ArgError(res7), "in method '" "mfe_main" "', argument " "7"" of type '" "mpq_class""'"); 
+    }  
+    if (!argp7) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "mfe_main" "', argument " "7"" of type '" "mpq_class""'");
+    } else {
+      mpq_class * temp = reinterpret_cast< mpq_class * >(argp7);
+      arg7 = *temp;
+      if (SWIG_IsNewObj(res7)) delete temp;
+    }
+  }
   result = mfe_main(arg1,arg2,arg3,arg4,arg5,arg6,arg7);
   resultobj = SWIG_NewPointerObj((new PolytopeVector(static_cast< const PolytopeVector& >(result))), SWIGTYPE_p_PolytopeVector, SWIG_POINTER_OWN |  0 );
   return resultobj;
@@ -4101,15 +4166,15 @@ SWIGINTERN PyObject *_wrap_mfe_main__SWIG_2(PyObject *SWIGUNUSEDPARM(self), PyOb
   std::string arg1 ;
   std::string arg2 ;
   std::string arg3 ;
-  double arg4 ;
-  double arg5 ;
-  double arg6 ;
-  double val4 ;
-  int ecode4 = 0 ;
-  double val5 ;
-  int ecode5 = 0 ;
-  double val6 ;
-  int ecode6 = 0 ;
+  mpq_class arg4 ;
+  mpq_class arg5 ;
+  mpq_class arg6 ;
+  void *argp4 ;
+  int res4 = 0 ;
+  void *argp5 ;
+  int res5 = 0 ;
+  void *argp6 ;
+  int res6 = 0 ;
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
   PyObject * obj2 = 0 ;
@@ -4146,21 +4211,45 @@ SWIGINTERN PyObject *_wrap_mfe_main__SWIG_2(PyObject *SWIGUNUSEDPARM(self), PyOb
     arg3 = *ptr;
     if (SWIG_IsNewObj(res)) delete ptr;
   }
-  ecode4 = SWIG_AsVal_double(obj3, &val4);
-  if (!SWIG_IsOK(ecode4)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode4), "in method '" "mfe_main" "', argument " "4"" of type '" "double""'");
-  } 
-  arg4 = static_cast< double >(val4);
-  ecode5 = SWIG_AsVal_double(obj4, &val5);
-  if (!SWIG_IsOK(ecode5)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode5), "in method '" "mfe_main" "', argument " "5"" of type '" "double""'");
-  } 
-  arg5 = static_cast< double >(val5);
-  ecode6 = SWIG_AsVal_double(obj5, &val6);
-  if (!SWIG_IsOK(ecode6)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode6), "in method '" "mfe_main" "', argument " "6"" of type '" "double""'");
-  } 
-  arg6 = static_cast< double >(val6);
+  {
+    res4 = SWIG_ConvertPtr(obj3, &argp4, SWIGTYPE_p_mpq_class,  0  | 0);
+    if (!SWIG_IsOK(res4)) {
+      SWIG_exception_fail(SWIG_ArgError(res4), "in method '" "mfe_main" "', argument " "4"" of type '" "mpq_class""'"); 
+    }  
+    if (!argp4) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "mfe_main" "', argument " "4"" of type '" "mpq_class""'");
+    } else {
+      mpq_class * temp = reinterpret_cast< mpq_class * >(argp4);
+      arg4 = *temp;
+      if (SWIG_IsNewObj(res4)) delete temp;
+    }
+  }
+  {
+    res5 = SWIG_ConvertPtr(obj4, &argp5, SWIGTYPE_p_mpq_class,  0  | 0);
+    if (!SWIG_IsOK(res5)) {
+      SWIG_exception_fail(SWIG_ArgError(res5), "in method '" "mfe_main" "', argument " "5"" of type '" "mpq_class""'"); 
+    }  
+    if (!argp5) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "mfe_main" "', argument " "5"" of type '" "mpq_class""'");
+    } else {
+      mpq_class * temp = reinterpret_cast< mpq_class * >(argp5);
+      arg5 = *temp;
+      if (SWIG_IsNewObj(res5)) delete temp;
+    }
+  }
+  {
+    res6 = SWIG_ConvertPtr(obj5, &argp6, SWIGTYPE_p_mpq_class,  0  | 0);
+    if (!SWIG_IsOK(res6)) {
+      SWIG_exception_fail(SWIG_ArgError(res6), "in method '" "mfe_main" "', argument " "6"" of type '" "mpq_class""'"); 
+    }  
+    if (!argp6) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "mfe_main" "', argument " "6"" of type '" "mpq_class""'");
+    } else {
+      mpq_class * temp = reinterpret_cast< mpq_class * >(argp6);
+      arg6 = *temp;
+      if (SWIG_IsNewObj(res6)) delete temp;
+    }
+  }
   result = mfe_main(arg1,arg2,arg3,arg4,arg5,arg6);
   resultobj = SWIG_NewPointerObj((new PolytopeVector(static_cast< const PolytopeVector& >(result))), SWIGTYPE_p_PolytopeVector, SWIG_POINTER_OWN |  0 );
   return resultobj;
@@ -4174,12 +4263,12 @@ SWIGINTERN PyObject *_wrap_mfe_main__SWIG_3(PyObject *SWIGUNUSEDPARM(self), PyOb
   std::string arg1 ;
   std::string arg2 ;
   std::string arg3 ;
-  double arg4 ;
-  double arg5 ;
-  double val4 ;
-  int ecode4 = 0 ;
-  double val5 ;
-  int ecode5 = 0 ;
+  mpq_class arg4 ;
+  mpq_class arg5 ;
+  void *argp4 ;
+  int res4 = 0 ;
+  void *argp5 ;
+  int res5 = 0 ;
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
   PyObject * obj2 = 0 ;
@@ -4215,16 +4304,32 @@ SWIGINTERN PyObject *_wrap_mfe_main__SWIG_3(PyObject *SWIGUNUSEDPARM(self), PyOb
     arg3 = *ptr;
     if (SWIG_IsNewObj(res)) delete ptr;
   }
-  ecode4 = SWIG_AsVal_double(obj3, &val4);
-  if (!SWIG_IsOK(ecode4)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode4), "in method '" "mfe_main" "', argument " "4"" of type '" "double""'");
-  } 
-  arg4 = static_cast< double >(val4);
-  ecode5 = SWIG_AsVal_double(obj4, &val5);
-  if (!SWIG_IsOK(ecode5)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode5), "in method '" "mfe_main" "', argument " "5"" of type '" "double""'");
-  } 
-  arg5 = static_cast< double >(val5);
+  {
+    res4 = SWIG_ConvertPtr(obj3, &argp4, SWIGTYPE_p_mpq_class,  0  | 0);
+    if (!SWIG_IsOK(res4)) {
+      SWIG_exception_fail(SWIG_ArgError(res4), "in method '" "mfe_main" "', argument " "4"" of type '" "mpq_class""'"); 
+    }  
+    if (!argp4) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "mfe_main" "', argument " "4"" of type '" "mpq_class""'");
+    } else {
+      mpq_class * temp = reinterpret_cast< mpq_class * >(argp4);
+      arg4 = *temp;
+      if (SWIG_IsNewObj(res4)) delete temp;
+    }
+  }
+  {
+    res5 = SWIG_ConvertPtr(obj4, &argp5, SWIGTYPE_p_mpq_class,  0  | 0);
+    if (!SWIG_IsOK(res5)) {
+      SWIG_exception_fail(SWIG_ArgError(res5), "in method '" "mfe_main" "', argument " "5"" of type '" "mpq_class""'"); 
+    }  
+    if (!argp5) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "mfe_main" "', argument " "5"" of type '" "mpq_class""'");
+    } else {
+      mpq_class * temp = reinterpret_cast< mpq_class * >(argp5);
+      arg5 = *temp;
+      if (SWIG_IsNewObj(res5)) delete temp;
+    }
+  }
   result = mfe_main(arg1,arg2,arg3,arg4,arg5);
   resultobj = SWIG_NewPointerObj((new PolytopeVector(static_cast< const PolytopeVector& >(result))), SWIGTYPE_p_PolytopeVector, SWIG_POINTER_OWN |  0 );
   return resultobj;
@@ -4238,9 +4343,9 @@ SWIGINTERN PyObject *_wrap_mfe_main__SWIG_4(PyObject *SWIGUNUSEDPARM(self), PyOb
   std::string arg1 ;
   std::string arg2 ;
   std::string arg3 ;
-  double arg4 ;
-  double val4 ;
-  int ecode4 = 0 ;
+  mpq_class arg4 ;
+  void *argp4 ;
+  int res4 = 0 ;
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
   PyObject * obj2 = 0 ;
@@ -4275,11 +4380,19 @@ SWIGINTERN PyObject *_wrap_mfe_main__SWIG_4(PyObject *SWIGUNUSEDPARM(self), PyOb
     arg3 = *ptr;
     if (SWIG_IsNewObj(res)) delete ptr;
   }
-  ecode4 = SWIG_AsVal_double(obj3, &val4);
-  if (!SWIG_IsOK(ecode4)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode4), "in method '" "mfe_main" "', argument " "4"" of type '" "double""'");
-  } 
-  arg4 = static_cast< double >(val4);
+  {
+    res4 = SWIG_ConvertPtr(obj3, &argp4, SWIGTYPE_p_mpq_class,  0  | 0);
+    if (!SWIG_IsOK(res4)) {
+      SWIG_exception_fail(SWIG_ArgError(res4), "in method '" "mfe_main" "', argument " "4"" of type '" "mpq_class""'"); 
+    }  
+    if (!argp4) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "mfe_main" "', argument " "4"" of type '" "mpq_class""'");
+    } else {
+      mpq_class * temp = reinterpret_cast< mpq_class * >(argp4);
+      arg4 = *temp;
+      if (SWIG_IsNewObj(res4)) delete temp;
+    }
+  }
   result = mfe_main(arg1,arg2,arg3,arg4);
   resultobj = SWIG_NewPointerObj((new PolytopeVector(static_cast< const PolytopeVector& >(result))), SWIGTYPE_p_PolytopeVector, SWIG_POINTER_OWN |  0 );
   return resultobj;
@@ -4371,10 +4484,8 @@ SWIGINTERN PyObject *_wrap_mfe_main(PyObject *self, PyObject *args) {
         int res = SWIG_AsPtr_std_string(argv[2], (std::string**)(0));
         _v = SWIG_CheckState(res);
         if (_v) {
-          {
-            int res = SWIG_AsVal_double(argv[3], NULL);
-            _v = SWIG_CheckState(res);
-          }
+          int res = SWIG_ConvertPtr(argv[3], 0, SWIGTYPE_p_mpq_class, 0);
+          _v = SWIG_CheckState(res);
           if (_v) {
             return _wrap_mfe_main__SWIG_4(self, args);
           }
@@ -4393,15 +4504,11 @@ SWIGINTERN PyObject *_wrap_mfe_main(PyObject *self, PyObject *args) {
         int res = SWIG_AsPtr_std_string(argv[2], (std::string**)(0));
         _v = SWIG_CheckState(res);
         if (_v) {
-          {
-            int res = SWIG_AsVal_double(argv[3], NULL);
-            _v = SWIG_CheckState(res);
-          }
+          int res = SWIG_ConvertPtr(argv[3], 0, SWIGTYPE_p_mpq_class, 0);
+          _v = SWIG_CheckState(res);
           if (_v) {
-            {
-              int res = SWIG_AsVal_double(argv[4], NULL);
-              _v = SWIG_CheckState(res);
-            }
+            int res = SWIG_ConvertPtr(argv[4], 0, SWIGTYPE_p_mpq_class, 0);
+            _v = SWIG_CheckState(res);
             if (_v) {
               return _wrap_mfe_main__SWIG_3(self, args);
             }
@@ -4421,20 +4528,14 @@ SWIGINTERN PyObject *_wrap_mfe_main(PyObject *self, PyObject *args) {
         int res = SWIG_AsPtr_std_string(argv[2], (std::string**)(0));
         _v = SWIG_CheckState(res);
         if (_v) {
-          {
-            int res = SWIG_AsVal_double(argv[3], NULL);
-            _v = SWIG_CheckState(res);
-          }
+          int res = SWIG_ConvertPtr(argv[3], 0, SWIGTYPE_p_mpq_class, 0);
+          _v = SWIG_CheckState(res);
           if (_v) {
-            {
-              int res = SWIG_AsVal_double(argv[4], NULL);
-              _v = SWIG_CheckState(res);
-            }
+            int res = SWIG_ConvertPtr(argv[4], 0, SWIGTYPE_p_mpq_class, 0);
+            _v = SWIG_CheckState(res);
             if (_v) {
-              {
-                int res = SWIG_AsVal_double(argv[5], NULL);
-                _v = SWIG_CheckState(res);
-              }
+              int res = SWIG_ConvertPtr(argv[5], 0, SWIGTYPE_p_mpq_class, 0);
+              _v = SWIG_CheckState(res);
               if (_v) {
                 return _wrap_mfe_main__SWIG_2(self, args);
               }
@@ -4455,25 +4556,17 @@ SWIGINTERN PyObject *_wrap_mfe_main(PyObject *self, PyObject *args) {
         int res = SWIG_AsPtr_std_string(argv[2], (std::string**)(0));
         _v = SWIG_CheckState(res);
         if (_v) {
-          {
-            int res = SWIG_AsVal_double(argv[3], NULL);
-            _v = SWIG_CheckState(res);
-          }
+          int res = SWIG_ConvertPtr(argv[3], 0, SWIGTYPE_p_mpq_class, 0);
+          _v = SWIG_CheckState(res);
           if (_v) {
-            {
-              int res = SWIG_AsVal_double(argv[4], NULL);
-              _v = SWIG_CheckState(res);
-            }
+            int res = SWIG_ConvertPtr(argv[4], 0, SWIGTYPE_p_mpq_class, 0);
+            _v = SWIG_CheckState(res);
             if (_v) {
-              {
-                int res = SWIG_AsVal_double(argv[5], NULL);
-                _v = SWIG_CheckState(res);
-              }
+              int res = SWIG_ConvertPtr(argv[5], 0, SWIGTYPE_p_mpq_class, 0);
+              _v = SWIG_CheckState(res);
               if (_v) {
-                {
-                  int res = SWIG_AsVal_double(argv[6], NULL);
-                  _v = SWIG_CheckState(res);
-                }
+                int res = SWIG_ConvertPtr(argv[6], 0, SWIGTYPE_p_mpq_class, 0);
+                _v = SWIG_CheckState(res);
                 if (_v) {
                   return _wrap_mfe_main__SWIG_1(self, args);
                 }
@@ -4495,25 +4588,17 @@ SWIGINTERN PyObject *_wrap_mfe_main(PyObject *self, PyObject *args) {
         int res = SWIG_AsPtr_std_string(argv[2], (std::string**)(0));
         _v = SWIG_CheckState(res);
         if (_v) {
-          {
-            int res = SWIG_AsVal_double(argv[3], NULL);
-            _v = SWIG_CheckState(res);
-          }
+          int res = SWIG_ConvertPtr(argv[3], 0, SWIGTYPE_p_mpq_class, 0);
+          _v = SWIG_CheckState(res);
           if (_v) {
-            {
-              int res = SWIG_AsVal_double(argv[4], NULL);
-              _v = SWIG_CheckState(res);
-            }
+            int res = SWIG_ConvertPtr(argv[4], 0, SWIGTYPE_p_mpq_class, 0);
+            _v = SWIG_CheckState(res);
             if (_v) {
-              {
-                int res = SWIG_AsVal_double(argv[5], NULL);
-                _v = SWIG_CheckState(res);
-              }
+              int res = SWIG_ConvertPtr(argv[5], 0, SWIGTYPE_p_mpq_class, 0);
+              _v = SWIG_CheckState(res);
               if (_v) {
-                {
-                  int res = SWIG_AsVal_double(argv[6], NULL);
-                  _v = SWIG_CheckState(res);
-                }
+                int res = SWIG_ConvertPtr(argv[6], 0, SWIGTYPE_p_mpq_class, 0);
+                _v = SWIG_CheckState(res);
                 if (_v) {
                   {
                     int res = SWIG_AsVal_int(argv[7], NULL);
@@ -4534,11 +4619,11 @@ SWIGINTERN PyObject *_wrap_mfe_main(PyObject *self, PyObject *args) {
 fail:
   SWIG_SetErrorMsg(PyExc_NotImplementedError,"Wrong number or type of arguments for overloaded function 'mfe_main'.\n"
     "  Possible C/C++ prototypes are:\n"
-    "    mfe_main(std::string,std::string,std::string,double,double,double,double,int)\n"
-    "    mfe_main(std::string,std::string,std::string,double,double,double,double)\n"
-    "    mfe_main(std::string,std::string,std::string,double,double,double)\n"
-    "    mfe_main(std::string,std::string,std::string,double,double)\n"
-    "    mfe_main(std::string,std::string,std::string,double)\n"
+    "    mfe_main(std::string,std::string,std::string,mpq_class,mpq_class,mpq_class,mpq_class,int)\n"
+    "    mfe_main(std::string,std::string,std::string,mpq_class,mpq_class,mpq_class,mpq_class)\n"
+    "    mfe_main(std::string,std::string,std::string,mpq_class,mpq_class,mpq_class)\n"
+    "    mfe_main(std::string,std::string,std::string,mpq_class,mpq_class)\n"
+    "    mfe_main(std::string,std::string,std::string,mpq_class)\n"
     "    mfe_main(std::string,std::string,std::string)\n");
   return 0;
 }
@@ -4580,25 +4665,25 @@ static PyMethodDef SwigMethods[] = {
 static swig_type_info _swigt__p_ParameterVector = {"_p_ParameterVector", "ParameterVector *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_PolytopeVector = {"_p_PolytopeVector", "PolytopeVector *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_char = {"_p_char", "char *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p_long_double = {"_p_long_double", "long double *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_mpq_class = {"_p_mpq_class", "mpq_class *", 0, 0, (void*)0, 0};
 
 static swig_type_info *swig_type_initial[] = {
   &_swigt__p_ParameterVector,
   &_swigt__p_PolytopeVector,
   &_swigt__p_char,
-  &_swigt__p_long_double,
+  &_swigt__p_mpq_class,
 };
 
 static swig_cast_info _swigc__p_ParameterVector[] = {  {&_swigt__p_ParameterVector, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_PolytopeVector[] = {  {&_swigt__p_PolytopeVector, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_char[] = {  {&_swigt__p_char, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_long_double[] = {  {&_swigt__p_long_double, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_mpq_class[] = {  {&_swigt__p_mpq_class, 0, 0, 0},{0, 0, 0, 0}};
 
 static swig_cast_info *swig_cast_initial[] = {
   _swigc__p_ParameterVector,
   _swigc__p_PolytopeVector,
   _swigc__p_char,
-  _swigc__p_long_double,
+  _swigc__p_mpq_class,
 };
 
 

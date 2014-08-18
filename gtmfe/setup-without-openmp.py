@@ -18,6 +18,7 @@ gtmfe_module = Extension('_gtmfe',
                                   'src/utils.cc'],
                          swig_opts=['-c++', '-verbose'],
                          include_dirs=['include'],
+                         libraries=['gmp'],
                      )
 
 setup (name = 'gtmfe',

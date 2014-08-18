@@ -2,15 +2,16 @@
 #define _ENERGY_TABLES_H_
 
 #include "data.h"
+#include <gmpxx.h>
 
-extern long double *V; 
-extern long double *W; 
-extern long double *VBI; 
-extern long double *VM; 
-extern long double **WM; 
-extern long double **WMPrime; 
+extern mpq_class *V; 
+extern mpq_class *W; 
+extern mpq_class *VBI; 
+extern mpq_class *VM; 
+extern mpq_class **WM; 
+extern mpq_class **WMPrime; 
 extern int *indx; 
-extern long double **PP; 
+extern mpq_class **PP; 
 
 #define V(i,j) V[indx[j]+i]
 #define VM(i,j) VM[indx[j]+i]
@@ -28,16 +29,16 @@ extern const float RT_;
 #ifdef __cplusplus
 extern "C" {
 #endif
-  long double Ed3(int i, int j, int k);
-  long double Ed5(int i, int j, int k);
-  long double auPenalty(int i, int j);
+  mpq_class Ed3(int i, int j, int k);
+  mpq_class Ed5(int i, int j, int k);
+  mpq_class auPenalty(int i, int j);
 
-  long double eS(int i, int j);
-  long double eH(int i, int j);
-  long double eL(int i, int j, int ip, int jp);
-  long double eL1(int i, int j, int ip, int jp);
-  long double Estackm(int i, int j);
-  long double Estacke(int i, int j);
+  mpq_class eS(int i, int j);
+  mpq_class eH(int i, int j);
+  mpq_class eL(int i, int j, int ip, int jp);
+  mpq_class eL1(int i, int j, int ip, int jp);
+  mpq_class Estackm(int i, int j);
+  mpq_class Estacke(int i, int j);
 
   void create_tables(int len);
   void init_tables(int len);

@@ -20,10 +20,12 @@
 #ifndef _ALGORITHMS_H
 #define _ALGORITHMS_H
 
+#include <gmpxx.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
-  long double calculate(int len);//, int nThreads, int unamode ,int t_mismatch);
+  mpq_class calculate(int len);//, int nThreads, int unamode ,int t_mismatch);
 #ifdef __cplusplus
 }
 #endif

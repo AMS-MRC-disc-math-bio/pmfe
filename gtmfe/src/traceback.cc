@@ -28,9 +28,10 @@
 #include "traceback.h"
 #include "constraints.h"
 #include "utils.h"
+#include <gmpxx.h>
 
-long double total_en = 0;
-long double total_ex = 0;
+mpq_class total_en = 0;
+mpq_class total_ex = 0;
 int count_multiloops;
 int count_unpaired;
 int count_branches;
@@ -63,7 +64,7 @@ PolytopeVector trace(int len) {
 void traceW(int j) {
   int done = 0, i;
   int flag = 1;
-  long double wim1;
+  mpq_class wim1;
 	
   if (j == 0 || j == 1)
     return;
@@ -76,7 +77,7 @@ void traceW(int j) {
     if ( wim1 != W[i-1] && canSSregion(0,i)) flag = 0;
 
     if (g_dangles == 2) {
-      long double e_dangles = 0;
+      mpq_class e_dangles = 0;
       if (i>1) e_dangles +=  Ed3(j,i,i-1);
       if (j<length) e_dangles += Ed5(j,i,j+1);
       if ((W[j] == V(i,j) + auPenalty(i, j) + e_dangles + wim1 && canSS(i) && canSS(j) && canStack(i+1,j-1)) || forcePair(i+1,j-1)) { 
@@ -128,15 +129,15 @@ void traceW(int j) {
   return;
 }
 
-long double traceV(int i, int j) {
-  long double a, b, c, d;
-  long double Vij;
-  if (j-i < TURN)  return INFINITY;
+mpq_class traceV(int i, int j) {
+  mpq_class a, b, c, d;
+  mpq_class Vij;
+  if (j-i < TURN)  return INFINITY_;
 
-  a = canHairpin(i,j)?eH(i, j):INFINITY;
-  b = canStack(i,j)?eS(i, j) + V(i + 1, j - 1):INFINITY;
-  c = canStack(i,j)?VBI(i,j):INFINITY;
-  d = canStack(i,j)?VM(i,j):INFINITY;
+  a = canHairpin(i,j)?eH(i, j):INFINITY_;
+  b = canStack(i,j)?eS(i, j) + V(i + 1, j - 1):INFINITY_;
+  c = canStack(i,j)?VBI(i,j):INFINITY_;
+  d = canStack(i,j)?VM(i,j):INFINITY_;
 
   Vij = V(i,j);
   structure[i] = j;
@@ -154,7 +155,7 @@ long double traceV(int i, int j) {
     traceVBI(i, j);
     return Vij;
   } else if (Vij == d) { 
-    long double eVM = traceVM(i, j);
+    mpq_class eVM = traceVM(i, j);
     total_en += (Vij-eVM);
     return Vij;
   }
@@ -162,8 +163,8 @@ long double traceV(int i, int j) {
   return 0;
 }
 
-long double traceVBI(int i, int j) {
-  long double VBIij;
+mpq_class traceVBI(int i, int j) {
+  mpq_class VBIij;
   int ip, jp;
   int ifinal, jfinal;
 
@@ -187,9 +188,9 @@ long double traceVBI(int i, int j) {
   return traceV(ifinal, jfinal);
 }
 
-long double traceVM(int i, int j) {
+mpq_class traceVM(int i, int j) {
   int done = 0;
-  long double eVM = 0;
+  mpq_class eVM = 0;
 
   if (g_dangles == 2) {
     if (V(i,j) ==  WMPrime[i + 1][j - 1] + multConst[0] + multConst[2] + auPenalty(i,j) + Ed5(i,j,i + 1) + Ed3(i,j,j - 1) && canSS(i+1) && canSS(j-1) ) {
@@ -236,9 +237,9 @@ long double traceVM(int i, int j) {
   return eVM;
 }
 
-long double traceWMPrime(int i, int j) {
+mpq_class traceWMPrime(int i, int j) {
   int done=0, h;
-  long double energy=0;
+  mpq_class energy=0;
 	
   for (h = i; h < j && !done; h++) {
     if (WM(i,h) + WM(h + 1,j) == WMPrime(i,j)) {
@@ -251,10 +252,10 @@ long double traceWMPrime(int i, int j) {
   return energy;
 }
 
-long double traceWM(int i, int j) {
+mpq_class traceWM(int i, int j) {
   assert(i < j);
   int done=0;
-  long double eWM=0;
+  mpq_class eWM=0;
 
   if (!done && WM(i,j) == WMPrime[i][j]) {
     eWM += traceWMPrime(i,j);
@@ -263,7 +264,7 @@ long double traceWM(int i, int j) {
 
   if (!done){
     if (g_dangles == 2) {
-      long double energy = V(i,j) + auPenalty(i, j) + multConst[2];				
+      mpq_class energy = V(i,j) + auPenalty(i, j) + multConst[2];				
       energy += (i==1)?Ed3(j,i,length):Ed3(j,i,i-1);
       /*if (j<len)*/ energy += Ed5(j,i,j+1);
       if (WM(i,j) ==  energy && canSS(i) && canSS(j) && canStack(i+1,j-1)) {

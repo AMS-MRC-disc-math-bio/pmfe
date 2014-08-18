@@ -18,8 +18,8 @@ gtmfe_module = Extension('_gtmfe',
                                   'src/utils.cc'],
                          swig_opts=['-c++', '-verbose'],
                          include_dirs=['include'],
-                         libraries = ['gomp'],
-                         extra_compile_args = ['-fopenmp']
+                         libraries = ['gomp','gmp'],
+                         extra_compile_args = ['-fopenmp','-O0']
                      )
 
 setup (name = 'gtmfe',
