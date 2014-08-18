@@ -83,7 +83,7 @@ void BBPolytope::Build()
 
   //solution1->id = 1;
 
-  cout << "\nPOINTS\n";
+  //cout << "\nPOINTS\n";
   solution1 = BlackBoxOptimize(&e1);
 
   #ifdef DEBUG2
@@ -91,8 +91,8 @@ void BBPolytope::Build()
   //solution1->Print();
   #endif
  
-  cout << "1 ";
-  solution1->Print();
+  //cout << "1 ";
+  //solution1->Print();
   numvertices++;
 
   startface.AddLIVertexToLowDim((solution1));
@@ -152,12 +152,12 @@ void BBPolytope::Build()
 
         #ifdef DEBUG2
         cout << "Point added:  ";
-        //solution1->Print();
+        solution1->Print();
         #endif
         
-        cout << "1 ";
+        //cout << "1 ";
 
-        solution1->Print();
+        //solution1->Print();
         numvertices++;
       }
       else if(dotproduct((solution2), startface.normalvectors[i]) < startface.rhs[i]) {
@@ -174,9 +174,9 @@ void BBPolytope::Build()
        // solution2->Print();
         #endif
 
-        cout << "1 ";
+        //cout << "1 ";
 
-        solution2->Print();
+        //solution2->Print();
         numvertices++;
       }
       else {
@@ -285,12 +285,12 @@ void BBPolytope::Build()
 
         #ifdef DEBUG2
         cout << "\nadded new vertex: ";
-        //solution1->Print();
+        solution1->Print();
         #endif
 
-        cout << "1 ";
+        //cout << "1 ";
 
-        solution1->Print();
+        //solution1->Print();
 
         #ifdef DEBUG2
         cout << "\nCalling processhorizonridges...";
@@ -377,9 +377,9 @@ void BBPolytope::Build()
   for(int i = 0; i < HASHTABLESIZE; i++)
     hashtable[i] = NULL;
 
-  cout << "\nFACETS\n";
-  printNormals(footinthedoor);  
-  printIncidences();
+  //cout << "\nFACETS\n";
+  //printNormals(footinthedoor);  
+  //printIncidences();
 
 }
 
