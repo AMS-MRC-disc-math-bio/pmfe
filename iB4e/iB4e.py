@@ -96,6 +96,8 @@ class EuclideanVector(_object):
         try: self.this.append(this)
         except: self.this = this
     def deletedata(self): return _iB4e.EuclideanVector_deletedata(self)
+    def get_split_value(self, *args): return _iB4e.EuclideanVector_get_split_value(self, *args)
+    def set_split_value(self, *args): return _iB4e.EuclideanVector_set_split_value(self, *args)
     __swig_destroy__ = _iB4e.delete_EuclideanVector
     __del__ = lambda self : None;
     def Print(self): return _iB4e.EuclideanVector_Print(self)
@@ -104,6 +106,25 @@ class EuclideanVector(_object):
     def plusequals(self, *args): return _iB4e.EuclideanVector_plusequals(self, *args)
     def minusequals(self, *args): return _iB4e.EuclideanVector_minusequals(self, *args)
     def timesequals(self, *args): return _iB4e.EuclideanVector_timesequals(self, *args)
+    def get_mpq_values(self):
+        import gmpy2
+        split_values = self.get_split_values()
+        return [gmpy2.mpq(val[0], val[1]) for val in split_values]
+
+    def get_split_values(self):
+        split_values = [self.get_split_value(i) for i in xrange(self.dimension)]
+        return split_values
+
+    def set_mpq_values(self, mpq_values):
+        import gmpy2
+        split_values = [(long(value.numerator), long(value.denominator)) for value in mpq_values]
+        self.set_split_values(split_values)                      
+
+    def set_split_values(self, split_values):
+        for index in xrange(self.dimension):
+            val = split_values[index]
+            self.set_split_value(index, val[0], val[1])
+
 EuclideanVector_swigregister = _iB4e.EuclideanVector_swigregister
 EuclideanVector_swigregister(EuclideanVector)
 
@@ -218,6 +239,39 @@ class BBPolytope(_object):
         return weakref_proxy(self)
 BBPolytope_swigregister = _iB4e.BBPolytope_swigregister
 BBPolytope_swigregister(BBPolytope)
+
+class pairll(_object):
+    __swig_setmethods__ = {}
+    __setattr__ = lambda self, name, value: _swig_setattr(self, pairll, name, value)
+    __swig_getmethods__ = {}
+    __getattr__ = lambda self, name: _swig_getattr(self, pairll, name)
+    __repr__ = _swig_repr
+    def __init__(self, *args): 
+        this = _iB4e.new_pairll(*args)
+        try: self.this.append(this)
+        except: self.this = this
+    __swig_setmethods__["first"] = _iB4e.pairll_first_set
+    __swig_getmethods__["first"] = _iB4e.pairll_first_get
+    if _newclass:first = _swig_property(_iB4e.pairll_first_get, _iB4e.pairll_first_set)
+    __swig_setmethods__["second"] = _iB4e.pairll_second_set
+    __swig_getmethods__["second"] = _iB4e.pairll_second_get
+    if _newclass:second = _swig_property(_iB4e.pairll_second_get, _iB4e.pairll_second_set)
+    def __len__(self): return 2
+    def __repr__(self): return str((self.first, self.second))
+    def __getitem__(self, index): 
+      if not (index % 2): 
+        return self.first
+      else:
+        return self.second
+    def __setitem__(self, index, val):
+      if not (index % 2): 
+        self.first = val
+      else:
+        self.second = val
+    __swig_destroy__ = _iB4e.delete_pairll
+    __del__ = lambda self : None;
+pairll_swigregister = _iB4e.pairll_swigregister
+pairll_swigregister(pairll)
 
 # This file is compatible with both classic and new-style classes.
 

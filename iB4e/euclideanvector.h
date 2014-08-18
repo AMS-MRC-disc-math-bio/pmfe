@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <iostream>
 #include <stdlib.h>
+#include <vector>
 
 #ifndef EUCLIDEANVECTOR_H
 #define EUCLIDEANVECTOR_H
@@ -32,6 +33,19 @@ class EuclideanVector {
      delete[] data;
     return; 
   };
+
+  // I sure wish I could use a real data structure here…
+  std::pair<long, long> get_split_value(int index) {
+    long num, denom;
+    num = mpz_get_si(data[index].get_num_mpz_t());
+    denom = mpz_get_si(data[index].get_den_mpz_t());
+    return std::make_pair(num, denom);
+  };
+
+  void set_split_value(int index, long num, long denom){
+    mpq_class value (num, denom);
+    data[index] = value;
+  }
 
   ~EuclideanVector(){return;};
   
