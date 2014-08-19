@@ -125,16 +125,28 @@ void init_tables(int len) {
 
 void free_tables(int len) {
   if (alloc_flag == 1) {
-    delete[] indx;
+    int i;
+    delete[] V;
 
+    for (i = 0; i <= len; i++) {
+      delete[] WM[i];
+    }
     delete[] WM;
 
+    for (i = 0; i <= len; i++) {
+      delete[] PP[i];
+    }
+    delete[] PP;
+
+    for (i = 0; i<=len; i++) {
+      delete[] WMPrime[i];
+    }
     delete[] WMPrime;
 
     delete[] VM;
     delete[] VBI;
-    delete[] V;
     delete[] W;
+    delete[] indx;
   }
 }
 
