@@ -3479,7 +3479,6 @@ SWIGINTERNINLINE PyObject*
 #include "traceback.h"
 #include "constraints.h"
 #include <gmpxx.h>
-#include "omp.h"
 
 
 namespace swig {  
@@ -4997,6 +4996,9 @@ SWIG_AsPtr_std_string (PyObject * obj, std::string **val)
   }
   return SWIG_ERROR;
 }
+
+
+#include "omp.h"
 
 #ifdef __cplusplus
 extern "C" {
