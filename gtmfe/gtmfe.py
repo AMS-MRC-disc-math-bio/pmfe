@@ -69,36 +69,6 @@ except AttributeError:
     _newclass = 0
 
 
-class PolytopeVector(_object):
-    __swig_setmethods__ = {}
-    __setattr__ = lambda self, name, value: _swig_setattr(self, PolytopeVector, name, value)
-    __swig_getmethods__ = {}
-    __getattr__ = lambda self, name: _swig_getattr(self, PolytopeVector, name)
-    __repr__ = _swig_repr
-    __swig_setmethods__["multiloops"] = _gtmfe.PolytopeVector_multiloops_set
-    __swig_getmethods__["multiloops"] = _gtmfe.PolytopeVector_multiloops_get
-    if _newclass:multiloops = _swig_property(_gtmfe.PolytopeVector_multiloops_get, _gtmfe.PolytopeVector_multiloops_set)
-    __swig_setmethods__["branches"] = _gtmfe.PolytopeVector_branches_set
-    __swig_getmethods__["branches"] = _gtmfe.PolytopeVector_branches_get
-    if _newclass:branches = _swig_property(_gtmfe.PolytopeVector_branches_get, _gtmfe.PolytopeVector_branches_set)
-    __swig_setmethods__["unpaired"] = _gtmfe.PolytopeVector_unpaired_set
-    __swig_getmethods__["unpaired"] = _gtmfe.PolytopeVector_unpaired_get
-    if _newclass:unpaired = _swig_property(_gtmfe.PolytopeVector_unpaired_get, _gtmfe.PolytopeVector_unpaired_set)
-    __swig_setmethods__["w"] = _gtmfe.PolytopeVector_w_set
-    __swig_getmethods__["w"] = _gtmfe.PolytopeVector_w_get
-    if _newclass:w = _swig_property(_gtmfe.PolytopeVector_w_get, _gtmfe.PolytopeVector_w_set)
-    __swig_setmethods__["energy"] = _gtmfe.PolytopeVector_energy_set
-    __swig_getmethods__["energy"] = _gtmfe.PolytopeVector_energy_get
-    if _newclass:energy = _swig_property(_gtmfe.PolytopeVector_energy_get, _gtmfe.PolytopeVector_energy_set)
-    def __init__(self): 
-        this = _gtmfe.new_PolytopeVector()
-        try: self.this.append(this)
-        except: self.this = this
-    __swig_destroy__ = _gtmfe.delete_PolytopeVector
-    __del__ = lambda self : None;
-PolytopeVector_swigregister = _gtmfe.PolytopeVector_swigregister
-PolytopeVector_swigregister(PolytopeVector)
-
 class ParameterVector(_object):
     __swig_setmethods__ = {}
     __setattr__ = lambda self, name, value: _swig_setattr(self, ParameterVector, name, value)
@@ -125,6 +95,39 @@ class ParameterVector(_object):
     __del__ = lambda self : None;
 ParameterVector_swigregister = _gtmfe.ParameterVector_swigregister
 ParameterVector_swigregister(ParameterVector)
+
+class PolytopeVector(_object):
+    __swig_setmethods__ = {}
+    __setattr__ = lambda self, name, value: _swig_setattr(self, PolytopeVector, name, value)
+    __swig_getmethods__ = {}
+    __getattr__ = lambda self, name: _swig_getattr(self, PolytopeVector, name)
+    __repr__ = _swig_repr
+    __swig_setmethods__["multiloops"] = _gtmfe.PolytopeVector_multiloops_set
+    __swig_getmethods__["multiloops"] = _gtmfe.PolytopeVector_multiloops_get
+    if _newclass:multiloops = _swig_property(_gtmfe.PolytopeVector_multiloops_get, _gtmfe.PolytopeVector_multiloops_set)
+    __swig_setmethods__["branches"] = _gtmfe.PolytopeVector_branches_set
+    __swig_getmethods__["branches"] = _gtmfe.PolytopeVector_branches_get
+    if _newclass:branches = _swig_property(_gtmfe.PolytopeVector_branches_get, _gtmfe.PolytopeVector_branches_set)
+    __swig_setmethods__["unpaired"] = _gtmfe.PolytopeVector_unpaired_set
+    __swig_getmethods__["unpaired"] = _gtmfe.PolytopeVector_unpaired_get
+    if _newclass:unpaired = _swig_property(_gtmfe.PolytopeVector_unpaired_get, _gtmfe.PolytopeVector_unpaired_set)
+    __swig_setmethods__["w"] = _gtmfe.PolytopeVector_w_set
+    __swig_getmethods__["w"] = _gtmfe.PolytopeVector_w_get
+    if _newclass:w = _swig_property(_gtmfe.PolytopeVector_w_get, _gtmfe.PolytopeVector_w_set)
+    __swig_setmethods__["energy"] = _gtmfe.PolytopeVector_energy_set
+    __swig_getmethods__["energy"] = _gtmfe.PolytopeVector_energy_get
+    if _newclass:energy = _swig_property(_gtmfe.PolytopeVector_energy_get, _gtmfe.PolytopeVector_energy_set)
+    __swig_setmethods__["params"] = _gtmfe.PolytopeVector_params_set
+    __swig_getmethods__["params"] = _gtmfe.PolytopeVector_params_get
+    if _newclass:params = _swig_property(_gtmfe.PolytopeVector_params_get, _gtmfe.PolytopeVector_params_set)
+    def __init__(self): 
+        this = _gtmfe.new_PolytopeVector()
+        try: self.this.append(this)
+        except: self.this = this
+    __swig_destroy__ = _gtmfe.delete_PolytopeVector
+    __del__ = lambda self : None;
+PolytopeVector_swigregister = _gtmfe.PolytopeVector_swigregister
+PolytopeVector_swigregister(PolytopeVector)
 
 
 def mfe_main(*args):

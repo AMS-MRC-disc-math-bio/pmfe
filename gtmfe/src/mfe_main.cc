@@ -114,6 +114,8 @@ PolytopeVector mfe_main(string seq_file, string output_file, string param_dir, P
         } else {
           result.w = (result.energy - result.multiloops * params.multiloop_penalty - result.branches * params.branch_penalty - result.unpaired * params.unpaired_penalty)/params.dummy_scaling;
 	};
+
+        result.params = params;
         
 	save_ct_file(outputFile, seq, energy);
 

@@ -3325,323 +3325,6 @@ SWIG_AsPtr_std_string (PyObject * obj, std::string **val)
 #ifdef __cplusplus
 extern "C" {
 #endif
-SWIGINTERN PyObject *_wrap_PolytopeVector_multiloops_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  PolytopeVector *arg1 = (PolytopeVector *) 0 ;
-  int arg2 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  int val2 ;
-  int ecode2 = 0 ;
-  PyObject * obj0 = 0 ;
-  PyObject * obj1 = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"OO:PolytopeVector_multiloops_set",&obj0,&obj1)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_PolytopeVector, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "PolytopeVector_multiloops_set" "', argument " "1"" of type '" "PolytopeVector *""'"); 
-  }
-  arg1 = reinterpret_cast< PolytopeVector * >(argp1);
-  ecode2 = SWIG_AsVal_int(obj1, &val2);
-  if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "PolytopeVector_multiloops_set" "', argument " "2"" of type '" "int""'");
-  } 
-  arg2 = static_cast< int >(val2);
-  if (arg1) (arg1)->multiloops = arg2;
-  resultobj = SWIG_Py_Void();
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_PolytopeVector_multiloops_get(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  PolytopeVector *arg1 = (PolytopeVector *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  PyObject * obj0 = 0 ;
-  int result;
-  
-  if (!PyArg_ParseTuple(args,(char *)"O:PolytopeVector_multiloops_get",&obj0)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_PolytopeVector, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "PolytopeVector_multiloops_get" "', argument " "1"" of type '" "PolytopeVector *""'"); 
-  }
-  arg1 = reinterpret_cast< PolytopeVector * >(argp1);
-  result = (int) ((arg1)->multiloops);
-  resultobj = SWIG_From_int(static_cast< int >(result));
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_PolytopeVector_branches_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  PolytopeVector *arg1 = (PolytopeVector *) 0 ;
-  int arg2 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  int val2 ;
-  int ecode2 = 0 ;
-  PyObject * obj0 = 0 ;
-  PyObject * obj1 = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"OO:PolytopeVector_branches_set",&obj0,&obj1)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_PolytopeVector, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "PolytopeVector_branches_set" "', argument " "1"" of type '" "PolytopeVector *""'"); 
-  }
-  arg1 = reinterpret_cast< PolytopeVector * >(argp1);
-  ecode2 = SWIG_AsVal_int(obj1, &val2);
-  if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "PolytopeVector_branches_set" "', argument " "2"" of type '" "int""'");
-  } 
-  arg2 = static_cast< int >(val2);
-  if (arg1) (arg1)->branches = arg2;
-  resultobj = SWIG_Py_Void();
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_PolytopeVector_branches_get(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  PolytopeVector *arg1 = (PolytopeVector *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  PyObject * obj0 = 0 ;
-  int result;
-  
-  if (!PyArg_ParseTuple(args,(char *)"O:PolytopeVector_branches_get",&obj0)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_PolytopeVector, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "PolytopeVector_branches_get" "', argument " "1"" of type '" "PolytopeVector *""'"); 
-  }
-  arg1 = reinterpret_cast< PolytopeVector * >(argp1);
-  result = (int) ((arg1)->branches);
-  resultobj = SWIG_From_int(static_cast< int >(result));
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_PolytopeVector_unpaired_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  PolytopeVector *arg1 = (PolytopeVector *) 0 ;
-  int arg2 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  int val2 ;
-  int ecode2 = 0 ;
-  PyObject * obj0 = 0 ;
-  PyObject * obj1 = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"OO:PolytopeVector_unpaired_set",&obj0,&obj1)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_PolytopeVector, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "PolytopeVector_unpaired_set" "', argument " "1"" of type '" "PolytopeVector *""'"); 
-  }
-  arg1 = reinterpret_cast< PolytopeVector * >(argp1);
-  ecode2 = SWIG_AsVal_int(obj1, &val2);
-  if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "PolytopeVector_unpaired_set" "', argument " "2"" of type '" "int""'");
-  } 
-  arg2 = static_cast< int >(val2);
-  if (arg1) (arg1)->unpaired = arg2;
-  resultobj = SWIG_Py_Void();
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_PolytopeVector_unpaired_get(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  PolytopeVector *arg1 = (PolytopeVector *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  PyObject * obj0 = 0 ;
-  int result;
-  
-  if (!PyArg_ParseTuple(args,(char *)"O:PolytopeVector_unpaired_get",&obj0)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_PolytopeVector, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "PolytopeVector_unpaired_get" "', argument " "1"" of type '" "PolytopeVector *""'"); 
-  }
-  arg1 = reinterpret_cast< PolytopeVector * >(argp1);
-  result = (int) ((arg1)->unpaired);
-  resultobj = SWIG_From_int(static_cast< int >(result));
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_PolytopeVector_w_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  PolytopeVector *arg1 = (PolytopeVector *) 0 ;
-  mpq_class arg2 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  void *argp2 ;
-  int res2 = 0 ;
-  PyObject * obj0 = 0 ;
-  PyObject * obj1 = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"OO:PolytopeVector_w_set",&obj0,&obj1)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_PolytopeVector, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "PolytopeVector_w_set" "', argument " "1"" of type '" "PolytopeVector *""'"); 
-  }
-  arg1 = reinterpret_cast< PolytopeVector * >(argp1);
-  {
-    res2 = SWIG_ConvertPtr(obj1, &argp2, SWIGTYPE_p_mpq_class,  0  | 0);
-    if (!SWIG_IsOK(res2)) {
-      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "PolytopeVector_w_set" "', argument " "2"" of type '" "mpq_class""'"); 
-    }  
-    if (!argp2) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "PolytopeVector_w_set" "', argument " "2"" of type '" "mpq_class""'");
-    } else {
-      mpq_class * temp = reinterpret_cast< mpq_class * >(argp2);
-      arg2 = *temp;
-      if (SWIG_IsNewObj(res2)) delete temp;
-    }
-  }
-  if (arg1) (arg1)->w = arg2;
-  resultobj = SWIG_Py_Void();
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_PolytopeVector_w_get(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  PolytopeVector *arg1 = (PolytopeVector *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  PyObject * obj0 = 0 ;
-  mpq_class result;
-  
-  if (!PyArg_ParseTuple(args,(char *)"O:PolytopeVector_w_get",&obj0)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_PolytopeVector, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "PolytopeVector_w_get" "', argument " "1"" of type '" "PolytopeVector *""'"); 
-  }
-  arg1 = reinterpret_cast< PolytopeVector * >(argp1);
-  result =  ((arg1)->w);
-  resultobj = SWIG_NewPointerObj((new mpq_class(static_cast< const mpq_class& >(result))), SWIGTYPE_p_mpq_class, SWIG_POINTER_OWN |  0 );
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_PolytopeVector_energy_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  PolytopeVector *arg1 = (PolytopeVector *) 0 ;
-  mpq_class arg2 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  void *argp2 ;
-  int res2 = 0 ;
-  PyObject * obj0 = 0 ;
-  PyObject * obj1 = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"OO:PolytopeVector_energy_set",&obj0,&obj1)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_PolytopeVector, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "PolytopeVector_energy_set" "', argument " "1"" of type '" "PolytopeVector *""'"); 
-  }
-  arg1 = reinterpret_cast< PolytopeVector * >(argp1);
-  {
-    res2 = SWIG_ConvertPtr(obj1, &argp2, SWIGTYPE_p_mpq_class,  0  | 0);
-    if (!SWIG_IsOK(res2)) {
-      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "PolytopeVector_energy_set" "', argument " "2"" of type '" "mpq_class""'"); 
-    }  
-    if (!argp2) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "PolytopeVector_energy_set" "', argument " "2"" of type '" "mpq_class""'");
-    } else {
-      mpq_class * temp = reinterpret_cast< mpq_class * >(argp2);
-      arg2 = *temp;
-      if (SWIG_IsNewObj(res2)) delete temp;
-    }
-  }
-  if (arg1) (arg1)->energy = arg2;
-  resultobj = SWIG_Py_Void();
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_PolytopeVector_energy_get(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  PolytopeVector *arg1 = (PolytopeVector *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  PyObject * obj0 = 0 ;
-  mpq_class result;
-  
-  if (!PyArg_ParseTuple(args,(char *)"O:PolytopeVector_energy_get",&obj0)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_PolytopeVector, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "PolytopeVector_energy_get" "', argument " "1"" of type '" "PolytopeVector *""'"); 
-  }
-  arg1 = reinterpret_cast< PolytopeVector * >(argp1);
-  result =  ((arg1)->energy);
-  resultobj = SWIG_NewPointerObj((new mpq_class(static_cast< const mpq_class& >(result))), SWIGTYPE_p_mpq_class, SWIG_POINTER_OWN |  0 );
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_new_PolytopeVector(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  PolytopeVector *result = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)":new_PolytopeVector")) SWIG_fail;
-  result = (PolytopeVector *)new PolytopeVector();
-  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_PolytopeVector, SWIG_POINTER_NEW |  0 );
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_delete_PolytopeVector(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  PolytopeVector *arg1 = (PolytopeVector *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  PyObject * obj0 = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"O:delete_PolytopeVector",&obj0)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_PolytopeVector, SWIG_POINTER_DISOWN |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "delete_PolytopeVector" "', argument " "1"" of type '" "PolytopeVector *""'"); 
-  }
-  arg1 = reinterpret_cast< PolytopeVector * >(argp1);
-  delete arg1;
-  resultobj = SWIG_Py_Void();
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *PolytopeVector_swigregister(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *obj;
-  if (!PyArg_ParseTuple(args,(char*)"O:swigregister", &obj)) return NULL;
-  SWIG_TypeNewClientData(SWIGTYPE_p_PolytopeVector, SWIG_NewClientData(obj));
-  return SWIG_Py_Void();
-}
-
 SWIGINTERN PyObject *_wrap_ParameterVector_multiloop_penalty_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   ParameterVector *arg1 = (ParameterVector *) 0 ;
@@ -4227,6 +3910,375 @@ SWIGINTERN PyObject *ParameterVector_swigregister(PyObject *SWIGUNUSEDPARM(self)
   return SWIG_Py_Void();
 }
 
+SWIGINTERN PyObject *_wrap_PolytopeVector_multiloops_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  PolytopeVector *arg1 = (PolytopeVector *) 0 ;
+  int arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:PolytopeVector_multiloops_set",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_PolytopeVector, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "PolytopeVector_multiloops_set" "', argument " "1"" of type '" "PolytopeVector *""'"); 
+  }
+  arg1 = reinterpret_cast< PolytopeVector * >(argp1);
+  ecode2 = SWIG_AsVal_int(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "PolytopeVector_multiloops_set" "', argument " "2"" of type '" "int""'");
+  } 
+  arg2 = static_cast< int >(val2);
+  if (arg1) (arg1)->multiloops = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_PolytopeVector_multiloops_get(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  PolytopeVector *arg1 = (PolytopeVector *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  int result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:PolytopeVector_multiloops_get",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_PolytopeVector, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "PolytopeVector_multiloops_get" "', argument " "1"" of type '" "PolytopeVector *""'"); 
+  }
+  arg1 = reinterpret_cast< PolytopeVector * >(argp1);
+  result = (int) ((arg1)->multiloops);
+  resultobj = SWIG_From_int(static_cast< int >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_PolytopeVector_branches_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  PolytopeVector *arg1 = (PolytopeVector *) 0 ;
+  int arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:PolytopeVector_branches_set",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_PolytopeVector, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "PolytopeVector_branches_set" "', argument " "1"" of type '" "PolytopeVector *""'"); 
+  }
+  arg1 = reinterpret_cast< PolytopeVector * >(argp1);
+  ecode2 = SWIG_AsVal_int(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "PolytopeVector_branches_set" "', argument " "2"" of type '" "int""'");
+  } 
+  arg2 = static_cast< int >(val2);
+  if (arg1) (arg1)->branches = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_PolytopeVector_branches_get(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  PolytopeVector *arg1 = (PolytopeVector *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  int result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:PolytopeVector_branches_get",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_PolytopeVector, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "PolytopeVector_branches_get" "', argument " "1"" of type '" "PolytopeVector *""'"); 
+  }
+  arg1 = reinterpret_cast< PolytopeVector * >(argp1);
+  result = (int) ((arg1)->branches);
+  resultobj = SWIG_From_int(static_cast< int >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_PolytopeVector_unpaired_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  PolytopeVector *arg1 = (PolytopeVector *) 0 ;
+  int arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:PolytopeVector_unpaired_set",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_PolytopeVector, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "PolytopeVector_unpaired_set" "', argument " "1"" of type '" "PolytopeVector *""'"); 
+  }
+  arg1 = reinterpret_cast< PolytopeVector * >(argp1);
+  ecode2 = SWIG_AsVal_int(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "PolytopeVector_unpaired_set" "', argument " "2"" of type '" "int""'");
+  } 
+  arg2 = static_cast< int >(val2);
+  if (arg1) (arg1)->unpaired = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_PolytopeVector_unpaired_get(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  PolytopeVector *arg1 = (PolytopeVector *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  int result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:PolytopeVector_unpaired_get",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_PolytopeVector, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "PolytopeVector_unpaired_get" "', argument " "1"" of type '" "PolytopeVector *""'"); 
+  }
+  arg1 = reinterpret_cast< PolytopeVector * >(argp1);
+  result = (int) ((arg1)->unpaired);
+  resultobj = SWIG_From_int(static_cast< int >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_PolytopeVector_w_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  PolytopeVector *arg1 = (PolytopeVector *) 0 ;
+  mpq_class arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 ;
+  int res2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:PolytopeVector_w_set",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_PolytopeVector, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "PolytopeVector_w_set" "', argument " "1"" of type '" "PolytopeVector *""'"); 
+  }
+  arg1 = reinterpret_cast< PolytopeVector * >(argp1);
+  {
+    res2 = SWIG_ConvertPtr(obj1, &argp2, SWIGTYPE_p_mpq_class,  0  | 0);
+    if (!SWIG_IsOK(res2)) {
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "PolytopeVector_w_set" "', argument " "2"" of type '" "mpq_class""'"); 
+    }  
+    if (!argp2) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "PolytopeVector_w_set" "', argument " "2"" of type '" "mpq_class""'");
+    } else {
+      mpq_class * temp = reinterpret_cast< mpq_class * >(argp2);
+      arg2 = *temp;
+      if (SWIG_IsNewObj(res2)) delete temp;
+    }
+  }
+  if (arg1) (arg1)->w = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_PolytopeVector_w_get(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  PolytopeVector *arg1 = (PolytopeVector *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  mpq_class result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:PolytopeVector_w_get",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_PolytopeVector, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "PolytopeVector_w_get" "', argument " "1"" of type '" "PolytopeVector *""'"); 
+  }
+  arg1 = reinterpret_cast< PolytopeVector * >(argp1);
+  result =  ((arg1)->w);
+  resultobj = SWIG_NewPointerObj((new mpq_class(static_cast< const mpq_class& >(result))), SWIGTYPE_p_mpq_class, SWIG_POINTER_OWN |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_PolytopeVector_energy_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  PolytopeVector *arg1 = (PolytopeVector *) 0 ;
+  mpq_class arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 ;
+  int res2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:PolytopeVector_energy_set",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_PolytopeVector, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "PolytopeVector_energy_set" "', argument " "1"" of type '" "PolytopeVector *""'"); 
+  }
+  arg1 = reinterpret_cast< PolytopeVector * >(argp1);
+  {
+    res2 = SWIG_ConvertPtr(obj1, &argp2, SWIGTYPE_p_mpq_class,  0  | 0);
+    if (!SWIG_IsOK(res2)) {
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "PolytopeVector_energy_set" "', argument " "2"" of type '" "mpq_class""'"); 
+    }  
+    if (!argp2) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "PolytopeVector_energy_set" "', argument " "2"" of type '" "mpq_class""'");
+    } else {
+      mpq_class * temp = reinterpret_cast< mpq_class * >(argp2);
+      arg2 = *temp;
+      if (SWIG_IsNewObj(res2)) delete temp;
+    }
+  }
+  if (arg1) (arg1)->energy = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_PolytopeVector_energy_get(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  PolytopeVector *arg1 = (PolytopeVector *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  mpq_class result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:PolytopeVector_energy_get",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_PolytopeVector, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "PolytopeVector_energy_get" "', argument " "1"" of type '" "PolytopeVector *""'"); 
+  }
+  arg1 = reinterpret_cast< PolytopeVector * >(argp1);
+  result =  ((arg1)->energy);
+  resultobj = SWIG_NewPointerObj((new mpq_class(static_cast< const mpq_class& >(result))), SWIGTYPE_p_mpq_class, SWIG_POINTER_OWN |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_PolytopeVector_params_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  PolytopeVector *arg1 = (PolytopeVector *) 0 ;
+  ParameterVector *arg2 = (ParameterVector *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:PolytopeVector_params_set",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_PolytopeVector, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "PolytopeVector_params_set" "', argument " "1"" of type '" "PolytopeVector *""'"); 
+  }
+  arg1 = reinterpret_cast< PolytopeVector * >(argp1);
+  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_ParameterVector, 0 |  0 );
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "PolytopeVector_params_set" "', argument " "2"" of type '" "ParameterVector *""'"); 
+  }
+  arg2 = reinterpret_cast< ParameterVector * >(argp2);
+  if (arg1) (arg1)->params = *arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_PolytopeVector_params_get(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  PolytopeVector *arg1 = (PolytopeVector *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  ParameterVector *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:PolytopeVector_params_get",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_PolytopeVector, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "PolytopeVector_params_get" "', argument " "1"" of type '" "PolytopeVector *""'"); 
+  }
+  arg1 = reinterpret_cast< PolytopeVector * >(argp1);
+  result = (ParameterVector *)& ((arg1)->params);
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_ParameterVector, 0 |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_new_PolytopeVector(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  PolytopeVector *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)":new_PolytopeVector")) SWIG_fail;
+  result = (PolytopeVector *)new PolytopeVector();
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_PolytopeVector, SWIG_POINTER_NEW |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_delete_PolytopeVector(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  PolytopeVector *arg1 = (PolytopeVector *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:delete_PolytopeVector",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_PolytopeVector, SWIG_POINTER_DISOWN |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "delete_PolytopeVector" "', argument " "1"" of type '" "PolytopeVector *""'"); 
+  }
+  arg1 = reinterpret_cast< PolytopeVector * >(argp1);
+  delete arg1;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *PolytopeVector_swigregister(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *obj;
+  if (!PyArg_ParseTuple(args,(char*)"O:swigregister", &obj)) return NULL;
+  SWIG_TypeNewClientData(SWIGTYPE_p_PolytopeVector, SWIG_NewClientData(obj));
+  return SWIG_Py_Void();
+}
+
 SWIGINTERN PyObject *_wrap_mfe_main__SWIG_0(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   std::string arg1 ;
@@ -4571,19 +4623,6 @@ fail:
 
 static PyMethodDef SwigMethods[] = {
 	 { (char *)"SWIG_PyInstanceMethod_New", (PyCFunction)SWIG_PyInstanceMethod_New, METH_O, NULL},
-	 { (char *)"PolytopeVector_multiloops_set", _wrap_PolytopeVector_multiloops_set, METH_VARARGS, NULL},
-	 { (char *)"PolytopeVector_multiloops_get", _wrap_PolytopeVector_multiloops_get, METH_VARARGS, NULL},
-	 { (char *)"PolytopeVector_branches_set", _wrap_PolytopeVector_branches_set, METH_VARARGS, NULL},
-	 { (char *)"PolytopeVector_branches_get", _wrap_PolytopeVector_branches_get, METH_VARARGS, NULL},
-	 { (char *)"PolytopeVector_unpaired_set", _wrap_PolytopeVector_unpaired_set, METH_VARARGS, NULL},
-	 { (char *)"PolytopeVector_unpaired_get", _wrap_PolytopeVector_unpaired_get, METH_VARARGS, NULL},
-	 { (char *)"PolytopeVector_w_set", _wrap_PolytopeVector_w_set, METH_VARARGS, NULL},
-	 { (char *)"PolytopeVector_w_get", _wrap_PolytopeVector_w_get, METH_VARARGS, NULL},
-	 { (char *)"PolytopeVector_energy_set", _wrap_PolytopeVector_energy_set, METH_VARARGS, NULL},
-	 { (char *)"PolytopeVector_energy_get", _wrap_PolytopeVector_energy_get, METH_VARARGS, NULL},
-	 { (char *)"new_PolytopeVector", _wrap_new_PolytopeVector, METH_VARARGS, NULL},
-	 { (char *)"delete_PolytopeVector", _wrap_delete_PolytopeVector, METH_VARARGS, NULL},
-	 { (char *)"PolytopeVector_swigregister", PolytopeVector_swigregister, METH_VARARGS, NULL},
 	 { (char *)"ParameterVector_multiloop_penalty_set", _wrap_ParameterVector_multiloop_penalty_set, METH_VARARGS, NULL},
 	 { (char *)"ParameterVector_multiloop_penalty_get", _wrap_ParameterVector_multiloop_penalty_get, METH_VARARGS, NULL},
 	 { (char *)"ParameterVector_unpaired_penalty_set", _wrap_ParameterVector_unpaired_penalty_set, METH_VARARGS, NULL},
@@ -4595,6 +4634,21 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"new_ParameterVector", _wrap_new_ParameterVector, METH_VARARGS, NULL},
 	 { (char *)"delete_ParameterVector", _wrap_delete_ParameterVector, METH_VARARGS, NULL},
 	 { (char *)"ParameterVector_swigregister", ParameterVector_swigregister, METH_VARARGS, NULL},
+	 { (char *)"PolytopeVector_multiloops_set", _wrap_PolytopeVector_multiloops_set, METH_VARARGS, NULL},
+	 { (char *)"PolytopeVector_multiloops_get", _wrap_PolytopeVector_multiloops_get, METH_VARARGS, NULL},
+	 { (char *)"PolytopeVector_branches_set", _wrap_PolytopeVector_branches_set, METH_VARARGS, NULL},
+	 { (char *)"PolytopeVector_branches_get", _wrap_PolytopeVector_branches_get, METH_VARARGS, NULL},
+	 { (char *)"PolytopeVector_unpaired_set", _wrap_PolytopeVector_unpaired_set, METH_VARARGS, NULL},
+	 { (char *)"PolytopeVector_unpaired_get", _wrap_PolytopeVector_unpaired_get, METH_VARARGS, NULL},
+	 { (char *)"PolytopeVector_w_set", _wrap_PolytopeVector_w_set, METH_VARARGS, NULL},
+	 { (char *)"PolytopeVector_w_get", _wrap_PolytopeVector_w_get, METH_VARARGS, NULL},
+	 { (char *)"PolytopeVector_energy_set", _wrap_PolytopeVector_energy_set, METH_VARARGS, NULL},
+	 { (char *)"PolytopeVector_energy_get", _wrap_PolytopeVector_energy_get, METH_VARARGS, NULL},
+	 { (char *)"PolytopeVector_params_set", _wrap_PolytopeVector_params_set, METH_VARARGS, NULL},
+	 { (char *)"PolytopeVector_params_get", _wrap_PolytopeVector_params_get, METH_VARARGS, NULL},
+	 { (char *)"new_PolytopeVector", _wrap_new_PolytopeVector, METH_VARARGS, NULL},
+	 { (char *)"delete_PolytopeVector", _wrap_delete_PolytopeVector, METH_VARARGS, NULL},
+	 { (char *)"PolytopeVector_swigregister", PolytopeVector_swigregister, METH_VARARGS, NULL},
 	 { (char *)"mfe_main", _wrap_mfe_main, METH_VARARGS, NULL},
 	 { NULL, NULL, 0, NULL }
 };
