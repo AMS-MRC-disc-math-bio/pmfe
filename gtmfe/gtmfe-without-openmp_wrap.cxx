@@ -3478,6 +3478,7 @@ SWIGINTERNINLINE PyObject*
 #include "algorithms.h"
 #include "traceback.h"
 #include "constraints.h"
+#include "helper-structs.h"
 #include <gmpxx.h>
 
 

@@ -37,8 +37,8 @@ class PolytopeVector {
   std::vector< std::pair<long, long> > get_pairs() {
     std::vector< std::pair<long, long> > result;
     result.push_back(std::pair<long, long> (multiloops, 1));
-    result.push_back(std::pair<long, long> (branches, 1));
     result.push_back(std::pair<long, long> (unpaired, 1));
+    result.push_back(std::pair<long, long> (branches, 1));
     result.push_back(std::pair<long, long> (w.get_num().get_si(), w.get_den().get_si()));
     result.push_back(std::pair<long, long> (energy.get_num().get_si(), energy.get_den().get_si()));
     return result;

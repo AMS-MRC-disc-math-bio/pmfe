@@ -173,8 +173,8 @@ class PolytopeVector(_object):
         from fractions import Fraction
         pairs = self.get_pairs()
         result = {"multiloops" : pairs[0][0],
-                  "branches": pairs[1][0],
-                  "unpaired": pairs[2][0],
+                  "unpaired": pairs[1][0],
+                  "branches": pairs[2][0],
                   "w": Fraction(pairs[3][0], pairs[3][1]),
                   "energy": Fraction(pairs[4][0], pairs[4][1]),
         }
