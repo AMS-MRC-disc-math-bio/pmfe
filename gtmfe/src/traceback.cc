@@ -134,10 +134,21 @@ mpq_class traceV(int i, int j) {
   mpq_class Vij;
   if (j-i < TURN)  return INFINITY_;
 
-  a = canHairpin(i,j)?eH(i, j):INFINITY_;
-  b = canStack(i,j)?eS(i, j) + V(i + 1, j - 1):INFINITY_;
-  c = canStack(i,j)?VBI(i,j):INFINITY_;
-  d = canStack(i,j)?VM(i,j):INFINITY_;
+  if (canHairpin(i,j)) {
+    a = eH(i, j);
+  } else {
+    a = INFINITY_;
+  }
+
+  if (canStack(i,j)) {
+    b = eS(i, j) + V(i + 1, j - 1);
+    c = VBI(i,j);
+    d = VM(i,j);
+  } else {
+    b = INFINITY_;
+    c = INFINITY_;
+    d = INFINITY_;
+  }
 
   Vij = V(i,j);
   structure[i] = j;

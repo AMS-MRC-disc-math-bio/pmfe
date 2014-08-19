@@ -152,9 +152,19 @@ mpq_class calculate(int len) {
     for (i = 1; i <= len - b; i++) {
       j = i + b;
 
+      mpq_class eh, es;
       if (PP[i][j] == 1) {
-        mpq_class eh = canHairpin(i,j)?eH(i,j):INFINITY_; //hair pin
-        mpq_class es = canStack(i,j)?eS(i,j)+V(i+1,j-1):INFINITY_; // stack
+        if (canHairpin(i,j)) {
+          eh = eH(i,j);
+        } else {
+          eh = INFINITY_;
+        }
+
+        if (canStack(i,j)) {
+          es = eS(i,j)+V(i+1,j-1);
+        } else {
+          es = INFINITY_;
+        }
 
         // Internal Loop BEGIN
         if (g_unamode) 
@@ -164,8 +174,18 @@ mpq_class calculate(int len) {
         // Internal Loop END
 
         // Multi Loop BEGIN
-        mpq_class d3 = canSS(j-1)?Ed3(i,j,j-1):INFINITY_;
-        mpq_class d5 = canSS(i+1)?Ed5(i,j,i+1):INFINITY_;
+        mpq_class d3, d5;
+        if (canSS(j-1)) {
+          d3 = Ed3(i,j,j-1);
+        } else {
+          d3 = INFINITY_;
+        }
+
+        if (canSS(i+1)) {
+          d5 = Ed5(i,j,i+1);
+        } else {
+          d5 = INFINITY_;
+        }
 
         if (g_dangles == 2) { // -d2
           std::vector<mpq_class> vals;
@@ -186,7 +206,9 @@ mpq_class calculate(int len) {
           vals.push_back(WMPrime[i+2][j-2] + d3 + d5 + auPenalty(i,j) + multConst[0] + multConst[2] + 2*multConst[1]);
           VM(i,j) = *std::min_element(vals.begin(), vals.end());
         }
-        VM(i,j) = canStack(i,j)?VM(i,j):INFINITY_;
+
+        if (!canStack(i,j)) VM(i,j) = INFINITY_;
+          
         // Multi Loop END
 
         std::vector<mpq_class> vals;
@@ -223,7 +245,12 @@ mpq_class calculate(int len) {
 
       if (g_dangles == 2) {
         mpq_class energy = V(i,j) + auPenalty(i,j) + multConst[2];
-        energy += (i==1)?Ed3(j,i,len):Ed3(j,i,i-1);
+        if (i == 1) {
+          energy += Ed3(j,i,len);
+        } else {
+          energy += Ed3(j,i,i-1);
+        }
+        
         /*if (j<len)*/ energy += Ed5(j,i,j+1);
         if (canSS(i)&&canSS(j)){
           std::vector<mpq_class> vals;
@@ -282,7 +309,7 @@ mpq_class calculate(int len) {
         mpq_class energy = V(i,j) +	 auPenalty(i,j) + Wim1;
         if (i>1) energy +=  Ed3(j,i,i-1);
         if (j<len) energy += Ed5(j,i,j+1);
-        Widjd = (canSS(i)&&canSS(j))? energy:Widjd;
+        if (canSS(i)&&canSS(j)) Widjd = energy;
 
         std::vector<mpq_class> vals;
         vals.push_back(Wij);
@@ -293,9 +320,23 @@ mpq_class calculate(int len) {
         Wij = V(i, j) + auPenalty(i, j) + Wim1;
       } else { // default
         Wij = V(i, j) + auPenalty(i, j) + Wim1;
-        Widj = canSS(i)?V(i+1, j) + auPenalty(i+1,j) + Ed3(j,i + 1,i) + Wim1:INFINITY_;
-        Wijd = canSS(j)?V(i,j-1) + auPenalty(i,j-1) + Ed5(j-1,i,j) + Wim1:INFINITY_;
-        Widjd = (canSS(i)&&canSS(j))?V(i+1,j-1) + auPenalty(i+1,j-1) + Ed3(j-1,i + 1,i) + Ed5(j-1,i+1,j) + Wim1:INFINITY_;
+        if (canSS(i)) {
+          Widj = V(i+1, j) + auPenalty(i+1,j) + Ed3(j,i + 1,i) + Wim1;
+        } else {
+          Widj = INFINITY_;
+        }
+        
+        if (canSS(j)) {
+          Wijd = V(i,j-1) + auPenalty(i,j-1) + Ed5(j-1,i,j) + Wim1;
+        } else {
+          Wijd = INFINITY_;
+        }
+
+        if (canSS(i)&&canSS(j)) {
+          Widjd = V(i+1,j-1) + auPenalty(i+1,j-1) + Ed3(j-1,i + 1,i) + Ed5(j-1,i+1,j) + Wim1;
+        } else {
+          INFINITY_;
+        }
 
         std::vector<mpq_class> vals;
         vals.push_back(Wij);

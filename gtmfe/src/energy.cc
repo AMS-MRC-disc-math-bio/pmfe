@@ -160,7 +160,7 @@ mpq_class eL1(int i, int j, int ip, int jp) {
   if (size1 == 0 || size2 == 0) {
     if (size > 30) {
       /* AM: Does not depend upon i and j and ip and jp - Stacking Energies */
-      mpq_class loginc (prelog * log((double) size / 30.0));
+      loginc = mpq_class(prelog * log((double) size / 30.0));
       energy = bulge[30] + eparam[2] + loginc + auPen(RNA[i], RNA[j])
         + auPen(RNA[ip], RNA[jp]);
     } else if (size <= 30 && size != 1) {
@@ -176,7 +176,7 @@ mpq_class eL1(int i, int j, int ip, int jp) {
     lopsided = abs(size1 - size2);
 
     if (size > 30) {
-      mpq_class loginc (prelog * log((double) size / 30.0));
+      loginc = mpq_class(prelog * log((double) size / 30.0));
 
       if (!((size1 == 1 || size2 == 1) && gail)) { /* normal internal loop with size > 30*/
 
@@ -230,7 +230,7 @@ mpq_class eL(int i, int j, int ip, int jp) {
   if (size1 == 0 || size2 == 0) {
     if (size > 30) {
       /* AM: Does not depend upon i and j and ip and jp - Stacking Energies */
-      mpq_class loginc (prelog * log((double) size / 30.0));
+      loginc = mpq_class(prelog * log((double) size / 30.0));
       energy = bulge[30] + eparam[2] + loginc + auPen(RNA[i], RNA[j])
         + auPen(RNA[ip], RNA[jp]);
     } else if (size <= 30 && size != 1) {
@@ -246,7 +246,7 @@ mpq_class eL(int i, int j, int ip, int jp) {
     lopsided = abs(size1 - size2);
 
     if (size > 30) {
-      mpq_class loginc (prelog * log((double) size / 30.0));
+      loginc = mpq_class(prelog * log((double) size / 30.0));
 
       if (!((size1 == 1 || size2 == 1) && gail)) { /* normal internal loop with size > 30*/
 
@@ -298,7 +298,7 @@ mpq_class eH(int i, int j) {
   /*  look in hairpin, and be careful that there is only 30 values */
 
   if (size > 30) {
-    mpq_class loginc (prelog * log(((double) size) / 30.0));
+    loginc = mpq_class(prelog * log(((double) size) / 30.0));
     energy = hairpin[30] + loginc + tstkh[fourBaseIndex(RNA[i], RNA[j],
                                                         RNA[i + 1], RNA[j - 1])] + eparam[4]; /* size penalty + terminal mismatch stacking energy*/
   }
