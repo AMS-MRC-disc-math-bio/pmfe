@@ -6402,6 +6402,117 @@ fail:
 }
 
 
+SWIGINTERN PyObject *_wrap_ParameterVector_set_from_pairs(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  ParameterVector *arg1 = (ParameterVector *) 0 ;
+  std::pair< long,long > arg2 ;
+  std::pair< long,long > arg3 ;
+  std::pair< long,long > arg4 ;
+  std::pair< long,long > arg5 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 ;
+  int res2 = 0 ;
+  void *argp3 ;
+  int res3 = 0 ;
+  void *argp4 ;
+  int res4 = 0 ;
+  void *argp5 ;
+  int res5 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  PyObject * obj2 = 0 ;
+  PyObject * obj3 = 0 ;
+  PyObject * obj4 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OOOOO:ParameterVector_set_from_pairs",&obj0,&obj1,&obj2,&obj3,&obj4)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_ParameterVector, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ParameterVector_set_from_pairs" "', argument " "1"" of type '" "ParameterVector *""'"); 
+  }
+  arg1 = reinterpret_cast< ParameterVector * >(argp1);
+  {
+    res2 = SWIG_ConvertPtr(obj1, &argp2, SWIGTYPE_p_std__pairT_long_long_t,  0  | 0);
+    if (!SWIG_IsOK(res2)) {
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "ParameterVector_set_from_pairs" "', argument " "2"" of type '" "std::pair< long,long >""'"); 
+    }  
+    if (!argp2) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "ParameterVector_set_from_pairs" "', argument " "2"" of type '" "std::pair< long,long >""'");
+    } else {
+      std::pair< long,long > * temp = reinterpret_cast< std::pair< long,long > * >(argp2);
+      arg2 = *temp;
+      if (SWIG_IsNewObj(res2)) delete temp;
+    }
+  }
+  {
+    res3 = SWIG_ConvertPtr(obj2, &argp3, SWIGTYPE_p_std__pairT_long_long_t,  0  | 0);
+    if (!SWIG_IsOK(res3)) {
+      SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "ParameterVector_set_from_pairs" "', argument " "3"" of type '" "std::pair< long,long >""'"); 
+    }  
+    if (!argp3) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "ParameterVector_set_from_pairs" "', argument " "3"" of type '" "std::pair< long,long >""'");
+    } else {
+      std::pair< long,long > * temp = reinterpret_cast< std::pair< long,long > * >(argp3);
+      arg3 = *temp;
+      if (SWIG_IsNewObj(res3)) delete temp;
+    }
+  }
+  {
+    res4 = SWIG_ConvertPtr(obj3, &argp4, SWIGTYPE_p_std__pairT_long_long_t,  0  | 0);
+    if (!SWIG_IsOK(res4)) {
+      SWIG_exception_fail(SWIG_ArgError(res4), "in method '" "ParameterVector_set_from_pairs" "', argument " "4"" of type '" "std::pair< long,long >""'"); 
+    }  
+    if (!argp4) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "ParameterVector_set_from_pairs" "', argument " "4"" of type '" "std::pair< long,long >""'");
+    } else {
+      std::pair< long,long > * temp = reinterpret_cast< std::pair< long,long > * >(argp4);
+      arg4 = *temp;
+      if (SWIG_IsNewObj(res4)) delete temp;
+    }
+  }
+  {
+    res5 = SWIG_ConvertPtr(obj4, &argp5, SWIGTYPE_p_std__pairT_long_long_t,  0  | 0);
+    if (!SWIG_IsOK(res5)) {
+      SWIG_exception_fail(SWIG_ArgError(res5), "in method '" "ParameterVector_set_from_pairs" "', argument " "5"" of type '" "std::pair< long,long >""'"); 
+    }  
+    if (!argp5) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "ParameterVector_set_from_pairs" "', argument " "5"" of type '" "std::pair< long,long >""'");
+    } else {
+      std::pair< long,long > * temp = reinterpret_cast< std::pair< long,long > * >(argp5);
+      arg5 = *temp;
+      if (SWIG_IsNewObj(res5)) delete temp;
+    }
+  }
+  (arg1)->set_from_pairs(arg2,arg3,arg4,arg5);
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_ParameterVector_get_pairs(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  ParameterVector *arg1 = (ParameterVector *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  std::vector< std::pair< long,long >,std::allocator< std::pair< long,long > > > result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:ParameterVector_get_pairs",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_ParameterVector, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ParameterVector_get_pairs" "', argument " "1"" of type '" "ParameterVector *""'"); 
+  }
+  arg1 = reinterpret_cast< ParameterVector * >(argp1);
+  result = (arg1)->get_pairs();
+  resultobj = SWIG_NewPointerObj((new std::vector< std::pair< long,long >,std::allocator< std::pair< long,long > > >(static_cast< const std::vector< std::pair< long,long >,std::allocator< std::pair< long,long > > >& >(result))), SWIGTYPE_p_std__vectorT_std__pairT_long_long_t_std__allocatorT_std__pairT_long_long_t_t_t, SWIG_POINTER_OWN |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
 SWIGINTERN PyObject *_wrap_delete_ParameterVector(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   ParameterVector *arg1 = (ParameterVector *) 0 ;
@@ -9374,6 +9485,8 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"ParameterVector_dummy_scaling_set", _wrap_ParameterVector_dummy_scaling_set, METH_VARARGS, NULL},
 	 { (char *)"ParameterVector_dummy_scaling_get", _wrap_ParameterVector_dummy_scaling_get, METH_VARARGS, NULL},
 	 { (char *)"new_ParameterVector", _wrap_new_ParameterVector, METH_VARARGS, NULL},
+	 { (char *)"ParameterVector_set_from_pairs", _wrap_ParameterVector_set_from_pairs, METH_VARARGS, NULL},
+	 { (char *)"ParameterVector_get_pairs", _wrap_ParameterVector_get_pairs, METH_VARARGS, NULL},
 	 { (char *)"delete_ParameterVector", _wrap_delete_ParameterVector, METH_VARARGS, NULL},
 	 { (char *)"ParameterVector_swigregister", ParameterVector_swigregister, METH_VARARGS, NULL},
 	 { (char *)"PolytopeVector_multiloops_set", _wrap_PolytopeVector_multiloops_set, METH_VARARGS, NULL},

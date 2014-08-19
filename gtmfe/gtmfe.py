@@ -120,6 +120,25 @@ class ParameterVector(_object):
         this = _gtmfe.new_ParameterVector(*args)
         try: self.this.append(this)
         except: self.this = this
+    def set_from_pairs(self, *args): return _gtmfe.ParameterVector_set_from_pairs(self, *args)
+    def get_pairs(self): return _gtmfe.ParameterVector_get_pairs(self)
+    def set_from_fractions(self, multiloop_fraction, unpaired_fraction, branch_fraction, dummy_fraction):
+        self.set_from_pairs( pairll(multiloop_fraction.numerator, multiloop_fraction.denominator),
+                             pairll(unpaired_fraction.numerator, unpaired_fraction.denominator),
+                             pairll(branch_fraction.numerator, branch_fraction.denominator),
+                             pairll(dummy_fraction.numerator, dummy_fraction.denominator),
+                             )
+
+    def get_python_numbers(self):
+        from fractions import Fraction
+        pairs = self.get_pairs()
+        result = {"multiloop penalty": Fraction(pairs[0][0], pairs[0][1]),
+                  "unpaired penalty": Fraction(pairs[1][0], pairs[1][1]),
+                  "branch penalty": Fraction(pairs[2][0], pairs[2][1]),
+                  "dummy scaling": Fraction(pairs[3][0], pairs[3][1]),
+        }
+        return result
+
     __swig_destroy__ = _gtmfe.delete_ParameterVector
     __del__ = lambda self : None;
 ParameterVector_swigregister = _gtmfe.ParameterVector_swigregister
@@ -151,17 +170,17 @@ class PolytopeVector(_object):
     if _newclass:params = _swig_property(_gtmfe.PolytopeVector_params_get, _gtmfe.PolytopeVector_params_set)
     def get_pairs(self): return _gtmfe.PolytopeVector_get_pairs(self)
     def get_python_numbers(self):
-    from fractions import Fraction
-      pairs = self.get_pairs()
-      result = {"multiloops" : pairs[0][0],
-                "branches": pairs[1][0],
-                "unpaired": pairs[2][0],
-                "w": Fraction(pairs[3][0], pairs[3][1]),
-                "energy": Fraction(pairs[4][0], pairs[4][1]),
-    }
+        from fractions import Fraction
+        pairs = self.get_pairs()
+        result = {"multiloops" : pairs[0][0],
+                  "branches": pairs[1][0],
+                  "unpaired": pairs[2][0],
+                  "w": Fraction(pairs[3][0], pairs[3][1]),
+                  "energy": Fraction(pairs[4][0], pairs[4][1]),
+        }
                   
-    return result
-      
+        return result
+        
     def __init__(self): 
         this = _gtmfe.new_PolytopeVector()
         try: self.this.append(this)
