@@ -20,7 +20,8 @@ def main(argv):
     args = parser.parse_args()
     seqfile = args.sequence
     verbose = args.verbose
-    params = (args.a, args.b, args.c, args.d)
+    params = gtmfe.ParameterVector()
+    #params.set_from_fraction(args.a, args.b, args.c, args.d)
 
     logger = logging.getLogger()
     if verbose:
@@ -37,13 +38,16 @@ def main(argv):
     except TypeError:
         structtarget = os.path.splitext(os.path.basename(seqfile))[0] + ".ct"
 
-    result = run_gtmfe(seqfile, structtarget, paramdir, params)    
+    result = run_gtmfe(seqfile, structtarget, paramdir, params)
 
-    print "a = {0}, b = {1}, c = {2}, d = {3}".format(params[0], params[1], params[2], params[3])
-    print "x = {0}, y = {1}, z = {2}, w = {3}".format(result.multiloops, result.unpaired, result.branches, result.w)
+    paramnums = params.get_python_numbers()
+    resultnums = result.get_python_numbers()
 
-def run_gtmfe(seqfile, structtarget, paramdir, params=[3.4, 0.0, 0.4, 1]):
-    result = gtmfe.mfe_main(seqfile, structtarget, paramdir, params[0], params[1], params[2], params[3])
+    print "Parameters: " + str(paramnums)
+    print "Results: " + str(resultnums)
+
+def run_gtmfe(seqfile, structtarget, paramdir, params=gtmfe.ParameterVector()):
+    result = gtmfe.mfe_main(seqfile, structtarget, paramdir, params)
     return result
 
 # Voodoo to make Python run the program
