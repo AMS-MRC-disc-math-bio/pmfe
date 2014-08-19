@@ -53,7 +53,7 @@ PolytopeVector trace(int len) {
 	
   traceW(len);
 
-  struct PolytopeVector result;
+  PolytopeVector result;
   result.multiloops = count_multiloops;
   result.unpaired = count_unpaired;
   result.branches = count_branches;

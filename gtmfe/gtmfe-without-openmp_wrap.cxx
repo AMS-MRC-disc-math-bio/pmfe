@@ -3201,7 +3201,6 @@ SWIGINTERNINLINE PyObject*
 #include "traceback.h"
 #include "constraints.h"
 #include <gmpxx.h>
-#include "omp.h"
 
 
 SWIGINTERN swig_type_info*

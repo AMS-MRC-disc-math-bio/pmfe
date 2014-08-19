@@ -77,11 +77,14 @@ void free_fold(int len) {
 	free_global_params();
 }
 
+PolytopeVector mfe_main(string seq_file, string output_file, string param_dir, int dangle_model) {
+  ParameterVector params = ParameterVector();
+  return mfe_main(seq_file, output_file, param_dir, params, dangle_model);
+}
 
-PolytopeVector mfe_main(string seq_file, string output_file, string param_dir, mpq_class a, mpq_class b, mpq_class c, mpq_class d, int dangle_model) {
+PolytopeVector mfe_main(string seq_file, string output_file, string param_dir, ParameterVector params, int dangle_model) {
         std::string seq;
         mpq_class energy;
-        ParameterVector params;
 	
         dangles = dangle_model;
              
@@ -99,21 +102,17 @@ PolytopeVector mfe_main(string seq_file, string output_file, string param_dir, m
 	init_fold(seq.c_str());
 	
 	// Read in thermodynamic parameters. Always use Turner99 data (for now)
-        params.a = a;
-        params.b = b;
-        params.c = c;
-        params.d = d;
         readThermodynamicParameters(param_dir.c_str(), params);
 
 	energy = calculate(seq.length()) ;
 
-        struct PolytopeVector result;
+        PolytopeVector result;
         result = trace(seq.length());
         result.energy = energy;
-        if (d==0) {
+        if (params.dummy_scaling==0) {
           result.w = 0;
         } else {
-          result.w = (result.energy - result.multiloops * a - result.branches * b - result.unpaired * c)/d;
+          result.w = (result.energy - result.multiloops * params.multiloop_penalty - result.branches * params.branch_penalty - result.unpaired * params.unpaired_penalty)/params.dummy_scaling;
 	};
         
 	save_ct_file(outputFile, seq, energy);

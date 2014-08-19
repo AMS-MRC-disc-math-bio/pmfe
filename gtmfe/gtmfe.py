@@ -105,20 +105,20 @@ class ParameterVector(_object):
     __swig_getmethods__ = {}
     __getattr__ = lambda self, name: _swig_getattr(self, ParameterVector, name)
     __repr__ = _swig_repr
-    __swig_setmethods__["a"] = _gtmfe.ParameterVector_a_set
-    __swig_getmethods__["a"] = _gtmfe.ParameterVector_a_get
-    if _newclass:a = _swig_property(_gtmfe.ParameterVector_a_get, _gtmfe.ParameterVector_a_set)
-    __swig_setmethods__["b"] = _gtmfe.ParameterVector_b_set
-    __swig_getmethods__["b"] = _gtmfe.ParameterVector_b_get
-    if _newclass:b = _swig_property(_gtmfe.ParameterVector_b_get, _gtmfe.ParameterVector_b_set)
-    __swig_setmethods__["c"] = _gtmfe.ParameterVector_c_set
-    __swig_getmethods__["c"] = _gtmfe.ParameterVector_c_get
-    if _newclass:c = _swig_property(_gtmfe.ParameterVector_c_get, _gtmfe.ParameterVector_c_set)
-    __swig_setmethods__["d"] = _gtmfe.ParameterVector_d_set
-    __swig_getmethods__["d"] = _gtmfe.ParameterVector_d_get
-    if _newclass:d = _swig_property(_gtmfe.ParameterVector_d_get, _gtmfe.ParameterVector_d_set)
-    def __init__(self): 
-        this = _gtmfe.new_ParameterVector()
+    __swig_setmethods__["multiloop_penalty"] = _gtmfe.ParameterVector_multiloop_penalty_set
+    __swig_getmethods__["multiloop_penalty"] = _gtmfe.ParameterVector_multiloop_penalty_get
+    if _newclass:multiloop_penalty = _swig_property(_gtmfe.ParameterVector_multiloop_penalty_get, _gtmfe.ParameterVector_multiloop_penalty_set)
+    __swig_setmethods__["unpaired_penalty"] = _gtmfe.ParameterVector_unpaired_penalty_set
+    __swig_getmethods__["unpaired_penalty"] = _gtmfe.ParameterVector_unpaired_penalty_get
+    if _newclass:unpaired_penalty = _swig_property(_gtmfe.ParameterVector_unpaired_penalty_get, _gtmfe.ParameterVector_unpaired_penalty_set)
+    __swig_setmethods__["branch_penalty"] = _gtmfe.ParameterVector_branch_penalty_set
+    __swig_getmethods__["branch_penalty"] = _gtmfe.ParameterVector_branch_penalty_get
+    if _newclass:branch_penalty = _swig_property(_gtmfe.ParameterVector_branch_penalty_get, _gtmfe.ParameterVector_branch_penalty_set)
+    __swig_setmethods__["dummy_scaling"] = _gtmfe.ParameterVector_dummy_scaling_set
+    __swig_getmethods__["dummy_scaling"] = _gtmfe.ParameterVector_dummy_scaling_get
+    if _newclass:dummy_scaling = _swig_property(_gtmfe.ParameterVector_dummy_scaling_get, _gtmfe.ParameterVector_dummy_scaling_set)
+    def __init__(self, *args): 
+        this = _gtmfe.new_ParameterVector(*args)
         try: self.this.append(this)
         except: self.this = this
     __swig_destroy__ = _gtmfe.delete_ParameterVector

@@ -158,7 +158,7 @@ int initStackValues(const string& fileName, const string& dirPath, ParameterVect
       j = cols/4;
       l = cols%4; 		
       if (!(val == "inf")) {
-        stack[fourBaseIndex(i,j,k,l)]  = params.d * atof(val.c_str());
+        stack[fourBaseIndex(i,j,k,l)]  = params.dummy_scaling * atof(val.c_str());
       }
     }	
     ++count;
@@ -186,31 +186,31 @@ int initMiscloopValues(const string& fileName, const string& dirpath, ParameterV
   for (int index = 1; index < 13; index++) { // There are total 12 values to read in.
     if (index == 1) {
       cf >> currentWord;
-      prelog = params.d * atof(currentWord);
+      prelog = params.dummy_scaling * atof(currentWord);
     }
     if (index == 2) {
       cf >> currentWord;
-      maxpen = params.d * atof(currentWord);
+      maxpen = params.dummy_scaling * atof(currentWord);
     }
     if (index == 3) {
       for (int count = 1; count <= 4; count++) {
         cf >> currentWord;
         s = currentWord;
-        poppen[count] = params.d * atof(s.c_str());
+        poppen[count] = params.dummy_scaling * atof(s.c_str());
       }
     }
     if (index == 4) {
-      eparam[1] = params.d * 0;
-      eparam[2] = params.d * 0;
-      eparam[3] = params.d * 0;
-      eparam[4] = params.d * 0;
-      eparam[7] = params.d * .30;
-      eparam[8] = params.d * .30;
-      eparam[9] = params.d * -5.00;
+      eparam[1] = params.dummy_scaling * 0;
+      eparam[2] = params.dummy_scaling * 0;
+      eparam[3] = params.dummy_scaling * 0;
+      eparam[4] = params.dummy_scaling * 0;
+      eparam[7] = params.dummy_scaling * .30;
+      eparam[8] = params.dummy_scaling * .30;
+      eparam[9] = params.dummy_scaling * -5.00;
 
-      multConst[0] = eparam[5] = params.a;
-      multConst[1] = eparam[6] = params.b;
-      multConst[2] = eparam[10] = params.c;
+      multConst[0] = eparam[5] = params.multiloop_penalty;
+      multConst[1] = eparam[6] = params.unpaired_penalty;
+      multConst[2] = eparam[10] = params.branch_penalty;
 
       // This loader code is really fiddly!
       // It breaks if we don't read these three words from the file,
@@ -224,35 +224,35 @@ int initMiscloopValues(const string& fileName, const string& dirpath, ParameterV
       for (int count = 1; count <= 3; count++) {
         cf >> currentWord;
         s = currentWord;
-        table[count] = params.d * atof(s.c_str());
+        table[count] = params.dummy_scaling * atof(s.c_str());
       }
-      efn2a = params.d * table[1];
-      efn2b = params.d * (table[2] - .01);
-      efn2c = params.d * (table[3] - .01);
+      efn2a = params.dummy_scaling * table[1];
+      efn2b = params.dummy_scaling * (table[2] - .01);
+      efn2c = params.dummy_scaling * (table[3] - .01);
     }
     if (index == 6) {
       cf >> currentWord;
-      auend = params.d * atof(currentWord);
+      auend = params.dummy_scaling * atof(currentWord);
     }
     if (index == 7) {
       cf >> currentWord;
-      gubonus = params.d * atof(currentWord);
+      gubonus = params.dummy_scaling * atof(currentWord);
     }
     if (index == 8) {
       cf >> currentWord;
-      cslope = params.d * (atof(currentWord) + .01);
+      cslope = params.dummy_scaling * (atof(currentWord) + .01);
     }
     if (index == 9) {
       cf >> currentWord;
-      cint = params.d * atof(currentWord);
+      cint = params.dummy_scaling * atof(currentWord);
     }
     if (index == 10) {
       cf >> currentWord;
-      c3 = params.d * (atof(currentWord) + .01);
+      c3 = params.dummy_scaling * (atof(currentWord) + .01);
     }
     if (index == 11) {
       cf >> currentWord;
-      init = params.d * (atof(currentWord) + .01);
+      init = params.dummy_scaling * (atof(currentWord) + .01);
     }
     if (index == 12) {
       cf >> currentWord;
@@ -305,7 +305,7 @@ int initDangleValues(const std::string& fileName,
       ss >> val;
       k = cols%4; 		
       if (!(val == "inf")) {
-        dangle[i][j][k][l] = params.d * atof(val.c_str());
+        dangle[i][j][k][l] = params.dummy_scaling * atof(val.c_str());
       }
     }	
     ++count;
@@ -340,7 +340,7 @@ int initLoopValues( const string& fileName, const string& dirPath, ParameterVect
         index = atoi(currentWord);
       if (j > 1) {
         if (strcmp(currentWord, "inf")) {
-          tempValue = params.d * atof(currentWord);
+          tempValue = params.dummy_scaling * atof(currentWord);
         } else {
           tempValue = INFINITY_;
         }
@@ -388,7 +388,7 @@ int initTstk23Values(const std::string& fileName, const std::string& dirPath, Pa
           else {
             cf >> val;
             tstacki23[i1][j1][i2][j2] = (val == "inf")? (INFINITY_): 
-              (params.d * atof(val.c_str()));
+              (params.dummy_scaling * atof(val.c_str()));
           }
   cf.close();
 
@@ -425,7 +425,7 @@ int initTstkeValues(const std::string& fileName, const std::string& dirPath, Par
           else { 
             cf >> val;
             tstacke[i1][j1][i2][j2] = (val == "inf")? (INFINITY_): 
-              (params.d * atof(val.c_str()));
+              (params.dummy_scaling * atof(val.c_str()));
           }
         }
       }
@@ -464,7 +464,7 @@ int initTstkmValues(const std::string& fileName, const std::string& dirPath, Par
           else { 
             cf >> val;
             tstackm[i1][j1][i2][j2] = (val == "inf")? (INFINITY_): 
-              (params.d * atof(val.c_str()));
+              (params.dummy_scaling * atof(val.c_str()));
           }
         }
       }
@@ -514,7 +514,7 @@ int initTstkhValues(const std::string& fileName, const std::string& dirPath, Par
       j = cols/4;
       l = cols%4; 		
       if (!(val == "inf")) {
-        tstkh[fourBaseIndex(i,j,k,l)]= params.d * atof(val.c_str());
+        tstkh[fourBaseIndex(i,j,k,l)]= params.dummy_scaling * atof(val.c_str());
       }
     }	
     ++count;
@@ -562,7 +562,7 @@ int initTstkiValues(const std::string& fileName, const std::string& dirPath, Par
       j = cols/4;
       l = cols%4; 		
       if (!(val == "inf")) {
-        tstki[fourBaseIndex(i,j,k,l)]= params.d * atof(val.c_str());
+        tstki[fourBaseIndex(i,j,k,l)]= params.dummy_scaling * atof(val.c_str());
       }
     }	
     ++count;
@@ -613,7 +613,7 @@ int initTloopValues(const std::string& fileName, const std::string& dirPath, Par
     tloop[numoftloops][0] = atoi(currentSeqNumbers);
 		
     if (!(strcmp(currentValue,"inf")==0)) 
-      tloop[numoftloops][1] = params.d * atof(currentValue);
+      tloop[numoftloops][1] = params.dummy_scaling * atof(currentValue);
   }
   cf.close();
   return 0;
@@ -693,7 +693,7 @@ int initInt22Values(const std::string& fileName, const std::string& dirPath, Par
 
         if (!(strcmp(currentValue,"inf")==0)) 
           iloop22[base[0]][base[1]][base[2]][base[3]][j][l][k][m] 
-            = params.d * atof(currentValue);
+            = params.dummy_scaling * atof(currentValue);
       }
     }
   }
@@ -774,7 +774,7 @@ int initInt21Values(const std::string& fileName, const std::string& dirPath, Par
         for (z = 1; z <=24 ; z++) {
           char value[32];
           ss >> value;
-          mpq_class temp = params.d * atof(value);
+          mpq_class temp = params.dummy_scaling * atof(value);
           a = base1[i];
           b = base2[i];
           f = base1[jj];
@@ -861,7 +861,7 @@ int initInt11Values(const std::string& fileName, const std::string& dirPath, Par
       for (int z=1; z <= 24; ++z) {
         char value[32];
         ss >> value;	
-        mpq_class temp = params.d * atof(value);
+        mpq_class temp = params.dummy_scaling * atof(value);
         a = base1[k];
         d = base2[k];
         c = base1[jj];
