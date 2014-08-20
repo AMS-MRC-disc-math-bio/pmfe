@@ -8,9 +8,11 @@ from gtmfe import gtmfe
 class gtmfeTest(unittest.TestCase):
     def setUp(self):
         # The default vector is [3.4, 0, 0.4, 1]. Here are some others.
+        # Vectors can be expressed with decimal strings
         self.variant_negative = gtmfe.ParameterVector()
-        self.variant_negative.set_from_fractions(Fraction(-34,10), Fraction(0), Fraction(-4,10), Fraction(1))
-        
+        self.variant_negative.set_from_words('-3.4', '0', '-0.4', '1')
+
+        # Vectors can also be expressed as exact rationals
         self.variant_madeup = gtmfe.ParameterVector()
         self.variant_madeup.set_from_fractions(Fraction(18,5), Fraction(-12,5), Fraction(8,7), Fraction(-2,3))
         self.structtarget = "test_result.ct"
