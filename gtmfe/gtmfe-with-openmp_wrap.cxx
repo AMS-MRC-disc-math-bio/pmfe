@@ -3436,6 +3436,98 @@ SWIG_AsVal_ptrdiff_t (PyObject * obj, ptrdiff_t *val)
 #include <vector>
 
 
+SWIGINTERN swig_type_info*
+SWIG_pchar_descriptor(void)
+{
+  static int init = 0;
+  static swig_type_info* info = 0;
+  if (!init) {
+    info = SWIG_TypeQuery("_p_char");
+    init = 1;
+  }
+  return info;
+}
+
+
+SWIGINTERN int
+SWIG_AsCharPtrAndSize(PyObject *obj, char** cptr, size_t* psize, int *alloc)
+{
+#if PY_VERSION_HEX>=0x03000000
+  if (PyUnicode_Check(obj))
+#else  
+  if (PyString_Check(obj))
+#endif
+  {
+    char *cstr; Py_ssize_t len;
+#if PY_VERSION_HEX>=0x03000000
+    if (!alloc && cptr) {
+        /* We can't allow converting without allocation, since the internal
+           representation of string in Python 3 is UCS-2/UCS-4 but we require
+           a UTF-8 representation.
+           TODO(bhy) More detailed explanation */
+        return SWIG_RuntimeError;
+    }
+    obj = PyUnicode_AsUTF8String(obj);
+    PyBytes_AsStringAndSize(obj, &cstr, &len);
+    if(alloc) *alloc = SWIG_NEWOBJ;
+#else
+    PyString_AsStringAndSize(obj, &cstr, &len);
+#endif
+    if (cptr) {
+      if (alloc) {
+	/* 
+	   In python the user should not be able to modify the inner
+	   string representation. To warranty that, if you define
+	   SWIG_PYTHON_SAFE_CSTRINGS, a new/copy of the python string
+	   buffer is always returned.
+
+	   The default behavior is just to return the pointer value,
+	   so, be careful.
+	*/ 
+#if defined(SWIG_PYTHON_SAFE_CSTRINGS)
+	if (*alloc != SWIG_OLDOBJ) 
+#else
+	if (*alloc == SWIG_NEWOBJ) 
+#endif
+	  {
+	    *cptr = reinterpret_cast< char* >(memcpy((new char[len + 1]), cstr, sizeof(char)*(len + 1)));
+	    *alloc = SWIG_NEWOBJ;
+	  }
+	else {
+	  *cptr = cstr;
+	  *alloc = SWIG_OLDOBJ;
+	}
+      } else {
+        #if PY_VERSION_HEX>=0x03000000
+        assert(0); /* Should never reach here in Python 3 */
+        #endif
+	*cptr = SWIG_Python_str_AsChar(obj);
+      }
+    }
+    if (psize) *psize = len + 1;
+#if PY_VERSION_HEX>=0x03000000
+    Py_XDECREF(obj);
+#endif
+    return SWIG_OK;
+  } else {
+    swig_type_info* pchar_descriptor = SWIG_pchar_descriptor();
+    if (pchar_descriptor) {
+      void* vptr = 0;
+      if (SWIG_ConvertPtr(obj, &vptr, pchar_descriptor, 0) == SWIG_OK) {
+	if (cptr) *cptr = (char *) vptr;
+	if (psize) *psize = vptr ? (strlen((char *)vptr) + 1) : 0;
+	if (alloc) *alloc = SWIG_OLDOBJ;
+	return SWIG_OK;
+      }
+    }
+  }
+  return SWIG_TypeError;
+}
+
+
+
+
+
 #include <limits.h>
 #if !defined(SWIG_NO_LLONG_MAX)
 # if !defined(LLONG_MAX) && defined(__GNUC__) && defined (__LONG_LONG_MAX__)
@@ -4878,95 +4970,6 @@ SWIGINTERN std::vector< std::pair< long,long > >::iterator std_vector_Sl_std_pai
 SWIGINTERN std::vector< std::pair< long,long > >::iterator std_vector_Sl_std_pair_Sl_long_Sc_long_Sg__Sg__erase__SWIG_1(std::vector< std::pair< long,long > > *self,std::vector< std::pair< long,long > >::iterator first,std::vector< std::pair< long,long > >::iterator last){ return self->erase(first, last); }
 SWIGINTERN std::vector< std::pair< long,long > >::iterator std_vector_Sl_std_pair_Sl_long_Sc_long_Sg__Sg__insert__SWIG_0(std::vector< std::pair< long,long > > *self,std::vector< std::pair< long,long > >::iterator pos,std::vector< std::pair< long,long > >::value_type const &x){ return self->insert(pos, x); }
 SWIGINTERN void std_vector_Sl_std_pair_Sl_long_Sc_long_Sg__Sg__insert__SWIG_1(std::vector< std::pair< long,long > > *self,std::vector< std::pair< long,long > >::iterator pos,std::vector< std::pair< long,long > >::size_type n,std::vector< std::pair< long,long > >::value_type const &x){ self->insert(pos, n, x); }
-
-SWIGINTERN swig_type_info*
-SWIG_pchar_descriptor(void)
-{
-  static int init = 0;
-  static swig_type_info* info = 0;
-  if (!init) {
-    info = SWIG_TypeQuery("_p_char");
-    init = 1;
-  }
-  return info;
-}
-
-
-SWIGINTERN int
-SWIG_AsCharPtrAndSize(PyObject *obj, char** cptr, size_t* psize, int *alloc)
-{
-#if PY_VERSION_HEX>=0x03000000
-  if (PyUnicode_Check(obj))
-#else  
-  if (PyString_Check(obj))
-#endif
-  {
-    char *cstr; Py_ssize_t len;
-#if PY_VERSION_HEX>=0x03000000
-    if (!alloc && cptr) {
-        /* We can't allow converting without allocation, since the internal
-           representation of string in Python 3 is UCS-2/UCS-4 but we require
-           a UTF-8 representation.
-           TODO(bhy) More detailed explanation */
-        return SWIG_RuntimeError;
-    }
-    obj = PyUnicode_AsUTF8String(obj);
-    PyBytes_AsStringAndSize(obj, &cstr, &len);
-    if(alloc) *alloc = SWIG_NEWOBJ;
-#else
-    PyString_AsStringAndSize(obj, &cstr, &len);
-#endif
-    if (cptr) {
-      if (alloc) {
-	/* 
-	   In python the user should not be able to modify the inner
-	   string representation. To warranty that, if you define
-	   SWIG_PYTHON_SAFE_CSTRINGS, a new/copy of the python string
-	   buffer is always returned.
-
-	   The default behavior is just to return the pointer value,
-	   so, be careful.
-	*/ 
-#if defined(SWIG_PYTHON_SAFE_CSTRINGS)
-	if (*alloc != SWIG_OLDOBJ) 
-#else
-	if (*alloc == SWIG_NEWOBJ) 
-#endif
-	  {
-	    *cptr = reinterpret_cast< char* >(memcpy((new char[len + 1]), cstr, sizeof(char)*(len + 1)));
-	    *alloc = SWIG_NEWOBJ;
-	  }
-	else {
-	  *cptr = cstr;
-	  *alloc = SWIG_OLDOBJ;
-	}
-      } else {
-        #if PY_VERSION_HEX>=0x03000000
-        assert(0); /* Should never reach here in Python 3 */
-        #endif
-	*cptr = SWIG_Python_str_AsChar(obj);
-      }
-    }
-    if (psize) *psize = len + 1;
-#if PY_VERSION_HEX>=0x03000000
-    Py_XDECREF(obj);
-#endif
-    return SWIG_OK;
-  } else {
-    swig_type_info* pchar_descriptor = SWIG_pchar_descriptor();
-    if (pchar_descriptor) {
-      void* vptr = 0;
-      if (SWIG_ConvertPtr(obj, &vptr, pchar_descriptor, 0) == SWIG_OK) {
-	if (cptr) *cptr = (char *) vptr;
-	if (psize) *psize = vptr ? (strlen((char *)vptr) + 1) : 0;
-	if (alloc) *alloc = SWIG_OLDOBJ;
-	return SWIG_OK;
-      }
-    }
-  }
-  return SWIG_TypeError;
-}
-
 
 SWIGINTERN int
 SWIG_AsPtr_std_string (PyObject * obj, std::string **val) 
@@ -6494,6 +6497,75 @@ fail:
 }
 
 
+SWIGINTERN PyObject *_wrap_ParameterVector_set_from_words(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  ParameterVector *arg1 = (ParameterVector *) 0 ;
+  char *arg2 = (char *) 0 ;
+  char *arg3 = (char *) 0 ;
+  char *arg4 = (char *) 0 ;
+  char *arg5 = (char *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int res2 ;
+  char *buf2 = 0 ;
+  int alloc2 = 0 ;
+  int res3 ;
+  char *buf3 = 0 ;
+  int alloc3 = 0 ;
+  int res4 ;
+  char *buf4 = 0 ;
+  int alloc4 = 0 ;
+  int res5 ;
+  char *buf5 = 0 ;
+  int alloc5 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  PyObject * obj2 = 0 ;
+  PyObject * obj3 = 0 ;
+  PyObject * obj4 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OOOOO:ParameterVector_set_from_words",&obj0,&obj1,&obj2,&obj3,&obj4)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_ParameterVector, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ParameterVector_set_from_words" "', argument " "1"" of type '" "ParameterVector *""'"); 
+  }
+  arg1 = reinterpret_cast< ParameterVector * >(argp1);
+  res2 = SWIG_AsCharPtrAndSize(obj1, &buf2, NULL, &alloc2);
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "ParameterVector_set_from_words" "', argument " "2"" of type '" "char const *""'");
+  }
+  arg2 = reinterpret_cast< char * >(buf2);
+  res3 = SWIG_AsCharPtrAndSize(obj2, &buf3, NULL, &alloc3);
+  if (!SWIG_IsOK(res3)) {
+    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "ParameterVector_set_from_words" "', argument " "3"" of type '" "char const *""'");
+  }
+  arg3 = reinterpret_cast< char * >(buf3);
+  res4 = SWIG_AsCharPtrAndSize(obj3, &buf4, NULL, &alloc4);
+  if (!SWIG_IsOK(res4)) {
+    SWIG_exception_fail(SWIG_ArgError(res4), "in method '" "ParameterVector_set_from_words" "', argument " "4"" of type '" "char const *""'");
+  }
+  arg4 = reinterpret_cast< char * >(buf4);
+  res5 = SWIG_AsCharPtrAndSize(obj4, &buf5, NULL, &alloc5);
+  if (!SWIG_IsOK(res5)) {
+    SWIG_exception_fail(SWIG_ArgError(res5), "in method '" "ParameterVector_set_from_words" "', argument " "5"" of type '" "char const *""'");
+  }
+  arg5 = reinterpret_cast< char * >(buf5);
+  (arg1)->set_from_words((char const *)arg2,(char const *)arg3,(char const *)arg4,(char const *)arg5);
+  resultobj = SWIG_Py_Void();
+  if (alloc2 == SWIG_NEWOBJ) delete[] buf2;
+  if (alloc3 == SWIG_NEWOBJ) delete[] buf3;
+  if (alloc4 == SWIG_NEWOBJ) delete[] buf4;
+  if (alloc5 == SWIG_NEWOBJ) delete[] buf5;
+  return resultobj;
+fail:
+  if (alloc2 == SWIG_NEWOBJ) delete[] buf2;
+  if (alloc3 == SWIG_NEWOBJ) delete[] buf3;
+  if (alloc4 == SWIG_NEWOBJ) delete[] buf4;
+  if (alloc5 == SWIG_NEWOBJ) delete[] buf5;
+  return NULL;
+}
+
+
 SWIGINTERN PyObject *_wrap_ParameterVector_get_pairs(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   ParameterVector *arg1 = (ParameterVector *) 0 ;
@@ -6820,58 +6892,6 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_PolytopeVector_params_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  PolytopeVector *arg1 = (PolytopeVector *) 0 ;
-  ParameterVector *arg2 = (ParameterVector *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  void *argp2 = 0 ;
-  int res2 = 0 ;
-  PyObject * obj0 = 0 ;
-  PyObject * obj1 = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"OO:PolytopeVector_params_set",&obj0,&obj1)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_PolytopeVector, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "PolytopeVector_params_set" "', argument " "1"" of type '" "PolytopeVector *""'"); 
-  }
-  arg1 = reinterpret_cast< PolytopeVector * >(argp1);
-  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_ParameterVector, 0 |  0 );
-  if (!SWIG_IsOK(res2)) {
-    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "PolytopeVector_params_set" "', argument " "2"" of type '" "ParameterVector *""'"); 
-  }
-  arg2 = reinterpret_cast< ParameterVector * >(argp2);
-  if (arg1) (arg1)->params = *arg2;
-  resultobj = SWIG_Py_Void();
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_PolytopeVector_params_get(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  PolytopeVector *arg1 = (PolytopeVector *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  PyObject * obj0 = 0 ;
-  ParameterVector *result = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"O:PolytopeVector_params_get",&obj0)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_PolytopeVector, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "PolytopeVector_params_get" "', argument " "1"" of type '" "PolytopeVector *""'"); 
-  }
-  arg1 = reinterpret_cast< PolytopeVector * >(argp1);
-  result = (ParameterVector *)& ((arg1)->params);
-  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_ParameterVector, 0 |  0 );
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
 SWIGINTERN PyObject *_wrap_PolytopeVector_get_pairs(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   PolytopeVector *arg1 = (PolytopeVector *) 0 ;
@@ -6934,6 +6954,31 @@ SWIGINTERN PyObject *PolytopeVector_swigregister(PyObject *SWIGUNUSEDPARM(self),
   SWIG_TypeNewClientData(SWIGTYPE_p_PolytopeVector, SWIG_NewClientData(obj));
   return SWIG_Py_Void();
 }
+
+SWIGINTERN PyObject *_wrap_get_mpq_from_word(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  char *arg1 = (char *) 0 ;
+  int res1 ;
+  char *buf1 = 0 ;
+  int alloc1 = 0 ;
+  PyObject * obj0 = 0 ;
+  mpq_class result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:get_mpq_from_word",&obj0)) SWIG_fail;
+  res1 = SWIG_AsCharPtrAndSize(obj0, &buf1, NULL, &alloc1);
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "get_mpq_from_word" "', argument " "1"" of type '" "char const *""'");
+  }
+  arg1 = reinterpret_cast< char * >(buf1);
+  result = get_mpq_from_word((char const *)arg1);
+  resultobj = SWIG_NewPointerObj((new mpq_class(static_cast< const mpq_class& >(result))), SWIGTYPE_p_mpq_class, SWIG_POINTER_OWN |  0 );
+  if (alloc1 == SWIG_NEWOBJ) delete[] buf1;
+  return resultobj;
+fail:
+  if (alloc1 == SWIG_NEWOBJ) delete[] buf1;
+  return NULL;
+}
+
 
 SWIGINTERN PyObject *_wrap_new_pairll__SWIG_0(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
@@ -9489,6 +9534,7 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"ParameterVector_dummy_scaling_get", _wrap_ParameterVector_dummy_scaling_get, METH_VARARGS, NULL},
 	 { (char *)"new_ParameterVector", _wrap_new_ParameterVector, METH_VARARGS, NULL},
 	 { (char *)"ParameterVector_set_from_pairs", _wrap_ParameterVector_set_from_pairs, METH_VARARGS, NULL},
+	 { (char *)"ParameterVector_set_from_words", _wrap_ParameterVector_set_from_words, METH_VARARGS, NULL},
 	 { (char *)"ParameterVector_get_pairs", _wrap_ParameterVector_get_pairs, METH_VARARGS, NULL},
 	 { (char *)"delete_ParameterVector", _wrap_delete_ParameterVector, METH_VARARGS, NULL},
 	 { (char *)"ParameterVector_swigregister", ParameterVector_swigregister, METH_VARARGS, NULL},
@@ -9502,12 +9548,11 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"PolytopeVector_w_get", _wrap_PolytopeVector_w_get, METH_VARARGS, NULL},
 	 { (char *)"PolytopeVector_energy_set", _wrap_PolytopeVector_energy_set, METH_VARARGS, NULL},
 	 { (char *)"PolytopeVector_energy_get", _wrap_PolytopeVector_energy_get, METH_VARARGS, NULL},
-	 { (char *)"PolytopeVector_params_set", _wrap_PolytopeVector_params_set, METH_VARARGS, NULL},
-	 { (char *)"PolytopeVector_params_get", _wrap_PolytopeVector_params_get, METH_VARARGS, NULL},
 	 { (char *)"PolytopeVector_get_pairs", _wrap_PolytopeVector_get_pairs, METH_VARARGS, NULL},
 	 { (char *)"new_PolytopeVector", _wrap_new_PolytopeVector, METH_VARARGS, NULL},
 	 { (char *)"delete_PolytopeVector", _wrap_delete_PolytopeVector, METH_VARARGS, NULL},
 	 { (char *)"PolytopeVector_swigregister", PolytopeVector_swigregister, METH_VARARGS, NULL},
+	 { (char *)"get_mpq_from_word", _wrap_get_mpq_from_word, METH_VARARGS, NULL},
 	 { (char *)"new_pairll", _wrap_new_pairll, METH_VARARGS, NULL},
 	 { (char *)"pairll_first_set", _wrap_pairll_first_set, METH_VARARGS, NULL},
 	 { (char *)"pairll_first_get", _wrap_pairll_first_get, METH_VARARGS, NULL},

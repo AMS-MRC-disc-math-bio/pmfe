@@ -121,6 +121,7 @@ class ParameterVector(_object):
         try: self.this.append(this)
         except: self.this = this
     def set_from_pairs(self, *args): return _gtmfe.ParameterVector_set_from_pairs(self, *args)
+    def set_from_words(self, *args): return _gtmfe.ParameterVector_set_from_words(self, *args)
     def get_pairs(self): return _gtmfe.ParameterVector_get_pairs(self)
     def set_from_fractions(self, multiloop_fraction, unpaired_fraction, branch_fraction, dummy_fraction):
         self.set_from_pairs( pairll(multiloop_fraction.numerator, multiloop_fraction.denominator),
@@ -165,9 +166,6 @@ class PolytopeVector(_object):
     __swig_setmethods__["energy"] = _gtmfe.PolytopeVector_energy_set
     __swig_getmethods__["energy"] = _gtmfe.PolytopeVector_energy_get
     if _newclass:energy = _swig_property(_gtmfe.PolytopeVector_energy_get, _gtmfe.PolytopeVector_energy_set)
-    __swig_setmethods__["params"] = _gtmfe.PolytopeVector_params_set
-    __swig_getmethods__["params"] = _gtmfe.PolytopeVector_params_get
-    if _newclass:params = _swig_property(_gtmfe.PolytopeVector_params_get, _gtmfe.PolytopeVector_params_set)
     def get_pairs(self): return _gtmfe.PolytopeVector_get_pairs(self)
     def get_python_numbers(self):
         from fractions import Fraction
@@ -190,6 +188,10 @@ class PolytopeVector(_object):
 PolytopeVector_swigregister = _gtmfe.PolytopeVector_swigregister
 PolytopeVector_swigregister(PolytopeVector)
 
+
+def get_mpq_from_word(*args):
+  return _gtmfe.get_mpq_from_word(*args)
+get_mpq_from_word = _gtmfe.get_mpq_from_word
 class pairll(_object):
     __swig_setmethods__ = {}
     __setattr__ = lambda self, name, value: _swig_setattr(self, pairll, name, value)
