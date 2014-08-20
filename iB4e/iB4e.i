@@ -24,18 +24,18 @@
 // This is easier than writing a TypeMap
 %extend EuclideanVector{
   %pythoncode{
-    def get_mpq_values(self):
-        import gmpy2
+    def get_frac_values(self):
+        from fractions import Fraction
         split_values = self.get_split_values()
-        return [gmpy2.mpq(val[0], val[1]) for val in split_values]
+        return [Fraction(val[0], val[1]) for val in split_values]
 
     def get_split_values(self):
         split_values = [self.get_split_value(i) for i in xrange(self.dimension)]
         return split_values
 
-    def set_mpq_values(self, mpq_values):
-        import gmpy2
-        split_values = [(long(value.numerator), long(value.denominator)) for value in mpq_values]
+    def set_frac_values(self, frac_values):
+        from fractions import Fraction
+        split_values = [(value.numerator, value.denominator) for value in frac_values]
         self.set_split_values(split_values)                      
 
     def set_split_values(self, split_values):
@@ -51,7 +51,7 @@
     def get_split_vertices(self):
         return [vertex.get_split_values() for vertex in self.vertices]
 
-    def get_mpq_vertices(self):
-        return [vertex.get_mpq_values() for vertex in self.vertices]
+    def get_frac_vertices(self):
+        return [vertex.get_frac_values() for vertex in self.vertices]
   }
  }
