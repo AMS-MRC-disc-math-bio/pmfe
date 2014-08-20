@@ -22,8 +22,6 @@
 
 #include "config.h"
 
-#if NUMBER_TYPE == GMP_RATIONALS
-
 #include "linalg.h"
 #include <gmpxx.h>
 #include <iostream>
@@ -34,7 +32,7 @@
 using namespace std;
 
 
-void printmatrix(NUMBER *matrix, int m, int n)
+void printmatrix(mpq_class *matrix, int m, int n)
 {
   for(int i = 0; i < m; i++) { 
     for(int j = 0; j < n; j++) { 
@@ -47,11 +45,11 @@ void printmatrix(NUMBER *matrix, int m, int n)
 }
 
 
-int uppertriangular(NUMBER *matrix, int m, int n)
+int uppertriangular(mpq_class *matrix, int m, int n)
 {
 
   int rank = 0;
-  NUMBER swap;
+  mpq_class swap;
 
   //int minmn;
   //if(m < n)
@@ -79,7 +77,7 @@ int uppertriangular(NUMBER *matrix, int m, int n)
       }
 
       // subtract appropriate multiples of ith row from all lower rows
-      NUMBER multiple;
+      mpq_class multiple;
       for(int i2 = i+1; i2 < m; i2++) {
         multiple = matrix[i2*n + j] / matrix[i*n + j];
         for(int j2=0; j2 < n; j2++)
@@ -94,13 +92,11 @@ int uppertriangular(NUMBER *matrix, int m, int n)
 
 }
       
-NUMBER diagonalproduct(NUMBER *matrix, int n)
+mpq_class diagonalproduct(mpq_class *matrix, int n)
 {
-  NUMBER ans;
+  mpq_class ans;
   ans = 1;
   for(int i = 0; i < n; i++)
     ans *= matrix[i*n + i];
   return ans;
 }
-
-#endif

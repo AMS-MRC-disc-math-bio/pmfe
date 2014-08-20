@@ -1,17 +1,13 @@
 
 #include "euclideanvector.h"
 
-#if NUMBER_TYPE == GMP_RATIONALS
-  #include "linalg.h"
-#endif
+#include "linalg.h"
 
 #include <iostream>
 #include <stdio.h>
 
 
-#ifdef GMP
-  #include <gmpxx.h>
-#endif
+#include <gmpxx.h>
 
 using namespace std;
 
@@ -44,7 +40,7 @@ bool computesubfactors(EuclideanVector *orthobasis, int ambientdimension)
 
   if(ambientdimension == 4) {
 
-   NUMBER a,b,c,d,e,f,g,h,i,j,k,l;
+   mpq_class a,b,c,d,e,f,g,h,i,j,k,l;
    
    a = orthobasis[0].data[0];
    b = orthobasis[0].data[1];
@@ -79,7 +75,7 @@ bool computesubfactors(EuclideanVector *orthobasis, int ambientdimension)
 
   if(ambientdimension == 5) {
 
-   NUMBER a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t;
+   mpq_class a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t;
    
    a = orthobasis[0].data[0];
    b = orthobasis[0].data[1];
@@ -121,14 +117,10 @@ bool computesubfactors(EuclideanVector *orthobasis, int ambientdimension)
    return true;
   }
 
-  #if NUMBER_TYPE != GMP_RATIONALS
-  if(ambientdimension > 5)
-    cerr << "Dimension > 5 requires NUMBER_TYPE to be GMP_RATIONALS";
-  #else
   //if(gmp_rationals || ambientdimension > 5) 
   {
   
-    NUMBER matrix[ambientdimension - 1][ambientdimension - 1];
+    mpq_class matrix[ambientdimension - 1][ambientdimension - 1];
     for(int i = 0; i < ambientdimension-1; i++)
     for(int j = 0; j < ambientdimension-1; j++)
       matrix[i][j] = 0;
@@ -149,18 +141,18 @@ bool computesubfactors(EuclideanVector *orthobasis, int ambientdimension)
 
       #ifdef DEBUG2
       cout << "\nbefore triangularize...\n";
-      printmatrix((NUMBER *)(matrix),ambientdimension-1,ambientdimension-1);
+      printmatrix((mpq_class *)(matrix),ambientdimension-1,ambientdimension-1);
       #endif
 
-      uppertriangular((NUMBER *)(matrix), ambientdimension-1, ambientdimension-1);
+      uppertriangular((mpq_class *)(matrix), ambientdimension-1, ambientdimension-1);
 
       
       #ifdef DEBUG2
       cout << "\n...and after\n";
-      printmatrix((NUMBER *)(matrix),ambientdimension-1,ambientdimension-1);
+      printmatrix((mpq_class *)(matrix),ambientdimension-1,ambientdimension-1);
       #endif
 
-      orthobasis[ambientdimension-1].data[k] = sign * diagonalproduct((NUMBER *)(matrix), ambientdimension-1); 
+      orthobasis[ambientdimension-1].data[k] = sign * diagonalproduct((mpq_class *)(matrix), ambientdimension-1); 
 
       sign *= -1;
     } 
@@ -178,20 +170,19 @@ bool computesubfactors(EuclideanVector *orthobasis, int ambientdimension)
     return false;
 
   }
-  #endif
 
   return true;
 }
 
-inline NUMBER threebythreedet(NUMBER a, NUMBER b, NUMBER c, NUMBER d, NUMBER e, NUMBER f, NUMBER g, NUMBER h, NUMBER i) {
+inline mpq_class threebythreedet(mpq_class a, mpq_class b, mpq_class c, mpq_class d, mpq_class e, mpq_class f, mpq_class g, mpq_class h, mpq_class i) {
   return a*(e*i - f*h) - b*(d*i - f*g) + c*(d*h - e*g);
 }
 
 
-NUMBER fourbyfourdet(NUMBER a, NUMBER b, NUMBER c, NUMBER d, NUMBER e, NUMBER f, NUMBER g, NUMBER h, NUMBER i, NUMBER j, NUMBER k, NUMBER l, NUMBER m, NUMBER n, NUMBER o, NUMBER p) 
+mpq_class fourbyfourdet(mpq_class a, mpq_class b, mpq_class c, mpq_class d, mpq_class e, mpq_class f, mpq_class g, mpq_class h, mpq_class i, mpq_class j, mpq_class k, mpq_class l, mpq_class m, mpq_class n, mpq_class o, mpq_class p) 
 {
 
-  NUMBER ans = 0;
+  mpq_class ans = 0;
 
   ans += a * threebythreedet(f,g,h, j,k,l, n,o,p);
   ans -= b * threebythreedet(e,g,h, i,k,l, m,o,p);
@@ -204,7 +195,7 @@ NUMBER fourbyfourdet(NUMBER a, NUMBER b, NUMBER c, NUMBER d, NUMBER e, NUMBER f,
 
 void EuclideanVector::Constructor(int d) {
   dimension = d;
-  data = new NUMBER[d];
+  data = new mpq_class[d];
 
   for(int i = 0; i < d; i++)
     data[i] = 0;
@@ -223,14 +214,14 @@ void EuclideanVector::Print(){
   cout << "\n";
 }
 
-NUMBER dotproduct(EuclideanVector *v, EuclideanVector *w)
+mpq_class dotproduct(EuclideanVector *v, EuclideanVector *w)
 {
   if(v->dimension != w->dimension) {
     cerr << "Dot product of two vectors of unequal dimension " << v->dimension <<"," << w->dimension <<  "!";
-    return (NUMBER)(0);
+    return (mpq_class)(0);
   }
 
-  NUMBER ans;
+  mpq_class ans;
   ans = 0;
 
   for(int i = 0; i < v->dimension; i++)
@@ -240,7 +231,7 @@ NUMBER dotproduct(EuclideanVector *v, EuclideanVector *w)
 
 }
 
-void EuclideanVector::timesequals(NUMBER c) {
+void EuclideanVector::timesequals(mpq_class c) {
   for(int i = 0; i < dimension; i++)
     data[i] *= c;
 

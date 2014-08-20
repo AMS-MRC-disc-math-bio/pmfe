@@ -25,12 +25,12 @@
 #include <string>
 #include <vector>
 #include <algorithm>
+#include <vector>
+#include <set>
 
 #include "BBpolytope.h"
 
-#ifdef GMP
-  #include <gmpxx.h>
-#endif
+#include <gmpxx.h>
 
 using namespace std;
 
@@ -42,19 +42,20 @@ using namespace std;
 
 //#define PROFILING
 
-//#define DEBUG
-//#define DEBUG2
+//#define DEBUG 
 
-#ifdef GMP
-void printNumber(NUMBER a) { cout << a.get_str(10);};
-#else
-void printNumber(NUMBER a) { cout << a;};
-#endif
+std::vector<EuclideanVector> vertices;
+
+void printNumber(mpq_class a) { cout << a.get_str(10);};
+
+BBPolytope::BBPolytope(int dim) {
+  dimension = dim;
+}
 
 void BBPolytope::Build()
 {
 
-  hashtable = new NUMBER *[HASHTABLESIZE];
+  hashtable = new mpq_class *[HASHTABLESIZE];
   facetvertextable = new vertexnode *[HASHTABLESIZE];
 
   ghostvertices = new int[dimension];
@@ -82,15 +83,18 @@ void BBPolytope::Build()
 
   solution1 = new EuclideanVector(dimension);
 
-  solution1->id = 1;
+  //solution1->id = 1;
 
-  BlackBoxOptimize(&e1, (solution1));
+  //cout << "\nPOINTS\n";
+  solution1 = BlackBoxOptimize(&e1);
 
   #ifdef DEBUG2
   cout << "\nGoing to add vertex:  ";
   //solution1->Print();
   #endif
  
+  //cout << "1 ";
+  //solution1->Print();
   numvertices++;
 
   startface.AddLIVertexToLowDim((solution1));
@@ -112,11 +116,11 @@ void BBPolytope::Build()
 
       solution1 = new EuclideanVector(dimension);
       solution1->id = startface.dimension + 2;
-      BlackBoxOptimize(startface.normalvectors[i], (solution1));
+      solution1 = BlackBoxOptimize(startface.normalvectors[i]);
 
       #ifdef DEBUG2
       cout << "new direction under consideration is:  ";
-      startface.normalvectors[i]->Print();
+       startface.normalvectors[i]->Print();
       cout << "point in plus direction:  ";
       solution1->Print();
       // printf("and RHS for it is:  %.15f ", startface.rhs[i]);
@@ -131,8 +135,7 @@ void BBPolytope::Build()
 
       solution2 = new EuclideanVector(dimension);
       solution2->id = startface.dimension + 2;
-      BlackBoxOptimize(startface.normalvectors[i], (solution2));
-
+      solution2 = BlackBoxOptimize(startface.normalvectors[i]);
       #ifdef DEBUG2
       cout << "point in minus direction:  ";
       solution2->Print();
@@ -151,9 +154,12 @@ void BBPolytope::Build()
 
         #ifdef DEBUG2
         cout << "Point added:  ";
-        //solution1->Print();
+        solution1->Print();
         #endif
         
+        //cout << "1 ";
+
+        //solution1->Print();
         numvertices++;
       }
       else if(dotproduct((solution2), startface.normalvectors[i]) < startface.rhs[i]) {
@@ -170,6 +176,9 @@ void BBPolytope::Build()
        // solution2->Print();
         #endif
 
+        //cout << "1 ";
+
+        //solution2->Print();
         numvertices++;
       }
       else {
@@ -247,7 +256,7 @@ void BBPolytope::Build()
       solution1->Print();
       #endif
 
-      BlackBoxOptimize(dequeue->normalvectors[0], (solution1));
+      solution1 = BlackBoxOptimize(dequeue->normalvectors[0]);
 
       #ifdef DEBUG2
       cout << "\n";
@@ -278,10 +287,10 @@ void BBPolytope::Build()
 
         #ifdef DEBUG2
         cout << "\nadded new vertex: ";
-        //solution1->Print();
+        solution1->Print();
         #endif
 
-        cout << "1 ";
+        //cout << "1 ";
 
         //solution1->Print();
 
@@ -370,6 +379,186 @@ void BBPolytope::Build()
   for(int i = 0; i < HASHTABLESIZE; i++)
     hashtable[i] = NULL;
 
+  //cout << "\nFACETS\n";
+  //printNormals(footinthedoor);  
+  //printIncidences();
+
+  populateVertices(footinthedoor);
+}
+
+void BBPolytope::populateVertices(Face *myface)
+{
+  std::set<EuclideanVector> * vertexset;
+  vertexset = new std::set<EuclideanVector>;
+  populateVertexSet(myface, vertexset);
+  std::copy(vertexset->begin(), vertexset->end(), inserter(vertices, vertices.begin()));}
+
+void BBPolytope::populateVertexSet(Face *myface, std::set<EuclideanVector> *vertexset)
+{
+  Face *neighbor;
+  bool alreadythere;
+
+  myface->deleted = true;
+
+  mpq_class paramValues[myface->ambientdimension];
+  
+  /* comment out only for debug */
+
+  for(int i = 0; i < myface->ambientdimension; i++) {
+    paramValues[i] = myface->normalvectors[0]->data[i];
+  }
+
+  alreadythere = hash(paramValues, myface, 1);
+
+  if(!alreadythere) {
+    for(int i = 0; i < myface->numvertices; i++) {
+      vertexset->insert(*myface->vertices[i]);
+    }
+  }
+
+  for(int i = 0; i < myface->numfacets; i++) {
+
+    if(myface->facets[i]->incidents[0] == myface) 
+      neighbor = myface->facets[i]->incidents[1];
+    else { 
+      if(myface->facets[i]->incidents[1] == myface) 
+        neighbor = myface->facets[i]->incidents[0];
+
+      else {
+        cerr << "\nFace not incident to its facet!!";
+        exit(0);
+      }
+    }
+
+    if(neighbor->deleted == false)
+      populateVertexSet(neighbor, vertexset);
+  }
+}
+
+void BBPolytope::printNormals(Face *myface) 
+{ 
+  Face *neighbor;
+  bool alreadythere;
+
+  myface->deleted = true;
+
+  mpq_class paramValues[myface->ambientdimension];
+  mpq_class paramValues2[myface->ambientdimension];  //because paramValues is going to be normalized
+  
+  /* comment out only for debug */
+
+  for(int i = 0; i < myface->ambientdimension; i++) {
+      paramValues[i] = myface->normalvectors[0]->data[i];
+      paramValues2[i] = myface->normalvectors[0]->data[i];
+  }
+
+  alreadythere = hash(paramValues, myface, 1);
+
+  //debug
+  //alreadythere = true;
+
+  //mpq_class tmp;
+   // cout << tmp;
+
+  if(!alreadythere) {
+    // tmp = myface->rhs[0];
+
+    //new
+      mpz_class normalization;
+      normalization = myface->rhs[0].get_den();
+      //normalization = 1;
+      for(int i = 0; i < myface->normalvectors[0]->dimension; i++)
+        normalization *= paramValues2[i].get_den();
+      if(normalization < 0)
+        normalization *= -1;
+
+    printNumber(normalization * myface->rhs[0]);
+
+    //cout << tmp.get_str(10);
+    for(int i = 0; i < myface->normalvectors[0]->dimension; i++) {
+      cout << " "; 
+      // tmp = -1 * paramValues2[i];
+      printNumber(-1 * normalization * paramValues2[i]);
+    }
+    cout << "\n";
+  }
+
+  for(int i = 0; i < myface->numfacets; i++) {
+
+    if(myface->facets[i]->incidents[0] == myface) 
+      neighbor = myface->facets[i]->incidents[1];
+    else { 
+      if(myface->facets[i]->incidents[1] == myface) 
+        neighbor = myface->facets[i]->incidents[0];
+
+      else {
+        cerr << "\nFace not incident to its facet!!";
+        exit(0);
+      }
+    }
+
+    if(neighbor->deleted == false)
+      printNormals(neighbor);
+  }
+
+  //printIncidences();
+
+}
+
+void BBPolytope::printIncidences() 
+{
+  cout << "\nPOINTS_IN_FACETS\n";
+  
+  vertexnode *current;
+  vector<vertexnode> mylist;
+
+  for(int i=0; i < HASHTABLESIZE; i++) {
+    if(facetvertextable[i] != NULL) {
+      //current = facetvertextable[i];
+      mylist.push_back(*(facetvertextable[i]));
+
+      //cout << current->item << ": ";
+      
+      //current = current->next;
+
+      //while(current != NULL) {
+      //  cout << current->item << " ";
+      //  current = current->next;
+      //}
+
+      //cout << "\n";
+    }
+  }
+
+  sort(mylist.begin(), mylist.end());
+  
+  vector<vertexnode>::iterator i2;
+
+  for (i2 = mylist.begin(); i2 != mylist.end(); i2++) {
+    current = (*i2).next;
+    cout << "{";
+
+    vector<int> vertexidlist;
+    while(current != NULL) {
+      vertexidlist.push_back(current->item-1);
+      current = current->next;
+    }
+
+    vector<int>::iterator i3;
+    //vector<int>::iterator i3next;
+    sort(vertexidlist.begin(), vertexidlist.end());
+
+    for (i3 = vertexidlist.begin(); i3 != vertexidlist.end(); i3++) {
+      if(*i3 >= 0)
+        cout << *i3;
+      if(i3+1 != vertexidlist.end())
+        cout << " ";
+    }
+
+    cout << "}\n";
+  }
+
+  return;
 }
 
 bool operator<(vertexnode a, vertexnode b)
@@ -380,7 +569,7 @@ bool operator<(vertexnode a, vertexnode b)
 bool BBPolytope::newdirection(Face *myface)
 {
 
-  NUMBER paramValues[myface->ambientdimension];
+  mpq_class paramValues[myface->ambientdimension];
 
   bool ismultiple;
 
@@ -405,15 +594,11 @@ bool BBPolytope::newdirection(Face *myface)
 }
 
 
-bool BBPolytope::hash(NUMBER *myvector, Face *myface, int recordvertices)
+bool BBPolytope::hash(mpq_class *myvector, Face *myface, int recordvertices)
 {
 
-  #ifdef GMP
     mpz_class tmp;
     tmp = 0;
-  #else
-    long long unsigned int tmp;
-  #endif
 
   static unsigned int *weights = NULL;
 
@@ -427,7 +612,7 @@ bool BBPolytope::hash(NUMBER *myvector, Face *myface, int recordvertices)
       weights[i] = rand() * rand();
   }
 
-  NUMBER divisor;
+  mpq_class divisor;
   divisor = gcd(myvector, size);
  
   #ifdef DEBUG
@@ -444,17 +629,9 @@ bool BBPolytope::hash(NUMBER *myvector, Face *myface, int recordvertices)
 
   for(int i = 0; i < size; i++) {
  
-    #if NUMBER_TYPE == GMP_RATIONALS
     tmp = (weights[i] * (23*myvector[i].get_num() + 17*myvector[i].get_den())) % HASHTABLESIZE;
-    #else
-    tmp = (weights[i] * myvector[i]) % HASHTABLESIZE;
-    #endif
 
-    #ifdef GMP
     hashvalue += tmp.get_si();
-    #else
-    hashvalue += tmp;
-    #endif
     
   }
 
@@ -494,7 +671,7 @@ bool BBPolytope::hash(NUMBER *myvector, Face *myface, int recordvertices)
         cout << "Hashed to empty bucket " << hashvalue << "\n";
       #endif
 
-      hashtable[hashvalue] = new NUMBER[size];
+      hashtable[hashvalue] = new mpq_class[size];
 
       for(int i = 0; i < size; i++)
         (hashtable[hashvalue])[i] = myvector[i];
@@ -553,16 +730,16 @@ void BBPolytope::pushvertexintoincidence(int location, EuclideanVector *vertex)
 
 }
 
-NUMBER gcd(NUMBER *myvector, int size)
+mpq_class gcd(mpq_class *myvector, int size)
 {
-  NUMBER ans, abs;
+  mpq_class ans, abs;
 
   int j;
 
   // test to see if there are non-units
   for(j = 0; j < size; j++)
     if(myvector[j] != 0)
-      if(((NUMBER)(1 / myvector[j])) * myvector[j] != 1)
+      if(((mpq_class)(1 / myvector[j])) * myvector[j] != 1)
         break;
 
   if(j == size) { // ie we didnt break, so everything's a unit
@@ -590,23 +767,12 @@ NUMBER gcd(NUMBER *myvector, int size)
   return ans;
 }
 
-#if NUMBER_TYPE != GMP_RATIONALS
-NUMBER gcd2(NUMBER a, NUMBER b) 
-{
-  if(b == 0)
-    return a;
-
-  return gcd2(b, a%b);
-}
-
-#else
-NUMBER gcd2(NUMBER a, NUMBER b) 
+mpq_class gcd2(mpq_class a, mpq_class b) 
 {
   if(a > 0)
     return a;
   else return -1 * a;
 }
-#endif
 
 Face * BBPolytope::vertexandridge(EuclideanVector *v, Face *r)
 {

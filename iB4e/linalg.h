@@ -27,14 +27,9 @@
 
 #include "config.h"
 
-#if NUMBER_TYPE != GMP_RATIONALS
-  #error linalg.cc requires GMP rational numbers
-#endif
-
-
-int uppertriangular(NUMBER *matrix, int numrows, int numcols);
-void printmatrix(NUMBER *matrix, int numrows, int numcols);
-NUMBER diagonalproduct(NUMBER *matrix, int numrows); 
+int uppertriangular(mpq_class *matrix, int numrows, int numcols);
+void printmatrix(mpq_class *matrix, int numrows, int numcols);
+mpq_class diagonalproduct(mpq_class *matrix, int numrows); 
 
 
 #endif
