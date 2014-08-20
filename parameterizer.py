@@ -2,8 +2,7 @@
 import os, sys, argparse, subprocess, shutil, logging, string
 import RNAscorer
 from gtmfe import gtmfe
-
-iB4e_path = "iB4e/iB4e-rna"
+from iB4e import iB4e
 
 def main(argv):
     # Set up parameters
@@ -25,7 +24,48 @@ def main(argv):
         if not os.path.isdir(structdir):
             raise
 
-    run_iB4e(seqfile, sagefile, paramdir, structdir, verbose=False)
+    print run_iB4e(seqfile, sagefile, paramdir, structdir, verbose=False)
+
+def setup_gtmfe_as_BlackBoxOptimize(seqfile, structdir, paramdir):
+    # Create storage directory for structures
+    shutil.rmtree(structdir, ignore_errors=True)
+    os.mkdir(structdir)
+    seqfilebase = os.path.splitext(os.path.basename(seqfile))[0]
+
+    logging.debug("Computing classical scores")
+
+    # Compute classical scores for later reference
+    classical_file = os.path.join(structdir, seqfilebase + ".classical.ct")
+    classical_result = gtmfe.mfe_main(seqfile, classical_file, paramdir)
+    classical_scores_gtmfe = score_parser(classical_result)
+    classical_scores_python = list(RNAscorer.score_file(classical_file))
+    
+    #classical_scores_python.append(find_w(classical_scores_python, classical_result.energy))
+
+    logging.debug("Classical scores from Python: " + str(classical_scores_python))
+    logging.debug("Classical scores from gtmfe: " + str(classical_scores_gtmfe))
+
+    # Build the function which wraps gtmfe input and output in iB4e-compatible structures
+    def BBfunc(params_as_EV):
+        params_as_pairs = params_as_EV.get_split_values()
+
+        pair_printer = lambda pair: str(pair[0]) + "/" + str(pair[1])
+        
+        result_file =  os.path.join(structdir, seqfilebase) + "." + "[" + " , ".join(pair_printer(pair) for pair in params_as_pairs) + "].ct"
+
+        pairs_as_pairll = [gtmfe.pairll(pair[0], pair[1]) for pair in params_as_pairs]
+        params_as_PV = gtmfe.ParameterVector()
+        params_as_PV.set_from_pairs(pairs_as_pairll[0], pairs_as_pairll[1], pairs_as_pairll[2], pairs_as_pairll[3])
+        
+        result_gtmfe = gtmfe.mfe_main(seqfile, result_file, paramdir, params_as_PV)
+        result_pairs = result_gtmfe.get_pairs()
+
+        result = iB4e.EuclideanVector(4)
+        result.set_split_values(result_pairs)
+
+        return result
+
+    return BBfunc        
 
 def run_iB4e(seqfile, sagefile, paramdir, structdir, verbose=False):
     logger = logging.getLogger()
@@ -37,84 +77,37 @@ def run_iB4e(seqfile, sagefile, paramdir, structdir, verbose=False):
     if not (os.path.isfile(seqfile) and os.access(seqfile, os.R_OK)):
         raise IOError("Could not locate sequence file " + seqfile + ".")
 
-    points = []
+    # Create the GTfold-running function
+    BBfunc = setup_gtmfe_as_BlackBoxOptimize(seqfile, structdir, paramdir)
 
-    seqfilebase = os.path.splitext(os.path.basename(seqfile))[0]
+    # Set up a class to interface iB4e with GTfold
+    class GTfoldPolytope(iB4e.BBPolytope):
+        def BlackBoxOptimize(self, objective):
+            return BBfunc(objective)
 
-    logging.debug("Starting iB4e")
+    thepoly = GTfoldPolytope(4)
 
-    try:
-        iB4e = subprocess.Popen([iB4e_path, '4'], # Our problem operates in 4 dimensions
-                                stdin=subprocess.PIPE,
-                                stdout=subprocess.PIPE,
-                                stderr=subprocess.PIPE,
-                                shell=False)
-    except OSError:
-        raise OSError("iB4e-rna executable not found!\nBe sure it is built, then edit the variable in " + __file__ + ".")
+    # Do magic
+    thepoly.Build()
 
-    logging.debug("Computing classical scores")
-
-    # Compute classical scores for later reference
-    classical_file = os.path.join(structdir, seqfilebase + ".classical.ct")
-    classical_result = gtmfe.mfe_main(seqfile, classical_file, paramdir)
-    classical_scores_gtmfe = score_parser(classical_result)
-    classical_scores_python = list(RNAscorer.score_file(classical_file))
-    
-    classical_scores_python.append(find_w(classical_scores_python, classical_result.energy))
-
-    logging.debug("Classical scores from Python: " + str(classical_scores_python))
-    logging.debug("Classical scores from gtmfe: " + str(classical_scores_gtmfe))
-
-    # Create storage directory for structures
-    shutil.rmtree(structdir, ignore_errors=True)
-    os.mkdir(structdir)
-
-    # Now turn iB4e loose to compute the geometry
-    while True:
-        # At the end of the file, we'll receive a blank line, which makes eval() choke
-        try:
-            params = eval(iB4e.stdout.readline())
-        except (SyntaxError, TypeError):
-            break
-
-        logging.debug("iB4e requests vector " + str(params))
-
-        # iB4e is a maximizer, while gtmfe is a minimizer
-        params = tuple([-p for p in params])
-
-        # Find the MFE structure
-        result_file =  os.path.join(structdir, seqfilebase) + "." + str(params) + ".ct"
-        result_gtmfe = gtmfe.mfe_main(seqfile, result_file, paramdir, params[0], params[1], params[2], params[3])
-        scores_gtmfe = score_parser(result_gtmfe)
-        logging.debug("Stored structure as " + str(result_file))
-
-        # Store the scores
-        scores_python = list(RNAscorer.score_file(result_file))
-        if scores_python != scores_gtmfe[:3]:
-            logging.warn("Score mismatch for parameters {0}!".format(params))
-            logging.warn("GTfold gives x={0}, y={1}, z={2}.".format(scores_gtmfe[0], scores_gtmfe[1], scores_gtmfe[2]))
-            logging.warn("RNAscorer gives x={0}, y={1}, z={2}".format(scores_python[0], scores_python[1], scores_python[2]))
-        scores_python.append(find_w(scores_python, result_gtmfe.energy, params))
-
-        points.append(scores_python)
-        result = " ".join(map(str, scores_python)) + "\n"
-        logging.debug("Structure scores from Python: " + str(scores_python))
-        logging.debug("Structure scores from gtmfe: " + str(scores_gtmfe))
-
-        # Send the score vector to iB4e
-        iB4e.stdin.write(result)
+    # Retrieve the results
+    point_pairs = thepoly.get_split_vertices()
 
     # Now build a Sage file encoding the desired data
-    build_sage_polytope_file(classical_scores_python, points, sagefile)
+    #build_sage_polytope_file(classical_scores_python, point_pairs, sagefile)
 
     # Finally, return the points for testing
-    return points
+    return point_pairs
 
-def build_sage_polytope_file(classical_scores, points, sagefile):
+def build_sage_polytope_file(classical_scores, point_pairs, sagefile):
     templatefile = open("output.template")
     template = string.Template(templatefile.read())
 
-    results = {"points": points, "classical_scores": classical_scores}
+    point_pair_writer = lambda point_pair: "QQ(" + str(pair[0]) + "/" + str(pair[1]) + ")"
+    pair_vector_writer = lambda pair_vector: "[" + " , ".join(point_pair_writer(pair) for pair in pair_vector) + "]"
+    point_string = "[" + " , ".join(pair_vector_writer(pair_vector) for pair_vector in point_pairs) + "]"
+
+    results = {"points": point_string, "classical_scores": classical_scores}
 
     sagecode = template.substitute(results)
 
