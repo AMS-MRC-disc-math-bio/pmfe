@@ -71,7 +71,7 @@ void prefilter(int len, int prefilter1, int prefilter2) {
   free(in);
 }
 
-mpq_class calcVBI(int i, int j) {
+mpq_class calcVBI_f(int i, int j) {
   int p=0, q=0;
   mpq_class VBIij = INFINITY_;
 
@@ -84,7 +84,7 @@ mpq_class calcVBI(int i, int j) {
       if (PP[p][q]==0) continue;
       if (!canILoop(i,j,p,q)) continue;
       std::vector<mpq_class> vals;
-      vals.push_back(eL(i, j, p, q) + V(p,q));
+      vals.push_back(eL(i, j, p, q) + V_f(p,q));
       vals.push_back(VBIij);
       VBIij = *std::min_element(vals.begin(), vals.end());
     }
@@ -106,7 +106,7 @@ mpq_class calcVBI1(int i, int j) {
       if (PP[p][q]==0) continue;
       if (!canILoop(i,j,p,q)) continue;
       std::vector<mpq_class> vals;
-      vals.push_back(eL1(i, j, p, q) + V(p,q));
+      vals.push_back(eL1(i, j, p, q) + V_f(p,q));
       vals.push_back(VBIij);
       VBIij = *std::min_element(vals.begin(), vals.end());
     }
@@ -126,7 +126,7 @@ mpq_class calcVBI2(int i, int j, int  len) {
       if (PP[ii][jj]==1) {
         std::vector<mpq_class> vals;
         vals.push_back(energy);
-        vals.push_back(eL1(i, j, ii, jj) + V(ii, jj));
+        vals.push_back(eL1(i, j, ii, jj) + V_f(ii, jj));
         energy = *std::min_element(vals.begin(), vals.end());
       }
     }    
@@ -161,16 +161,16 @@ mpq_class calculate(int len) {
         }
 
         if (canStack(i,j)) {
-          es = eS(i,j)+V(i+1,j-1);
+          es = eS(i,j)+V_f(i+1,j-1);
         } else {
           es = INFINITY_;
         }
 
         // Internal Loop BEGIN
         if (g_unamode) 
-          VBI(i,j) = calcVBI1(i,j);
+          VBI_f(i,j) = calcVBI1(i,j);
         else
-          VBI(i,j) = calcVBI(i,j);
+          VBI_f(i,j) = calcVBI_f(i,j);
         // Internal Loop END
 
         // Multi Loop BEGIN
@@ -189,37 +189,37 @@ mpq_class calculate(int len) {
 
         if (g_dangles == 2) { // -d2
           std::vector<mpq_class> vals;
-          vals.push_back(VM(i, j));
+          vals.push_back(VM_f(i, j));
           vals.push_back(WMPrime[i+1][j-1] + d3 + d5 + auPenalty(i,j) + multConst[0] + multConst[2]);
-          VM(i,j) = *std::min_element(vals.begin(), vals.end());
+          VM_f(i,j) = *std::min_element(vals.begin(), vals.end());
         } else if (g_dangles == 0) { // -d0
           std::vector<mpq_class> vals;
-          vals.push_back(VM(i,j));
+          vals.push_back(VM_f(i,j));
           vals.push_back(WMPrime[i+1][j-1] + auPenalty(i,j) + multConst[0] + multConst[2]);
-          VM(i,j) = *std::min_element(vals.begin(), vals.end());
+          VM_f(i,j) = *std::min_element(vals.begin(), vals.end());
         }	else { // default
           std::vector<mpq_class> vals;
-          vals.push_back(VM(i,j));
+          vals.push_back(VM_f(i,j));
           vals.push_back(WMPrime[i+1][j-1] + auPenalty(i,j) + multConst[0] + multConst[2]);
           vals.push_back(WMPrime[i+2][j-1] + d5 + auPenalty(i,j) + multConst[0] + multConst[2] + multConst[1]);
           vals.push_back(WMPrime[i+1][j-2] + d3 + auPenalty(i,j) + multConst[0] + multConst[2] + multConst[1]);
           vals.push_back(WMPrime[i+2][j-2] + d3 + d5 + auPenalty(i,j) + multConst[0] + multConst[2] + 2*multConst[1]);
-          VM(i,j) = *std::min_element(vals.begin(), vals.end());
+          VM_f(i,j) = *std::min_element(vals.begin(), vals.end());
         }
 
-        if (!canStack(i,j)) VM(i,j) = INFINITY_;
+        if (!canStack(i,j)) VM_f(i,j) = INFINITY_;
           
         // Multi Loop END
 
         std::vector<mpq_class> vals;
         vals.push_back(eh);
         vals.push_back(es);
-        vals.push_back(VBI(i,j));
-        vals.push_back(VM(i,j));
-        V(i,j) = *std::min_element(vals.begin(), vals.end());
+        vals.push_back(VBI_f(i,j));
+        vals.push_back(VM_f(i,j));
+        V_f(i,j) = *std::min_element(vals.begin(), vals.end());
       }
       else {
-        V(i,j) = INFINITY_;
+        V_f(i,j) = INFINITY_;
       }
 
       // Added auxillary storage WMPrime to speedup multiloop calculations
@@ -227,7 +227,7 @@ mpq_class calculate(int len) {
       for (h = i+TURN+1 ; h <= j-TURN-2; h++) {
         std::vector<mpq_class> vals;
         vals.push_back(WMPrime[i][j]);
-        vals.push_back(WMU(i,h-1) + WML(h,j));
+        vals.push_back(WMU_f(i,h-1) + WML_f(h,j));
         WMPrime[i][j] = *std::min_element(vals.begin(), vals.end());
       }
 
@@ -244,7 +244,7 @@ mpq_class calculate(int len) {
         }
 
       if (g_dangles == 2) {
-        mpq_class energy = V(i,j) + auPenalty(i,j) + multConst[2];
+        mpq_class energy = V_f(i,j) + auPenalty(i,j) + multConst[2];
         if (i == 1) {
           energy += Ed3(j,i,len);
         } else {
@@ -260,22 +260,22 @@ mpq_class calculate(int len) {
         }
       } else if (g_dangles == 0) {
         std::vector<mpq_class> vals;
-        vals.push_back(V(i,j) + auPenalty(i,j) + multConst[2]);
+        vals.push_back(V_f(i,j) + auPenalty(i,j) + multConst[2]);
         vals.push_back(newWM);
         newWM = *std::min_element(vals.begin(), vals.end());
       } else { // default
         std::vector<mpq_class> vals;
         vals.push_back(newWM);
-        vals.push_back(V(i,j) + auPenalty(i,j) + multConst[2]);
+        vals.push_back(V_f(i,j) + auPenalty(i,j) + multConst[2]);
 
         if (canSS(i))
-          vals.push_back(V(i+1,j) + Ed3(j,i+1,i) + auPenalty(i+1,j) + multConst[2] + multConst[1]); //i dangle
+          vals.push_back(V_f(i+1,j) + Ed3(j,i+1,i) + auPenalty(i+1,j) + multConst[2] + multConst[1]); //i dangle
 
         if (canSS(j))
-          vals.push_back(V(i,j-1) + Ed5(j-1,i,j) + auPenalty(i,j-1) + multConst[2] + multConst[1]);  //j dangle
+          vals.push_back(V_f(i,j-1) + Ed5(j-1,i,j) + auPenalty(i,j-1) + multConst[2] + multConst[1]);  //j dangle
 
         if (canSS(i)&&canSS(j))
-          vals.push_back(V(i+1,j-1) + Ed3(j-1,i+1,i) + Ed5(j-1,i+1,j) + auPenalty(i+1,j-1) + multConst[2] + 2*multConst[1]); //i,j dangle
+          vals.push_back(V_f(i+1,j-1) + Ed3(j-1,i+1,i) + Ed5(j-1,i+1,j) + auPenalty(i+1,j-1) + multConst[2] + 2*multConst[1]); //i,j dangle
 
         newWM = *std::min_element(vals.begin(), vals.end());
       }
@@ -284,14 +284,14 @@ mpq_class calculate(int len) {
       vals.push_back(newWM);
 
       if (canSS(i))
-        vals.push_back(WMU(i+1,j) + multConst[1]); //i dangle
+        vals.push_back(WMU_f(i+1,j) + multConst[1]); //i dangle
 
       if (canSS(j))
-        vals.push_back(WML(i,j-1) + multConst[1]); //j dangle
+        vals.push_back(WML_f(i,j-1) + multConst[1]); //j dangle
 
       newWM = *std::min_element(vals.begin(), vals.end());
 
-      WMU(i,j) = WML(i,j) = newWM;
+      WMU_f(i,j) = WML_f(i,j) = newWM;
       // WM end
     }
   }
@@ -306,7 +306,7 @@ mpq_class calculate(int len) {
       Wim1 = MIN(0, W[i-1]); 
 
       if (g_dangles == 2) { // -d2 option
-        mpq_class energy = V(i,j) +	 auPenalty(i,j) + Wim1;
+        mpq_class energy = V_f(i,j) +	 auPenalty(i,j) + Wim1;
         if (i>1) energy +=  Ed3(j,i,i-1);
         if (j<len) energy += Ed5(j,i,j+1);
         if (canSS(i)&&canSS(j)) Widjd = energy;
@@ -317,23 +317,23 @@ mpq_class calculate(int len) {
         
         Wij = *std::min_element(vals.begin(), vals.end());
       }	else if (g_dangles == 0) { // -d0 option
-        Wij = V(i, j) + auPenalty(i, j) + Wim1;
+        Wij = V_f(i, j) + auPenalty(i, j) + Wim1;
       } else { // default
-        Wij = V(i, j) + auPenalty(i, j) + Wim1;
+        Wij = V_f(i, j) + auPenalty(i, j) + Wim1;
         if (canSS(i)) {
-          Widj = V(i+1, j) + auPenalty(i+1,j) + Ed3(j,i + 1,i) + Wim1;
+          Widj = V_f(i+1, j) + auPenalty(i+1,j) + Ed3(j,i + 1,i) + Wim1;
         } else {
           Widj = INFINITY_;
         }
         
         if (canSS(j)) {
-          Wijd = V(i,j-1) + auPenalty(i,j-1) + Ed5(j-1,i,j) + Wim1;
+          Wijd = V_f(i,j-1) + auPenalty(i,j-1) + Ed5(j-1,i,j) + Wim1;
         } else {
           Wijd = INFINITY_;
         }
 
         if (canSS(i)&&canSS(j)) {
-          Widjd = V(i+1,j-1) + auPenalty(i+1,j-1) + Ed3(j-1,i + 1,i) + Ed5(j-1,i+1,j) + Wim1;
+          Widjd = V_f(i+1,j-1) + auPenalty(i+1,j-1) + Ed3(j-1,i + 1,i) + Ed5(j-1,i+1,j) + Wim1;
         } else {
           INFINITY_;
         }
@@ -367,7 +367,7 @@ mpq_class calculate(int len) {
   int ii, jj;
   for (ii = 1; ii <= len; ++ii) {    
     for (jj = len; jj > ii; --jj) {
-      fprintf(file, "%d %d %d\n",ii,jj,VBI(ii,jj));
+      fprintf(file, "%d %d %d\n",ii,jj,VBI_f(ii,jj));
     }
   }    
   fclose(file);
@@ -403,7 +403,7 @@ mpq_class calculate(int len) {
   file = fopen("VM.txt", "w");
   for (ii = 1; ii <= len; ++ii) {    
     for (jj = len; jj > ii; --jj) {
-      fprintf(file, "%d %d %d\n",ii,jj,VM(ii,jj));
+      fprintf(file, "%d %d %d\n",ii,jj,VM_f(ii,jj));
     }
   }    
   fclose(file);
@@ -411,7 +411,7 @@ mpq_class calculate(int len) {
   file = fopen("WM.txt", "w");
   for (ii = 1; ii <= len; ++ii) {    
     for (jj = len; jj > ii; --jj) {
-      fprintf(file, "%d %d %d\n",ii,jj,WM(ii,jj));
+      fprintf(file, "%d %d %d\n",ii,jj,WM_f(ii,jj));
     }
   }    
   fclose(file);

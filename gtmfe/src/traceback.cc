@@ -80,7 +80,7 @@ void traceW(int j) {
       mpq_class e_dangles = 0;
       if (i>1) e_dangles +=  Ed3(j,i,i-1);
       if (j<length) e_dangles += Ed5(j,i,j+1);
-      if ((W[j] == V(i,j) + auPenalty(i, j) + e_dangles + wim1 && canSS(i) && canSS(j) && canStack(i+1,j-1)) || forcePair(i+1,j-1)) { 
+      if ((W[j] == V_f(i,j) + auPenalty(i, j) + e_dangles + wim1 && canSS(i) && canSS(j) && canStack(i+1,j-1)) || forcePair(i+1,j-1)) { 
         done = 1;
         total_ex += (auPenalty(i, j) + e_dangles);
         traceV(i, j);
@@ -88,7 +88,7 @@ void traceW(int j) {
         break;
       } 
     }	else if (g_dangles == 0) {
-      if ((W[j] == V(i,j) + auPenalty(i, j) + wim1 && canStack(i,j)) || forcePair(i,j)) { 
+      if ((W[j] == V_f(i,j) + auPenalty(i, j) + wim1 && canStack(i,j)) || forcePair(i,j)) { 
         done = 1;
         total_ex += auPenalty(i, j);
         traceV(i, j);
@@ -96,25 +96,25 @@ void traceW(int j) {
         break;
       }
     } else { // default
-      if ((W[j] == V(i,j) + auPenalty(i, j) + wim1 && canStack(i,j)) || forcePair(i,j)) { 
+      if ((W[j] == V_f(i,j) + auPenalty(i, j) + wim1 && canStack(i,j)) || forcePair(i,j)) { 
         done = 1;
         total_ex += auPenalty(i, j);
         traceV(i, j);
         if (flag ) traceW(i - 1);
         break;
-      } else if ((W[j] ==  V(i,j-1) + auPenalty(i,j-1) + Ed5(j-1,i,j) + wim1 && canSS(j) && canStack(i,j-1)) || forcePair(i, j-1)) { 	
+      } else if ((W[j] ==  V_f(i,j-1) + auPenalty(i,j-1) + Ed5(j-1,i,j) + wim1 && canSS(j) && canStack(i,j-1)) || forcePair(i, j-1)) { 	
         done = 1;
         total_ex += (auPenalty(i,j-1) + Ed5(j-1,i,j));
         traceV(i, j - 1);
         if (flag ) traceW(i - 1);
         break;
-      } else if ((W[j] == V(i+1,j) + auPenalty(i+1,j) + Ed3(j,i+1,i) + wim1 && canSS(i) && canStack(i+1,j)) || forcePair(i+1,j)){
+      } else if ((W[j] == V_f(i+1,j) + auPenalty(i+1,j) + Ed3(j,i+1,i) + wim1 && canSS(i) && canStack(i+1,j)) || forcePair(i+1,j)){
         done = 1;
         total_ex += (auPenalty(i+1,j) + Ed3(j,i+1,i));
         traceV(i + 1, j);
         if (flag ) traceW(i - 1);
         break;
-      } else if ((W[j] == V(i+1,j-1) + auPenalty(i+1, j-1) + Ed3(j-1,i+1,i) + Ed5(j-1,i+1,j) + wim1 && canSS(i) && canSS(j) && canStack(i+1,j-1)) || forcePair(i+1,j-1)) { 
+      } else if ((W[j] == V_f(i+1,j-1) + auPenalty(i+1, j-1) + Ed3(j-1,i+1,i) + Ed5(j-1,i+1,j) + wim1 && canSS(i) && canSS(j) && canStack(i+1,j-1)) || forcePair(i+1,j-1)) { 
         done = 1;
         total_ex += (auPenalty(i+1, j-1) + Ed3(j-1,i+1,i) + Ed5(j-1,i+1,j));
         traceV(i + 1, j - 1);
@@ -141,16 +141,16 @@ mpq_class traceV(int i, int j) {
   }
 
   if (canStack(i,j)) {
-    b = eS(i, j) + V(i + 1, j - 1);
-    c = VBI(i,j);
-    d = VM(i,j);
+    b = eS(i, j) + V_f(i + 1, j - 1);
+    c = VBI_f(i,j);
+    d = VM_f(i,j);
   } else {
     b = INFINITY_;
     c = INFINITY_;
     d = INFINITY_;
   }
 
-  Vij = V(i,j);
+  Vij = V_f(i,j);
   structure[i] = j;
   structure[j] = i;
 	
@@ -184,8 +184,8 @@ mpq_class traceVBI(int i, int j) {
 
   for (ip = i + 1; ip < j - 1; ip++) {
     for (jp = ip + 1; jp < j; jp++) {
-      VBIij = eL(i, j, ip, jp)+ V(ip,jp);
-      if (VBIij == VBI(i,j) || forcePair(ip,jp)){
+      VBIij = eL(i, j, ip, jp)+ V_f(ip,jp);
+      if (VBIij == VBI_f(i,j) || forcePair(ip,jp)){
         ifinal = ip;
         jfinal = jp;
         break;
@@ -204,39 +204,39 @@ mpq_class traceVM(int i, int j) {
   mpq_class eVM = 0;
 
   if (g_dangles == 2) {
-    if (V(i,j) ==  WMPrime[i + 1][j - 1] + multConst[0] + multConst[2] + auPenalty(i,j) + Ed5(i,j,i + 1) + Ed3(i,j,j - 1) && canSS(i+1) && canSS(j-1) ) {
+    if (V_f(i,j) ==  WMPrime[i + 1][j - 1] + multConst[0] + multConst[2] + auPenalty(i,j) + Ed5(i,j,i + 1) + Ed3(i,j,j - 1) && canSS(i+1) && canSS(j-1) ) {
       done = 1;
       eVM += traceWMPrime(i + 1, j - 1);
       count_multiloops++;
       count_branches++;
     }
   }	else if (g_dangles == 0) {
-    if (VM(i,j) == WMPrime[i+1][j - 1] + multConst[0] + multConst[2] + auPenalty(i, j) ) {
+    if (VM_f(i,j) == WMPrime[i+1][j - 1] + multConst[0] + multConst[2] + auPenalty(i, j) ) {
       done = 1;
       eVM += traceWMPrime(i + 1, j - 1);
       count_multiloops++;
       count_branches++;
     }
   } else {
-    if (VM(i,j) == WMPrime[i+1][j - 1] + multConst[0] + multConst[2] + auPenalty(i, j) ) {
+    if (VM_f(i,j) == WMPrime[i+1][j - 1] + multConst[0] + multConst[2] + auPenalty(i, j) ) {
       done = 1;
       eVM += traceWMPrime(i + 1, j - 1);
       count_multiloops++;
       count_branches++;
-    } else if (VM(i,j) == WMPrime[i + 2][j - 1] + multConst[0] + multConst[2] + auPenalty(i,j) + Ed5(i,j,i + 1) + multConst[1] && canSS(i+1) ) {
+    } else if (VM_f(i,j) == WMPrime[i + 2][j - 1] + multConst[0] + multConst[2] + auPenalty(i,j) + Ed5(i,j,i + 1) + multConst[1] && canSS(i+1) ) {
       done = 1;
       eVM += traceWMPrime(i + 2, j - 1);
       count_multiloops++;
       count_branches++;
       count_unpaired++;
     }
-    else if ( VM(i,j) == WMPrime[i + 1][j - 2] + multConst[0] + multConst[2] + auPenalty(i, j) + Ed3(i,j,j - 1) + multConst[1] && canSS(j-1)) {
+    else if ( VM_f(i,j) == WMPrime[i + 1][j - 2] + multConst[0] + multConst[2] + auPenalty(i, j) + Ed3(i,j,j - 1) + multConst[1] && canSS(j-1)) {
       done = 1;
       eVM += traceWMPrime(i + 1, j - 2);
       count_multiloops++;
       count_branches++;
       count_unpaired++;
-    } else if (V(i,j) ==  WMPrime[i + 2][j - 2] + multConst[0] + multConst[2] + auPenalty(i,j) + Ed5(i,j,i + 1) + Ed3(i,j,j - 1) + 2*multConst[1] && canSS(i+1) && canSS(j-1) ) {
+    } else if (V_f(i,j) ==  WMPrime[i + 2][j - 2] + multConst[0] + multConst[2] + auPenalty(i,j) + Ed5(i,j,i + 1) + Ed3(i,j,j - 1) + 2*multConst[1] && canSS(i+1) && canSS(j-1) ) {
       done = 1;
       eVM += traceWMPrime(i + 2, j - 2);
       count_multiloops++;
@@ -253,7 +253,7 @@ mpq_class traceWMPrime(int i, int j) {
   mpq_class energy=0;
 	
   for (h = i; h < j && !done; h++) {
-    if (WM(i,h) + WM(h + 1,j) == WMPrime(i,j)) {
+    if (WM_f(i,h) + WM_f(h + 1,j) == WMPrime_f(i,j)) {
       energy += traceWM(i, h);
       energy += traceWM(h + 1, j);
       done = 1;
@@ -268,43 +268,43 @@ mpq_class traceWM(int i, int j) {
   int done=0;
   mpq_class eWM=0;
 
-  if (!done && WM(i,j) == WMPrime[i][j]) {
+  if (!done && WM_f(i,j) == WMPrime[i][j]) {
     eWM += traceWMPrime(i,j);
     done = 1;
   }
 
   if (!done){
     if (g_dangles == 2) {
-      mpq_class energy = V(i,j) + auPenalty(i, j) + multConst[2];				
+      mpq_class energy = V_f(i,j) + auPenalty(i, j) + multConst[2];				
       energy += (i==1)?Ed3(j,i,length):Ed3(j,i,i-1);
       /*if (j<len)*/ energy += Ed5(j,i,j+1);
-      if (WM(i,j) ==  energy && canSS(i) && canSS(j) && canStack(i+1,j-1)) {
+      if (WM_f(i,j) ==  energy && canSS(i) && canSS(j) && canStack(i+1,j-1)) {
         eWM += traceV(i, j);
         count_branches++;
         done = 1;
       }
     } else if (g_dangles == 0) {
-      if (WM(i,j) == V(i,j) + auPenalty(i, j) + multConst[2] && canStack(i,j)) { 
+      if (WM_f(i,j) == V_f(i,j) + auPenalty(i, j) + multConst[2] && canStack(i,j)) { 
         eWM += traceV(i, j);
         count_branches++;
         done = 1;
       }
     } else  {
-      if (WM(i,j) == V(i,j) + auPenalty(i, j) + multConst[2] && canStack(i,j)) { 
+      if (WM_f(i,j) == V_f(i,j) + auPenalty(i, j) + multConst[2] && canStack(i,j)) { 
         eWM += traceV(i, j);
         count_branches++;
         done = 1;
-      } else if (WM(i,j) == V(i+1, j) + Ed3(j,i + 1,i) + auPenalty(i+1, j) + multConst[2] + multConst[1] && canSS(i) &&  canStack(i+1,j)) { 
+      } else if (WM_f(i,j) == V_f(i+1, j) + Ed3(j,i + 1,i) + auPenalty(i+1, j) + multConst[2] + multConst[1] && canSS(i) &&  canStack(i+1,j)) { 
         eWM += traceV(i + 1, j);
         count_branches++;
         count_unpaired++;
         done = 1;
-      } else if (WM(i,j) == V(i,j-1) + Ed5(j-1,i,j) + auPenalty(i,j-1) +  multConst[2] + multConst[1] && canSS(j) && canStack(i,j-1)) { 
+      } else if (WM_f(i,j) == V_f(i,j-1) + Ed5(j-1,i,j) + auPenalty(i,j-1) +  multConst[2] + multConst[1] && canSS(j) && canStack(i,j-1)) { 
         eWM += traceV(i, j - 1);
         count_branches++;
         count_unpaired++;
         done = 1;
-      } else if (WM(i,j) == V(i+1,j-1) + Ed3(j-1,i+1,i) + Ed5(j-1,i+1,j) + auPenalty(i+1, j-1) + multConst[2] + 2*multConst[1] && canSS(i) && canSS(j) && canStack(i+1,j-1)) { 
+      } else if (WM_f(i,j) == V_f(i+1,j-1) + Ed3(j-1,i+1,i) + Ed5(j-1,i+1,j) + auPenalty(i+1, j-1) + multConst[2] + 2*multConst[1] && canSS(i) && canSS(j) && canStack(i+1,j-1)) { 
         eWM += traceV(i + 1, j - 1);
         count_branches++;
         count_unpaired += 2;
@@ -314,11 +314,11 @@ mpq_class traceWM(int i, int j) {
   }
 	
   if (!done){
-    if (WM(i,j) == WM(i + 1,j) + multConst[1] && canSS(i)) { 
+    if (WM_f(i,j) == WM_f(i + 1,j) + multConst[1] && canSS(i)) { 
       done = 1;
       eWM += traceWM(i + 1, j);
       count_unpaired++;
-    } else if (WM(i,j) == WM(i,j - 1) + multConst[1] && canSS(j)) { 
+    } else if (WM_f(i,j) == WM_f(i,j - 1) + multConst[1] && canSS(j)) { 
       done = 1;
       eWM += traceWM(i, j - 1);
       count_unpaired++;

@@ -7,84 +7,30 @@
 #include "global.h"
 #include "constants.h"
 #include <gmpxx.h>
+#include <vector>
 
-mpq_class *V; 
-mpq_class *W; 
-mpq_class *VBI; 
-mpq_class *VM; 
-mpq_class **WM; 
-mpq_class **WMPrime; 
+std::vector<mpq_class> V; 
+std::vector<mpq_class> W; 
+std::vector<mpq_class> VBI; 
+std::vector<mpq_class> VM; 
+std::vector< std::vector<mpq_class> > WM; 
+std::vector< std::vector<mpq_class> > WMPrime; 
+std::vector< std::vector<mpq_class> > PP; 
 int *indx; 
-mpq_class **PP; 
 
 int alloc_flag = 0;
 const float RT = (0.00198721 * 310.15); //* 100.00);
 const float RT_ = (0.00198721 * 310.15);
 
-void create_tables(int len) {	
-  V = new mpq_class[(len+1)*len/2 + 1];
-  if (V == NULL) {
-    perror("Cannot allocate variable 'V'");
-    exit(-1);
-  }
+void create_tables(int len) {
+  V.resize((len+1)*len/2 + 1);
+  W.resize((len+1)*len/2 + 1);
+  VBI.resize((len+1)*len/2 + 1);
+  VM.resize((len+1)*len/2 + 1);
 
-  int i;
-  WM = new mpq_class*[len+1];
-  if (WM == NULL) {
-    perror("Cannot allocate variable 'WM'");
-    exit(-1);
-  }   
-  for (i = 0; i <= len; i++) {
-    WM[i] = new mpq_class[len+1];
-    if (WM[i] == NULL) {
-      perror("Cannot allocate variable 'WM[i]'");
-      exit(-1);
-    }   
-  }
-
-  PP = new mpq_class*[len+1];
-  if (PP == NULL) {
-    perror("Cannot allocate variable 'WM'");
-    exit(-1);
-  }   
-  for (i = 0; i <= len; i++) {
-    PP[i] = new mpq_class[len+1];
-    if (PP[i] == NULL) {
-      perror("Cannot allocate variable 'WM[i]'");
-      exit(-1);
-    }   
-  }
-
-  WMPrime = new mpq_class*[len+1];
-  if (WMPrime == NULL) {
-    perror("Cannot allocate variable 'WM'");
-    exit(-1);
-  }   
-  for (i = 0; i <= len; i++) {
-    WMPrime[i] = new mpq_class[len+1];
-    if (WMPrime[i] == NULL) {
-      perror("Cannot allocate variable 'WM[i]'");
-      exit(-1);
-    }   
-  }
-
-  VM = new mpq_class[(len+1)*len/2 + 1];
-  if (VM == NULL) {
-    perror("Cannot allocate variable 'V'");
-    exit(-1);
-  }
-
-  VBI = new mpq_class[(len+1)*len/2 + 1];
-  if (VBI == NULL) {
-    perror("Cannot allocate variable 'V'");
-    exit(-1);
-  }
-
-  W = new mpq_class[len+1];
-  if (W == NULL) {
-    perror("Cannot allocate variable 'W'");
-    exit(-1);
-  }
+  WM.resize(len+1, std::vector<mpq_class>(len+1));
+  PP.resize(len+1, std::vector<mpq_class>(len+1));
+  WMPrime.resize(len+1, std::vector<mpq_class>(len+1));
 
   indx = new int[len+1];
   if (indx == NULL) {
@@ -125,28 +71,14 @@ void init_tables(int len) {
 
 void free_tables(int len) {
   if (alloc_flag == 1) {
-    int i;
-    delete[] V;
-
-    for (i = 0; i <= len; i++) {
-      delete[] WM[i];
-    }
-    delete[] WM;
-
-    for (i = 0; i <= len; i++) {
-      delete[] PP[i];
-    }
-    delete[] PP;
-
-    for (i = 0; i<=len; i++) {
-      delete[] WMPrime[i];
-    }
-    delete[] WMPrime;
-
-    delete[] VM;
-    delete[] VBI;
-    delete[] W;
     delete[] indx;
+    V.clear();
+    W.clear();
+    VBI.clear();
+    VM.clear();
+    WM.clear();
+    PP.clear();
+    WMPrime.clear();
   }
 }
 
