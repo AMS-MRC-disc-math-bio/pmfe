@@ -20,6 +20,10 @@
 #ifndef _CONSTANTS_H
 #define _CONSTANTS_H
 
+#include <gmpxx.h>
+
+#define INFINITY_ mpz_class(9999999999999)
+
 #define maxfil 100    /* maximum length of file names */
 #define maxtloop 100 /* maximum tetraloops allowed (info read from tloop) */
 #define maxstructures 1010 /* maximum number of structures in ct file */

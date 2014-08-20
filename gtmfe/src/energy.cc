@@ -6,86 +6,87 @@
 #include "utils.h"
 #include "global.h"
 #include "constants.h"
+#include <gmpxx.h>
 
-long double *V; 
-long double *W; 
-long double *VBI; 
-long double *VM; 
-long double **WM; 
-long double **WMPrime; 
+mpq_class *V; 
+mpq_class *W; 
+mpq_class *VBI; 
+mpq_class *VM; 
+mpq_class **WM; 
+mpq_class **WMPrime; 
 int *indx; 
-long double **PP; 
+mpq_class **PP; 
 
 int alloc_flag = 0;
 const float RT = (0.00198721 * 310.15); //* 100.00);
 const float RT_ = (0.00198721 * 310.15);
 
 void create_tables(int len) {	
-  V = (long double *) malloc(((len+1)*len/2 + 1) * sizeof(long double));
+  V = new mpq_class[(len+1)*len/2 + 1];
   if (V == NULL) {
     perror("Cannot allocate variable 'V'");
     exit(-1);
   }
 
   int i;
-  WM = (long double **) malloc((len+1)* sizeof(long double *));
+  WM = new mpq_class*[len+1];
   if (WM == NULL) {
     perror("Cannot allocate variable 'WM'");
     exit(-1);
   }   
   for (i = 0; i <= len; i++) {
-    WM[i] = (long double *)malloc((len+1)* sizeof(long double));
+    WM[i] = new mpq_class[len+1];
     if (WM[i] == NULL) {
       perror("Cannot allocate variable 'WM[i]'");
       exit(-1);
     }   
   }
 
-  PP = (long double **) malloc((len+1)* sizeof(long double *));
+  PP = new mpq_class*[len+1];
   if (PP == NULL) {
     perror("Cannot allocate variable 'WM'");
     exit(-1);
   }   
   for (i = 0; i <= len; i++) {
-    PP[i] = (long double *)malloc((len+1)* sizeof(long double));
+    PP[i] = new mpq_class[len+1];
     if (PP[i] == NULL) {
       perror("Cannot allocate variable 'WM[i]'");
       exit(-1);
     }   
   }
 
-  WMPrime = (long double **) malloc((len+1)* sizeof(long double *));
+  WMPrime = new mpq_class*[len+1];
   if (WMPrime == NULL) {
     perror("Cannot allocate variable 'WM'");
     exit(-1);
   }   
   for (i = 0; i <= len; i++) {
-    WMPrime[i] = (long double *)malloc((len+1)* sizeof(long double));
+    WMPrime[i] = new mpq_class[len+1];
     if (WMPrime[i] == NULL) {
       perror("Cannot allocate variable 'WM[i]'");
       exit(-1);
     }   
   }
 
-  VM = (long double *) malloc(((len+1)*len/2 + 1) * sizeof(long double));
+  VM = new mpq_class[(len+1)*len/2 + 1];
   if (VM == NULL) {
     perror("Cannot allocate variable 'V'");
     exit(-1);
   }
 
-  VBI = (long double *) malloc(((len+1)*len/2 + 1) * sizeof(long double));
+  VBI = new mpq_class[(len+1)*len/2 + 1];
   if (VBI == NULL) {
     perror("Cannot allocate variable 'V'");
     exit(-1);
   }
 
-  W = (long double *) malloc((len+1) * sizeof(long double));
+  W = new mpq_class[len+1];
   if (W == NULL) {
     perror("Cannot allocate variable 'W'");
     exit(-1);
   }
 
-  indx = (int*) malloc((len+1) * sizeof(int));
+  indx = new int[len+1];
   if (indx == NULL) {
     perror("Cannot allocate variable 'indx'");
     exit(-1);
@@ -101,19 +102,19 @@ void init_tables(int len) {
   int i, j, LLL;
 	
   for (i = 0; i <= len; i++) {
-    W[i] = INFINITY; 
+    W[i] = INFINITY_; 
     for (j = 0; j <= len; j++) {
-      WM[i][j] = INFINITY;
-      WMPrime[i][j] = INFINITY;
+      WM[i][j] = INFINITY_;
+      WMPrime[i][j] = INFINITY_;
       PP[i][j] = 0;
     }
   }
 	
   LLL = (len)*(len+1)/2 + 1;
   for (i = 0; i < LLL; i++) {
-    V[i] = INFINITY;
-    VM[i] = INFINITY;
-    VBI[i] = INFINITY;
+    V[i] = INFINITY_;
+    VM[i] = INFINITY_;
+    VBI[i] = INFINITY_;
   }
 
   for (i = 1; i <= (unsigned) len; i++) 
@@ -124,34 +125,43 @@ void init_tables(int len) {
 
 void free_tables(int len) {
   if (alloc_flag == 1) {
-    free(indx);
-
     int i;
-    for (i = 0; i <= len; i++) free(WM[i]);
-    free(WM);
+    delete[] V;
 
-    for (i = 0; i <= len; i++) free(WMPrime[i]);
-    free(WMPrime);
+    for (i = 0; i <= len; i++) {
+      delete[] WM[i];
+    }
+    delete[] WM;
 
-    free(VM);
-    free(VBI);
-    free(V);
-    free(W);
+    for (i = 0; i <= len; i++) {
+      delete[] PP[i];
+    }
+    delete[] PP;
+
+    for (i = 0; i<=len; i++) {
+      delete[] WMPrime[i];
+    }
+    delete[] WMPrime;
+
+    delete[] VM;
+    delete[] VBI;
+    delete[] W;
+    delete[] indx;
   }
 }
 
 
-long double Ed3(int i, int j, int k) { return dangle[RNA[i]][RNA[j]][RNA[k]][1];}
-long double Ed5(int i, int j, int k) { return dangle[RNA[i]][RNA[j]][RNA[k]][0]; }
-long double auPenalty(int i, int j) { return auPen(RNA[i], RNA[j]);}
+mpq_class Ed3(int i, int j, int k) { return dangle[RNA[i]][RNA[j]][RNA[k]][1];}
+mpq_class Ed5(int i, int j, int k) { return dangle[RNA[i]][RNA[j]][RNA[k]][0]; }
+mpq_class auPenalty(int i, int j) { return auPen(RNA[i], RNA[j]);}
 
-long double eL1(int i, int j, int ip, int jp) {
-  long double energy;
+mpq_class eL1(int i, int j, int ip, int jp) {
+  mpq_class energy;
   int size1, size2, size;
-  long double loginc; /* SH: Originally unassiged, but needs to be set to 0 so it doesn't throw off later calculations. */
+  mpq_class loginc; /* SH: Originally unassiged, but needs to be set to 0 so it doesn't throw off later calculations. */
   int lopsided; /* define the asymmetry of an interior loop */
 
-  energy = INFINITY;
+  energy = INFINITY_;
   loginc = 0;
 
   /*SH: These calculations used to incorrectly be within the bulge loop code, moved out here. */
@@ -162,7 +172,7 @@ long double eL1(int i, int j, int ip, int jp) {
   if (size1 == 0 || size2 == 0) {
     if (size > 30) {
       /* AM: Does not depend upon i and j and ip and jp - Stacking Energies */
-      loginc = prelog * log((long double) size / 30.0);
+      loginc = mpq_class(prelog * log((double) size / 30.0));
       energy = bulge[30] + eparam[2] + loginc + auPen(RNA[i], RNA[j])
         + auPen(RNA[ip], RNA[jp]);
     } else if (size <= 30 && size != 1) {
@@ -178,7 +188,7 @@ long double eL1(int i, int j, int ip, int jp) {
     lopsided = abs(size1 - size2);
 
     if (size > 30) {
-      loginc = prelog * log((long double) size / 30.0);
+      loginc = mpq_class(prelog * log((double) size / 30.0));
 
       if (!((size1 == 1 || size2 == 1) && gail)) { /* normal internal loop with size > 30*/
 
@@ -215,13 +225,13 @@ long double eL1(int i, int j, int ip, int jp) {
   return energy;
 }
 
-long double eL(int i, int j, int ip, int jp) {
-  long double energy;
+mpq_class eL(int i, int j, int ip, int jp) {
+  mpq_class energy;
   int size1, size2, size;
-  long double loginc; /* SH: Originally unassiged, but needs to be set to 0 so it doesn't throw off later calculations. */
+  mpq_class loginc; /* SH: Originally unassiged, but needs to be set to 0 so it doesn't throw off later calculations. */
   int lopsided; /* define the asymmetry of an interior loop */
 
-  energy = INFINITY;
+  energy = INFINITY_;
   loginc = 0;
 
   /*SH: These calculations used to incorrectly be within the bulge loop code, moved out here. */
@@ -232,7 +242,7 @@ long double eL(int i, int j, int ip, int jp) {
   if (size1 == 0 || size2 == 0) {
     if (size > 30) {
       /* AM: Does not depend upon i and j and ip and jp - Stacking Energies */
-      loginc = prelog * log((long double) size / 30.0);
+      loginc = mpq_class(prelog * log((double) size / 30.0));
       energy = bulge[30] + eparam[2] + loginc + auPen(RNA[i], RNA[j])
         + auPen(RNA[ip], RNA[jp]);
     } else if (size <= 30 && size != 1) {
@@ -248,7 +258,7 @@ long double eL(int i, int j, int ip, int jp) {
     lopsided = abs(size1 - size2);
 
     if (size > 30) {
-      loginc = prelog * log((long double) size / 30.0);
+      loginc = mpq_class(prelog * log((double) size / 30.0));
 
       if (!((size1 == 1 || size2 == 1) && gail)) { /* normal internal loop with size > 30*/
 
@@ -286,21 +296,21 @@ long double eL(int i, int j, int ip, int jp) {
   return energy;
 }
 
-long double eH(int i, int j) {
+mpq_class eH(int i, int j) {
   /*  Hairpin loop for all the bases between i and j */
   /*  size for size of the loop, energy is the result, loginc is for the extrapolation for loops bigger than 30 */
   int size;
-  long double loginc;
-  long double energy = INFINITY;
+  mpq_class loginc;
+  mpq_class energy = INFINITY_;
   int key, index, count, kmult;
-  long double tlink;
+  mpq_class tlink;
 
   size = j - i - 1; /*  size is the number of bases in the loop, when the closing pair is excluded */
 
   /*  look in hairpin, and be careful that there is only 30 values */
 
   if (size > 30) {
-    loginc = prelog * log(((long double) size) / 30.0);
+    loginc = mpq_class(prelog * log(((double) size) / 30.0));
     energy = hairpin[30] + loginc + tstkh[fourBaseIndex(RNA[i], RNA[j],
                                                         RNA[i + 1], RNA[j - 1])] + eparam[4]; /* size penalty + terminal mismatch stacking energy*/
   }
@@ -359,7 +369,7 @@ long double eH(int i, int j) {
     /*  no terminal mismatch */
     energy = hairpin[size] + eparam[4];
   } else if (size == 0)
-    return INFINITY;
+    return INFINITY_;
 
   /*  GGG Bonus => GU closure preceded by GG */
   /*  i-2 = i-1 = i = G, and j = U; i < j */
@@ -388,18 +398,18 @@ long double eH(int i, int j) {
   return energy;
 }
 
-long double eS(int i, int j) {
-  long double energy;
+mpq_class eS(int i, int j) {
+  mpq_class energy;
   /*  not sure about eparam[1], come from MFold.. = 0 */
   energy = stack[fourBaseIndex(RNA[i], RNA[j], RNA[i+1], RNA[j-1])] + eparam[1];
 
   return energy;
 }
 
-long double Estackm(int i, int j) {
+mpq_class Estackm(int i, int j) {
   return tstackm[RNA[i]][RNA[j]][RNA[i + 1]][RNA[j - 1]];
 }
 
-long double Estacke(int i, int j) {
+mpq_class Estacke(int i, int j) {
   return tstacke[RNA[i]][RNA[j]][RNA[i + 1]][RNA[j - 1]];
 }

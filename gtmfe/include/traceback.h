@@ -24,14 +24,15 @@
 #define _TRACEBACK_H
 
 #include "helper-structs.h"
+#include <gmpxx.h>
 
 PolytopeVector trace(int len);
 
 void traceW(int i);
-long double traceV(int i, int j);
-long double traceVM(int i, int j);
-long double traceVBI(int i, int j);
-long double traceWM(int i, int j);
-long double traceWMPrime(int i, int j);
+mpq_class traceV(int i, int j);
+mpq_class traceVM(int i, int j);
+mpq_class traceVBI(int i, int j);
+mpq_class traceWM(int i, int j);
+mpq_class traceWMPrime(int i, int j);
 
 #endif

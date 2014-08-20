@@ -15,10 +15,11 @@ gtmfe_module = Extension('_gtmfe',
                                   'src/loader.cc',
                                   'src/mfe_main.cc',
                                   'src/constraints.cc',
-                                  'src/utils.cc'],
+                                  'src/utils.cc',
+                                  'src/helper-structs.cc'],
                          swig_opts=['-c++', '-verbose'],
                          include_dirs=['include'],
-                         libraries = ['gomp'],
+                         libraries = ['gomp','gmp'],
                          extra_compile_args = ['-fopenmp']
                      )
 

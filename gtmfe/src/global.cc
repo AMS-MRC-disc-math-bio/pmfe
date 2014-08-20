@@ -5,6 +5,7 @@
 #include "utils.h"
 #include "global.h"
 #include "constraints.h"
+#include <gmpxx.h>
 
 unsigned char *RNA; 
 int *structure; 
@@ -25,12 +26,12 @@ int g_contactDistance;
 int g_bignumprecision = 512;
 
 void init_global_params(int len) {
-  RNA = (unsigned char *) malloc((len+1)* sizeof(unsigned char));
+  RNA = new unsigned char[len+1];
   if (RNA == NULL) {
     perror("Cannot allocate variable 'RNA'");
     exit(-1);
   }
-  structure = (int *) malloc((len+1) * sizeof(int));
+  structure = new int[len+1];
   if (structure == NULL) {
     perror("Cannot allocate variable 'structure'");
     exit(-1);
@@ -40,8 +41,8 @@ void init_global_params(int len) {
 }
 
 void free_global_params() {
-  free(structure);
-  free(RNA);
+  delete[] structure;
+  delete[] RNA;
 }
 
 void print_sequence(int len) {
@@ -147,12 +148,12 @@ void print_gtfold_usage_help() {
 }
 
 
-void save_ct_file(string outputFile, string seq, long double energy) {
+void save_ct_file(string outputFile, string seq, mpq_class energy) {
 
   ofstream outfile;
   outfile.open(outputFile.c_str());
 
-  outfile << seq.length() << "\t  dG = " << energy << endl;
+  outfile << seq.length() << "\t  dG = " << energy.get_str() << endl;
   //outfile << seq.length() << "\tdG = " << energy/100.0 << "\t" << seqfile << endl;
 
   unsigned int i = 1;
@@ -162,11 +163,11 @@ void save_ct_file(string outputFile, string seq, long double energy) {
   outfile.close();
 }
 
-void save_ct_file(string outputFile, string seq, long double energy, int *structure1) {
+void save_ct_file(string outputFile, string seq, mpq_class energy, int *structure1) {
   ofstream outfile;
   outfile.open(outputFile.c_str());
 
-  outfile << seq.length() << "\t  dG = " << energy << endl;
+  outfile << seq.length() << "\t  dG = " << energy.get_str() << endl;
   //outfile << seq.length() << "\tdG = " << energy/100.0 << "\t" << seqfile << endl;
 
   unsigned int i = 1;
