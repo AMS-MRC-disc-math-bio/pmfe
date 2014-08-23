@@ -37,7 +37,7 @@ int count_unpaired;
 int count_branches;
 int length = 0;
 
-PolytopeVector trace(int len) { 
+ScoreVector trace(int len) { 
   int i;
   for (i = 0; i <= len; i++) structure[i] = 0;
 
@@ -53,7 +53,7 @@ PolytopeVector trace(int len) {
 	
   traceW(len);
 
-  PolytopeVector result;
+  ScoreVector result;
   result.multiloops = count_multiloops;
   result.unpaired = count_unpaired;
   result.branches = count_branches;

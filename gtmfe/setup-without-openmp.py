@@ -16,9 +16,9 @@ gtmfe_module = Extension('_gtmfe',
                                   'src/mfe_main.cc',
                                   'src/constraints.cc',
                                   'src/utils.cc',
-                                  'src/helper-structs.cc'],
+                                  '../parametrizer-types/parametrizer-types.cc'],
                          swig_opts=['-c++', '-verbose'],
-                         include_dirs=['include'],
+                         include_dirs=['include','../parametrizer-types/'],
                          libraries=['gmp'],
                      )
 

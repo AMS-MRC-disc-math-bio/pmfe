@@ -36,7 +36,7 @@
 #include "constants.h"
 #include "global.h"
 #include "loader.h"
-#include "helper-structs.h"
+#include "parametrizer-types.h"
 #include <gmpxx.h>
 
 #define xstr(s) str(s)

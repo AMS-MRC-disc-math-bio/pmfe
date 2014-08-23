@@ -24,7 +24,7 @@
 
 #include "constants.h"
 #include "data.h"
-#include "helper-structs.h"
+#include "parametrizer-types.h"
 
 void readThermodynamicParameters(const char *userdatadir, ParameterVector params);
 

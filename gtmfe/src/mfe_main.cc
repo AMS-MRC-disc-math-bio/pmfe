@@ -77,12 +77,12 @@ void free_fold(int len) {
 	free_global_params();
 }
 
-PolytopeVector mfe_main(string seq_file, string output_file, string param_dir, int dangle_model) {
+ScoreVector mfe_main(string seq_file, string output_file, string param_dir, int dangle_model) {
   ParameterVector params = ParameterVector();
   return mfe_main(seq_file, output_file, param_dir, params, dangle_model);
 }
 
-PolytopeVector mfe_main(string seq_file, string output_file, string param_dir, ParameterVector params, int dangle_model) {
+ScoreVector mfe_main(string seq_file, string output_file, string param_dir, ParameterVector params, int dangle_model) {
         std::string seq;
         mpq_class energy;
 	
@@ -106,7 +106,7 @@ PolytopeVector mfe_main(string seq_file, string output_file, string param_dir, P
 
 	energy = calculate(seq.length()) ;
 
-        PolytopeVector result;
+        ScoreVector result;
         result = trace(seq.length());
         result.energy = energy;
         if (params.dummy_scaling==0) {

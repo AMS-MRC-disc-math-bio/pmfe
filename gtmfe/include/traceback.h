@@ -23,10 +23,10 @@
 #ifndef _TRACEBACK_H
 #define _TRACEBACK_H
 
-#include "helper-structs.h"
+#include "parametrizer-types.h"
 #include <gmpxx.h>
 
-PolytopeVector trace(int len);
+ScoreVector trace(int len);
 
 void traceW(int i);
 mpq_class traceV(int i, int j);
