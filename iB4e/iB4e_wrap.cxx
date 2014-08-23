@@ -6061,6 +6061,28 @@ fail:
 }
 
 
+SWIGINTERN PyObject *_wrap_new_EuclideanVector__SWIG_4(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  ScoreVector *arg1 = (ScoreVector *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  EuclideanVector *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:new_EuclideanVector",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_ScoreVector, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "new_EuclideanVector" "', argument " "1"" of type '" "ScoreVector *""'"); 
+  }
+  arg1 = reinterpret_cast< ScoreVector * >(argp1);
+  result = (EuclideanVector *)new EuclideanVector(arg1);
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_EuclideanVector, SWIG_POINTER_NEW |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
 SWIGINTERN PyObject *_wrap_new_EuclideanVector(PyObject *self, PyObject *args) {
   int argc;
   PyObject *argv[2];
@@ -6093,6 +6115,15 @@ SWIGINTERN PyObject *_wrap_new_EuclideanVector(PyObject *self, PyObject *args) {
   }
   if (argc == 1) {
     int _v;
+    void *vptr = 0;
+    int res = SWIG_ConvertPtr(argv[0], &vptr, SWIGTYPE_p_ScoreVector, 0);
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      return _wrap_new_EuclideanVector__SWIG_4(self, args);
+    }
+  }
+  if (argc == 1) {
+    int _v;
     {
       int res = SWIG_AsVal_int(argv[0], NULL);
       _v = SWIG_CheckState(res);
@@ -6108,7 +6139,8 @@ fail:
     "    EuclideanVector::EuclideanVector()\n"
     "    EuclideanVector::EuclideanVector(int)\n"
     "    EuclideanVector::EuclideanVector(EuclideanVector *)\n"
-    "    EuclideanVector::EuclideanVector(std::vector< mpq_class,std::allocator< mpq_class > >)\n");
+    "    EuclideanVector::EuclideanVector(std::vector< mpq_class,std::allocator< mpq_class > >)\n"
+    "    EuclideanVector::EuclideanVector(ScoreVector *)\n");
   return 0;
 }
 
@@ -6275,6 +6307,28 @@ SWIGINTERN PyObject *_wrap_EuclideanVector_set_split_value(PyObject *SWIGUNUSEDP
   arg4 = static_cast< long >(val4);
   (arg1)->set_split_value(arg2,arg3,arg4);
   resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_EuclideanVector_as_param_vector(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  EuclideanVector *arg1 = (EuclideanVector *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  ParameterVector result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:EuclideanVector_as_param_vector",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_EuclideanVector, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "EuclideanVector_as_param_vector" "', argument " "1"" of type '" "EuclideanVector *""'"); 
+  }
+  arg1 = reinterpret_cast< EuclideanVector * >(argp1);
+  result = (arg1)->as_param_vector();
+  resultobj = SWIG_NewPointerObj((new ParameterVector(static_cast< const ParameterVector& >(result))), SWIGTYPE_p_ParameterVector, SWIG_POINTER_OWN |  0 );
   return resultobj;
 fail:
   return NULL;
@@ -16086,6 +16140,7 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"EuclideanVector___lt__", _wrap_EuclideanVector___lt__, METH_VARARGS, NULL},
 	 { (char *)"EuclideanVector_get_split_value", _wrap_EuclideanVector_get_split_value, METH_VARARGS, NULL},
 	 { (char *)"EuclideanVector_set_split_value", _wrap_EuclideanVector_set_split_value, METH_VARARGS, NULL},
+	 { (char *)"EuclideanVector_as_param_vector", _wrap_EuclideanVector_as_param_vector, METH_VARARGS, NULL},
 	 { (char *)"delete_EuclideanVector", _wrap_delete_EuclideanVector, METH_VARARGS, NULL},
 	 { (char *)"EuclideanVector_Print", _wrap_EuclideanVector_Print, METH_VARARGS, NULL},
 	 { (char *)"EuclideanVector_Constructor", _wrap_EuclideanVector_Constructor, METH_VARARGS, NULL},

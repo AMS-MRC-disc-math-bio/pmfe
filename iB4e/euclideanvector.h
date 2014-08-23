@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include <vector>
 #include "gmpxx.h"
+#include "parametrizer-types.h"
 
 #ifndef EUCLIDEANVECTOR_H
 #define EUCLIDEANVECTOR_H
@@ -21,16 +22,29 @@ class EuclideanVector {
   int id;
 
   EuclideanVector() {dimension=-1;};
+
   //EuclideanVector(int d) { dimension = d; data = new mpq_class[d]; for(int i=0; i<d; i++) data[i] = 0;};
+
   EuclideanVector(int d) { Constructor(d);};
+
   EuclideanVector(EuclideanVector *v) {
     dimension = v->dimension;
     data.clear();
     data = v->data;
   };
+
   EuclideanVector(std::vector<mpq_class> vals){
     dimension = vals.size();
     data = vals;
+  };
+
+  EuclideanVector(ScoreVector *scores) {
+    dimension = 4;
+    data.clear();
+    data.push_back(mpq_class(scores->multiloops));
+    data.push_back(mpq_class(scores->branches));
+    data.push_back(mpq_class(scores->unpaired));
+    data.push_back(mpq_class(scores->w));
   };
 
   void deletedata() { 
@@ -73,6 +87,11 @@ class EuclideanVector {
     mpq_class value (num, denom);
     data[index] = value;
   }
+
+  ParameterVector as_param_vector(){
+    ParameterVector result (data[0], data[1], data[2], data[3]);
+    return result;
+  };
 
   ~EuclideanVector(){return;};
   

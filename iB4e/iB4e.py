@@ -100,6 +100,7 @@ class EuclideanVector(_object):
     def __lt__(self, *args): return _iB4e.EuclideanVector___lt__(self, *args)
     def get_split_value(self, *args): return _iB4e.EuclideanVector_get_split_value(self, *args)
     def set_split_value(self, *args): return _iB4e.EuclideanVector_set_split_value(self, *args)
+    def as_param_vector(self): return _iB4e.EuclideanVector_as_param_vector(self)
     __swig_destroy__ = _iB4e.delete_EuclideanVector
     __del__ = lambda self : None;
     def Print(self): return _iB4e.EuclideanVector_Print(self)
