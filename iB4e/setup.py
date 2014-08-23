@@ -11,10 +11,11 @@ iB4e_module = Extension('_iB4e',
                                  'euclideanvector.cc',
                                  'faces.cc',
                                  'linalg.cc',
-                                 'stack.cc'],
+                                 'stack.cc',
+                                 '../parametrizer-types/parametrizer-types.cc'],
                         swig_opts=['-c++', '-verbose'],
+                        include_dirs = ['../parametrizer-types/'],
                         libraries = ['gmp'],
-                        include_dirs = ['.'],
                     )
 
 setup (name = 'iB4e',

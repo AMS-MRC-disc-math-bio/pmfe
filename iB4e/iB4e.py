@@ -234,6 +234,98 @@ class SwigPyIterator(_object):
 SwigPyIterator_swigregister = _iB4e.SwigPyIterator_swigregister
 SwigPyIterator_swigregister(SwigPyIterator)
 
+class ParameterVector(_object):
+    __swig_setmethods__ = {}
+    __setattr__ = lambda self, name, value: _swig_setattr(self, ParameterVector, name, value)
+    __swig_getmethods__ = {}
+    __getattr__ = lambda self, name: _swig_getattr(self, ParameterVector, name)
+    __repr__ = _swig_repr
+    def __init__(self, *args): 
+        this = _iB4e.new_ParameterVector(*args)
+        try: self.this.append(this)
+        except: self.this = this
+    __swig_setmethods__["multiloop_penalty"] = _iB4e.ParameterVector_multiloop_penalty_set
+    __swig_getmethods__["multiloop_penalty"] = _iB4e.ParameterVector_multiloop_penalty_get
+    if _newclass:multiloop_penalty = _swig_property(_iB4e.ParameterVector_multiloop_penalty_get, _iB4e.ParameterVector_multiloop_penalty_set)
+    __swig_setmethods__["unpaired_penalty"] = _iB4e.ParameterVector_unpaired_penalty_set
+    __swig_getmethods__["unpaired_penalty"] = _iB4e.ParameterVector_unpaired_penalty_get
+    if _newclass:unpaired_penalty = _swig_property(_iB4e.ParameterVector_unpaired_penalty_get, _iB4e.ParameterVector_unpaired_penalty_set)
+    __swig_setmethods__["branch_penalty"] = _iB4e.ParameterVector_branch_penalty_set
+    __swig_getmethods__["branch_penalty"] = _iB4e.ParameterVector_branch_penalty_get
+    if _newclass:branch_penalty = _swig_property(_iB4e.ParameterVector_branch_penalty_get, _iB4e.ParameterVector_branch_penalty_set)
+    __swig_setmethods__["dummy_scaling"] = _iB4e.ParameterVector_dummy_scaling_set
+    __swig_getmethods__["dummy_scaling"] = _iB4e.ParameterVector_dummy_scaling_get
+    if _newclass:dummy_scaling = _swig_property(_iB4e.ParameterVector_dummy_scaling_get, _iB4e.ParameterVector_dummy_scaling_set)
+    def set_from_pairs(self, *args): return _iB4e.ParameterVector_set_from_pairs(self, *args)
+    def set_from_words(self, *args): return _iB4e.ParameterVector_set_from_words(self, *args)
+    def get_pairs(self): return _iB4e.ParameterVector_get_pairs(self)
+    def get_words(self): return _iB4e.ParameterVector_get_words(self)
+    def get_python_fractions_dict(self):
+        from fractions import Fraction
+        pairs = self.get_pairs()
+        result = {"multiloop penalty" : Fraction(pairs[0][0], pairs[0][1]),
+                  "unpaired base penalty": Fraction(pairs[1][0], pairs[1][1]),
+                  "branching helix penalty": Fraction(pairs[2][0], pairs[2][1]),
+                  "dummy scaling parameter": Fraction(pairs[3][0], pairs[3][1]),
+        }
+                 
+        return result
+      
+    __swig_destroy__ = _iB4e.delete_ParameterVector
+    __del__ = lambda self : None;
+ParameterVector_swigregister = _iB4e.ParameterVector_swigregister
+ParameterVector_swigregister(ParameterVector)
+
+class ScoreVector(_object):
+    __swig_setmethods__ = {}
+    __setattr__ = lambda self, name, value: _swig_setattr(self, ScoreVector, name, value)
+    __swig_getmethods__ = {}
+    __getattr__ = lambda self, name: _swig_getattr(self, ScoreVector, name)
+    __repr__ = _swig_repr
+    def __init__(self, *args): 
+        this = _iB4e.new_ScoreVector(*args)
+        try: self.this.append(this)
+        except: self.this = this
+    __swig_setmethods__["multiloops"] = _iB4e.ScoreVector_multiloops_set
+    __swig_getmethods__["multiloops"] = _iB4e.ScoreVector_multiloops_get
+    if _newclass:multiloops = _swig_property(_iB4e.ScoreVector_multiloops_get, _iB4e.ScoreVector_multiloops_set)
+    __swig_setmethods__["branches"] = _iB4e.ScoreVector_branches_set
+    __swig_getmethods__["branches"] = _iB4e.ScoreVector_branches_get
+    if _newclass:branches = _swig_property(_iB4e.ScoreVector_branches_get, _iB4e.ScoreVector_branches_set)
+    __swig_setmethods__["unpaired"] = _iB4e.ScoreVector_unpaired_set
+    __swig_getmethods__["unpaired"] = _iB4e.ScoreVector_unpaired_get
+    if _newclass:unpaired = _swig_property(_iB4e.ScoreVector_unpaired_get, _iB4e.ScoreVector_unpaired_set)
+    __swig_setmethods__["w"] = _iB4e.ScoreVector_w_set
+    __swig_getmethods__["w"] = _iB4e.ScoreVector_w_get
+    if _newclass:w = _swig_property(_iB4e.ScoreVector_w_get, _iB4e.ScoreVector_w_set)
+    __swig_setmethods__["energy"] = _iB4e.ScoreVector_energy_set
+    __swig_getmethods__["energy"] = _iB4e.ScoreVector_energy_get
+    if _newclass:energy = _swig_property(_iB4e.ScoreVector_energy_get, _iB4e.ScoreVector_energy_set)
+    def set_from_pairs(self, *args): return _iB4e.ScoreVector_set_from_pairs(self, *args)
+    def set_from_words(self, *args): return _iB4e.ScoreVector_set_from_words(self, *args)
+    def get_pairs(self): return _iB4e.ScoreVector_get_pairs(self)
+    def get_words(self): return _iB4e.ScoreVector_get_words(self)
+    def get_python_fractions_dict(self):
+        from fractions import Fraction
+        pairs = self.get_pairs()
+        result = {"multiloops" : pairs[0][0],
+                  "unpaired": pairs[1][0],
+                  "branches": pairs[2][0],
+                  "w": Fraction(pairs[3][0], pairs[3][1]),
+                  "energy": Fraction(pairs[4][0], pairs[4][1]),
+        }
+                 
+        return result
+      
+    __swig_destroy__ = _iB4e.delete_ScoreVector
+    __del__ = lambda self : None;
+ScoreVector_swigregister = _iB4e.ScoreVector_swigregister
+ScoreVector_swigregister(ScoreVector)
+
+
+def get_mpq_from_word(*args):
+  return _iB4e.get_mpq_from_word(*args)
+get_mpq_from_word = _iB4e.get_mpq_from_word
 class pairll(_object):
     __swig_setmethods__ = {}
     __setattr__ = lambda self, name, value: _swig_setattr(self, pairll, name, value)
@@ -266,6 +358,100 @@ class pairll(_object):
     __del__ = lambda self : None;
 pairll_swigregister = _iB4e.pairll_swigregister
 pairll_swigregister(pairll)
+
+class vecll(_object):
+    __swig_setmethods__ = {}
+    __setattr__ = lambda self, name, value: _swig_setattr(self, vecll, name, value)
+    __swig_getmethods__ = {}
+    __getattr__ = lambda self, name: _swig_getattr(self, vecll, name)
+    __repr__ = _swig_repr
+    def iterator(self): return _iB4e.vecll_iterator(self)
+    def __iter__(self): return self.iterator()
+    def __nonzero__(self): return _iB4e.vecll___nonzero__(self)
+    def __bool__(self): return _iB4e.vecll___bool__(self)
+    def __len__(self): return _iB4e.vecll___len__(self)
+    def pop(self): return _iB4e.vecll_pop(self)
+    def __getslice__(self, *args): return _iB4e.vecll___getslice__(self, *args)
+    def __setslice__(self, *args): return _iB4e.vecll___setslice__(self, *args)
+    def __delslice__(self, *args): return _iB4e.vecll___delslice__(self, *args)
+    def __delitem__(self, *args): return _iB4e.vecll___delitem__(self, *args)
+    def __getitem__(self, *args): return _iB4e.vecll___getitem__(self, *args)
+    def __setitem__(self, *args): return _iB4e.vecll___setitem__(self, *args)
+    def append(self, *args): return _iB4e.vecll_append(self, *args)
+    def empty(self): return _iB4e.vecll_empty(self)
+    def size(self): return _iB4e.vecll_size(self)
+    def clear(self): return _iB4e.vecll_clear(self)
+    def swap(self, *args): return _iB4e.vecll_swap(self, *args)
+    def get_allocator(self): return _iB4e.vecll_get_allocator(self)
+    def begin(self): return _iB4e.vecll_begin(self)
+    def end(self): return _iB4e.vecll_end(self)
+    def rbegin(self): return _iB4e.vecll_rbegin(self)
+    def rend(self): return _iB4e.vecll_rend(self)
+    def pop_back(self): return _iB4e.vecll_pop_back(self)
+    def erase(self, *args): return _iB4e.vecll_erase(self, *args)
+    def __init__(self, *args): 
+        this = _iB4e.new_vecll(*args)
+        try: self.this.append(this)
+        except: self.this = this
+    def push_back(self, *args): return _iB4e.vecll_push_back(self, *args)
+    def front(self): return _iB4e.vecll_front(self)
+    def back(self): return _iB4e.vecll_back(self)
+    def assign(self, *args): return _iB4e.vecll_assign(self, *args)
+    def resize(self, *args): return _iB4e.vecll_resize(self, *args)
+    def insert(self, *args): return _iB4e.vecll_insert(self, *args)
+    def reserve(self, *args): return _iB4e.vecll_reserve(self, *args)
+    def capacity(self): return _iB4e.vecll_capacity(self)
+    __swig_destroy__ = _iB4e.delete_vecll
+    __del__ = lambda self : None;
+vecll_swigregister = _iB4e.vecll_swigregister
+vecll_swigregister(vecll)
+
+class vecstr(_object):
+    __swig_setmethods__ = {}
+    __setattr__ = lambda self, name, value: _swig_setattr(self, vecstr, name, value)
+    __swig_getmethods__ = {}
+    __getattr__ = lambda self, name: _swig_getattr(self, vecstr, name)
+    __repr__ = _swig_repr
+    def iterator(self): return _iB4e.vecstr_iterator(self)
+    def __iter__(self): return self.iterator()
+    def __nonzero__(self): return _iB4e.vecstr___nonzero__(self)
+    def __bool__(self): return _iB4e.vecstr___bool__(self)
+    def __len__(self): return _iB4e.vecstr___len__(self)
+    def pop(self): return _iB4e.vecstr_pop(self)
+    def __getslice__(self, *args): return _iB4e.vecstr___getslice__(self, *args)
+    def __setslice__(self, *args): return _iB4e.vecstr___setslice__(self, *args)
+    def __delslice__(self, *args): return _iB4e.vecstr___delslice__(self, *args)
+    def __delitem__(self, *args): return _iB4e.vecstr___delitem__(self, *args)
+    def __getitem__(self, *args): return _iB4e.vecstr___getitem__(self, *args)
+    def __setitem__(self, *args): return _iB4e.vecstr___setitem__(self, *args)
+    def append(self, *args): return _iB4e.vecstr_append(self, *args)
+    def empty(self): return _iB4e.vecstr_empty(self)
+    def size(self): return _iB4e.vecstr_size(self)
+    def clear(self): return _iB4e.vecstr_clear(self)
+    def swap(self, *args): return _iB4e.vecstr_swap(self, *args)
+    def get_allocator(self): return _iB4e.vecstr_get_allocator(self)
+    def begin(self): return _iB4e.vecstr_begin(self)
+    def end(self): return _iB4e.vecstr_end(self)
+    def rbegin(self): return _iB4e.vecstr_rbegin(self)
+    def rend(self): return _iB4e.vecstr_rend(self)
+    def pop_back(self): return _iB4e.vecstr_pop_back(self)
+    def erase(self, *args): return _iB4e.vecstr_erase(self, *args)
+    def __init__(self, *args): 
+        this = _iB4e.new_vecstr(*args)
+        try: self.this.append(this)
+        except: self.this = this
+    def push_back(self, *args): return _iB4e.vecstr_push_back(self, *args)
+    def front(self): return _iB4e.vecstr_front(self)
+    def back(self): return _iB4e.vecstr_back(self)
+    def assign(self, *args): return _iB4e.vecstr_assign(self, *args)
+    def resize(self, *args): return _iB4e.vecstr_resize(self, *args)
+    def insert(self, *args): return _iB4e.vecstr_insert(self, *args)
+    def reserve(self, *args): return _iB4e.vecstr_reserve(self, *args)
+    def capacity(self): return _iB4e.vecstr_capacity(self)
+    __swig_destroy__ = _iB4e.delete_vecstr
+    __del__ = lambda self : None;
+vecstr_swigregister = _iB4e.vecstr_swigregister
+vecstr_swigregister(vecstr)
 
 class vecEV(_object):
     __swig_setmethods__ = {}

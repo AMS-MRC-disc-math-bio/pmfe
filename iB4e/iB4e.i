@@ -6,6 +6,7 @@
 %include "BBpolytope.h"
 %include "std_pair.i"
 %include "std_vector.i"
+%include "../parametrizer-types/parametrizer-types.i"
 
 %{
 #define SWIG_FILE_WITH_INIT
@@ -16,9 +17,9 @@
 #include "linalg.h"
 #include "stack.h"
 #include "gmpxx.h"
+#include "parametrizer-types.h"
 %}
 
-%template(pairll) std::pair<long, long>;
 %template(vecEV) std::vector<EuclideanVector>;
 
 // This is easier than writing a TypeMap
