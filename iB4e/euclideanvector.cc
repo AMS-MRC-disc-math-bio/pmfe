@@ -5,6 +5,7 @@
 
 #include <iostream>
 #include <stdio.h>
+#include <vector>
 
 
 #include <gmpxx.h>
@@ -195,7 +196,8 @@ mpq_class fourbyfourdet(mpq_class a, mpq_class b, mpq_class c, mpq_class d, mpq_
 
 void EuclideanVector::Constructor(int d) {
   dimension = d;
-  data = new mpq_class[d];
+  data.clear();
+  data.resize(dimension);
 
   for(int i = 0; i < d; i++)
     data[i] = 0;

@@ -16,7 +16,7 @@ class EuclideanVector {
 
  public:
   int dimension;
-  mpq_class *data;
+  std::vector<mpq_class> data;
 
   int id;
 
@@ -25,13 +25,15 @@ class EuclideanVector {
   EuclideanVector(int d) { Constructor(d);};
   EuclideanVector(EuclideanVector *v) {
     dimension = v->dimension;
-    data = new mpq_class[dimension];
-    for(int i =0; i < dimension; i++)
-      data[i] = v->data[i];
+    data.clear();
+    data = v->data;
+  };
+  EuclideanVector(std::vector<mpq_class> vals){
+    dimension = vals.size();
+    data = vals;
   };
 
   void deletedata() { 
-     delete[] data;
     return; 
   };
 

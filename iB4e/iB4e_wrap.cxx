@@ -3443,13 +3443,14 @@ namespace Swig {
 #define SWIGTYPE_p_std__string swig_types[18]
 #define SWIGTYPE_p_std__vectorT_EuclideanVector_std__allocatorT_EuclideanVector_t_t swig_types[19]
 #define SWIGTYPE_p_std__vectorT__Tp__Alloc_t swig_types[20]
-#define SWIGTYPE_p_std__vectorT_std__pairT_long_long_t_std__allocatorT_std__pairT_long_long_t_t_t swig_types[21]
-#define SWIGTYPE_p_std__vectorT_std__string_std__allocatorT_std__string_t_t swig_types[22]
-#define SWIGTYPE_p_swig__SwigPyIterator swig_types[23]
-#define SWIGTYPE_p_value_type swig_types[24]
-#define SWIGTYPE_p_vertexnode swig_types[25]
-static swig_type_info *swig_types[27];
-static swig_module_info swig_module = {swig_types, 26, 0, 0, 0, 0};
+#define SWIGTYPE_p_std__vectorT_mpq_class_std__allocatorT_mpq_t_t swig_types[21]
+#define SWIGTYPE_p_std__vectorT_std__pairT_long_long_t_std__allocatorT_std__pairT_long_long_t_t_t swig_types[22]
+#define SWIGTYPE_p_std__vectorT_std__string_std__allocatorT_std__string_t_t swig_types[23]
+#define SWIGTYPE_p_swig__SwigPyIterator swig_types[24]
+#define SWIGTYPE_p_value_type swig_types[25]
+#define SWIGTYPE_p_vertexnode swig_types[26]
+static swig_type_info *swig_types[28];
+static swig_module_info swig_module = {swig_types, 27, 0, 0, 0, 0};
 #define SWIG_TypeQuery(name) SWIG_TypeQueryModule(&swig_module, &swig_module, name)
 #define SWIG_MangledTypeQuery(name) SWIG_MangledTypeQueryModule(&swig_module, &swig_module, name)
 
@@ -5872,7 +5873,7 @@ fail:
 SWIGINTERN PyObject *_wrap_EuclideanVector_data_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   EuclideanVector *arg1 = (EuclideanVector *) 0 ;
-  mpq_class *arg2 = (mpq_class *) 0 ;
+  std::vector< mpq_class,std::allocator< mpq_class > > *arg2 = (std::vector< mpq_class,std::allocator< mpq_class > > *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   void *argp2 = 0 ;
@@ -5886,12 +5887,12 @@ SWIGINTERN PyObject *_wrap_EuclideanVector_data_set(PyObject *SWIGUNUSEDPARM(sel
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "EuclideanVector_data_set" "', argument " "1"" of type '" "EuclideanVector *""'"); 
   }
   arg1 = reinterpret_cast< EuclideanVector * >(argp1);
-  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_mpq_class, SWIG_POINTER_DISOWN |  0 );
+  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_std__vectorT_mpq_class_std__allocatorT_mpq_t_t, 0 |  0 );
   if (!SWIG_IsOK(res2)) {
-    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "EuclideanVector_data_set" "', argument " "2"" of type '" "mpq_class *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "EuclideanVector_data_set" "', argument " "2"" of type '" "std::vector< mpq_class,std::allocator< mpq_class > > *""'"); 
   }
-  arg2 = reinterpret_cast< mpq_class * >(argp2);
-  if (arg1) (arg1)->data = arg2;
+  arg2 = reinterpret_cast< std::vector< mpq_class,std::allocator< mpq_class > > * >(argp2);
+  if (arg1) (arg1)->data = *arg2;
   resultobj = SWIG_Py_Void();
   return resultobj;
 fail:
@@ -5905,7 +5906,7 @@ SWIGINTERN PyObject *_wrap_EuclideanVector_data_get(PyObject *SWIGUNUSEDPARM(sel
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
-  mpq_class *result = 0 ;
+  std::vector< mpq_class,std::allocator< mpq_class > > *result = 0 ;
   
   if (!PyArg_ParseTuple(args,(char *)"O:EuclideanVector_data_get",&obj0)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_EuclideanVector, 0 |  0 );
@@ -5913,8 +5914,8 @@ SWIGINTERN PyObject *_wrap_EuclideanVector_data_get(PyObject *SWIGUNUSEDPARM(sel
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "EuclideanVector_data_get" "', argument " "1"" of type '" "EuclideanVector *""'"); 
   }
   arg1 = reinterpret_cast< EuclideanVector * >(argp1);
-  result = (mpq_class *) ((arg1)->data);
-  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_mpq_class, 0 |  0 );
+  result = (std::vector< mpq_class,std::allocator< mpq_class > > *)& ((arg1)->data);
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_std__vectorT_mpq_class_std__allocatorT_mpq_t_t, 0 |  0 );
   return resultobj;
 fail:
   return NULL;
@@ -6030,6 +6031,36 @@ fail:
 }
 
 
+SWIGINTERN PyObject *_wrap_new_EuclideanVector__SWIG_3(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  SwigValueWrapper< std::vector< mpq_class,std::allocator< mpq_class > > > arg1 ;
+  void *argp1 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  EuclideanVector *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:new_EuclideanVector",&obj0)) SWIG_fail;
+  {
+    res1 = SWIG_ConvertPtr(obj0, &argp1, SWIGTYPE_p_std__vectorT_mpq_class_std__allocatorT_mpq_t_t,  0  | 0);
+    if (!SWIG_IsOK(res1)) {
+      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "new_EuclideanVector" "', argument " "1"" of type '" "std::vector< mpq_class,std::allocator< mpq_class > >""'"); 
+    }  
+    if (!argp1) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "new_EuclideanVector" "', argument " "1"" of type '" "std::vector< mpq_class,std::allocator< mpq_class > >""'");
+    } else {
+      std::vector< mpq_class,std::allocator< mpq_class > > * temp = reinterpret_cast< std::vector< mpq_class,std::allocator< mpq_class > > * >(argp1);
+      arg1 = *temp;
+      if (SWIG_IsNewObj(res1)) delete temp;
+    }
+  }
+  result = (EuclideanVector *)new EuclideanVector(arg1);
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_EuclideanVector, SWIG_POINTER_NEW |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
 SWIGINTERN PyObject *_wrap_new_EuclideanVector(PyObject *self, PyObject *args) {
   int argc;
   PyObject *argv[2];
@@ -6054,6 +6085,14 @@ SWIGINTERN PyObject *_wrap_new_EuclideanVector(PyObject *self, PyObject *args) {
   }
   if (argc == 1) {
     int _v;
+    int res = SWIG_ConvertPtr(argv[0], 0, SWIGTYPE_p_std__vectorT_mpq_class_std__allocatorT_mpq_t_t, 0);
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      return _wrap_new_EuclideanVector__SWIG_3(self, args);
+    }
+  }
+  if (argc == 1) {
+    int _v;
     {
       int res = SWIG_AsVal_int(argv[0], NULL);
       _v = SWIG_CheckState(res);
@@ -6068,7 +6107,8 @@ fail:
     "  Possible C/C++ prototypes are:\n"
     "    EuclideanVector::EuclideanVector()\n"
     "    EuclideanVector::EuclideanVector(int)\n"
-    "    EuclideanVector::EuclideanVector(EuclideanVector *)\n");
+    "    EuclideanVector::EuclideanVector(EuclideanVector *)\n"
+    "    EuclideanVector::EuclideanVector(std::vector< mpq_class,std::allocator< mpq_class > >)\n");
   return 0;
 }
 
@@ -16261,6 +16301,7 @@ static swig_type_info _swigt__p_std__pairT_long_long_t = {"_p_std__pairT_long_lo
 static swig_type_info _swigt__p_std__string = {"_p_std__string", "std::string *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_std__vectorT_EuclideanVector_std__allocatorT_EuclideanVector_t_t = {"_p_std__vectorT_EuclideanVector_std__allocatorT_EuclideanVector_t_t", "std::vector< EuclideanVector > *|std::vector< EuclideanVector,std::allocator< EuclideanVector > > *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_std__vectorT__Tp__Alloc_t = {"_p_std__vectorT__Tp__Alloc_t", "std::vector< _Tp,_Alloc > *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_std__vectorT_mpq_class_std__allocatorT_mpq_t_t = {"_p_std__vectorT_mpq_class_std__allocatorT_mpq_t_t", "std::vector< mpq_class,std::allocator< mpq_class > > *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_std__vectorT_std__pairT_long_long_t_std__allocatorT_std__pairT_long_long_t_t_t = {"_p_std__vectorT_std__pairT_long_long_t_std__allocatorT_std__pairT_long_long_t_t_t", "std::vector< std::pair< long,long > > *|std::vector< std::pair< long,long >,std::allocator< std::pair< long,long > > > *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_std__vectorT_std__string_std__allocatorT_std__string_t_t = {"_p_std__vectorT_std__string_std__allocatorT_std__string_t_t", "std::vector< std::string,std::allocator< std::string > > *|std::vector< std::string > *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_swig__SwigPyIterator = {"_p_swig__SwigPyIterator", "swig::SwigPyIterator *", 0, 0, (void*)0, 0};
@@ -16289,6 +16330,7 @@ static swig_type_info *swig_type_initial[] = {
   &_swigt__p_std__string,
   &_swigt__p_std__vectorT_EuclideanVector_std__allocatorT_EuclideanVector_t_t,
   &_swigt__p_std__vectorT__Tp__Alloc_t,
+  &_swigt__p_std__vectorT_mpq_class_std__allocatorT_mpq_t_t,
   &_swigt__p_std__vectorT_std__pairT_long_long_t_std__allocatorT_std__pairT_long_long_t_t_t,
   &_swigt__p_std__vectorT_std__string_std__allocatorT_std__string_t_t,
   &_swigt__p_swig__SwigPyIterator,
@@ -16317,6 +16359,7 @@ static swig_cast_info _swigc__p_std__pairT_long_long_t[] = {  {&_swigt__p_std__p
 static swig_cast_info _swigc__p_std__string[] = {  {&_swigt__p_std__string, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_std__vectorT_EuclideanVector_std__allocatorT_EuclideanVector_t_t[] = {  {&_swigt__p_std__vectorT_EuclideanVector_std__allocatorT_EuclideanVector_t_t, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_std__vectorT__Tp__Alloc_t[] = {  {&_swigt__p_std__vectorT__Tp__Alloc_t, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_std__vectorT_mpq_class_std__allocatorT_mpq_t_t[] = {  {&_swigt__p_std__vectorT_mpq_class_std__allocatorT_mpq_t_t, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_std__vectorT_std__pairT_long_long_t_std__allocatorT_std__pairT_long_long_t_t_t[] = {  {&_swigt__p_std__vectorT_std__pairT_long_long_t_std__allocatorT_std__pairT_long_long_t_t_t, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_std__vectorT_std__string_std__allocatorT_std__string_t_t[] = {  {&_swigt__p_std__vectorT_std__string_std__allocatorT_std__string_t_t, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_swig__SwigPyIterator[] = {  {&_swigt__p_swig__SwigPyIterator, 0, 0, 0},{0, 0, 0, 0}};
@@ -16345,6 +16388,7 @@ static swig_cast_info *swig_cast_initial[] = {
   _swigc__p_std__string,
   _swigc__p_std__vectorT_EuclideanVector_std__allocatorT_EuclideanVector_t_t,
   _swigc__p_std__vectorT__Tp__Alloc_t,
+  _swigc__p_std__vectorT_mpq_class_std__allocatorT_mpq_t_t,
   _swigc__p_std__vectorT_std__pairT_long_long_t_std__allocatorT_std__pairT_long_long_t_t_t,
   _swigc__p_std__vectorT_std__string_std__allocatorT_std__string_t_t,
   _swigc__p_swig__SwigPyIterator,
