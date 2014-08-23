@@ -10,6 +10,7 @@ parametrizer_types_module = Extension('_parametrizer_types',
                                  'parametrizer-types.cc'],
                         swig_opts=['-c++', '-verbose'],
                         libraries = ['gmp'],
+                                      extra_compile_args = ['-fpic'],
                     )
 
 setup (name = 'parametrizer_types',
