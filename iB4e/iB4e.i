@@ -2,6 +2,16 @@
 %module(directors="1") iB4e
 %feature("director");
 
+%feature("director:except") {
+  if( $error != NULL ) {
+    PyObject *ptype, *pvalue, *ptraceback;
+    PyErr_Fetch( &ptype, &pvalue, &ptraceback );
+    PyErr_Restore( ptype, pvalue, ptraceback );
+    PyErr_Print();
+    Py_Exit(1);
+  }
+}
+
 %include "euclideanvector.h"
 %include "BBpolytope.h"
 %include "std_pair.i"

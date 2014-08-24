@@ -5801,8 +5801,14 @@ EuclideanVector *SwigDirector_BBPolytope::BlackBoxOptimize(EuclideanVector *obje
 #endif
   if (!result) {
     PyObject *error = PyErr_Occurred();
-    if (error) {
-      Swig::DirectorMethodException::raise("Error detected when calling 'BBPolytope.BlackBoxOptimize'");
+    {
+      if( error != NULL ) {
+        PyObject *ptype, *pvalue, *ptraceback;
+        PyErr_Fetch( &ptype, &pvalue, &ptraceback );
+        PyErr_Restore( ptype, pvalue, ptraceback );
+        PyErr_Print();
+        Py_Exit(1);
+      }
     }
   }
   swig_res = SWIG_ConvertPtrAndOwn(result, &swig_argp, SWIGTYPE_p_EuclideanVector,  0  | SWIG_POINTER_DISOWN, &own);
