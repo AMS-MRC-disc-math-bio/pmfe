@@ -40,8 +40,8 @@ def main(argv):
 
     result = run_gtmfe(seqfile, structtarget, paramdir, params)
 
-    paramnums = params.get_python_numbers()
-    resultnums = result.get_python_numbers()
+    paramnums = params.get_python_fractions_dict()
+    resultnums = result.get_python_fractions_dict()
 
     print "Parameters: " + str(paramnums)
     print "Results: " + str(resultnums)
