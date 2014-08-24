@@ -13,12 +13,12 @@ git clone https://github.com/AMS-MRC-disc-math-bio/iB4e-GTfold-parametrizer.git
 
 This will download the code and extract it into a directory called `iB4e-GTfold-parameterizer`.
 
-Next, you will need to build our custom versions of iB4e and GTFold.
+Next, you will need to build our custom versions of `iB4e` and `GTFold` along with our `parametrizer-types` library.
 For iB4e, run the following from the `iB4e-GTfold-parameterizer` directory:
 
 ```
-cd iB4e-GTfold-parametrizer/iB4e
-make
+cd iB4e
+python setup.py build_ext --inplace
 ```
 
 For GTFold, you will need to decide whether to link against the [OpenMP][openmp] library.
@@ -27,14 +27,21 @@ However, it is not supported natively by the cgit ompiler included in OSX.
 
 To link against OpenMP, run the following from the `iB4e-GTfold-parameterizer` directory:
 ```
-cd ../gtmfe
+cd gtmfe
 python setup-with-openmp.py build_ext --inplace
 ```
 
 To build without linking against OpenMP, run the following from the `iB4e-GTfold-parameterizer` directory:
 ```
-cd ../gtmfe
+cd gtmfe
 python setup-without-openmp.py build_ext --inplace
+```
+
+For `parametrizer-types`, run the the following from the `iB4e-GTfold-parameterizer` directory:
+
+```
+cd parametrizer-types
+python setup.py build_ext --inplace
 ```
 
 ## Updating
