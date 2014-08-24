@@ -50,9 +50,11 @@ def setup_gtmfe_as_BlackBoxOptimize(seqfile, structdir, paramdir):
     def BBfunc(objectiveEV):
         param_vec = objectiveEV.as_param_vector()
         params_as_pairs = param_vec.get_pairs()
-        pair_printer = lambda pair: str(pair[0]) + "/" + str(pair[1])
+        pair_printer = lambda pair: str(pair[0]) + "," + str(pair[1])
         
-        result_file =  os.path.join(structdir, seqfilebase) + "." + "[" + " , ".join(pair_printer(pair) for pair in params_as_pairs) + "].ct"
+        result_file =  os.path.join(structdir, seqfilebase) + ".[" + " ; ".join(pair_printer(pair) for pair in params_as_pairs) + "].ct"
+
+        print result_file
 
         result_scores = gtmfe.mfe_main(seqfile, result_file, paramdir, param_vec)
 
