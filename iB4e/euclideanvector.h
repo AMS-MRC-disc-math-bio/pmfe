@@ -6,7 +6,7 @@
 #include <stdlib.h>
 #include <vector>
 #include "gmpxx.h"
-#include "parametrizer-types.h"
+#include "parametrizer_types.h"
 
 #ifndef EUCLIDEANVECTOR_H
 #define EUCLIDEANVECTOR_H

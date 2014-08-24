@@ -12,9 +12,9 @@ iB4e_module = Extension('_iB4e',
                                  'faces.cc',
                                  'linalg.cc',
                                  'stack.cc',
-                                 '../parametrizer-types/parametrizer-types.cc'],
+                                 '../parametrizer_types/parametrizer_types.cc'],
                         swig_opts=['-c++', '-verbose'],
-                        include_dirs = ['../parametrizer-types/'],
+                        include_dirs = ['../parametrizer_types/'],
                         libraries = ['gmp'],
                     )
 

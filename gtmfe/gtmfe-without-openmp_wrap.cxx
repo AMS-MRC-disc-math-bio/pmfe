@@ -5162,9 +5162,6 @@ SWIG_AsVal_int (PyObject * obj, int *val)
   return res;
 }
 
-
-#include "omp.h"
-
 #ifdef __cplusplus
 extern "C" {
 #endif

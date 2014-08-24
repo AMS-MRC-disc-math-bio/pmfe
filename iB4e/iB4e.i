@@ -6,7 +6,7 @@
 %include "BBpolytope.h"
 %include "std_pair.i"
 %include "std_vector.i"
-%include "../parametrizer-types/parametrizer-types.i"
+%include "../parametrizer_types/parametrizer_types.i"
 
 %{
 #define SWIG_FILE_WITH_INIT
@@ -17,7 +17,7 @@
 #include "linalg.h"
 #include "stack.h"
 #include "gmpxx.h"
-#include "parametrizer-types.h"
+#include "parametrizer_types.h"
 %}
 
 %template(vecEV) std::vector<EuclideanVector>;

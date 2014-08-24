@@ -3965,7 +3965,7 @@ SWIG_AsVal_ptrdiff_t (PyObject * obj, ptrdiff_t *val)
 
 
   #define SWIG_FILE_WITH_INIT
-  #include "parametrizer-types.h"
+  #include "parametrizer_types.h"
 
 
 namespace swig {  
@@ -5657,7 +5657,7 @@ SWIGINTERN void std_vector_Sl_std_string_Sg__insert__SWIG_1(std::vector< std::st
 #include "linalg.h"
 #include "stack.h"
 #include "gmpxx.h"
-#include "parametrizer-types.h"
+#include "parametrizer_types.h"
 
 
   namespace swig {

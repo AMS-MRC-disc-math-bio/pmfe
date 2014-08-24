@@ -6,7 +6,7 @@
 %include "std_string.i"
 %include "std_pair.i"
 %include "std_vector.i"
-%include "../parametrizer-types/parametrizer-types.i"
+%include "../parametrizer_types/parametrizer_types.i"
 
 %{
 #define SWIG_FILE_WITH_INIT
@@ -18,7 +18,7 @@
 #include "algorithms.h"
 #include "traceback.h"
 #include "constraints.h"
-#include "parametrizer-types.h"
+#include "parametrizer_types.h"
 #include <gmpxx.h>
 %}
 

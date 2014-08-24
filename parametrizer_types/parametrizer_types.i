@@ -1,14 +1,14 @@
-/* File: parametrizer-types.i */
+/* File: parametrizer_types.i */
 %module parametrizer_types
 
-%include "parametrizer-types.h"
+%include "parametrizer_types.h"
 %include "std_pair.i"
 %include "std_vector.i"
 %include "std_string.i"
 
 %{
   #define SWIG_FILE_WITH_INIT
-  #include "parametrizer-types.h"
+  #include "parametrizer_types.h"
 %}
 
 %template(pairll) std::pair< long, long >;

@@ -1,1 +1,1 @@
-__all__ = ["iB4erunner", "GTrunner", "RNAscorer"]
+__all__ = ["parametrizer", "GTrunner", "RNAscorer"]

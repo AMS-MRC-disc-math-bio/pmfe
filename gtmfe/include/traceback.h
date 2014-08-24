@@ -23,7 +23,7 @@
 #ifndef _TRACEBACK_H
 #define _TRACEBACK_H
 
-#include "parametrizer-types.h"
+#include "parametrizer_types.h"
 #include <gmpxx.h>
 
 ScoreVector trace(int len);
