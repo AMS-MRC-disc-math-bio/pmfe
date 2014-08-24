@@ -3,6 +3,7 @@ import os, sys, argparse, subprocess, shutil, logging, string
 import RNAscorer
 from gtmfe import gtmfe
 from iB4e import iB4e
+from parametrizer_types import parametrizer_types
 
 def main(argv):
     # Set up parameters
@@ -24,7 +25,7 @@ def main(argv):
         if not os.path.isdir(structdir):
             raise
 
-    print run_iB4e(seqfile, sagefile, paramdir, structdir, verbose=False)
+    print run_iB4e(seqfile, sagefile, paramdir, structdir, verbose)
 
 def setup_gtmfe_as_BlackBoxOptimize(seqfile, structdir, paramdir):
     # Create storage directory for structures
@@ -46,26 +47,18 @@ def setup_gtmfe_as_BlackBoxOptimize(seqfile, structdir, paramdir):
     logging.debug("Classical scores from gtmfe: " + str(classical_scores_gtmfe))
 
     # Build the function which wraps gtmfe input and output in iB4e-compatible structures
-    def BBfunc(params_as_EV):
-        params_as_pairs = params_as_EV.get_split_values()
-
+    def BBfunc(objectiveEV):
+        param_vec = objectiveEV.as_param_vector()
+        params_as_pairs = param_vec.get_pairs()
         pair_printer = lambda pair: str(pair[0]) + "/" + str(pair[1])
         
         result_file =  os.path.join(structdir, seqfilebase) + "." + "[" + " , ".join(pair_printer(pair) for pair in params_as_pairs) + "].ct"
 
-        pairs_as_pairll = [gtmfe.pairll(pair[0], pair[1]) for pair in params_as_pairs]
-        params_as_PV = gtmfe.ParameterVector()
-        params_as_PV.set_from_pairs(pairs_as_pairll[0], pairs_as_pairll[1], pairs_as_pairll[2], pairs_as_pairll[3])
+        result_scores = gtmfe.mfe_main(seqfile, result_file, paramdir, param_vec)
+
+        return iB4e.EuclideanVector(result_scores)
         
-        result_gtmfe = gtmfe.mfe_main(seqfile, result_file, paramdir, params_as_PV)
-        result_pairs = result_gtmfe.get_pairs()
-
-        result = iB4e.EuclideanVector(4)
-        result.set_split_values(result_pairs)
-
-        return result
-
-    return BBfunc        
+    return (classical_scores_python, BBfunc)
 
 def run_iB4e(seqfile, sagefile, paramdir, structdir, verbose=False):
     logger = logging.getLogger()
@@ -78,7 +71,7 @@ def run_iB4e(seqfile, sagefile, paramdir, structdir, verbose=False):
         raise IOError("Could not locate sequence file " + seqfile + ".")
 
     # Create the GTfold-running function
-    BBfunc = setup_gtmfe_as_BlackBoxOptimize(seqfile, structdir, paramdir)
+    (classical_scores_python, BBfunc) = setup_gtmfe_as_BlackBoxOptimize(seqfile, structdir, paramdir)
 
     # Set up a class to interface iB4e with GTfold
     class GTfoldPolytope(iB4e.BBPolytope):
@@ -91,21 +84,21 @@ def run_iB4e(seqfile, sagefile, paramdir, structdir, verbose=False):
     thepoly.Build()
 
     # Retrieve the results
-    point_pairs = thepoly.get_split_vertices()
+    vertices = thepoly.vertices
 
     # Now build a Sage file encoding the desired data
-    #build_sage_polytope_file(classical_scores_python, point_pairs, sagefile)
+    build_sage_polytope_file(classical_scores_python, vertices, sagefile)
 
     # Finally, return the points for testing
-    return point_pairs
+    return vertices
 
-def build_sage_polytope_file(classical_scores, point_pairs, sagefile):
+def build_sage_polytope_file(classical_scores, vertices, sagefile):
     templatefile = open("output.template")
     template = string.Template(templatefile.read())
 
-    point_pair_writer = lambda point_pair: "QQ(" + str(pair[0]) + "/" + str(pair[1]) + ")"
+    point_pair_writer = lambda point_pair: "QQ(" + str(point_pair[0]) + "/" + str(point_pair[1]) + ")"
     pair_vector_writer = lambda pair_vector: "[" + " , ".join(point_pair_writer(pair) for pair in pair_vector) + "]"
-    point_string = "[" + " , ".join(pair_vector_writer(pair_vector) for pair_vector in point_pairs) + "]"
+    point_string = "[" + " , ".join(pair_vector_writer(vertex.as_param_vector().get_pairs()) for vertex in vertices) + "]"
 
     results = {"points": point_string, "classical_scores": classical_scores}
 
@@ -118,7 +111,12 @@ def build_sage_polytope_file(classical_scores, point_pairs, sagefile):
     logging.info("Wrote Sage polytope file " + str(sagefile))
 
 def score_parser(result):
-    return [int(result.multiloops), int(result.unpaired), int(result.branches), result.w]
+    results_dict = result.get_python_fractions_dict()
+    multiloops = results_dict["multiloops"]
+    unpaired = results_dict["unpaired"]
+    branches = results_dict["branches"]
+    w = results_dict["w"]
+    return [multiloops, unpaired, branches, w]
 
 def find_w(scores, energy, params=[3.4, 0.0, 0.4, 1]):
     if params[3] == 0:
