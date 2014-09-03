@@ -434,7 +434,7 @@ void BBPolytope::populateVertexSet(Face *myface, std::set<EuclideanVector> *vert
       populateVertexSet(neighbor, vertexset);
   }
 
-  delete paramValues;
+  delete [] paramValues;
 }
 
 void BBPolytope::printNormals(Face *myface) 
@@ -505,8 +505,8 @@ void BBPolytope::printNormals(Face *myface)
 
   //printIncidences();
 
-  delete paramValues;
-  delete paramValues2;
+  delete [] paramValues;
+  delete [] paramValues2;
 
 }
 
@@ -596,7 +596,7 @@ bool BBPolytope::newdirection(Face *myface)
   #endif
   return true;
 
-  delete paramValues;
+  delete [] paramValues;
 
 }
 
