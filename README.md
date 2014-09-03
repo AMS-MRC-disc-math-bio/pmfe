@@ -13,6 +13,15 @@ git clone https://github.com/AMS-MRC-disc-math-bio/iB4e-GTfold-parametrizer.git
 
 This will download the code and extract it into a directory called `iB4e-GTfold-parameterizer`.
 
+The project depends on a few important libraries.
+You must install the [GMP][gmp] arbitrary-precision arithmetic library, either by downloading it from the project's [download page][gmp-dl] or using your package manager.
+If you are not running OSX, you should install [OpenMP][openmp], either by downloading it from the project's [download page][openmp-dl] or using your package manager.
+Under Debian or Ubuntu, you can install everything you need by running the following command:
+
+```
+sudo apt-get install libgmp-dev libgomp1
+```
+
 Next, you will need to build our custom versions of `iB4e` and `GTFold` along with our `parametrizer-types` library.
 For iB4e, run the following from the `iB4e-GTfold-parameterizer` directory:
 
@@ -73,4 +82,8 @@ later version.
 
 The code in the `iB4e` folder is from the iB4e project by Peter Huggins, used and distributed here under the terms of the GNU General Public License.
 
-[macports]: https://www.macports.org/
+[macports]: //www.macports.org/
+[openmp]: http://openmp.org/
+[opemmp-dl]: http://openmp.org/wp/openmp-compilers/
+[gmp]: //gmplib.org/
+[gmp-dl]: //gmplib.org/#DOWNLOAD
