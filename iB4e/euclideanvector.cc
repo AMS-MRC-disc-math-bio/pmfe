@@ -160,6 +160,8 @@ bool computesubfactors(EuclideanVector *orthobasis, int ambientdimension)
 
       sign *= -1;
 
+      for(int i = 0; i < ambientdimension-1; i++)
+        delete matrix[i];
       delete matrix;
     } 
 
