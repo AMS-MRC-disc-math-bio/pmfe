@@ -121,7 +121,10 @@ bool computesubfactors(EuclideanVector *orthobasis, int ambientdimension)
   //if(gmp_rationals || ambientdimension > 5) 
   {
   
-    mpq_class matrix[ambientdimension - 1][ambientdimension - 1];
+    mpq_class **matrix = new mpq_class*[ambientdimension - 1];
+    for(int i = 0; i < ambientdimension-1; i++)
+      matrix[i] = new mpq_class[ambientdimension - 1];
+    
     for(int i = 0; i < ambientdimension-1; i++)
     for(int j = 0; j < ambientdimension-1; j++)
       matrix[i][j] = 0;
@@ -156,6 +159,8 @@ bool computesubfactors(EuclideanVector *orthobasis, int ambientdimension)
       orthobasis[ambientdimension-1].data[k] = sign * diagonalproduct((mpq_class *)(matrix), ambientdimension-1); 
 
       sign *= -1;
+
+      delete matrix;
     } 
 
   

@@ -400,7 +400,7 @@ void BBPolytope::populateVertexSet(Face *myface, std::set<EuclideanVector> *vert
 
   myface->deleted = true;
 
-  mpq_class paramValues[myface->ambientdimension];
+  mpq_class *paramValues = new mpq_class[myface->ambientdimension];
   
   /* comment out only for debug */
 
@@ -433,6 +433,8 @@ void BBPolytope::populateVertexSet(Face *myface, std::set<EuclideanVector> *vert
     if(neighbor->deleted == false)
       populateVertexSet(neighbor, vertexset);
   }
+
+  delete paramValues;
 }
 
 void BBPolytope::printNormals(Face *myface) 
@@ -442,8 +444,8 @@ void BBPolytope::printNormals(Face *myface)
 
   myface->deleted = true;
 
-  mpq_class paramValues[myface->ambientdimension];
-  mpq_class paramValues2[myface->ambientdimension];  //because paramValues is going to be normalized
+  mpq_class *paramValues = new mpq_class[myface->ambientdimension];
+  mpq_class *paramValues2 = new mpq_class[myface->ambientdimension];  //because paramValues is going to be normalized
   
   /* comment out only for debug */
 
@@ -502,6 +504,9 @@ void BBPolytope::printNormals(Face *myface)
   }
 
   //printIncidences();
+
+  delete paramValues;
+  delete paramValues2;
 
 }
 
@@ -569,7 +574,7 @@ bool operator<(vertexnode a, vertexnode b)
 bool BBPolytope::newdirection(Face *myface)
 {
 
-  mpq_class paramValues[myface->ambientdimension];
+  mpq_class *paramValues = new mpq_class[myface->ambientdimension];
 
   bool ismultiple;
 
@@ -590,6 +595,8 @@ bool BBPolytope::newdirection(Face *myface)
     cout << "Damn dodged no work";
   #endif
   return true;
+
+  delete paramValues;
 
 }
 
