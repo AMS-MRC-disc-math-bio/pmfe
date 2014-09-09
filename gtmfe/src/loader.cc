@@ -102,6 +102,10 @@ void readThermodynamicParameters(const char *userdatadir, ParameterVector params
     EN_DATADIR += "/";
   }
 
+  if (abs(params.dummy_scaling) > 1) {
+      INFINITY_ *= abs(params.dummy_scaling);
+    }
+
   initMiscloopValues("miscloop.DAT", EN_DATADIR, params);
   initDangleValues("dangle.DAT", EN_DATADIR, params);
   initStackValues("stack.DAT", EN_DATADIR, params);
