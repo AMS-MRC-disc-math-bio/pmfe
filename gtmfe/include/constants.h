@@ -22,7 +22,8 @@
 
 #include <gmpxx.h>
 
-#define INFINITY_ mpz_class("9999999999999", 10)
+// Moved to globals
+//#define INFINITY_ mpz_class("9999999999999", 10)
 
 #define maxfil 100    /* maximum length of file names */
 #define maxtloop 100 /* maximum tetraloops allowed (info read from tloop) */

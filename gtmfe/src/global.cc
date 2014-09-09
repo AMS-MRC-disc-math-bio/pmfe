@@ -25,6 +25,8 @@ int g_LIMIT_DISTANCE;
 int g_contactDistance;
 int g_bignumprecision = 512;
 
+mpz_class INFINITY_;
+
 void init_global_params(int len) {
   RNA = new unsigned char[len+1];
   if (RNA == NULL) {
@@ -36,6 +38,8 @@ void init_global_params(int len) {
     perror("Cannot allocate variable 'structure'");
     exit(-1);
   }
+
+  INFINITY_ = mpz_class("9999999999999", 10);
 
   init_checkPair();
 }
