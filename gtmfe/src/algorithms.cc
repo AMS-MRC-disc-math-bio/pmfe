@@ -335,7 +335,7 @@ mpq_class calculate(int len) {
         if (canSS(i)&&canSS(j)) {
           Widjd = V_f(i+1,j-1) + auPenalty(i+1,j-1) + Ed3(j-1,i + 1,i) + Ed5(j-1,i+1,j) + Wim1;
         } else {
-          INFINITY_;
+          Widjd = INFINITY_;
         }
 
         std::vector<mpq_class> vals;
