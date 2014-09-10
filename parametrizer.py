@@ -25,7 +25,7 @@ def main(argv):
         if not os.path.isdir(structdir):
             raise
 
-    print run_iB4e(seqfile, sagefile, paramdir, structdir, verbose)
+    run_iB4e(seqfile, sagefile, paramdir, structdir, verbose)
 
 def setup_gtmfe_as_BlackBoxOptimize(seqfile, structdir, paramdir):
     # Create storage directory for structures
@@ -40,7 +40,7 @@ def setup_gtmfe_as_BlackBoxOptimize(seqfile, structdir, paramdir):
     classical_result = gtmfe.mfe_main(seqfile, classical_file, paramdir)
     classical_scores_gtmfe = score_parser(classical_result)
     classical_scores_python = list(RNAscorer.score_file(classical_file))
-    
+
     #classical_scores_python.append(find_w(classical_scores_python, classical_result.energy))
 
     logging.debug("Classical scores from Python: " + str(classical_scores_python))
@@ -51,15 +51,13 @@ def setup_gtmfe_as_BlackBoxOptimize(seqfile, structdir, paramdir):
         param_vec = objectiveEV.as_param_vector()
         params_as_pairs = param_vec.get_pairs()
         pair_printer = lambda pair: str(pair[0]) + "," + str(pair[1])
-        
-        result_file =  os.path.join(structdir, seqfilebase) + ".[" + " ; ".join(pair_printer(pair) for pair in params_as_pairs) + "].ct"
 
-        print result_file
+        result_file =  os.path.join(structdir, seqfilebase) + ".[" + " ; ".join(pair_printer(pair) for pair in params_as_pairs) + "].ct"
 
         result_scores = gtmfe.mfe_main(seqfile, result_file, paramdir, param_vec)
 
         return iB4e.EuclideanVector(result_scores)
-        
+
     return (classical_scores_python, BBfunc)
 
 def run_iB4e(seqfile, sagefile, paramdir, structdir, verbose=False):
