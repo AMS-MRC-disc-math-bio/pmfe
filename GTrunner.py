@@ -34,21 +34,25 @@ def main(argv):
     # Use the supplied output file if applicable
     try:
         structtarget = args.structure[0]
-    # Otherwise, generate one from the input filename
+        # Otherwise, generate one from the input filename
     except TypeError:
         structtarget = os.path.splitext(os.path.basename(seqfile))[0] + ".ct"
 
     result = run_gtmfe(seqfile, structtarget, paramdir, params)
 
-    paramnums = params.get_python_fractions_dict()
-    resultnums = result.get_python_fractions_dict()
-
-    print "Parameters: " + str(paramnums)
-    print "Results: " + str(resultnums)
+    print "Results: " + str(score_parser(result))
 
 def run_gtmfe(seqfile, structtarget, paramdir, params=gtmfe.ParameterVector()):
     result = gtmfe.mfe_main(seqfile, structtarget, paramdir, params)
     return result
+
+def score_parser(result):
+    results_dict = result.get_python_fractions_dict()
+    multiloops = results_dict["multiloops"]
+    unpaired = results_dict["unpaired"]
+    branches = results_dict["branches"]
+    w = results_dict["w"]
+    return [multiloops, unpaired, branches, w]
 
 # Voodoo to make Python run the program
 if __name__ == "__main__":
