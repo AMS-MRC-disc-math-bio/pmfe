@@ -58,7 +58,7 @@ def setup_gtmfe_as_BlackBoxOptimize(seqfile, structdir, paramdir):
 
         return iB4e.EuclideanVector(result_scores)
 
-    return (classical_scores_python, BBfunc)
+    return (classical_scores_gtmfe, BBfunc)
 
 def run_iB4e(seqfile, sagefile, paramdir, structdir, verbose=False):
     logger = logging.getLogger()
@@ -71,7 +71,7 @@ def run_iB4e(seqfile, sagefile, paramdir, structdir, verbose=False):
         raise IOError("Could not locate sequence file " + seqfile + ".")
 
     # Create the GTfold-running function
-    (classical_scores_python, BBfunc) = setup_gtmfe_as_BlackBoxOptimize(seqfile, structdir, paramdir)
+    (classical_scores, BBfunc) = setup_gtmfe_as_BlackBoxOptimize(seqfile, structdir, paramdir)
 
     # Set up a class to interface iB4e with GTfold
     class GTfoldPolytope(iB4e.BBPolytope):
@@ -87,7 +87,7 @@ def run_iB4e(seqfile, sagefile, paramdir, structdir, verbose=False):
     vertices = thepoly.vertices
 
     # Now build a Sage file encoding the desired data
-    build_sage_polytope_file(classical_scores_python, vertices, sagefile)
+    build_sage_polytope_file(classical_scores, vertices, sagefile)
 
     # Finally, return the points for testing
     return vertices
@@ -100,7 +100,10 @@ def build_sage_polytope_file(classical_scores, vertices, sagefile):
     pair_vector_writer = lambda pair_vector: "[" + " , ".join(point_pair_writer(pair) for pair in pair_vector) + "]"
     point_string = "[" + " , ".join(pair_vector_writer(vertex.as_param_vector().get_pairs()) for vertex in vertices) + "]"
 
-    results = {"points": point_string, "classical_scores": classical_scores}
+    classical_scores_pairs = [(classical_scores[0], 1), (classical_scores[1], 1), (classical_scores[2], 1), (classical_scores[3].numerator, classical_scores[3].denominator)]
+    classical_scores_string = pair_vector_writer(classical_scores_pairs)
+
+    results = {"points": point_string, "classical_scores": classical_scores_string}
 
     sagecode = template.substitute(results)
 
