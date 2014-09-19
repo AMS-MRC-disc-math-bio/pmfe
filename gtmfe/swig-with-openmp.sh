@@ -1,3 +1,3 @@
 #!/bin/sh
 
-swig -python -c++ gtmfe-with-openmp.i
+swig -python -c++ -o gtmfe-with-openmp.cc gtmfe-with-openmp.i
