@@ -3559,8 +3559,17 @@ SWIG_AsPtr_std_string (PyObject * obj, std::string **val)
 }
 
 
-  #define SWIG_FILE_WITH_INIT
-  #include "parametrizer_types.h"
+#define SWIG_FILE_WITH_INIT
+#include "mfe_main.h"
+#include "utils.h"
+#include "loader.h"
+#include "global.h"
+#include "energy.h"
+#include "algorithms.h"
+#include "traceback.h"
+#include "constraints.h"
+#include "parametrizer_types.h"
+#include <gmpxx.h>
 
 
 namespace swig {  
@@ -5123,19 +5132,6 @@ SWIGINTERN std::vector< std::string >::iterator std_vector_Sl_std_string_Sg__era
 SWIGINTERN std::vector< std::string >::iterator std_vector_Sl_std_string_Sg__erase__SWIG_1(std::vector< std::string > *self,std::vector< std::string >::iterator first,std::vector< std::string >::iterator last){ return self->erase(first, last); }
 SWIGINTERN std::vector< std::string >::iterator std_vector_Sl_std_string_Sg__insert__SWIG_0(std::vector< std::string > *self,std::vector< std::string >::iterator pos,std::vector< std::string >::value_type const &x){ return self->insert(pos, x); }
 SWIGINTERN void std_vector_Sl_std_string_Sg__insert__SWIG_1(std::vector< std::string > *self,std::vector< std::string >::iterator pos,std::vector< std::string >::size_type n,std::vector< std::string >::value_type const &x){ self->insert(pos, n, x); }
-
-#define SWIG_FILE_WITH_INIT
-#include "mfe_main.h"
-#include "utils.h"
-#include "loader.h"
-#include "global.h"
-#include "energy.h"
-#include "algorithms.h"
-#include "traceback.h"
-#include "constraints.h"
-#include "parametrizer_types.h"
-#include <gmpxx.h>
-
 
 #include <limits.h>
 #if !defined(SWIG_NO_LLONG_MAX)
