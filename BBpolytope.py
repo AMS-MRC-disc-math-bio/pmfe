@@ -40,12 +40,16 @@ def build_polytope(find_vector_oracle, dim):
     ### MAIN LOOP
     confirmed_facets = []
     while len(confirmed_facets) < tentative_polytope.n_facets():
-        for facet in tentative_polytope.faces(dim-1):
+        for index in range(tentative_polytope.n_facets()):
+            facet = tentative_polytope.faces(dim-1)[index]
             vertex_vector_set = set(tuple(coord for coord in vert.vector()) for vert in facet.vertices())
             if vertex_vector_set in confirmed_facets:
                 continue
 
-            outernormal = facet_normal_vector(vertex_vector_set, dim)
+            # TODO: Make sure this is finding the right normals
+            innernormal = NormalFan(tentative_polytope).rays()[index]
+            outernormal = -innernormal
+            
             v = find_vector_oracle(outernormal)
             if v in facet.polyhedron():
                 confirmed_facets.append(vertex_vector_set)
