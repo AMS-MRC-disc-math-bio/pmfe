@@ -14,58 +14,21 @@ git clone https://github.com/AMS-MRC-disc-math-bio/iB4e-GTfold-parametrizer.git
 This will download the code and extract it into a directory called `iB4e-GTfold-parameterizer`.
 
 ### Dependencies
-The project depends on a few important libraries.
-You must install the [GMP][gmp] arbitrary-precision arithmetic library, either by downloading it from the project's [download page][gmp-dl] or using your package manager.
-If you install it from source, you must pass the option `--enable-cxx` to the `./configure` script before you build.
-Under Debian or Ubuntu, you can install this using the following command:
-```
-sudo apt-get install libgmp-dev
-```
-
-In addition, if you are not running OSX, you should install [OpenMP][openmp], either by downloading it from the project's [download page][openmp-dl] or using your package manager.
-Under Debian or Ubuntu, you can install OpenMP by running the following command:
-
-```
-sudo apt-get install libgomp1
-```
+The project depends on various libraries and functionality that are implemented in [Sage][sage].
+If you do not already have Sage installed on your computer, you must download and install it before you can proceed.
 
 ### Building the project code
-Next, you will need to build our custom versions of `iB4e` and `GTFold` along with our `parametrizer-types` library.
-For iB4e, run the following from the `iB4e-GTfold-parameterizer` directory:
-
-```
-cd iB4e
-python setup.py build_ext --inplace
-```
-
-For GTFold, you will need to decide whether to link against the [OpenMP][openmp] library.
-Using OpenMP will allow GTFold to take advantage of multiple cores or processors, speeding it up significantly.
-However, it is not supported natively by the cgit ompiler included in OSX.
-
-To link against OpenMP, run the following from the `iB4e-GTfold-parameterizer` directory:
+Next, you will need to build our custom version of `GTFold`.
+To do so, run the following from the `iB4e-GTfold-parameterizer` directory:
 ```
 cd gtmfe
-python setup-with-openmp.py build_ext --inplace
-```
-
-To build without linking against OpenMP, run the following from the `iB4e-GTfold-parameterizer` directory:
-```
-cd gtmfe
-python setup-without-openmp.py build_ext --inplace
-```
-
-For `parametrizer-types`, run the the following from the `iB4e-GTfold-parameterizer` directory:
-
-```
-cd parametrizer-types
-python setup.py build_ext --inplace
+make
 ```
 
 ## Updating
 
 If you used Git to download your copy of this software, you can update it easily.
 Just run `git pull` in a terminal from anywhere inside the repository to fetch the latest version.
-Be sure to run `make` in the `iB4e` directory if the iB4e code has been updated!
 
 ## Usage
 
@@ -73,25 +36,23 @@ Given a FASTA file representing an RNA sequence, the program will produce a Sage
 
 To run the calculation on the sequence in `testseq.fasta`, type
 
-    ./iB4erunner.py -s testseq.fasta
+    ./parametrizer.py -s testseq.fasta
 
-The result will be a file `testseq.sage` containing the required Sage commands.
+The result will be a file `testseq.polytope.sage` containing the required Sage commands and a directory called `testseq` containing structure files representing the MFE structures for each set of parameters.
 
 ## Testing
 
-This project includes unit tests in the files `test_GTrunner.py`, `test_RNAscorer.py`, and `test_iB4erunner.py`.
+This project includes unit tests in the files `test_GTrunner.py` and `test_RNAscorer.py`.
 Simply run each of these scripts from your shell to test the functionality of the associated program.
-If any of the tests fail, please be sure your build of the C code in `iB4e/` and `gtmfe/` is up to date; if the tests continue to fail, please contact the author with information about your computer architecture, operating system, and compiler.
+If any of the tests fail, please be sure your build of the C code in `gtmfe/` is up to date; if the tests continue to fail, please contact the author with information about your computer architecture, operating system, and compiler.
 
 ## License
 
-The source for iB4e-GTfold-parametrizer is released under the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
-later version.
-
-The code in the `iB4e` folder is from the iB4e project by Peter Huggins, used and distributed here under the terms of the GNU General Public License.
+The source for iB4e-GTfold-parametrizer is released under the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 
 [macports]: //www.macports.org/
 [openmp]: http://openmp.org/
 [opemmp-dl]: http://openmp.org/wp/openmp-compilers/
 [gmp]: //gmplib.org/
 [gmp-dl]: //gmplib.org/#DOWNLOAD
+[sage]: //sagemath.org
