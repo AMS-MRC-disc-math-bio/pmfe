@@ -1,4 +1,5 @@
-#!/usr/bin/env python
+#!/usr/bin/env sage
+from sage.all import *
 import os, sys, argparse, logging
 from gtmfe import gtmfe
 
@@ -25,7 +26,7 @@ def main(argv):
         logger.setLevel(logging.DEBUG)
     else:
         logger.setLevel(logging.INFO)
-        
+
     paramdir = "Turner99"
 
     # Use the supplied output file if applicable
