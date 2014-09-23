@@ -1,19 +1,19 @@
-#!/usr/bin/env python
+#!/usr/bin/env sage 
+from sage.all import *
 import os, sys, argparse, subprocess, shutil, logging, string
 import RNAscorer
+import BBpolytope
 from gtmfe import gtmfe
-from iB4e import iB4e
-from parametrizer_types import parametrizer_types
 
 def main(argv):
     # Set up parameters
-    parser = argparse.ArgumentParser(description="Run iB4e and GTFold to construct the structure polytope")
+    parser = argparse.ArgumentParser(description="Construct the branching polytope for a given RNA sequence")
     parser.add_argument("sequence", help="Sequence to fold")
     parser.add_argument("-v", "--verbose", help="Output debugging information", action="store_true")
 
     args = parser.parse_args()
     seqfile = args.sequence
-    sagefile = os.path.splitext(seqfile)[0] + ".sage"
+    sagefile = os.path.splitext(seqfile)[0] + ".polytope.sage"
     verbose = args.verbose
 
     paramdir = "Turner99"
@@ -26,6 +26,28 @@ def main(argv):
             raise
 
     run_iB4e(seqfile, sagefile, paramdir, structdir, verbose)
+
+def run_iB4e(seqfile, sagefile, paramdir, structdir, verbose=False):
+    logger = logging.getLogger()
+    if verbose:
+        logger.setLevel(logging.DEBUG)
+    else:
+        logger.setLevel(logging.INFO)
+
+    if not (os.path.isfile(seqfile) and os.access(seqfile, os.R_OK)):
+        raise IOError("Could not locate sequence file " + seqfile + ".")
+
+    # Create the GTfold-running function
+    (classical_scores, find_mfe_score) = setup_gtmfe_as_BlackBoxOptimize(seqfile, structdir, paramdir)
+
+    # Do the magic
+    thepoly = BBpolytope.build_polytope(find_mfe_score, 4)
+
+    # Now build a Sage file encoding the desired data
+    build_sage_polytope_file(classical_scores, thepoly, sagefile)
+
+    # Finally, return the polytope for testing
+    return thepoly
 
 def setup_gtmfe_as_BlackBoxOptimize(seqfile, structdir, paramdir):
     # Create storage directory for structures
@@ -47,61 +69,42 @@ def setup_gtmfe_as_BlackBoxOptimize(seqfile, structdir, paramdir):
     logging.debug("Classical scores from gtmfe: " + str(classical_scores_gtmfe))
 
     # Build the function which wraps gtmfe input and output in iB4e-compatible structures
-    def BBfunc(objectiveEV):
-        param_vec = objectiveEV.as_param_vector()
-        params_as_pairs = param_vec.get_pairs()
-        pair_printer = lambda pair: str(pair[0]) + "," + str(pair[1])
+    def find_mfe_score(objective_vector):
+        logging.debug("Optimizing for vector: " + str(objective_vector))
+        
+        parameter_vector = gtmfe.ParameterVector()
+        pairify = lambda term: gtmfe.pairll(long(term.numerator()), long(term.denominator()))
+        parameter_vector.set_from_pairs(pairify(objective_vector[0]), pairify(objective_vector[1]), pairify(objective_vector[2]), pairify(objective_vector[3]))
 
-        result_file =  os.path.join(structdir, seqfilebase) + ".[" + " ; ".join(pair_printer(pair) for pair in params_as_pairs) + "].ct"
+        result_file =  os.path.join(structdir, seqfilebase) + ".ct"
+        result_scores = gtmfe.mfe_main(seqfile, result_file, paramdir, parameter_vector).get_python_fractions_dict()
 
-        result_scores = gtmfe.mfe_main(seqfile, result_file, paramdir, param_vec)
+        qqify = lambda frac: QQ(frac.numerator) / QQ(frac.denominator)
+        result_vector = [qqify(result_scores["multiloops"]), qqify(result_scores["unpaired"]), qqify(result_scores["branches"]), qqify(result_scores["w"])]
 
-        return iB4e.EuclideanVector(result_scores)
+        logging.debug("MFE structure scores: " + str(result_vector))
 
-    return (classical_scores_gtmfe, BBfunc)
+        result_vector_filename_string = "[ " + ", ".join([str(value.numerator()) for value in result_vector[:3]] + [str(result_vector[3].n(digits=3))]) + " ]"
 
-def run_iB4e(seqfile, sagefile, paramdir, structdir, verbose=False):
-    logger = logging.getLogger()
-    if verbose:
-        logger.setLevel(logging.DEBUG)
-    else:
-        logger.setLevel(logging.INFO)
+        new_result_file = os.path.join(structdir, seqfilebase) + "." + result_vector_filename_string + ".ct"
+        shutil.move(result_file, new_result_file)
 
-    if not (os.path.isfile(seqfile) and os.access(seqfile, os.R_OK)):
-        raise IOError("Could not locate sequence file " + seqfile + ".")
+        return result_vector
 
-    # Create the GTfold-running function
-    (classical_scores, BBfunc) = setup_gtmfe_as_BlackBoxOptimize(seqfile, structdir, paramdir)
+    return (classical_scores_gtmfe, find_mfe_score)
 
-    # Set up a class to interface iB4e with GTfold
-    class GTfoldPolytope(iB4e.BBPolytope):
-        def BlackBoxOptimize(self, objective):
-            return BBfunc(objective)
-
-    thepoly = GTfoldPolytope(4)
-
-    # Do magic
-    thepoly.Build()
-
-    # Retrieve the results
-    vertices = thepoly.vertices
-
-    # Now build a Sage file encoding the desired data
-    build_sage_polytope_file(classical_scores, vertices, sagefile)
-
-    # Finally, return the points for testing
-    return vertices
-
-def build_sage_polytope_file(classical_scores, vertices, sagefile):
+def build_sage_polytope_file(classical_scores, polytope, sagefile):
     templatefile = open("output.template")
     template = string.Template(templatefile.read())
 
-    point_pair_writer = lambda point_pair: "QQ(" + str(point_pair[0]) + "/" + str(point_pair[1]) + ")"
-    pair_vector_writer = lambda pair_vector: "[" + " , ".join(point_pair_writer(pair) for pair in pair_vector) + "]"
-    point_string = "[" + " , ".join(pair_vector_writer(vertex.as_param_vector().get_pairs()) for vertex in vertices) + "]"
+    #point_pair_writer = lambda point_pair: "QQ(" + str(point_pair[0]) + "/" + str(point_pair[1]) + ")"
+    #pair_vector_writer = lambda pair_vector: "[" + " , ".join(point_pair_writer(pair) for pair in pair_vector) + "]"
+    #point_string = "[" + " , ".join(pair_vector_writer(vertex.as_param_vector().get_pairs()) for vertex in vertices) + "]"
+    point_string = str(polytope.vertices_list())
 
-    classical_scores_pairs = [(classical_scores[0], 1), (classical_scores[1], 1), (classical_scores[2], 1), (classical_scores[3].numerator, classical_scores[3].denominator)]
-    classical_scores_string = pair_vector_writer(classical_scores_pairs)
+    #classical_scores_pairs = [(classical_scores[0], 1), (classical_scores[1], 1), (classical_scores[2], 1), (classical_scores[3].numerator, classical_scores[3].denominator)]
+    #classical_scores_string = pair_vector_writer(classical_scores_pairs)
+    classical_scores_string = str(classical_scores)
 
     results = {"points": point_string, "classical_scores": classical_scores_string}
 

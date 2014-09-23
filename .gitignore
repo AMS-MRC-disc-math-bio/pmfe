@@ -6,5 +6,5 @@
 objective
 solution
 output/
-*.sage
+*.polytope.sage
 
