@@ -19,11 +19,7 @@ If you do not already have Sage installed on your computer, you must download an
 
 ### Building the project code
 Next, you will need to build our custom version of `GTFold`.
-To do so, run the following from the `iB4e-GTfold-parameterizer` directory:
-```
-cd gtmfe
-make
-```
+To do so, simply run `make` from the `iB4e-GTfold-parametrizer` directory.
 
 ## Updating
 
