@@ -45,3 +45,5 @@ gtmfe-without-openmp: $(SRC-WITHOUT)
 
 clean:
 	-rm -vf $(OBJ)
+
+.PHONY: clean
