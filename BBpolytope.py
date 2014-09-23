@@ -18,6 +18,7 @@ def affine_hull(points, dim = None):
 def facet_normal_vector(points, dim):
     ambient_space = VectorSpace(QQ, dim)
     vectors = [ambient_space(point) for point in points]
+    center = Polyhedron(vertices = vectors).center()
 
     shifted_vectors = [vector - vectors[0] for vector in vectors]
     shifted_linear_hull = ambient_space.subspace(shifted_vectors)
@@ -26,40 +27,17 @@ def facet_normal_vector(points, dim):
     return normal_space.basis()[0]
 
 def build_polytope(find_vector_oracle, dim):
+    from itertools import chain
     ### INITIALIZE
-    polytope_vertices = []
     failed_target_vectors = []
 
+    # Huggins' algorithm searches for the initial vectors using normals, but checking the basis set is simpler and should still catch everything
     ambient_space = VectorSpace(QQ, dim)
-    vertices_affine_hull = []
-
-    ### Determine the affine hull of the polytope by testing vectors
-    for k in xrange(dim+1):
-        if len(polytope_vertices) != 0:
-            vertices_affine_hull = affine_hull(polytope_vertices, dim)
-            union_space = ambient_space.subspace(vertices_affine_hull.linear_part().basis() + failed_target_vectors)
-
-        else:
-            vertices_affine_hull = []
-            union_space = ambient_space.subspace(failed_target_vectors)
-
-        target_vector = union_space.complement().basis()[0]
-
-        a = find_vector_oracle(target_vector)
-        if a not in vertices_affine_hull:
-            polytope_vertices.append(a)
-            continue
-
-        b = find_vector_oracle(-target_vector)
-        if b not in vertices_affine_hull:
-            polytope_vertices.append(b)
-            continue
-
-        failed_target_vectors.append(c)
+    initial_vector_pairs = ((find_vector_oracle(basis_element), find_vector_oracle(-basis_element)) for basis_element in ambient_space.basis())
+    initial_vectors = (vector for pair in initial_vector_pairs for vector in pair)
+    tentative_polytope = Polyhedron(vertices = initial_vectors)
 
     ### MAIN LOOP
-    tentative_polytope = Polyhedron(vertices = polytope_vertices)
-
     confirmed_facets = []
     while len(confirmed_facets) < tentative_polytope.n_facets():
         for facet in tentative_polytope.faces(dim-1):
@@ -73,8 +51,8 @@ def build_polytope(find_vector_oracle, dim):
                 confirmed_facets.append(vertex_vector_set)
                 continue
             else:
-                polytope_vertices.append(v)
-                tentative_polytope = Polyhedron(vertices = polytope_vertices)
+                vertexlist = list(tentative_polytope.vertices()) + [v]
+                tentative_polytope = Polyhedron(vertices = vertexlist)
                 break
 
     return tentative_polytope

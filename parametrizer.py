@@ -97,14 +97,13 @@ def build_sage_polytope_file(classical_scores, polytope, sagefile):
     templatefile = open("output.template")
     template = string.Template(templatefile.read())
 
-    #point_pair_writer = lambda point_pair: "QQ(" + str(point_pair[0]) + "/" + str(point_pair[1]) + ")"
-    #pair_vector_writer = lambda pair_vector: "[" + " , ".join(point_pair_writer(pair) for pair in pair_vector) + "]"
-    #point_string = "[" + " , ".join(pair_vector_writer(vertex.as_param_vector().get_pairs()) for vertex in vertices) + "]"
     point_string = str(polytope.vertices_list())
 
-    #classical_scores_pairs = [(classical_scores[0], 1), (classical_scores[1], 1), (classical_scores[2], 1), (classical_scores[3].numerator, classical_scores[3].denominator)]
-    #classical_scores_string = pair_vector_writer(classical_scores_pairs)
-    classical_scores_string = str(classical_scores)
+    classical_scores_pairs = [(classical_scores[0], 1), (classical_scores[1], 1), (classical_scores[2], 1), (classical_scores[3].numerator, classical_scores[3].denominator)]
+
+    point_pair_writer = lambda point_pair: "QQ(" + str(point_pair[0]) + "/" + str(point_pair[1]) + ")"
+    pair_vector_writer = lambda pair_vector: "[" + " , ".join(point_pair_writer(pair) for pair in pair_vector) + "]"
+    classical_scores_string = pair_vector_writer(classical_scores_pairs)
 
     results = {"points": point_string, "classical_scores": classical_scores_string}
 
