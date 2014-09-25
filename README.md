@@ -16,6 +16,13 @@ This will download the code and extract it into a directory called `iB4e-GTfold-
 ### Dependencies
 The project depends on various libraries and functionality that are implemented in [Sage][sage].
 If you do not already have Sage installed on your computer, you must download and install it before you can proceed.
+If you install Sage using the binary distribution (typical), you must also install the Sage version of the compiler suite GCC.
+To do this, run the following from a terminal.
+```
+sage -i gcc
+```
+If you installed Sage from source or Git, you already have the Sage GCC and no action is required.
+
 
 ### Building the project code
 Next, you will need to build our custom version of `GTFold`.
