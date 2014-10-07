@@ -16,6 +16,16 @@ This will download the code and extract it into a directory called `iB4e-GTfold-
 ### Dependencies
 The project depends on various libraries and functionality that are implemented in [Sage][sage].
 If you do not already have Sage installed on your computer, you must download and install it before you can proceed.
+
+Once you have installed Sage, you must make it available.
+To see if this is the case, run `sage` from a terminal.
+If you see a version string like `Sage Version 6.4.beta3, Release Date: 2014-09-10`, you're good to go!
+If you see a `command not found` error, you need to configure your path.
+The easiest way to do this is to link it into the `/usr/local/bin` directory, using the following command:
+```
+ln -s /path/to/sage/directory/sage /usr/local/bin
+```
+
 If you install Sage using the binary distribution (typical), you must also install the Sage version of the compiler suite GCC.
 To do this, run the following from a terminal.
 ```
