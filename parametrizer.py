@@ -41,7 +41,7 @@ def run_iB4e(seqfile, sagefile, paramdir, structdir, verbose=False):
     (classical_scores, find_mfe_score) = setup_gtmfe_as_BlackBoxOptimize(seqfile, structdir, paramdir)
 
     # Do the magic
-    thepoly = BBpolytope.build_polytope(find_mfe_score, 4)
+    thepoly = BBpolytope.build_polytope(find_mfe_score, 4, maximize=False)
 
     # Now build a Sage file encoding the desired data
     build_sage_polytope_file(classical_scores, thepoly, sagefile)
