@@ -12,6 +12,9 @@ def build_polytope(find_vector_oracle, dim, maximize=True):
     initial_vectors = [find_vector_oracle(basis_element) for basis_element in ambient_space.basis()] + [find_vector_oracle(-basis_element) for basis_element in ambient_space.basis()]
     tentative_polytope = Polyhedron(vertices = initial_vectors)
 
+    # Sanity check: make sure that the polytope is full-dimensional at this point.
+    assert tentative_polytope.dimension() == dim, "Initial polytope is not full-dimensional!"
+
     ### MAIN LOOP
     confirmed_facets = set()
 
