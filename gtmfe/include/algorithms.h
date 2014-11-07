@@ -25,7 +25,7 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-  mpq_class calculate(int len);//, int nThreads, int unamode ,int t_mismatch);
+    mpq_class calculate(int len);//, int nThreads, int unamode ,int t_mismatch);
 #ifdef __cplusplus
 }
 #endif

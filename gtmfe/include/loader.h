@@ -38,9 +38,9 @@ int initTloopValues(const std::string& fileName, const std::string& dirPath, Par
 int initInt21Values(const std::string& fileName, const std::string& dirPath, ParameterVector params);
 int initInt22Values(const std::string& fileName, const std::string& dirPath, ParameterVector params);
 int initInt11Values(const std::string& fileName, const std::string& dirPath, ParameterVector params);
-int	initTstkmValues(const std::string& fileName, const std::string& dirPath, ParameterVector params);
-int	initTstkeValues(const std::string& fileName, const std::string& dirPath, ParameterVector params);
-int	initTstk23Values(const std::string& fileName, const std::string& dirPath, ParameterVector params);
+int initTstkmValues(const std::string& fileName, const std::string& dirPath, ParameterVector params);
+int initTstkeValues(const std::string& fileName, const std::string& dirPath, ParameterVector params);
+int initTstk23Values(const std::string& fileName, const std::string& dirPath, ParameterVector params);
 
 extern std::string EN_DATADIR;
 

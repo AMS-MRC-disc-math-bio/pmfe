@@ -21,23 +21,23 @@ void print_constraints(int length) ;
 #ifdef __cplusplus
 extern "C" {
 #endif
-  int canStack(int i, int j);
-  int canSS(int i);
-  int canSSregion(int i, int j);
-  int canHairpin(int i, int j);
-  int canILoop(int i, int j, int p, int q);
+    int canStack(int i, int j);
+    int canSS(int i);
+    int canSSregion(int i, int j);
+    int canHairpin(int i, int j);
+    int canILoop(int i, int j, int p, int q);
 
-  int forceSS(int i);
-  int forceSSregion(int i, int j);
-  int forcePair(int i, int j);
-  int forcePaired(int i);
+    int forceSS(int i);
+    int forceSSregion(int i, int j);
+    int forcePair(int i, int j);
+    int forcePaired(int i);
 
-  int withinCD(int i, int j);
-  int verify_structure();
+    int withinCD(int i, int j);
+    int verify_structure();
 
-  void enable_constraints(int b);
-  void enable_limit_distance(int b);
-  void set_contact_distance(int dist);
+    void enable_constraints(int b);
+    void enable_limit_distance(int b);
+    void set_contact_distance(int dist);
 
 #ifdef __cplusplus
 }
