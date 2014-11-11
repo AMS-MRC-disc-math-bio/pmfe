@@ -1,14 +1,18 @@
-#ifndef _PARAMETRIZER_TYPES_H_
-#define _PARAMETRIZER_TYPES_H_
+#ifndef PARAMETRIZER_TYPES_H
+#define PARAMETRIZER_TYPES_H
 
 #include <vector>
 #include <string>
 #include <utility>
 #include <gmpxx.h>
 
+extern mpq_class multiloop_default;
+extern mpq_class unpaired_default;
+extern mpq_class branch_default;
+
 class ParameterVector {
  public:
- ParameterVector(mpq_class multiloop_penalty = mpq_class(34,10), mpq_class unpaired_penalty = mpq_class(0), mpq_class branch_penalty = mpq_class(4,10), mpq_class dummy_scaling = mpq_class(1)) : multiloop_penalty(multiloop_penalty), unpaired_penalty(unpaired_penalty), branch_penalty(branch_penalty), dummy_scaling(dummy_scaling) {
+ ParameterVector(mpq_class multiloop_penalty = multiloop_default, mpq_class unpaired_penalty = unpaired_default, mpq_class branch_penalty = branch_default, mpq_class dummy_scaling = mpq_class(1)) : multiloop_penalty(multiloop_penalty), unpaired_penalty(unpaired_penalty), branch_penalty(branch_penalty), dummy_scaling(dummy_scaling) {
         multiloop_penalty.canonicalize();
         unpaired_penalty.canonicalize();
         branch_penalty.canonicalize();
@@ -38,6 +42,70 @@ class ScoreVector {
     std::vector< std::pair<long, long> > get_pairs();
     std::vector< std::string > get_words();
 };
+
+class energy_pair {
+ public:
+ energy_pair(mpq_class param = mpq_class(0), mpq_class classical = mpq_class(0)): param(param), classical(classical) {};
+
+    mpq_class param, classical;
+
+    energy_pair& operator= (const energy_pair b) {
+        this->param = b.param;
+        this->classical = b.classical;
+        return *this;
+    }
+
+    energy_pair& operator+= (const energy_pair &b) {
+        this->param += b.param;
+        this->classical += b.classical;
+        return *this;
+    }
+    friend energy_pair operator+ (energy_pair a, const energy_pair &b){
+        return a += b;
+    }
+
+    energy_pair& operator-= (const energy_pair &b){
+        this->param -= b.param;
+        this->classical -= b.classical;
+        return *this;
+    }
+
+    friend energy_pair operator- (energy_pair a, const energy_pair &b) {
+        return a -= b;
+    }
+
+    energy_pair& operator*= (const energy_pair &b){
+        this->param *= b.param;
+        this->classical *= b.classical;
+        return *this;
+    }
+
+    friend energy_pair operator* (energy_pair a, const energy_pair &b) {
+        return a *= b;
+    }
+
+    energy_pair& operator*= (const mpq_class &b){
+        return *this *= energy_pair(b, b);
+    }
+
+    friend energy_pair operator* (energy_pair a, const mpq_class &b){
+        return a *= b;
+    }
+
+    friend energy_pair operator* (const mpq_class &a, energy_pair b) {
+        return b *= a;
+    }
+
+    friend bool operator< (const energy_pair &a, const energy_pair &b) { return a.param < b.param; };
+    friend bool operator<= (const energy_pair &a, const energy_pair &b) { return a.param <= b.param; };
+
+    friend bool operator== (const energy_pair &a, const energy_pair &b) { return a.param == b.param; };
+    friend bool operator!= (const energy_pair &a, const energy_pair &b) { return a.param != b.param; };
+
+    friend bool operator> (const energy_pair &a, const energy_pair &b) { return a.param > b.param; };
+    friend bool operator>= (const energy_pair &a, const energy_pair &b) { return a.param >= b.param; };
+};
+
 
 mpq_class get_mpq_from_word(std::string word);
 

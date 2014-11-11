@@ -50,7 +50,7 @@ def score_parser(result):
     unpaired = results_dict["unpaired"]
     branches = results_dict["branches"]
     w = results_dict["w"]
-    return [multiloops, unpaired, branches, w]
+    return [multiloops, unpaired, branches, w, results_dict["energy"]]
 
 # Voodoo to make Python run the program
 if __name__ == "__main__":

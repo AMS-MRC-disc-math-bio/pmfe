@@ -46,22 +46,22 @@ using namespace std;
 
 std::string EN_DATADIR;
 
-mpq_class poppen[5];
-mpq_class maxpen;
-mpq_class eparam[11];
-mpq_class multConst[3]; /* for multiloop penalties. */
-mpq_class dangle[4][4][4][2]; /* Contain dangling energy values */
-mpq_class inter[31]; /* Contains size penalty for internal loops */
-mpq_class bulge[31]; /* Contain the size penalty for bulges */
-mpq_class hairpin[31]; /* Contains the size penalty for hairpin loops */
-mpq_class stack[256]; /* Stacking energy used to calculate energy of stack loops */
-mpq_class tstkh[256]; /* Terminal mismatch energy used in the calculations of hairpin loops */
-mpq_class tstki[256]; /* Terminal mismatch energy used in the calculations of internal loops */
-mpq_class tloop[maxtloop + 1][2];
+energy_pair poppen[5];
+energy_pair maxpen;
+energy_pair eparam[11];
+energy_pair multConst[3]; /* for multiloop penalties. */
+energy_pair dangle[4][4][4][2]; /* Contain dangling energy values */
+energy_pair inter[31]; /* Contains size penalty for internal loops */
+energy_pair bulge[31]; /* Contain the size penalty for bulges */
+energy_pair hairpin[31]; /* Contains the size penalty for hairpin loops */
+energy_pair stack[256]; /* Stacking energy used to calculate energy of stack loops */
+energy_pair tstkh[256]; /* Terminal mismatch energy used in the calculations of hairpin loops */
+energy_pair tstki[256]; /* Terminal mismatch energy used in the calculations of internal loops */
+int tloop[maxtloop + 1][2];
 int numoftloops;
-mpq_class iloop21[5][5][5][5][5][5][5]; /* 2*1 internal loops */
-mpq_class iloop22[5][5][5][5][5][5][5][5]; /* 2*2 internal looops */
-mpq_class iloop11[5][5][5][5][5][5]; /* 1*1 internal loops */
+energy_pair iloop21[5][5][5][5][5][5][5]; /* 2*1 internal loops */
+energy_pair iloop22[5][5][5][5][5][5][5][5]; /* 2*2 internal looops */
+energy_pair iloop11[5][5][5][5][5][5]; /* 1*1 internal loops */
 
 //int coax[6][6][6][6];
 //int tstackcoax[6][6][6][6];
@@ -69,24 +69,29 @@ mpq_class iloop11[5][5][5][5][5][5]; /* 1*1 internal loops */
 //int tstack[6][6][6][6];
 //int tstkm[6][6][6][6];
 
-mpq_class tstackm[5][5][6][6];
-mpq_class tstacke[5][5][6][6];
+energy_pair tstackm[5][5][6][6];
+energy_pair tstacke[5][5][6][6];
 
-mpq_class tstacki23[5][5][5][5];
+energy_pair tstacki23[5][5][5][5];
 
-mpq_class auend;
-mpq_class gubonus;
-mpq_class cint; /* cint, cslope, c3 are used for poly C hairpin loops */
-mpq_class cslope;
-mpq_class c3;
-mpq_class efn2a;
-mpq_class efn2b;
-mpq_class efn2c;
-mpq_class triloop[maxtloop + 1][2];
+energy_pair auend;
+energy_pair gubonus;
+energy_pair cint; /* cint, cslope, c3 are used for poly C hairpin loops */
+energy_pair cslope;
+energy_pair c3;
+energy_pair efn2a;
+energy_pair efn2b;
+energy_pair efn2c;
+energy_pair triloop[maxtloop + 1][2];
 int numoftriloops;
-mpq_class init;
+energy_pair init;
 int gail; /* It is either 0 or 1. It is used for grosely asymmetric internal loops */
-mpq_class prelog;
+energy_pair prelog;
+
+energy_pair dummy_scaling;
+energy_pair multiloop_penalty;
+energy_pair unpaired_penalty;
+energy_pair branch_penalty;
 
 void readThermodynamicParameters(const char *userdatadir, ParameterVector params) {
     struct stat buf;
@@ -102,24 +107,20 @@ void readThermodynamicParameters(const char *userdatadir, ParameterVector params
         EN_DATADIR += "/";
     }
 
-    if (abs(params.dummy_scaling) > 1) {
-        INFINITY_ *= abs(params.dummy_scaling);
-    }
+    initMiscloopValues("miscloop.DAT", EN_DATADIR);
+    initDangleValues("dangle.DAT", EN_DATADIR);
+    initStackValues("stack.DAT", EN_DATADIR);
+    initLoopValues("loop.DAT", EN_DATADIR);
+    initTstkhValues("tstackh.DAT", EN_DATADIR);
+    initTstkiValues("tstacki.DAT", EN_DATADIR);
+    initTloopValues("tloop.DAT", EN_DATADIR);
 
-    initMiscloopValues("miscloop.DAT", EN_DATADIR, params);
-    initDangleValues("dangle.DAT", EN_DATADIR, params);
-    initStackValues("stack.DAT", EN_DATADIR, params);
-    initLoopValues("loop.DAT", EN_DATADIR, params);
-    initTstkhValues("tstackh.DAT", EN_DATADIR, params);
-    initTstkiValues("tstacki.DAT", EN_DATADIR, params);
-    initTloopValues("tloop.DAT", EN_DATADIR, params);
-
-    initInt21Values("int21.DAT", EN_DATADIR, params);
-    initInt22Values("int22.DAT", EN_DATADIR, params);
-    initInt11Values("int11.DAT", EN_DATADIR, params);
+    initInt21Values("int21.DAT", EN_DATADIR);
+    initInt22Values("int22.DAT", EN_DATADIR);
+    initInt11Values("int11.DAT", EN_DATADIR);
 }
 
-int initStackValues(const string& fileName, const string& dirPath, ParameterVector params)  {
+int initStackValues(const string& fileName, const string& dirPath)  {
     std::string filePath;
     std::ifstream cf;
 
@@ -136,7 +137,7 @@ int initStackValues(const string& fileName, const string& dirPath, ParameterVect
         for (int j = 0; j < 4; j++) {
             for (int k = 0; k < 4; k++) {
                 for (int l = 0; l < 4; l++) {
-                    stack[fourBaseIndex(i,j,k,l)] = INFINITY_;
+                    stack[fourBaseIndex(i,j,k,l)] = inf;
                 }
             }
         }
@@ -163,7 +164,7 @@ int initStackValues(const string& fileName, const string& dirPath, ParameterVect
             j = cols/4;
             l = cols%4;
             if (!(val == "inf")) {
-                stack[fourBaseIndex(i,j,k,l)]  = params.dummy_scaling * get_mpq_from_word(val.c_str());
+                stack[fourBaseIndex(i,j,k,l)]  = dummy_scaling * get_mpq_from_word(val.c_str());
             }
         }
         ++count;
@@ -172,7 +173,7 @@ int initStackValues(const string& fileName, const string& dirPath, ParameterVect
     return 0;
 }
 
-int initMiscloopValues(const string& fileName, const string& dirpath, ParameterVector params) {
+int initMiscloopValues(const string& fileName, const string& dirpath) {
     std::string filePath;
     std::ifstream cf;
 
@@ -191,31 +192,31 @@ int initMiscloopValues(const string& fileName, const string& dirpath, ParameterV
     for (int index = 1; index < 13; index++) { // There are total 12 values to read in.
         if (index == 1) {
             cf >> currentWord;
-            prelog = params.dummy_scaling * get_mpq_from_word(currentWord);
+            prelog = dummy_scaling * get_mpq_from_word(currentWord);
         }
         if (index == 2) {
             cf >> currentWord;
-            maxpen = params.dummy_scaling * get_mpq_from_word(currentWord);
+            maxpen = dummy_scaling * get_mpq_from_word(currentWord);
         }
         if (index == 3) {
             for (int count = 1; count <= 4; count++) {
                 cf >> currentWord;
                 s = currentWord;
-                poppen[count] = params.dummy_scaling * get_mpq_from_word(s.c_str());
+                poppen[count] = dummy_scaling * get_mpq_from_word(s.c_str());
             }
         }
         if (index == 4) {
-            eparam[1] = params.dummy_scaling * 0;
-            eparam[2] = params.dummy_scaling * 0;
-            eparam[3] = params.dummy_scaling * 0;
-            eparam[4] = params.dummy_scaling * 0;
-            eparam[7] = params.dummy_scaling * mpq_class(3,10);
-            eparam[8] = params.dummy_scaling * mpq_class(3,10);
-            eparam[9] = params.dummy_scaling * mpq_class(-5);
+            eparam[1] = dummy_scaling * 0;
+            eparam[2] = dummy_scaling * 0;
+            eparam[3] = dummy_scaling * 0;
+            eparam[4] = dummy_scaling * 0;
+            eparam[7] = dummy_scaling * mpq_class(3, 10);
+            eparam[8] = dummy_scaling * mpq_class(3, 10);
+            eparam[9] = dummy_scaling * mpq_class(-5);
 
-            multConst[0] = eparam[5] = params.multiloop_penalty;
-            multConst[1] = eparam[6] = params.unpaired_penalty;
-            multConst[2] = eparam[10] = params.branch_penalty;
+            multConst[0] = multiloop_penalty;
+            multConst[1] = unpaired_penalty;
+            multConst[2] = branch_penalty;
 
             // This loader code is really fiddly!
             // It breaks if we don't read these three words from the file,
@@ -225,39 +226,39 @@ int initMiscloopValues(const string& fileName, const string& dirpath, ParameterV
             cf >> currentWord; // Original c
         }
         if (index == 5) {
-            mpq_class table[4];
+            energy_pair table[4];
             for (int count = 1; count <= 3; count++) {
                 cf >> currentWord;
                 s = currentWord;
-                table[count] = params.dummy_scaling * get_mpq_from_word(s.c_str());
+                table[count] =  get_mpq_from_word(s.c_str());
             }
-            efn2a = params.dummy_scaling * table[1];
-            efn2b = params.dummy_scaling * (table[2] - mpq_class(1,100));
-            efn2c = params.dummy_scaling * (table[3] - mpq_class(1,100));
+            efn2a = dummy_scaling * table[1];
+            efn2b = dummy_scaling * (table[2] - mpq_class(1,100));
+            efn2c = dummy_scaling * (table[3]  - mpq_class(1,100));
         }
         if (index == 6) {
             cf >> currentWord;
-            auend = params.dummy_scaling * get_mpq_from_word(currentWord);
+            auend = dummy_scaling * get_mpq_from_word(currentWord);
         }
         if (index == 7) {
             cf >> currentWord;
-            gubonus = params.dummy_scaling * get_mpq_from_word(currentWord);
+            gubonus = dummy_scaling * get_mpq_from_word(currentWord);
         }
         if (index == 8) {
             cf >> currentWord;
-            cslope = params.dummy_scaling * (get_mpq_from_word(currentWord) + mpq_class(1,100));
+            cslope = dummy_scaling * (get_mpq_from_word(currentWord) + mpq_class(1,100));
         }
         if (index == 9) {
             cf >> currentWord;
-            cint = params.dummy_scaling * get_mpq_from_word(currentWord);
+            cint = dummy_scaling * get_mpq_from_word(currentWord);
         }
         if (index == 10) {
             cf >> currentWord;
-            c3 = params.dummy_scaling * (get_mpq_from_word(currentWord) + mpq_class(1,100));
+            c3 = dummy_scaling * (get_mpq_from_word(currentWord) + mpq_class(1,100));
         }
         if (index == 11) {
             cf >> currentWord;
-            init = params.dummy_scaling * (get_mpq_from_word(currentWord) + mpq_class(1,100));
+            init = dummy_scaling * (get_mpq_from_word(currentWord) + mpq_class(1,100));
         }
         if (index == 12) {
             cf >> currentWord;
@@ -271,7 +272,7 @@ int initMiscloopValues(const string& fileName, const string& dirpath, ParameterV
 }
 
 int initDangleValues(const std::string& fileName,
-                     const std::string& dirPath, ParameterVector params) {
+                     const std::string& dirPath) {
     std::string filePath;
     std::ifstream cf;
 
@@ -282,7 +283,7 @@ int initDangleValues(const std::string& fileName,
         for (int j = 0; j < 4; j++) {
             for (int k = 0; k < 4; k++) {
                 for (int l = 0; l < 2; l++) {
-                    dangle[i][j][k][l] = INFINITY_;
+                    dangle[i][j][k][l] = inf;
                 }
             }
         }
@@ -310,7 +311,7 @@ int initDangleValues(const std::string& fileName,
             ss >> val;
             k = cols%4;
             if (!(val == "inf")) {
-                dangle[i][j][k][l] = params.dummy_scaling * get_mpq_from_word(val.c_str());
+                dangle[i][j][k][l] = dummy_scaling * get_mpq_from_word(val.c_str());
             }
         }
         ++count;
@@ -319,7 +320,7 @@ int initDangleValues(const std::string& fileName,
     return 0;
 }
 
-int initLoopValues( const string& fileName, const string& dirPath, ParameterVector params) {
+int initLoopValues( const string& fileName, const string& dirPath) {
     // algorithm.c, line 2996
     ifstream cf; // current file
     std::string filePath;
@@ -331,7 +332,7 @@ int initLoopValues( const string& fileName, const string& dirPath, ParameterVect
     char currentWord[256];
     string s;
     int index= 0;
-    mpq_class tempValue = 0;
+    energy_pair tempValue;
 
     if (cf.fail()) {
         cerr << "File open failed " << filePath << endl;
@@ -345,9 +346,9 @@ int initLoopValues( const string& fileName, const string& dirPath, ParameterVect
                 index = atoi(currentWord);
             if (j > 1) {
                 if (strcmp(currentWord, "inf")) {
-                    tempValue = params.dummy_scaling * get_mpq_from_word(currentWord);
+                    tempValue = dummy_scaling * get_mpq_from_word(currentWord);
                 } else {
-                    tempValue = INFINITY_;
+                    tempValue = inf;
                 }
             }
             switch (j) {
@@ -368,7 +369,7 @@ int initLoopValues( const string& fileName, const string& dirPath, ParameterVect
     return 0;
 }
 
-int initTstk23Values(const std::string& fileName, const std::string& dirPath, ParameterVector params) {
+int initTstk23Values(const std::string& fileName, const std::string& dirPath) {
     int i1, j1, i2, j2;
     std::string filePath;
     std::ifstream cf;
@@ -387,15 +388,15 @@ int initTstk23Values(const std::string& fileName, const std::string& dirPath, Pa
             for (j1 = 0; j1 < 5; ++j1)
                 for (j2 = 0; j2 < 5; ++j2)
                     if (i1 == 4 || j1 == 4)
-                        tstacki23[i1][j1][i2][j2] = INFINITY_;
+                        tstacki23[i1][j1][i2][j2] = inf;
                     else if (i2 == 4 || j2 == 4)
-                        tstacki23[i1][j1][i2][j2] = 0;
+                        tstacki23[i1][j1][i2][j2] = dummy_scaling * 0;
                     else {
                         cf >> val;
                         if (val == "inf") {
-                            tstacki23[i1][j1][i2][j2] = INFINITY_;
+                            tstacki23[i1][j1][i2][j2] = inf;
                         } else {
-                            tstacki23[i1][j1][i2][j2] = params.dummy_scaling * get_mpq_from_word(val.c_str());
+                            tstacki23[i1][j1][i2][j2] = dummy_scaling * get_mpq_from_word(val.c_str());
                         }
                     }
     cf.close();
@@ -406,7 +407,7 @@ int initTstk23Values(const std::string& fileName, const std::string& dirPath, Pa
 
 
 
-int initTstkeValues(const std::string& fileName, const std::string& dirPath, ParameterVector params) {
+int initTstkeValues(const std::string& fileName, const std::string& dirPath) {
     int i1, j1, i2, j2;
     std::string filePath;
     std::ifstream cf;
@@ -425,17 +426,17 @@ int initTstkeValues(const std::string& fileName, const std::string& dirPath, Par
             for (j1 = 0; j1 < 5; ++j1) {
                 for (j2 = 0; j2 < 6; ++j2) {
                     if (i1 == 4 || j1 == 4)
-                        tstacke[i1][j1][i2][j2] = INFINITY_;
+                        tstacke[i1][j1][i2][j2] = inf;
                     else if (i2 == 5 || j2 == 5)
-                        tstacke[i1][j1][i2][j2] = INFINITY_;
+                        tstacke[i1][j1][i2][j2] = inf;
                     else if (i2 == 4 || j2 == 4)
-                        tstacke[i1][j1][i2][j2] = 0;
+                        tstacke[i1][j1][i2][j2] = dummy_scaling * 0;
                     else {
                         cf >> val;
                         if (val == "inf") {
-                            tstacke[i1][j1][i2][j2] = INFINITY_;
+                            tstacke[i1][j1][i2][j2] = inf;
                         } else {
-                            tstacke[i1][j1][i2][j2] = params.dummy_scaling * get_mpq_from_word(val.c_str());
+                            tstacke[i1][j1][i2][j2] = dummy_scaling * get_mpq_from_word(val.c_str());
                         }
                     }
                 }
@@ -448,7 +449,7 @@ int initTstkeValues(const std::string& fileName, const std::string& dirPath, Par
     return 0;
 }
 
-int initTstkmValues(const std::string& fileName, const std::string& dirPath, ParameterVector params) {
+int initTstkmValues(const std::string& fileName, const std::string& dirPath) {
     int i1, j1, i2, j2;
     std::string filePath;
     std::ifstream cf;
@@ -467,17 +468,17 @@ int initTstkmValues(const std::string& fileName, const std::string& dirPath, Par
             for (j1 = 0; j1 < 5; ++j1) {
                 for (j2 = 0; j2 < 6; ++j2) {
                     if (i1 == 4 || j1 == 4)
-                        tstackm[i1][j1][i2][j2] = INFINITY_;
+                        tstackm[i1][j1][i2][j2] = inf;
                     else if (i2 == 5 || j2 == 5)
-                        tstackm[i1][j1][i2][j2] = INFINITY_;
+                        tstackm[i1][j1][i2][j2] = inf;
                     else if (i2 == 4 || j2 == 4)
-                        tstackm[i1][j1][i2][j2] = 0;
+                        tstackm[i1][j1][i2][j2] = dummy_scaling * 0;
                     else {
                         cf >> val;
                         if (val == "inf") {
-                            tstackm[i1][j1][i2][j2] = INFINITY_;
+                            tstackm[i1][j1][i2][j2] = inf;
                         } else {
-                            tstackm[i1][j1][i2][j2] = params.dummy_scaling * get_mpq_from_word(val.c_str());
+                            tstackm[i1][j1][i2][j2] = dummy_scaling * get_mpq_from_word(val.c_str());
                         }
                     }
                 }
@@ -490,7 +491,7 @@ int initTstkmValues(const std::string& fileName, const std::string& dirPath, Par
     return 0;
 }
 
-int initTstkhValues(const std::string& fileName, const std::string& dirPath, ParameterVector params) {
+int initTstkhValues(const std::string& fileName, const std::string& dirPath) {
     std::string filePath;
     std::ifstream cf;
 
@@ -501,7 +502,7 @@ int initTstkhValues(const std::string& fileName, const std::string& dirPath, Par
         for (int j = 0; j < 4; j++) {
             for (int k = 0; k < 4; k++) {
                 for (int l = 0; l < 2; l++) {
-                    tstkh[fourBaseIndex(i,j,k,l)] = INFINITY_;
+                    tstkh[fourBaseIndex(i,j,k,l)] = inf;
                 }
             }
         }
@@ -528,7 +529,7 @@ int initTstkhValues(const std::string& fileName, const std::string& dirPath, Par
             j = cols/4;
             l = cols%4;
             if (!(val == "inf")) {
-                tstkh[fourBaseIndex(i,j,k,l)]= params.dummy_scaling * get_mpq_from_word(val.c_str());
+                tstkh[fourBaseIndex(i,j,k,l)]= dummy_scaling * get_mpq_from_word(val.c_str());
             }
         }
         ++count;
@@ -538,7 +539,7 @@ int initTstkhValues(const std::string& fileName, const std::string& dirPath, Par
 }
 
 
-int initTstkiValues(const std::string& fileName, const std::string& dirPath, ParameterVector params) {
+int initTstkiValues(const std::string& fileName, const std::string& dirPath) {
     std::string filePath;
     std::ifstream cf;
 
@@ -549,7 +550,7 @@ int initTstkiValues(const std::string& fileName, const std::string& dirPath, Par
         for (int j = 0; j < 4; j++) {
             for (int k = 0; k < 4; k++) {
                 for (int l = 0; l < 2; l++) {
-                    tstki[fourBaseIndex(i,j,k,l)] = INFINITY_;
+                    tstki[fourBaseIndex(i,j,k,l)] = inf;
                 }
             }
         }
@@ -576,7 +577,7 @@ int initTstkiValues(const std::string& fileName, const std::string& dirPath, Par
             j = cols/4;
             l = cols%4;
             if (!(val == "inf")) {
-                tstki[fourBaseIndex(i,j,k,l)]= params.dummy_scaling * get_mpq_from_word(val.c_str());
+                tstki[fourBaseIndex(i,j,k,l)]= dummy_scaling * get_mpq_from_word(val.c_str());
             }
         }
         ++count;
@@ -585,7 +586,7 @@ int initTstkiValues(const std::string& fileName, const std::string& dirPath, Par
     return 0;
 }
 
-int initTloopValues(const std::string& fileName, const std::string& dirPath, ParameterVector params) {
+int initTloopValues(const std::string& fileName, const std::string& dirPath) {
     std::string filePath;
     std::ifstream cf;
 
@@ -627,13 +628,13 @@ int initTloopValues(const std::string& fileName, const std::string& dirPath, Par
         tloop[numoftloops][0] = atoi(currentSeqNumbers);
 
         if (!(strcmp(currentValue,"inf")==0))
-            tloop[numoftloops][1] = params.dummy_scaling * get_mpq_from_word(currentValue);
+            tloop[numoftloops][1] = atoi(currentValue);
     }
     cf.close();
     return 0;
 }
 
-int initInt22Values(const std::string& fileName, const std::string& dirPath, ParameterVector params) {
+int initInt22Values(const std::string& fileName, const std::string& dirPath) {
     //Read the 2x2 internal loops
     //key iloop22[a][b][c][d][j][l][k][m] =
     //a j l b
@@ -648,7 +649,7 @@ int initInt22Values(const std::string& fileName, const std::string& dirPath, Par
                         for (t = 0; t < 4; t++)
                             for (y = 0; y < 4; y++)
                                 for (z = 0; z < 4; z++)
-                                    iloop22[i][j][k][r][q][t][y][z] = INFINITY_;
+                                    iloop22[i][j][k][r][q][t][y][z] = inf;
 
     ifstream cf;
     char currentLine[256], currentValue[6];
@@ -707,7 +708,7 @@ int initInt22Values(const std::string& fileName, const std::string& dirPath, Par
 
                 if (!(strcmp(currentValue,"inf")==0))
                     iloop22[base[0]][base[1]][base[2]][base[3]][j][l][k][m]
-                        = params.dummy_scaling * get_mpq_from_word(currentValue);
+                        = dummy_scaling * get_mpq_from_word(currentValue);
             }
         }
     }
@@ -716,7 +717,7 @@ int initInt22Values(const std::string& fileName, const std::string& dirPath, Par
     return 0;
 }
 
-int initInt21Values(const std::string& fileName, const std::string& dirPath, ParameterVector params) {
+int initInt21Values(const std::string& fileName, const std::string& dirPath) {
     // 24x6 arrays of 4x4 values
     //      c
     //   a     f
@@ -738,7 +739,7 @@ int initInt21Values(const std::string& fileName, const std::string& dirPath, Par
                     for (q = 0; q < 4; q++)
                         for (t = 0; t < 4; t++)
                             for (y = 0; y < 4; y++)
-                                iloop21[i][j][k][r][q][t][y] = INFINITY_;
+                                iloop21[i][j][k][r][q][t][y] = inf;
     a = 0;
     b = 0;
     c = 0;
@@ -788,7 +789,7 @@ int initInt21Values(const std::string& fileName, const std::string& dirPath, Par
                 for (z = 1; z <=24 ; z++) {
                     char value[32];
                     ss >> value;
-                    mpq_class temp = params.dummy_scaling * get_mpq_from_word(value);
+                    energy_pair temp = dummy_scaling * get_mpq_from_word(value);
                     a = base1[i];
                     b = base2[i];
                     f = base1[jj];
@@ -814,7 +815,7 @@ int initInt21Values(const std::string& fileName, const std::string& dirPath, Par
 }
 
 
-int initInt11Values(const std::string& fileName, const std::string& dirPath, ParameterVector params) {
+int initInt11Values(const std::string& fileName, const std::string& dirPath) {
     int i, j, k, r, q, t;
 
     for (i = 0; i < 4; i++)
@@ -823,7 +824,7 @@ int initInt11Values(const std::string& fileName, const std::string& dirPath, Par
                 for (r = 0; r < 4; r++)
                     for (q = 0; q < 4; q++)
                         for (t = 0; t < 4; t++)
-                            iloop11[i][j][k][r][q][t] = INFINITY_;
+                            iloop11[i][j][k][r][q][t] = inf;
 
     ifstream cf;
     char currentLine[256];
@@ -875,7 +876,7 @@ int initInt11Values(const std::string& fileName, const std::string& dirPath, Par
             for (int z=1; z <= 24; ++z) {
                 char value[32];
                 ss >> value;
-                mpq_class temp = params.dummy_scaling * get_mpq_from_word(value);
+                energy_pair temp = dummy_scaling * get_mpq_from_word(value);
                 a = base1[k];
                 d = base2[k];
                 c = base1[jj];

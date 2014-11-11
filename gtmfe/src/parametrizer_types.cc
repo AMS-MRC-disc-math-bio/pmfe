@@ -7,13 +7,13 @@
 void ParameterVector::set_from_pairs(std::pair<long, long> multiloop_param_pair, std::pair<long, long> unpaired_param_pair, std::pair<long, long> branch_param_pair, std::pair<long, long> dummy_param_pair) {
   multiloop_penalty = mpq_class (multiloop_param_pair.first, multiloop_param_pair.second);
   multiloop_penalty.canonicalize();
-    
+
   unpaired_penalty = mpq_class (unpaired_param_pair.first, unpaired_param_pair.second);
   unpaired_penalty.canonicalize();
-    
+
   branch_penalty = mpq_class (branch_param_pair.first, branch_param_pair.second);
   branch_penalty.canonicalize();
-    
+
   dummy_scaling = mpq_class (dummy_param_pair.first, dummy_param_pair.second);
   dummy_scaling.canonicalize();
 };
@@ -47,10 +47,10 @@ void ScoreVector::set_from_pairs(long multiloop_score, long unpaired_score, long
   multiloops = multiloop_score;
   unpaired = unpaired_score;
   branches = branch_score;
-  
+
   w = mpq_class (w_score_pair.first, w_score_pair.second);
   w.canonicalize();
-  
+
   energy = mpq_class (energy_pair.first, energy_pair.second);
   energy.canonicalize();
 };
@@ -109,3 +109,7 @@ mpq_class get_mpq_from_word(std::string word) {
   }
   return result;
 };
+
+mpq_class multiloop_default = mpq_class(34, 10);
+mpq_class unpaired_default = mpq_class(0);
+mpq_class branch_default = mpq_class(4, 10);

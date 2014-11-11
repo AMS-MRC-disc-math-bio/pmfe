@@ -21,11 +21,12 @@
 #define _ALGORITHMS_H
 
 #include <gmpxx.h>
+#include "parametrizer_types.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-    mpq_class calculate(int len);//, int nThreads, int unamode ,int t_mismatch);
+    energy_pair calculate(int len);//, int nThreads, int unamode ,int t_mismatch);
 #ifdef __cplusplus
 }
 #endif

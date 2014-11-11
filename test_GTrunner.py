@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env sage
 import unittest
 import os
 import GTrunner
@@ -35,40 +35,40 @@ class gtmfeTest(unittest.TestCase):
         multiloops = resultdict["multiloops"]
         unpaired = resultdict["unpaired"]
         branches = resultdict["branches"]
-        return [multiloops, unpaired, branches]        
-        
+        w = resultdict["w"]
+        return [multiloops, unpaired, branches, w]
+
     def test_combinatorial_sequence_classical(self):
         seqfile = "test_data/test_tRNA.fasta"
         result = GTrunner.run_gtmfe(seqfile, self.structtarget, self.paramdir)
-        self.assertEqual([1, 10, 3], self.parse_result(result))
+        self.assertEqual([1, 10, 3, Fraction(-55, 2)], self.parse_result(result))
 
     def test_combinatorial_sequence_variant_negative(self):
         seqfile = "test_data/test_tRNA.fasta"
         result = GTrunner.run_gtmfe(seqfile, self.structtarget, self.paramdir, self.variant_negative)
-        self.assertEqual([2, 8, 6], self.parse_result(result))
+        self.assertEqual([2, 8, 6, Fraction(-139, 5)], self.parse_result(result))
 
     def test_combinatorial_sequence_variant_madeup(self):
         seqfile = "test_data/test_tRNA.fasta"
         result = GTrunner.run_gtmfe(seqfile, self.structtarget, self.paramdir, self.variant_madeup)
-        self.assertEqual([1, 63, 3], self.parse_result(result))
+        self.assertEqual([1, 63, 3, Fraction(67, 5)], self.parse_result(result))
 
     def test_arboreum_classical(self):
         seqfile = "test_data/arboreum5S.fasta"
         result = GTrunner.run_gtmfe(seqfile, self.structtarget, self.paramdir)
-        self.assertEqual([1, 25, 3], self.parse_result(result))
+        self.assertEqual([1, 25, 3, Fraction(-453, 10)], self.parse_result(result))
 
     def test_arboreum_variant_negative(self):
         seqfile = "test_data/arboreum5S.fasta"
         result = GTrunner.run_gtmfe(seqfile, self.structtarget, self.paramdir, self.variant_negative)
-        self.assertEqual([5, 23, 15], self.parse_result(result))
+        self.assertEqual([5, 23, 15, Fraction(-227, 5)], self.parse_result(result))
 
     def test_arboreum_variant_madeup(self):
         seqfile = "test_data/arboreum5S.fasta"
         result = GTrunner.run_gtmfe(seqfile, self.structtarget, self.paramdir, self.variant_madeup)
-        self.assertEqual([1, 108, 3], self.parse_result(result))
+        self.assertEqual([1, 108, 3, Fraction(72, 5)], self.parse_result(result))
 
 # Voodoo to make Python run the tests
 if __name__ == "__main__":
     suite = unittest.TestLoader().loadTestsFromTestCase(gtmfeTest)
     unittest.TextTestRunner(verbosity=2).run(suite)
-

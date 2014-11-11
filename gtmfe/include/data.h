@@ -23,49 +23,54 @@
 #define _DATA_H
 
 #include "constants.h"
+#include "parametrizer_types.h"
 #include <gmpxx.h>
 
-extern mpq_class poppen[5];
-extern mpq_class maxpen;
-extern mpq_class eparam[11];
-extern mpq_class multConst[3]; /* for multiloop penalties. */
-extern mpq_class dangle[4][4][4][2]; /* Contain dangling energy values */
-extern mpq_class inter[31]; /* Contains size penalty for internal loops */
-extern mpq_class bulge[31]; /* Contain the size penalty for bulges */
-extern mpq_class hairpin[31]; /* Contains the size penalty for hairpin loops */
-extern mpq_class stack[256]; /* Stacking energy used to calculate energy of stack loops */
-extern mpq_class tstkh[256]; /* Terminal mismatch energy used in the calculations of hairpin loops */
-extern mpq_class tstki[256]; /* Terminal mismatch energy used in the calculations of internal loops */
-extern mpq_class tloop[maxtloop + 1][2];
+extern energy_pair poppen[5];
+extern energy_pair maxpen;
+extern energy_pair eparam[11];
+extern energy_pair multConst[3]; /* for multiloop penalties. */
+extern energy_pair dangle[4][4][4][2]; /* Contain dangling energy values */
+extern energy_pair inter[31]; /* Contains size penalty for internal loops */
+extern energy_pair bulge[31]; /* Contain the size penalty for bulges */
+extern energy_pair hairpin[31]; /* Contains the size penalty for hairpin loops */
+extern energy_pair stack[256]; /* Stacking energy used to calculate energy of stack loops */
+extern energy_pair tstkh[256]; /* Terminal mismatch energy used in the calculations of hairpin loops */
+extern energy_pair tstki[256]; /* Terminal mismatch energy used in the calculations of internal loops */
+extern int tloop[maxtloop + 1][2];
 extern int numoftloops;
-extern mpq_class iloop22[5][5][5][5][5][5][5][5]; /* 2*2 internal looops */
-extern mpq_class iloop21[5][5][5][5][5][5][5]; /* 2*1 internal loops */
-extern mpq_class iloop11[5][5][5][5][5][5]; /* 1*1 internal loops */
-extern mpq_class coax[6][6][6][6];
-extern mpq_class tstackcoax[6][6][6][6];
-extern mpq_class coaxstack[6][6][6][6];
-extern mpq_class tstack[6][6][6][6];
-extern mpq_class tstkm[6][6][6][6];
-extern mpq_class auend;
-extern mpq_class gubonus;
-extern mpq_class cint; /* cint, cslope, c3 are used for poly C hairpin loops */
-extern mpq_class cslope;
-extern mpq_class c3;
-extern mpq_class efn2a;
-extern mpq_class efn2b;
-extern mpq_class efn2c;
-extern mpq_class triloop[maxtloop + 1][2];
+extern energy_pair iloop22[5][5][5][5][5][5][5][5]; /* 2*2 internal looops */
+extern energy_pair iloop21[5][5][5][5][5][5][5]; /* 2*1 internal loops */
+extern energy_pair iloop11[5][5][5][5][5][5]; /* 1*1 internal loops */
+extern energy_pair coax[6][6][6][6];
+extern energy_pair tstackcoax[6][6][6][6];
+extern energy_pair coaxstack[6][6][6][6];
+extern energy_pair tstack[6][6][6][6];
+extern energy_pair tstkm[6][6][6][6];
+extern energy_pair auend;
+extern energy_pair gubonus;
+extern energy_pair cint; /* cint, cslope, c3 are used for poly C hairpin loops */
+extern energy_pair cslope;
+extern energy_pair c3;
+extern energy_pair efn2a;
+extern energy_pair efn2b;
+extern energy_pair efn2c;
+extern energy_pair triloop[maxtloop + 1][2];
 extern int numoftriloops;
-extern mpq_class init;
+extern energy_pair init;
 extern int gail; /* It is either 0 or 1. It is used for grosely asymmetric internal loops */
-extern mpq_class prelog;
+extern energy_pair prelog;
 
-extern mpq_class tstackm[5][5][6][6];
-extern mpq_class tstacke[5][5][6][6];
-extern mpq_class tstacki23[5][5][5][5];
+extern energy_pair tstackm[5][5][6][6];
+extern energy_pair tstacke[5][5][6][6];
+extern energy_pair tstacki23[5][5][5][5];
+
+extern energy_pair dummy_scaling;
+extern energy_pair multiloop_penalty;
+extern energy_pair unpaired_penalty;
+extern energy_pair branch_penalty;
 
 
 #define fourBaseIndex(a, b, c, d) (((a) << 6) + ((b) << 4) + ((c) << 2) + (d))
 
 #endif
-

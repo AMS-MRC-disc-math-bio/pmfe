@@ -1,4 +1,4 @@
-#!/usr/bin/env sage 
+#!/usr/bin/env sage
 from sage.all import *
 import os, sys, argparse, subprocess, shutil, logging, string
 import RNAscorer
@@ -63,15 +63,13 @@ def setup_gtmfe_as_BlackBoxOptimize(seqfile, structdir, paramdir):
     classical_scores_gtmfe = score_parser(classical_result)
     classical_scores_python = list(RNAscorer.score_file(classical_file))
 
-    #classical_scores_python.append(find_w(classical_scores_python, classical_result.energy))
-
     logging.debug("Classical scores from Python: " + str(classical_scores_python))
     logging.debug("Classical scores from gtmfe: " + str(classical_scores_gtmfe))
 
     # Build the function which wraps gtmfe input and output in iB4e-compatible structures
     def find_mfe_score(objective_vector):
         logging.debug("Optimizing for vector: " + str(objective_vector))
-        
+
         parameter_vector = gtmfe.ParameterVector()
         pairify = lambda term: gtmfe.pairll(long(term.numerator()), long(term.denominator()))
         parameter_vector.set_from_pairs(pairify(objective_vector[0]), pairify(objective_vector[1]), pairify(objective_vector[2]), pairify(objective_vector[3]))
@@ -122,12 +120,6 @@ def score_parser(result):
     branches = results_dict["branches"]
     w = results_dict["w"]
     return [multiloops, unpaired, branches, w]
-
-def find_w(scores, energy, params=[3.4, 0.0, 0.4, 1]):
-    if params[3] == 0:
-        return 0
-    else:
-        return (-scores[0]*params[0] + -scores[1]*params[1] + -scores[2]*params[2] + energy)/params[3]
 
 # Voodoo to make Python run the program
 if __name__ == "__main__":

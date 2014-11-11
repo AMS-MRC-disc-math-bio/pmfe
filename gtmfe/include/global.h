@@ -2,6 +2,7 @@
 #define _GLOBAL_H_
 
 #include "constants.h"
+#include "parametrizer_types.h"
 #include <gmpxx.h>
 
 #ifdef __cplusplus
@@ -28,6 +29,13 @@ extern int g_LIMIT_DISTANCE;
 extern int g_contactDistance;
 
 extern mpz_class INFINITY_;
+extern energy_pair inf;
+extern energy_pair zero;
+
+extern energy_pair dummy_scaling;
+extern energy_pair multiloop_penalty;
+extern energy_pair unpaired_penalty;
+extern energy_pair branch_penalty;
 
 // The possible base pairs are (A,U), (U,A), (C,G), (G,C), (G,U)
 //  and (U,G).
@@ -37,7 +45,7 @@ extern mpz_class INFINITY_;
 extern "C" {
 #endif
     int canPair(int a, int b);
-    void init_global_params(int len);
+    void init_global_params(int len, ParameterVector params);
     void free_global_params();
     void print_sequence(int len);
     void print_structure(int len);

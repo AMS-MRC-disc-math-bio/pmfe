@@ -5,10 +5,11 @@
 #include "utils.h"
 #include "global.h"
 #include "constraints.h"
+#include "parametrizer_types.h"
 #include <gmpxx.h>
 
-unsigned char *RNA; 
-int *structure; 
+unsigned char *RNA;
+int *structure;
 unsigned int chPairKey;
 
 int g_nthreads;
@@ -26,8 +27,10 @@ int g_contactDistance;
 int g_bignumprecision = 512;
 
 mpz_class INFINITY_;
+energy_pair inf;
+energy_pair zero;
 
-void init_global_params(int len) {
+void init_global_params(int len, ParameterVector params) {
   RNA = new unsigned char[len+1];
   if (RNA == NULL) {
     perror("Cannot allocate variable 'RNA'");
@@ -39,7 +42,22 @@ void init_global_params(int len) {
     exit(-1);
   }
 
+  dummy_scaling = energy_pair(params.dummy_scaling, 1);
+  multiloop_penalty = energy_pair(params.multiloop_penalty, multiloop_default);
+  unpaired_penalty = energy_pair(params.unpaired_penalty, unpaired_default);
+  branch_penalty = energy_pair(params.branch_penalty, branch_default);
+
   INFINITY_ = mpz_class("9999999999999", 10);
+
+  mpq_class OLD_INFINITY_ = INFINITY_;
+
+  if (abs(params.dummy_scaling) > 1) {
+      INFINITY_ *= abs(params.dummy_scaling);
+  }
+
+  inf = energy_pair(INFINITY_, OLD_INFINITY_);
+
+  zero = energy_pair(0, 0);
 
   init_checkPair();
 }
@@ -68,7 +86,7 @@ void print_sequence(int len) {
 
 void print_structure(int len) {
   int i = 1;
-  for (i = 1; i <= len; i++) 
+  for (i = 1; i <= len; i++)
     {
       if (structure[i] > 0 && structure[i] > i)
         printf("(");
@@ -194,7 +212,7 @@ int update_checkPair(int i, int j) {
   if (!((i >= 0 && i <=3 )&&(j >=0 && j <=3)))
     return r;
   if (!(chPairKey & (1 << ((i << 2) + j)))) {
-    chPairKey += 1 << ((i << 2) + j);	
+    chPairKey += 1 << ((i << 2) + j);
     r = 1;
   }
   return r;
@@ -213,7 +231,7 @@ int canPair(int a, int b) {
   printf("OPTIONS\n");
   printf("   -c, --constraints FILE\n");
   printf("                        Load constraints from FILE.  See Constraint syntax below.\n");
-  printf("   -d, --dangle INT     Restricts treatment of dangling energies (INT=0,2),\n"); 
+  printf("   -d, --dangle INT     Restricts treatment of dangling energies (INT=0,2),\n");
   printf("                        see below for details.\n");
   printf("   -h, --help           Output help (this message) and exit.\n");
   printf("   -l, --limitCD INT    Set a maximum base pair contact distance to INT. If no\n");
@@ -239,7 +257,7 @@ int canPair(int a, int b) {
   printf("   --pf_count          Calculate the structure count using partition function and zero energy value.\n");
   printf("   --subopt NUM         Calculate suboptimal structures within NUM kcal/mol\n");
   printf("                        of the MFE. (Uses -d 2 treatment of dangling energies.)\n");
-  printf("   -s, --useSHAPE FILE  Use SHAPE constraints from FILE.\n");      
+  printf("   -s, --useSHAPE FILE  Use SHAPE constraints from FILE.\n");
 
   printf("\nConstraint syntax:\n");
   printf("\tF i j k  # force (i,j)(i+1,j-1),.......,(i+k-1,j-k+1) pairs.\n");

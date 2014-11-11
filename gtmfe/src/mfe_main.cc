@@ -18,8 +18,6 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <iostream>
-#include <iomanip>
 #include <fstream>
 #include <string>
 #include <math.h>
@@ -28,6 +26,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <cassert>
+#include <iostream>
 
 #include "mfe_main.h"
 #include "utils.h"
@@ -36,6 +35,7 @@
 #include "energy.h"
 #include "algorithms.h"
 #include "traceback.h"
+#include "parametrizer_types.h"
 #include <gmpxx.h>
 
 using namespace std;
@@ -48,11 +48,11 @@ static int dangles=-1;
 
 static int nThreads = -1;
 
-void init_fold(const char* seq) {
+void init_fold(const char* seq, ParameterVector params) {
     assert(seq != NULL);
     int len = strlen(seq);
 
-    init_global_params(len);
+    init_global_params(len, params);
 
     if (!encodeSequence(seq)) {
         free_fold(len);
@@ -84,7 +84,7 @@ ScoreVector mfe_main(string seq_file, string output_file, string param_dir, int 
 
 ScoreVector mfe_main(string seq_file, string output_file, string param_dir, ParameterVector params, int dangle_model) {
     std::string seq;
-    mpq_class energy;
+    energy_pair energy;
 
     dangles = dangle_model;
 
@@ -99,7 +99,7 @@ ScoreVector mfe_main(string seq_file, string output_file, string param_dir, Para
         exit(-1);
     }
 
-    init_fold(seq.c_str());
+    init_fold(seq.c_str(), params);
 
     // Read in thermodynamic parameters. Always use Turner99 data (for now)
     readThermodynamicParameters(param_dir.c_str(), params);
@@ -108,16 +108,13 @@ ScoreVector mfe_main(string seq_file, string output_file, string param_dir, Para
 
     ScoreVector result;
     result = trace(seq.length());
-    result.energy = energy;
-    if (params.dummy_scaling==0) {
-        result.w = 0;
-    } else {
-        result.w = (result.energy - result.multiloops * params.multiloop_penalty - result.branches * params.branch_penalty - result.unpaired * params.unpaired_penalty)/params.dummy_scaling;
-    };
+    result.energy = energy.param;
+    result.w = energy.classical - (result.multiloops * multiloop_default + result.unpaired * unpaired_default + result.branches * branch_default);
 
-    //result.params = params;
+    cout << "defaults: multiloops: " << multiloop_default.get_str() << ", unpaired: " << unpaired_default.get_str() << ", branches: " << branch_default.get_str() << ".\n";
+    cout << "results: classical energy: " << energy.classical.get_str() << ", multiloops: " << result.multiloops.get_str() << ", unpaired: " << result.unpaired.get_str() << ", branches: " << result.branches.get_str() << ".\n";
 
-    save_ct_file(outputFile, seq, energy);
+    save_ct_file(outputFile, seq, energy.classical);
 
     free_fold(seq.length());
 

@@ -29,10 +29,10 @@
 ScoreVector trace(int len);
 
 void traceW(int i);
-mpq_class traceV(int i, int j);
-mpq_class traceVM(int i, int j);
-mpq_class traceVBI(int i, int j);
-mpq_class traceWM(int i, int j);
-mpq_class traceWMPrime(int i, int j);
+energy_pair traceV(int i, int j);
+energy_pair traceVM(int i, int j);
+energy_pair traceVBI(int i, int j);
+energy_pair traceWM(int i, int j);
+energy_pair traceWMPrime(int i, int j);
 
 #endif

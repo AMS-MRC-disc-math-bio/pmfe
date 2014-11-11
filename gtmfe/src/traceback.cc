@@ -30,8 +30,9 @@
 #include "utils.h"
 #include <gmpxx.h>
 
-mpq_class total_en = 0;
-mpq_class total_ex = 0;
+energy_pair total_en;
+energy_pair total_ex;
+
 int count_multiloops;
 int count_unpaired;
 int count_branches;
@@ -42,10 +43,6 @@ ScoreVector trace(int len) {
     for (i = 0; i <= len; i++) structure[i] = 0;
 
     length = len;
-    if (W[len] >= MAXENG) {
-        printf("- No Structure \n");
-        exit(EXIT_FAILURE);
-    }
 
     count_multiloops = 0;
     count_unpaired = 0;
@@ -64,7 +61,7 @@ ScoreVector trace(int len) {
 void traceW(int j) {
     int done = 0, i;
     int flag = 1;
-    mpq_class wim1;
+    energy_pair wim1;
 
     if (j == 0 || j == 1)
         return;
@@ -72,12 +69,12 @@ void traceW(int j) {
     for (i = 1; i < j && !done; i++) {
         if (j-i < TURN) continue;
 
-        wim1 = MIN(0, W[i-1]);
+        wim1 = MIN(zero, W[i-1]);
         flag = 1;
         if ( wim1 != W[i-1] && canSSregion(0,i)) flag = 0;
 
         if (g_dangles == 2) {
-            mpq_class e_dangles = 0;
+            energy_pair e_dangles;
             if (i>1) e_dangles +=  Ed3(j,i,i-1);
             if (j<length) e_dangles += Ed5(j,i,j+1);
             if ((W[j] == V_f(i,j) + auPenalty(i, j) + e_dangles + wim1 && canSS(i) && canSS(j) && canStack(i+1,j-1)) || forcePair(i+1,j-1)) {
@@ -129,15 +126,15 @@ void traceW(int j) {
     return;
 }
 
-mpq_class traceV(int i, int j) {
-    mpq_class a, b, c, d;
-    mpq_class Vij;
-    if (j-i < TURN)  return INFINITY_;
+energy_pair traceV(int i, int j) {
+    energy_pair a, b, c, d;
+    energy_pair Vij;
+    if (j-i < TURN)  return inf;
 
     if (canHairpin(i,j)) {
         a = eH(i, j);
     } else {
-        a = INFINITY_;
+        a = inf;
     }
 
     if (canStack(i,j)) {
@@ -145,9 +142,7 @@ mpq_class traceV(int i, int j) {
         c = VBI_f(i,j);
         d = VM_f(i,j);
     } else {
-        b = INFINITY_;
-        c = INFINITY_;
-        d = INFINITY_;
+        b = c = d = inf;
     }
 
     Vij = V_f(i,j);
@@ -166,16 +161,16 @@ mpq_class traceV(int i, int j) {
         traceVBI(i, j);
         return Vij;
     } else if (Vij == d) {
-        mpq_class eVM = traceVM(i, j);
+        energy_pair eVM = traceVM(i, j);
         total_en += (Vij-eVM);
         return Vij;
     }
 
-    return 0;
+    return zero;
 }
 
-mpq_class traceVBI(int i, int j) {
-    mpq_class VBIij;
+energy_pair traceVBI(int i, int j) {
+    energy_pair VBIij;
     int ip, jp;
     int ifinal, jfinal;
 
@@ -199,9 +194,9 @@ mpq_class traceVBI(int i, int j) {
     return traceV(ifinal, jfinal);
 }
 
-mpq_class traceVM(int i, int j) {
+energy_pair traceVM(int i, int j) {
     int done = 0;
-    mpq_class eVM = 0;
+    energy_pair eVM;
 
     if (g_dangles == 2) {
         if (V_f(i,j) ==  WMPrime[i + 1][j - 1] + multConst[0] + multConst[2] + auPenalty(i,j) + Ed5(i,j,i + 1) + Ed3(i,j,j - 1) && canSS(i+1) && canSS(j-1) ) {
@@ -236,7 +231,7 @@ mpq_class traceVM(int i, int j) {
             count_multiloops++;
             count_branches++;
             count_unpaired++;
-        } else if (V_f(i,j) ==  WMPrime[i + 2][j - 2] + multConst[0] + multConst[2] + auPenalty(i,j) + Ed5(i,j,i + 1) + Ed3(i,j,j - 1) + 2*multConst[1] && canSS(i+1) && canSS(j-1) ) {
+        } else if (V_f(i,j) ==  WMPrime[i + 2][j - 2] + multConst[0] + multConst[2] + auPenalty(i,j) + Ed5(i,j,i + 1) + Ed3(i,j,j - 1) + multConst[1]*2 && canSS(i+1) && canSS(j-1) ) {
             done = 1;
             eVM += traceWMPrime(i + 2, j - 2);
             count_multiloops++;
@@ -248,9 +243,9 @@ mpq_class traceVM(int i, int j) {
     return eVM;
 }
 
-mpq_class traceWMPrime(int i, int j) {
+energy_pair traceWMPrime(int i, int j) {
     int done=0, h;
-    mpq_class energy=0;
+    energy_pair energy;
 
     for (h = i; h < j && !done; h++) {
         if (WM_f(i,h) + WM_f(h + 1,j) == WMPrime_f(i,j)) {
@@ -263,10 +258,10 @@ mpq_class traceWMPrime(int i, int j) {
     return energy;
 }
 
-mpq_class traceWM(int i, int j) {
+energy_pair traceWM(int i, int j) {
     assert(i < j);
     int done=0;
-    mpq_class eWM=0;
+    energy_pair eWM;
 
     if (!done && WM_f(i,j) == WMPrime[i][j]) {
         eWM += traceWMPrime(i,j);
@@ -275,7 +270,7 @@ mpq_class traceWM(int i, int j) {
 
     if (!done){
         if (g_dangles == 2) {
-            mpq_class energy = V_f(i,j) + auPenalty(i, j) + multConst[2];
+            energy_pair energy = V_f(i,j) + auPenalty(i, j) + multConst[2];
             energy += (i==1)?Ed3(j,i,length):Ed3(j,i,i-1);
             /*if (j<len)*/ energy += Ed5(j,i,j+1);
             if (WM_f(i,j) ==  energy && canSS(i) && canSS(j) && canStack(i+1,j-1)) {
@@ -304,7 +299,7 @@ mpq_class traceWM(int i, int j) {
                 count_branches++;
                 count_unpaired++;
                 done = 1;
-            } else if (WM_f(i,j) == V_f(i+1,j-1) + Ed3(j-1,i+1,i) + Ed5(j-1,i+1,j) + auPenalty(i+1, j-1) + multConst[2] + 2*multConst[1] && canSS(i) && canSS(j) && canStack(i+1,j-1)) {
+            } else if (WM_f(i,j) == V_f(i+1,j-1) + Ed3(j-1,i+1,i) + Ed5(j-1,i+1,j) + auPenalty(i+1, j-1) + multConst[2] + multConst[1]*2 && canSS(i) && canSS(j) && canStack(i+1,j-1)) {
                 eWM += traceV(i + 1, j - 1);
                 count_branches++;
                 count_unpaired += 2;

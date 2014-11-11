@@ -8,7 +8,7 @@ ScoreVector mfe_main(std::string seq_file, std::string output_file, std::string 
 
 ScoreVector mfe_main(std::string seq_file, std::string output_file, std::string param_dir, int dangle_model = 1);
 
-void init_fold(const char* seq);
+void init_fold(const char* seq, ParameterVector params);
 void free_fold(int len);
 
 #endif
