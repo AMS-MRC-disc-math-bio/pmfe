@@ -296,7 +296,7 @@ energy_pair eH(int i, int j) {
                 tlink = tloop[count][1];
             }
         }
-        energy = tlink + hairpin[size] + tstkh[fourBaseIndex(RNA[i], RNA[j],
+        energy = dummy_scaling * tlink + hairpin[size] + tstkh[fourBaseIndex(RNA[i], RNA[j],
                                                              RNA[i + 1], RNA[j - 1])] + eparam[4];
     }
 

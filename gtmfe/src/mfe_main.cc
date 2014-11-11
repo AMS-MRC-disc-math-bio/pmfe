@@ -111,9 +111,6 @@ ScoreVector mfe_main(string seq_file, string output_file, string param_dir, Para
     result.energy = energy.param;
     result.w = energy.classical - (result.multiloops * multiloop_default + result.unpaired * unpaired_default + result.branches * branch_default);
 
-    cout << "defaults: multiloops: " << multiloop_default.get_str() << ", unpaired: " << unpaired_default.get_str() << ", branches: " << branch_default.get_str() << ".\n";
-    cout << "results: classical energy: " << energy.classical.get_str() << ", multiloops: " << result.multiloops.get_str() << ", unpaired: " << result.unpaired.get_str() << ", branches: " << result.branches.get_str() << ".\n";
-
     save_ct_file(outputFile, seq, energy.classical);
 
     free_fold(seq.length());
