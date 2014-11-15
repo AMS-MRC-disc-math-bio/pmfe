@@ -1,6 +1,7 @@
 from sage.all import *
 
-facet_vertex_set = lambda facet: frozenset(tuple(coord for coord in vert.vector()) for vert in facet.vertices())
+frozen_vertex = lambda vertex: tuple(vertex)
+facet_vertex_set = lambda facet: frozenset(frozen_vertex(vert.vector()) for vert in facet.vertices())
 polytope_facet_set = lambda polytope: set(facet_vertex_set(facet) for facet in polytope.faces(polytope.dim()-1))
 
 def build_polytope(find_vector_oracle, dim, maximize=True):
@@ -19,14 +20,16 @@ def build_polytope(find_vector_oracle, dim, maximize=True):
     confirmed_facets = set()
 
     # Keep looping until we have confirmed every face of the polytope.
-    while not polytope_facet_set(tentative_polytope).issubset(confirmed_facets):
+    while not polytope_facet_set(tentative_polytope).issubset(confirmed_facets): # Test not strictly needed, but it's essentially free and makes the control flow clearer
+        new_found_vertices = set()
+
         # Test every facet of the polytope.
         for facet in tentative_polytope.faces(dim-1):
             # Test whether the facet is already confirmed.
             vertex_vector_set = facet_vertex_set(facet)
             if vertex_vector_set in confirmed_facets:
                 # If so, continue to the next facet.
-                continue 
+                continue
 
             # If the facet is not already confirmed, we need to test it.
             # To do this, we need to find the inner normal of the facet.
@@ -44,17 +47,17 @@ def build_polytope(find_vector_oracle, dim, maximize=True):
             # Which test we do depends on whether the underlying oracle is a maximizer or minimizer.
             if maximize and testnormal.dot_product(v) > facetscore or not maximize and testnormal.dot_product(v) < facetscore:
                 # If so, add the vector to the polytope
-                vertexlist = list(tentative_polytope.vertices()) + [v]
-                new_tentative_polytope = Polyhedron(vertices = vertexlist)
-                assert new_tentative_polytope != tentative_polytope, "Facet confirmation error!"
-                tentative_polytope = new_tentative_polytope
-                # Since we changed tentative_polytope, we return to the outer loop and begin checking facets again.
-                break
+                new_found_vertices.add(frozen_vertex(v))
             else:
                 # Otherwise, confirm the facet
                 confirmed_facets.add(vertex_vector_set)
-                # and continue through the facet list.
-                continue
+
+        if len(new_found_vertices) == 0:
+            break
+        else:
+            new_vertices = list(tentative_polytope.vertices()) + list(new_found_vertices)
+            tentative_polytope = Polyhedron(vertices = new_vertices)
+            confirmed_facets.intersection_update(polytope_facet_set(tentative_polytope))
 
     # If we made it out of the while loop, it should mean that we have confirmed every facet.
     # We test to make sure that's true.
