@@ -65,6 +65,8 @@ void init_global_params(int len, ParameterVector params) {
 void free_global_params() {
   delete[] structure;
   delete[] RNA;
+  delete inf;
+  delete zero;
 }
 
 void print_sequence(int len) {
