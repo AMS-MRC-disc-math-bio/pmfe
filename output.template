@@ -1,6 +1,11 @@
 points = $points
 classical_scores = $classical_scores
-poly = Polyhedron(points, base_ring=QQ)
+
+try: 
+    poly = load("$polydump")
+except IOError:
+    poly = Polytope(points, base_ring = QQ)
+
 slice = Polyhedron(eqns=[(1,0,0,0,1)])
 fan = NormalFan(poly)
 regions4 = [slice.intersection(cone.polyhedron()) for cone in fan.cones()[-1]]

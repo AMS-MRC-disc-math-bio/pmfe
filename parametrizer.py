@@ -13,7 +13,7 @@ def main(argv):
 
     args = parser.parse_args()
     seqfile = args.sequence
-    sagefile = os.path.splitext(seqfile)[0] + ".polytope.sage"
+    filebase = os.path.splitext(seqfile)[0]
     verbose = args.verbose
 
     paramdir = "Turner99"
@@ -25,9 +25,9 @@ def main(argv):
         if not os.path.isdir(structdir):
             raise
 
-    run_iB4e(seqfile, sagefile, paramdir, structdir, verbose)
+    run_iB4e(seqfile, filebase, paramdir, structdir, verbose)
 
-def run_iB4e(seqfile, sagefile, paramdir, structdir, verbose=False):
+def run_iB4e(seqfile, filebase, paramdir, structdir, verbose=False):
     logger = logging.getLogger()
     if verbose:
         logger.setLevel(logging.DEBUG)
@@ -44,7 +44,7 @@ def run_iB4e(seqfile, sagefile, paramdir, structdir, verbose=False):
     thepoly = BBpolytope.build_polytope(find_mfe_score, 4, maximize=False)
 
     # Now build a Sage file encoding the desired data
-    build_sage_polytope_file(classical_scores, thepoly, sagefile)
+    build_sage_polytope_file(classical_scores, thepoly, filebase)
 
     # Finally, return the polytope for testing
     return thepoly
@@ -91,9 +91,15 @@ def setup_gtmfe_as_BlackBoxOptimize(seqfile, structdir, paramdir):
 
     return (classical_scores_gtmfe, find_mfe_score)
 
-def build_sage_polytope_file(classical_scores, polytope, sagefile):
+def build_sage_polytope_file(classical_scores, polytope, filebase):
     templatefile = open("output.template")
     template = string.Template(templatefile.read())
+
+    sagefile = filebase + ".polytope.sage"
+    picklefile = filebase + ".sobj"
+
+    dumpfile = os.path.splitext(os.path.basename(filebase))[0]
+    polytope.dump(filebase)
 
     point_string = str(polytope.vertices_list())
 
@@ -103,7 +109,7 @@ def build_sage_polytope_file(classical_scores, polytope, sagefile):
     pair_vector_writer = lambda pair_vector: "[" + " , ".join(point_pair_writer(pair) for pair in pair_vector) + "]"
     classical_scores_string = pair_vector_writer(classical_scores_pairs)
 
-    results = {"points": point_string, "classical_scores": classical_scores_string}
+    results = {"points": point_string, "classical_scores": classical_scores_string, "polydump": dumpfile}
 
     sagecode = template.substitute(results)
 
