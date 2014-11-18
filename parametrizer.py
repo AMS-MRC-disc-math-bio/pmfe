@@ -96,10 +96,9 @@ def build_sage_polytope_file(classical_scores, polytope, filebase):
     template = string.Template(templatefile.read())
 
     sagefile = filebase + ".polytope.sage"
-    picklefile = filebase + ".sobj"
 
     dumpfile = os.path.splitext(os.path.basename(filebase))[0]
-    polytope.dump(filebase)
+    polytope.dump(filebase, -1) # Protocol "-1" indicates highest version currently available
 
     point_string = str(polytope.vertices_list())
 
