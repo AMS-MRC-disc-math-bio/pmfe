@@ -226,15 +226,15 @@ int initMiscloopValues(const string& fileName, const string& dirpath) {
             cf >> currentWord; // Original c
         }
         if (index == 5) {
-            energy_pair table[4];
+            mpq_class table[4];
             for (int count = 1; count <= 3; count++) {
                 cf >> currentWord;
                 s = currentWord;
                 table[count] =  get_mpq_from_word(s.c_str());
             }
             efn2a = dummy_scaling * table[1];
-            efn2b = dummy_scaling * (table[2] - mpq_class(1,100));
-            efn2c = dummy_scaling * (table[3]  - mpq_class(1,100));
+            efn2b = dummy_scaling * table[2];
+            efn2c = dummy_scaling * table[3];
         }
         if (index == 6) {
             cf >> currentWord;
@@ -246,7 +246,7 @@ int initMiscloopValues(const string& fileName, const string& dirpath) {
         }
         if (index == 8) {
             cf >> currentWord;
-            cslope = dummy_scaling * (get_mpq_from_word(currentWord) + mpq_class(1,100));
+            cslope = dummy_scaling * get_mpq_from_word(currentWord);
         }
         if (index == 9) {
             cf >> currentWord;
@@ -254,11 +254,11 @@ int initMiscloopValues(const string& fileName, const string& dirpath) {
         }
         if (index == 10) {
             cf >> currentWord;
-            c3 = dummy_scaling * (get_mpq_from_word(currentWord) + mpq_class(1,100));
+            c3 = dummy_scaling * get_mpq_from_word(currentWord);
         }
         if (index == 11) {
             cf >> currentWord;
-            init = dummy_scaling * (get_mpq_from_word(currentWord) + mpq_class(1,100));
+            init = dummy_scaling * get_mpq_from_word(currentWord);
         }
         if (index == 12) {
             cf >> currentWord;
