@@ -28,7 +28,7 @@
 #include <cassert>
 #include <iostream>
 
-#include "mfe_main.h"
+#include "mfe.h"
 #include "utils.h"
 #include "loader.h"
 #include "global.h"
@@ -77,12 +77,12 @@ void free_fold(int len) {
     free_global_params();
 }
 
-ScoreVector mfe_main(string seq_file, string output_file, string param_dir, int dangle_model) {
+ScoreVector mfe(string seq_file, string output_file, string param_dir, int dangle_model) {
     ParameterVector params = ParameterVector();
-    return mfe_main(seq_file, output_file, param_dir, params, dangle_model);
+    return mfe(seq_file, output_file, param_dir, params, dangle_model);
 }
 
-ScoreVector mfe_main(string seq_file, string output_file, string param_dir, ParameterVector params, int dangle_model) {
+ScoreVector mfe(string seq_file, string output_file, string param_dir, ParameterVector params, int dangle_model) {
     std::string seq;
     energy_pair energy;
 

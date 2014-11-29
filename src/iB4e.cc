@@ -10,7 +10,7 @@
 #include <boost/lexical_cast.hpp>
 
 #include "iB4e.h"
-#include "mfe_main.h"
+#include "mfe.h"
 #include "parametrizer_types.h"
 
 QPoint run_gtmfe_on_q4vector(QVector param_vector, boost::filesystem::path seq_file, boost::filesystem::path output_dir, boost::filesystem::path param_dir) {
@@ -23,7 +23,7 @@ QPoint run_gtmfe_on_q4vector(QVector param_vector, boost::filesystem::path seq_f
     initial_output_file.replace_extension(structure_ext);
 
     params = ParameterVector(param_vector);
-    scores = mfe_main(seq_file.string(), initial_output_file.string(), param_dir.string(), params);
+    scores = mfe(seq_file.string(), initial_output_file.string(), param_dir.string(), params);
 
     std::string score_sep (", ");
     std::string w_score_string (boost::lexical_cast<std::string>(mpf_class(scores.w).get_d()));
