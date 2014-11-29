@@ -13,13 +13,15 @@
 #include "mfe.h"
 #include "parametrizer_types.h"
 
-QPoint run_gtmfe_on_q4vector(QVector param_vector, boost::filesystem::path seq_file, boost::filesystem::path output_dir, boost::filesystem::path param_dir) {
+namespace fs = boost::filesystem;
+
+QPoint run_gtmfe_on_q4vector(QVector param_vector, fs::path seq_file, fs::path output_dir, fs::path param_dir) {
     ParameterVector params;
     ScoreVector scores;
 
     std::string structure_ext = ".ct";
-    boost::filesystem::path seq_base_name = seq_file.stem();
-    boost::filesystem::path initial_output_file = output_dir / seq_base_name;
+    fs::path seq_base_name = seq_file.stem();
+    fs::path initial_output_file = output_dir / seq_base_name;
     initial_output_file.replace_extension(structure_ext);
 
     params = ParameterVector(param_vector);
@@ -35,9 +37,9 @@ QPoint run_gtmfe_on_q4vector(QVector param_vector, boost::filesystem::path seq_f
         w_score_string +
         "]";
 
-    boost::filesystem::path updated_output_file = initial_output_file;
+    fs::path updated_output_file = initial_output_file;
     updated_output_file.replace_extension(score_string + structure_ext);
-    boost::filesystem::rename(initial_output_file, updated_output_file);
+    fs::rename(initial_output_file, updated_output_file);
 
     return scores.get_q4point();
 }
@@ -50,14 +52,14 @@ int iB4e_main(std::string seq_file_path, std::string param_dir_path) {
     ConvexHull CH(dim);
 
     // Create directory path objects
-    boost::filesystem::path param_dir(param_dir_path);
+    fs::path param_dir(param_dir_path);
 
-    boost::filesystem::path seq_file(seq_file_path);
-    boost::filesystem::path seq_base_name = seq_file.stem();
+    fs::path seq_file(seq_file_path);
+    fs::path seq_base_name = seq_file.stem();
 
-    boost::filesystem::path struct_dir = seq_file.parent_path() / seq_base_name;
-    boost::filesystem::remove_all(struct_dir);
-    boost::filesystem::create_directory(struct_dir);
+    fs::path struct_dir = seq_file.parent_path() / seq_base_name;
+    fs::remove_all(struct_dir);
+    fs::create_directory(struct_dir);
 
     // Fancy functional trick to create a vertex oracle function
     boost::function<QPoint (QVector param_vector)> vertex_finder =
@@ -135,7 +137,7 @@ int iB4e_main(std::string seq_file_path, std::string param_dir_path) {
             if (!f->is_confirmed()) { // If the facet is not already confirmed, test it
                 Hyperplane hp = CH.hyperplane_supporting(f);
                 QVector innernormal = -hp.orthogonal_vector(); // CGAL returns the outer normal
-                innernormal *= innernormal[0].denominator();
+                //innernormal *= innernormal[0].denominator();
                 QPoint mfe_point = vertex_finder(innernormal);
 
                 switch (hp.oriented_side(mfe_point)) {
@@ -154,7 +156,10 @@ int iB4e_main(std::string seq_file_path, std::string param_dir_path) {
                     std::cout << "Hyperplane: " << hp << std::endl;
                     std::cout << "Inner normal: " << innernormal << std::endl;
                     std::cout << "MFE point: " << mfe_point << std::endl;
-                    std::cout << "Known vertex: " << CH.vertex_of_facet(f, 0)->point() << std::endl << std::endl;
+                    std::cout << "MFE energy: " << std::inner_product(mfe_point.cartesian_begin(), mfe_point.cartesian_end(), innernormal.cartesian_begin(), CGAL::Gmpq(0)) << std::endl;
+                    QPoint known_v =  CH.vertex_of_facet(f, 0)->point();
+                    std::cout << "Example known vertex: " << known_v << std::endl;
+                    std::cout << "Known vertex energy: " << std::inner_product(known_v.cartesian_begin(), known_v.cartesian_end(), innernormal.cartesian_begin(), CGAL::Gmpq(0)) << std::endl << std::endl;
                     f->confirm();
                     break;
                 }

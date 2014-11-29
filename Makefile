@@ -28,6 +28,7 @@ LIBS += -lm
 LIBS += -lgomp
 LIBS += -lboost_system
 LIBS += -lboost_filesystem
+LIBS += -lboost_program_options
 
 all: cgal $(OBJ) $(EXEC)
 

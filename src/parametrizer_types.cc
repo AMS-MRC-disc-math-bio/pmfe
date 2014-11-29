@@ -68,8 +68,8 @@ std::ostream& operator<<(std::ostream& os, const ScoreVector& score) {
     os << "Multiloops: " << score.multiloops.get_str(10) << std::endl
        << "Unpaired bases: " << score.unpaired.get_str(10) << std::endl
        << "Branches: " << score.branches.get_str(10) << std::endl
-       << "Parametrized energy: " << score.energy.get_str(10) << std::endl
-       << "w: " << score.w.get_str(10) << std::endl;
+       << "w: " << score.w.get_str(10) << std::endl
+       << "Parametrized energy: " << score.energy.get_str(10) << std::endl;
     return os;
 };
 

@@ -101,10 +101,10 @@ ScoreVector mfe(string seq_file, string output_file, string param_dir, Parameter
 
     init_fold(seq.c_str(), params);
 
-    // Read in thermodynamic parameters. Always use Turner99 data (for now)
-    readThermodynamicParameters(param_dir.c_str(), params);
+    // Read in thermodynamic parameters.
+    readThermodynamicParameters(param_dir.c_str());
 
-    energy = calculate(seq.length()) ;
+    energy = calculate(seq.length());
 
     ScoreVector result;
     result = trace(seq.length());
