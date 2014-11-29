@@ -93,7 +93,7 @@ energy_pair multiloop_penalty;
 energy_pair unpaired_penalty;
 energy_pair branch_penalty;
 
-void readThermodynamicParameters(const char *userdatadir, ParameterVector params) {
+void readThermodynamicParameters(const char *userdatadir) {
     struct stat buf;
 
     EN_DATADIR.assign(userdatadir);

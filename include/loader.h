@@ -27,7 +27,7 @@
 #include "global.h"
 #include "parametrizer_types.h"
 
-void readThermodynamicParameters(const char *userdatadir, ParameterVector params);
+void readThermodynamicParameters(const char *userdatadir);
 
 int initStackValues(const std::string& fileName, const std::string& dirPath);
 int initMiscloopValues(const std::string& fileName, const std::string& dirPath);
