@@ -3,7 +3,10 @@ SRC = $(wildcard src/*.cc)
 OBJ = $(SRC:.cc=.o)
 DEP = $(SRC:.cc=.d)
 HDR = $(wildcard include/*.h)
-EXEC = parametrizer
+
+OBJ-GTMFE = $(filter-out src/iB4e_main.o, $(OBJ))
+OBJ-PARAM = $(filter-out src/gtmfe_main.o, $(OBJ))
+EXEC = gtmfe-param parametrizer
 
 # include directories
 INCLUDES += -Iinclude
@@ -28,8 +31,11 @@ LIBS += -lboost_filesystem
 
 all: $(OBJ) $(EXEC)
 
-$(EXEC): $(OBJ)
-	$(CXX) $(INCLUDES) $(LDFLAGS) $(CXXFLAGS) $(OBJ) -o $@ $(LIBS)
+gtmfe-param: $(OBJ-GTMFE)
+	$(CXX) $(INCLUDES) $(LDFLAGS) $(CXXFLAGS) $(OBJ-GTMFE) -o $@ $(LIBS)
+
+parametrizer: $(OBJ-PARAM)
+	$(CXX) $(INCLUDES) $(LDFLAGS) $(CXXFLAGS) $(OBJ-PARAM) -o $@ $(LIBS)
 
 -include $(DEP)
 
