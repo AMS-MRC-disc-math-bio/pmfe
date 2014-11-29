@@ -1,8 +1,29 @@
-#include "parametrizer_types.h"
+// Copyright (c) 2014 Andrew Gainer-Dewar.
+
 #include <vector>
 #include <utility>
 #include <gmpxx.h>
 #include <cmath>
+#include <iostream>
+
+#include "iB4e.h"
+#include "parametrizer_types.h"
+
+std::ostream& operator<<(std::ostream& os, const ParameterVector& params) {
+    os << "Multiloop penalty: " << params.multiloop_penalty.get_str(10) << std::endl
+       << "Unpaired penalty: " << params.unpaired_penalty.get_str(10) << std::endl
+       << "Branch penalty: " << params.branch_penalty.get_str(10) << std::endl
+       << "Dummy scaling: " << params.dummy_scaling.get_str(10) << std::endl;
+    return os;
+};
+
+ParameterVector::ParameterVector(QVector v) {
+    assert(v.dimension() == 4);
+    multiloop_penalty = mpq_class(v.cartesian(0).mpq());
+    unpaired_penalty = mpq_class(v.cartesian(1).mpq());
+    branch_penalty = mpq_class(v.cartesian(2).mpq());
+    dummy_scaling = mpq_class(v.cartesian(3).mpq());
+};
 
 void ParameterVector::set_from_pairs(std::pair<long, long> multiloop_param_pair, std::pair<long, long> unpaired_param_pair, std::pair<long, long> branch_param_pair, std::pair<long, long> dummy_param_pair) {
   multiloop_penalty = mpq_class (multiloop_param_pair.first, multiloop_param_pair.second);
@@ -41,6 +62,29 @@ std::vector< std::string > ParameterVector::get_words() {
   result.push_back(branch_penalty.get_str(10));
   result.push_back(dummy_scaling.get_str(10));
   return result;
+};
+
+std::ostream& operator<<(std::ostream& os, const ScoreVector& score) {
+    os << "Multiloops: " << score.multiloops.get_str(10) << std::endl
+       << "Unpaired bases: " << score.unpaired.get_str(10) << std::endl
+       << "Branches: " << score.branches.get_str(10) << std::endl
+       << "Parametrized energy: " << score.energy.get_str(10) << std::endl
+       << "w: " << score.w.get_str(10) << std::endl;
+    return os;
+};
+
+QPoint ScoreVector::get_q4point() {
+    mpq_t values [4];
+    mpq_inits(values[0], values[1], values[2], values[3], NULL);
+
+    mpq_set_z(values[0], multiloops.get_mpz_t());
+    mpq_set_z(values[1], unpaired.get_mpz_t());
+    mpq_set_z(values[2], branches.get_mpz_t());
+    mpq_set(values[3], w.get_mpq_t());
+
+    QPoint result(4, values, values+4);
+    mpq_clears(values[0], values[1], values[2], values[3], NULL);
+    return result;
 };
 
 void ScoreVector::set_from_pairs(long multiloop_score, long unpaired_score, long branch_score, std::pair<long, long> w_score_pair, std::pair<long, long> energy_pair) {

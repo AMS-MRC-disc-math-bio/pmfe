@@ -2,9 +2,10 @@
 *.ct
 *.poly
 *.o
+*.d
 *.pyc
 objective
 solution
 output/
 *.polytope.sage
-
+CGAL/*

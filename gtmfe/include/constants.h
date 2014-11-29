@@ -32,11 +32,9 @@
 #define ctheaderlength 125 /* maximum length of string containing info on sequence */
 #define ga_bonus -10 /* the value of a bonus for the "almost coaxial stacking" case in efn2 */
 #define amax 400 /* this is a maximum line length for void linout (below) */
-#define col 80  /* this is the number of columns in an output file */
 #define numlen 8  /* maximum digits in a number */
 #define maxforce 600 /* maximum number of bases that can be forced single */
 #define maxgu 5 /* maximum number of u's in gu pair */
-#define C_ 1 /* "c" for optimized VBI. */
 
 #define MAXLOOP 30 /* The maximum loop size. */
 #define MAXENG 1000

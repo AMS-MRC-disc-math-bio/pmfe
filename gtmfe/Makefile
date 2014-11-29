@@ -1,49 +1,43 @@
-# Sage directory information (ew)
-SAGE_ROOT = $(shell sage --root)
-SAGE_ENV = $(SAGE_ROOT)/local/bin/sage-env
-SAGE_INC = $(SAGE_ROOT)/local/include
-SAGE_LIB = $(SAGE_ROOT)/local/lib
-SAGE_LIB64 = $(SAGE_ROOT)/local/lib64
-
-LD_PATH_SET = LD_LIBRARY_PATH="$(SAGE_LIB):$(SAGE_LIB64)"
-SAGE_GCC = $(LD_PATH_SET) $(SAGE_ROOT)/local/bin/gcc
-CC = $(SAGE_GCC)
-CPP = $(SAGE_GCC)
-CXX = $(SAGE_GCC)
-
 # source files.
-SRC = src/*.cc
-SRC-WITH = $(SRC) gtmfe-with-openmp.cc
-SRC-WITHOUT = $(SRC) gtmfe-without-openmp.cc
-
-OBJ = *.o
-
-OUT = _gtmfe.so
+SRC = $(wildcard src/*.cc)
+OBJ = $(SRC:.cc=.o)
+DEP = $(SRC:.cc=.d)
+HDR = $(wildcard include/*.h)
+EXEC = parametrizer
 
 # include directories
 INCLUDES += -Iinclude
+INCLUDES += -I../CGAL/include
 
-# subdirectories of sage include/ to include
-RINCLUDES += "python2.7" "gmp++"
-# And then this nightmare
-INCLUDES += -I$(SAGE_INC) $(addprefix -I,$(foreach dir,$(RINCLUDES),$(shell find $(SAGE_INC)/$(dir)  -type d -print)))
-
-# C++ compiler flags (-g -O2 -Wall)
-CXXFLAGS += -shared -fPIC -Wall -g -O2 #-nostdinc
-CXXFLAGS-OPENMP = -fopenmp -DHAVE_OPENMP
+# C++ compiler flags
+CXXFLAGS += -fPIC
+CXXFLAGS += -Wall
+CXXFLAGS += -g
+#CXXFLAGS += -O2
+CXXFLAGS += -O0
+CXXFLAGS += -fopenmp
+CXXFLAGS += -DHAVE_OPENMP
 
 # library paths
-LIBS += -Wl,-rpath,$(SAGE_LIB) -Wl,-rpath,$(SAGE_LIB64)
-LIBS += -L$(SAGE_LIB) -L$(SAGE_LIB64) -lgmp -lm
-LIBS-OPENMP = -lgomp
+LIBS += -L../CGAL/lib -lCGAL
+LIBS += -lgmp
+LIBS += -lm
+LIBS += -lgomp
+LIBS += -lboost_system
+LIBS += -lboost_filesystem
 
-gtmfe-with-openmp: $(SRC-WITH)
-	$(LINK.cc) $(INCLUDES) $(CXXFLAGS-OPENMP) $(LIBS) $(LIBS-OPENMP) $^ -o $(OUT)
+all: $(OBJ) $(EXEC)
 
-gtmfe-without-openmp: $(SRC-WITHOUT)
-	$(LINK.cc) $(INCLUDES) $(LIBS) $^ -o $(OUT)
+$(EXEC): $(OBJ)
+	$(CXX) $(INCLUDES) $(LDFLAGS) $(CXXFLAGS) $(OBJ) -o $@ $(LIBS)
+
+-include $(DEP)
+
+%.o: %.cc
+	$(CXX) $(INCLUDES) $(LDFLAGS) $(CXXFLAGS) -c $*.cc -o $*.o $(LIBS)
+	$(CXX) $(INCLUDES) $(LDFLAGS) $(CXXFLAGS) -MM $*.cc $(LIBS) | sed -e 's@^\(.*\)\.o:@src/\1.d src/\1.o:@' > $*.d
 
 clean:
-	-rm -vf $(OBJ)
+	-rm -vf $(EXEC) $(OBJ) $(DEP)
 
 .PHONY: clean

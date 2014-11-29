@@ -4,7 +4,7 @@ classical_scores = $classical_scores
 try:
     poly = load("$polydump.sobj")
 except IOError:
-    poly = Polytope(points, base_ring = QQ)
+    poly = Polyhedron(points, base_ring = QQ)
     poly.dump("$polydump", -1)
 
 slice = Polyhedron(eqns=[(1,0,0,0,1)])

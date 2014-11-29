@@ -1,3 +1,5 @@
+// Copyright (c) 2014 Andrew Gainer-Dewar.
+
 #ifndef PARAMETRIZER_TYPES_H
 #define PARAMETRIZER_TYPES_H
 
@@ -5,6 +7,9 @@
 #include <string>
 #include <utility>
 #include <gmpxx.h>
+#include <iostream>
+
+#include "iB4e.h"
 
 extern mpq_class multiloop_default;
 extern mpq_class unpaired_default;
@@ -20,11 +25,15 @@ class ParameterVector {
     };
     mpq_class multiloop_penalty, unpaired_penalty, branch_penalty, dummy_scaling;
 
+    ParameterVector(QVector v);
+
     void set_from_pairs(std::pair<long, long> multiloop_param_pair, std::pair<long, long> unpaired_param_pair, std::pair<long, long> branch_param_pair, std::pair<long, long> dummy_param_pair);
     void set_from_words(std::string multiloop_param_word, std::string unpaired_param_word, std::string branch_param_word, std::string dummy_param_word);
 
     std::vector< std::pair<long, long> > get_pairs();
     std::vector< std::string > get_words();
+
+    friend std::ostream& operator<<(std::ostream& os, const ParameterVector& params);
 };
 
 class ScoreVector {
@@ -36,11 +45,14 @@ class ScoreVector {
     mpz_class multiloops, branches, unpaired;
     mpq_class w, energy;
 
+    QPoint get_q4point();
+
     void set_from_pairs(long multiloop_score, long unpaired_score, long branch_score, std::pair<long, long> w_score_pair,std::pair<long, long> energy_pair);
     void set_from_words(std::string multiloop_score_word, std::string unpaired_score_word, std::string branch_score_word, std::string w_score_word, std::string energy_word);
 
     std::vector< std::pair<long, long> > get_pairs();
     std::vector< std::string > get_words();
+    friend std::ostream& operator<<(std::ostream& os, const ScoreVector& score);
 };
 
 class energy_pair {
