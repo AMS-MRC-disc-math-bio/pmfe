@@ -67,6 +67,8 @@ int main(int argc, char * argv[]) {
         params.dummy_scaling = get_mpq_from_word(vm["dummy-scaling"].as<std::string>());
     };
 
+    params.canonicalize();
+
     ScoreVector result = mfe(seq_file.native(), output_file.native(), param_dir.native(), params);
     std::cout << result << std::endl;
     return(0);
