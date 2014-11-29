@@ -14,29 +14,18 @@ git clone https://github.com/AMS-MRC-disc-math-bio/iB4e-GTfold-parametrizer.git
 This will download the code and extract it into a directory called `iB4e-GTfold-parameterizer`.
 
 ### Dependencies
-The project depends on various libraries and functionality that are implemented in [Sage][sage].
-If you do not already have Sage installed on your computer, you must download and install it before you can proceed.
+This project depends on the [CGAL][cgal] computational geometry library.
+It has been slightly modified, so the source tree is included here under the terms of the GPL3 and LGPL (see `LICENSE` in the `CGAL` directory).
+To build it, you will need the [CMake][cmake] build system.
 
-Once you have installed Sage, you must make it available.
-To see if this is the case, run `sage` from a terminal.
-If you see a version string like `Sage Version 6.4.beta3, Release Date: 2014-09-10`, you're good to go!
-If you see a `command not found` error, you need to configure your path.
-The easiest way to do this is to link it into the `/usr/local/bin` directory, using the following command:
-```
-ln -s /path/to/sage/directory/sage /usr/local/bin
-```
-
-If you install Sage using the binary distribution (typical), you must also install the Sage version of the compiler suite GCC.
-To do this, run the following from a terminal.
-```
-sage -i gcc
-```
-If you installed Sage from source or Git, you already have the Sage GCC and no action is required.
+This project also depends on several libraries from the [Boost][boost] project.
+You should install it according to the project's [instructions][boost-getstarted].
 
 
 ### Building the project code
 Next, you will need to build our custom version of `GTFold`.
 To do so, simply run `make` from the `iB4e-GTfold-parametrizer` directory.
+This will automatically run all the required build steps, including handling the `CGAL` subdirectory.
 
 ## Updating
 
@@ -69,3 +58,7 @@ The source for iB4e-GTfold-parametrizer is released under the GNU General Public
 [gmp]: //gmplib.org/
 [gmp-dl]: //gmplib.org/#DOWNLOAD
 [sage]: //sagemath.org
+[cgal]: //www.cgal.org
+[boost]: //www.boost.org
+[boost-getstarted]: //www.boost.org/doc/libs/1_57_0/more/getting_started/unix-variants.html
+[cmake]: //www.cmake.org/download/

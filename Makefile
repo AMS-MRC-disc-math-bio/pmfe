@@ -29,7 +29,7 @@ LIBS += -lgomp
 LIBS += -lboost_system
 LIBS += -lboost_filesystem
 
-all: $(OBJ) $(EXEC)
+all: cgal $(OBJ) $(EXEC)
 
 gtmfe-param: $(OBJ-GTMFE)
 	$(CXX) $(INCLUDES) $(LDFLAGS) $(CXXFLAGS) $(OBJ-GTMFE) -o $@ $(LIBS)
@@ -43,7 +43,14 @@ parametrizer: $(OBJ-PARAM)
 	$(CXX) $(INCLUDES) $(LDFLAGS) $(CXXFLAGS) -c $*.cc -o $*.o $(LIBS)
 	$(CXX) $(INCLUDES) $(LDFLAGS) $(CXXFLAGS) -MM $*.cc $(LIBS) | sed -e 's@^\(.*\)\.o:@src/\1.d src/\1.o:@' > $*.d
 
+CGAL/Makefile:
+	cmake CGAL
+
+cgal: CGAL/Makefile
+	$(MAKE) -C CGAL
+
 clean:
 	-rm -vf $(EXEC) $(OBJ) $(DEP)
+	$(MAKE) -C CGAL clean
 
 .PHONY: clean
