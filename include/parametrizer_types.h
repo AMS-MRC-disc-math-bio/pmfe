@@ -13,10 +13,11 @@
 extern mpq_class multiloop_default;
 extern mpq_class unpaired_default;
 extern mpq_class branch_default;
+extern mpq_class dummy_default;
 
 class ParameterVector {
  public:
- ParameterVector(mpq_class multiloop_penalty = multiloop_default, mpq_class unpaired_penalty = unpaired_default, mpq_class branch_penalty = branch_default, mpq_class dummy_scaling = mpq_class(1)) : multiloop_penalty(multiloop_penalty), unpaired_penalty(unpaired_penalty), branch_penalty(branch_penalty), dummy_scaling(dummy_scaling) {
+ ParameterVector(mpq_class multiloop_penalty = multiloop_default, mpq_class unpaired_penalty = unpaired_default, mpq_class branch_penalty = branch_default, mpq_class dummy_scaling = dummy_default) : multiloop_penalty(multiloop_penalty), unpaired_penalty(unpaired_penalty), branch_penalty(branch_penalty), dummy_scaling(dummy_scaling) {
         this->canonicalize();
     };
     mpq_class multiloop_penalty, unpaired_penalty, branch_penalty, dummy_scaling;
@@ -53,9 +54,16 @@ class ScoreVector {
 
 class energy_pair {
  public:
- energy_pair(mpq_class param = mpq_class(0), mpq_class classical = mpq_class(0)): param(param), classical(classical) {};
+ energy_pair(mpq_class param = mpq_class(0), mpq_class classical = mpq_class(0)): param(param), classical(classical) {
+        this->canonicalize();
+    };
 
     mpq_class param, classical;
+
+    void canonicalize() {
+        param.canonicalize();
+        classical.canonicalize();
+    }
 
     energy_pair& operator= (const energy_pair b) {
         this->param = b.param;
@@ -88,6 +96,7 @@ class energy_pair {
         return *this;
     }
 
+
     friend energy_pair operator* (energy_pair a, const energy_pair &b) {
         return a *= b;
     }
@@ -104,16 +113,17 @@ class energy_pair {
         return b *= a;
     }
 
-    friend bool operator< (const energy_pair &a, const energy_pair &b) { return a.param < b.param; };
-    friend bool operator<= (const energy_pair &a, const energy_pair &b) { return a.param <= b.param; };
+    friend bool operator< (const energy_pair &a, const energy_pair &b);
+    friend bool operator<= (const energy_pair &a, const energy_pair &b);
 
-    friend bool operator== (const energy_pair &a, const energy_pair &b) { return a.param == b.param; };
-    friend bool operator!= (const energy_pair &a, const energy_pair &b) { return a.param != b.param; };
+    friend bool operator== (const energy_pair &a, const energy_pair &b);
+    friend bool operator!= (const energy_pair &a, const energy_pair &b);
 
-    friend bool operator> (const energy_pair &a, const energy_pair &b) { return a.param > b.param; };
-    friend bool operator>= (const energy_pair &a, const energy_pair &b) { return a.param >= b.param; };
+    friend bool operator> (const energy_pair &a, const energy_pair &b) ;
+    friend bool operator>= (const energy_pair &a, const energy_pair &b);
+
+    friend std::ostream& operator<<(std::ostream& os, const energy_pair& energy);
 };
-
 
 mpq_class get_mpq_from_word(std::string word);
 
