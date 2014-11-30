@@ -44,15 +44,16 @@ Given a FASTA file representing an RNA sequence, the program will produce a Sage
 
 To run the calculation on the sequence in `testseq.fasta`, type
 
-    ./parametrizer.py -s testseq.fasta
+    ./parametrizer testseq.fasta
 
 The result will be a file `testseq.polytope.sage` containing the required Sage commands and a directory called `testseq` containing structure files representing the MFE structures for each set of parameters.
 
-## Testing
+We also supply a program which can be used to find an MFE structure for a single set of parameters.
+To use it on the sequence in `testseq.fasta` with parameters `A`, `B`, `C`, and `D`, type
 
-This project includes unit tests in the files `test_GTrunner.py` and `test_RNAscorer.py`.
-Simply run each of these scripts from your shell to test the functionality of the associated program.
-If any of the tests fail, please be sure your build of the C code in `gtmfe/` is up to date; if the tests continue to fail, please contact the author with information about your computer architecture, operating system, and compiler.
+    ./gtmfe-param testseq.fasta -a A -b B -c C -d D
+
+The result will be printed to your terminal.
 
 ## License
 
