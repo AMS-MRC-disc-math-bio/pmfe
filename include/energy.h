@@ -29,25 +29,19 @@ extern int *indx;
 extern const float RT;
 extern const float RT_;
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-    energy_pair Ed3(int i, int j, int k);
-    energy_pair Ed5(int i, int j, int k);
-    energy_pair auPenalty(int i, int j);
+energy_pair Ed3(int i, int j, int k);
+energy_pair Ed5(int i, int j, int k);
+energy_pair auPenalty(int i, int j);
 
-    energy_pair eS(int i, int j);
-    energy_pair eH(int i, int j);
-    energy_pair eL(int i, int j, int ip, int jp);
-    energy_pair eL1(int i, int j, int ip, int jp);
-    energy_pair Estackm(int i, int j);
-    energy_pair Estacke(int i, int j);
+energy_pair eS(int i, int j);
+energy_pair eH(int i, int j);
+energy_pair eL(int i, int j, int ip, int jp);
+energy_pair eL1(int i, int j, int ip, int jp);
+energy_pair Estackm(int i, int j);
+energy_pair Estacke(int i, int j);
 
-    void create_tables(int len);
-    void init_tables(int len);
-    void free_tables(int len);
-#ifdef __cplusplus
-}
-#endif
+void create_tables(int len);
+void init_tables(int len);
+void free_tables(int len);
 
 #endif
