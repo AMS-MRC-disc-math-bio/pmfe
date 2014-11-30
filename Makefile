@@ -10,7 +10,6 @@ EXEC = gtmfe-param parametrizer
 
 # include directories
 INCLUDES += -Iinclude
-INCLUDES += -ICGAL/include
 
 # C++ compiler flags
 CXXFLAGS += -fPIC
@@ -21,7 +20,7 @@ CXXFLAGS += -fopenmp
 CXXFLAGS += -DHAVE_OPENMP
 
 # library paths
-LIBS += -LCGAL/lib -lCGAL
+LIBS += -lCGAL
 LIBS += -lgmp
 LIBS += -lm
 LIBS += -lgomp
@@ -29,7 +28,7 @@ LIBS += -lboost_system
 LIBS += -lboost_filesystem
 LIBS += -lboost_program_options
 
-all: cgal $(OBJ) $(EXEC)
+all: $(OBJ) $(EXEC)
 
 gtmfe-param: $(OBJ-GTMFE)
 	$(CXX) $(INCLUDES) $(LDFLAGS) $(CXXFLAGS) $(OBJ-GTMFE) -o $@ $(LIBS)
@@ -43,14 +42,7 @@ parametrizer: $(OBJ-PARAM)
 	$(CXX) $(INCLUDES) $(LDFLAGS) $(CXXFLAGS) -c $*.cc -o $*.o $(LIBS)
 	$(CXX) $(INCLUDES) $(LDFLAGS) $(CXXFLAGS) -MM $*.cc $(LIBS) | sed -e 's@^\(.*\)\.o:@src/\1.d src/\1.o:@' > $*.d
 
-CGAL/Makefile:
-	cd CGAL && cmake .
-
-cgal: CGAL/Makefile
-	$(MAKE) -C CGAL
-
 clean:
 	-rm -vf $(EXEC) $(OBJ) $(DEP)
-	$(MAKE) -C CGAL clean
 
 .PHONY: clean

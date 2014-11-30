@@ -14,15 +14,14 @@ git clone https://github.com/AMS-MRC-disc-math-bio/iB4e-GTfold-parametrizer.git
 This will download the code and extract it into a directory called `iB4e-GTfold-parameterizer`.
 
 ### Dependencies
-This project depends on the [CGAL][cgal] computational geometry library.
-It has been slightly modified, so the source tree is included here under the terms of the GPL3 and LGPL (see `LICENSE` in the `CGAL` directory).
-To build it, you will need the [CMake][cmake] build system.
+This project depends on the [CGAL][cgal] computational geometry library, several libraries from the [Boost][boost] project, and the [GMP][gmp] arbitrary-precision arithmetic library.
+To install the required dependencies on a Debian system, run
+
+    sudo apt-get install libgmp-dev libboost-filesystem-dev libboost-program-options-dev libcgal-dev
+
 
 This project also depends on the [NLTemplate] string templating library.
 It has been included here under the terms of the MIT license.
-
-This project also depends on several libraries from the [Boost][boost] project.
-You should install it according to the project's [instructions][boost-getstarted].
 
 
 ### Building the project code
