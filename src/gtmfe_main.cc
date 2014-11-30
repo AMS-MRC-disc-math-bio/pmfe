@@ -28,12 +28,13 @@ int main(int argc, char * argv[]) {
     p.add("sequence", -1);
     po::variables_map vm;
     po::store(po::command_line_parser(argc, argv).options(desc).positional(p).run(), vm);
-    po::notify(vm);
 
-    if (vm.count("help")) {
+    if (vm.count("help") or argc == 1) {
         std::cout << desc << std::endl;
         return 1;
     };
+
+    po::notify(vm);
 
     // Process file-related options
     fs::path seq_file, output_file, param_dir;
