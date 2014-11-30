@@ -55,6 +55,8 @@ To use it on the sequence in `testseq.fasta` with parameters `A`, `B`, `C`, and 
 
 The result will be printed to your terminal.
 
+For more information about either program, run it with the `-h` option.
+
 ## License
 
 The source for iB4e-GTfold-parametrizer is released under the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
