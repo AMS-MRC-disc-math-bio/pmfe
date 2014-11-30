@@ -27,7 +27,11 @@ It has been included here under the terms of the MIT license.
 ### Building the project code
 Next, you will need to build our custom version of `GTFold`.
 To do so, simply run `make` from the `iB4e-GTfold-parametrizer` directory.
-This will automatically run all the required build steps, including handling the `CGAL` subdirectory.
+If you have multiple cores or processors, you can build in parallel by running
+
+    nice make -j
+
+instead.
 
 ## Updating
 
