@@ -25,6 +25,21 @@ ParameterVector::ParameterVector(QVector v) {
     this->canonicalize();
 };
 
+QVector ParameterVector::as_QVector() {
+    this->canonicalize();
+    mpq_t values [4];
+    mpq_inits(values[0], values[1], values[2], values[3], NULL);
+
+    mpq_set(values[0], multiloop_penalty.get_mpq_t());
+    mpq_set(values[1], unpaired_penalty.get_mpq_t());
+    mpq_set(values[2], branch_penalty.get_mpq_t());
+    mpq_set(values[3], dummy_scaling.get_mpq_t());
+
+    QVector result(4, values, values+4);
+    mpq_clears(values[0], values[1], values[2], values[3], NULL);
+    return result;
+};
+
 std::ostream& operator<<(std::ostream& os, const ScoreVector& score) {
     os << "Multiloops: " << score.multiloops.get_str(10) << std::endl
        << "Unpaired bases: " << score.unpaired.get_str(10) << std::endl

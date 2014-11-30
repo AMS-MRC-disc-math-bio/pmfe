@@ -2,16 +2,20 @@
 
 #include <stdlib.h>
 #include <iostream>
+#include <sstream>
 #include <set>
 #include <string>
 #include <boost/bind.hpp>
 #include <boost/function.hpp>
 #include <boost/filesystem.hpp>
+#include <boost/filesystem/fstream.hpp>
 #include <boost/lexical_cast.hpp>
 
 #include "iB4e.h"
 #include "mfe.h"
 #include "parametrizer_types.h"
+
+#include "NLTemplate.h"
 
 namespace fs = boost::filesystem;
 
@@ -21,6 +25,7 @@ QPoint run_gtmfe_on_q4vector(QVector param_vector, fs::path seq_file, fs::path o
 
     std::string structure_ext = ".ct";
     fs::path seq_base_name = seq_file.stem();
+
     fs::path initial_output_file = output_dir / seq_base_name;
     initial_output_file.replace_extension(structure_ext);
 
@@ -128,6 +133,12 @@ int iB4e_main(std::string seq_file_path, std::string param_dir_path) {
     assert(CH.is_valid());
     assert(CH.current_dimension() == dim);
 
+    // We compute the classical scores here, because we'll need them later anyway
+    QVector classical = ParameterVector().as_QVector();
+    QPoint classical_mfe = vertex_finder(classical);
+    CH.insert(classical_mfe);
+    LVector classical_structure_point = LVector(classical_mfe.cartesian_begin(), classical_mfe.cartesian_end());
+
     // MAIN LOOP
     bool all_confirmed_so_far = false;
     int confirmed = 0;
@@ -172,18 +183,47 @@ int iB4e_main(std::string seq_file_path, std::string param_dir_path) {
     // END LOGIC
     // BEGIN OUTPUT
 
+    // Output statistics to stdout
     assert(CH.is_valid());
     CH.print_statistics();
     std::cout << CH.all_facets().size() << " facets, " << confirmed << " confirmed." << std::endl;
 
-    std::cout << "[";
+    // Build string encoding discovered points in polytope
+    std::ostringstream point_stream;
+    point_stream << "[";
 
     for (Vertex_iterator v = CH.vertices_begin(); v != CH.vertices_end(); v++) {
         QPoint p = v->point();
-        std::cout << "[" << p[0] << ", " << p[1] << ", " << p[2] << ", " << p[3] << "], ";
+        point_stream << "[" << p[0] << ", " << p[1] << ", " << p[2] << ", " << p[3] << "], ";
     }
 
-    std::cout << "]" << std::endl;
+    point_stream << "]";
+
+    // Build string encoding classical scores
+    std::ostringstream classical_score_stream;
+    classical_score_stream << "[" <<
+        classical_structure_point[0] << ", " <<
+        classical_structure_point[1] << ", " <<
+        classical_structure_point[2] << ", " <<
+        classical_structure_point[3] << "]";
+
+    // Build polytope file from template
+    NL::Template::LoaderFile loader;
+    NL::Template::Template t(loader);
+
+    t.load("output.template");
+    t.set("POINTS", point_stream.str());
+    t.set("CLASSICAL_SCORES", classical_score_stream.str());
+    t.set("POLYDUMP", seq_base_name.string());
+
+    NL::Template::OutputString result_buffer;
+    t.render(result_buffer);
+
+    fs::path polytope_file_path = seq_base_name;
+    polytope_file_path.replace_extension(".polytope.sage");
+
+    fs::ofstream polytope_file(polytope_file_path);
+    polytope_file << result_buffer.buf.str();
 
     // END OUTPUT
 

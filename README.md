@@ -18,6 +18,9 @@ This project depends on the [CGAL][cgal] computational geometry library.
 It has been slightly modified, so the source tree is included here under the terms of the GPL3 and LGPL (see `LICENSE` in the `CGAL` directory).
 To build it, you will need the [CMake][cmake] build system.
 
+This project also depends on the [NLTemplate] string templating library.
+It has been included here under the terms of the MIT license.
+
 This project also depends on several libraries from the [Boost][boost] project.
 You should install it according to the project's [instructions][boost-getstarted].
 
@@ -62,3 +65,4 @@ The source for iB4e-GTfold-parametrizer is released under the GNU General Public
 [boost]: //www.boost.org
 [boost-getstarted]: //www.boost.org/doc/libs/1_57_0/more/getting_started/unix-variants.html
 [cmake]: //www.cmake.org/download/
+[NLTemplate]: //github.com/catnapgames/NLTemplate

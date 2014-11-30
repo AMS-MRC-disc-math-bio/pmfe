@@ -1,11 +1,11 @@
-points = $points
-classical_scores = $classical_scores
+points = {{ POINTS }}
+classical_scores = {{ CLASSICAL_SCORES }}
 
 try:
-    poly = load("$polydump.sobj")
+    poly = load("{{ POLYDUMP }}.sobj")
 except IOError:
     poly = Polyhedron(points, base_ring = QQ)
-    poly.dump("$polydump", -1)
+    poly.dump("{{ POLYDUMP }}", -1)
 
 slice = Polyhedron(eqns=[(1,0,0,0,1)])
 fan = NormalFan(poly)

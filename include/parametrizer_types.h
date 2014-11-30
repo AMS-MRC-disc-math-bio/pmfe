@@ -31,6 +31,8 @@ class ParameterVector {
         dummy_scaling.canonicalize();
     }
 
+    QVector as_QVector();
+
     friend std::ostream& operator<<(std::ostream& os, const ParameterVector& params);
 };
 
