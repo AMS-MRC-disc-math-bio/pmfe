@@ -104,15 +104,39 @@ ScoreVector mfe(string seq_file, string output_file, string param_dir, Parameter
     // Read in thermodynamic parameters.
     readThermodynamicParameters(param_dir.c_str());
 
+    // Compute the minimum free energy
     energy = calculate(seq.length());
 
+    // Find the associated structure
     ScoreVector result;
     result = trace(seq.length());
     result.energy = energy.param;
-    result.w = energy.classical - (result.multiloops * multiloop_default + result.unpaired * unpaired_default + result.branches * branch_default);
 
+    // Calculate w
+    // Unfortunately, the mechanism used to compute classical energy is unreliable due to a quirk of std::min_element.
+    // This should not apply when d=0, so we include two different methods.
+    if (params.dummy_scaling == 0) {
+        result.w = energy.classical - (result.multiloops * multiloop_default + result.unpaired * unpaired_default + result.branches * branch_default);
+    } else {
+        result.w = (energy.param - result.multiloops * params.multiloop_penalty - result.branches * params.branch_penalty - result.unpaired * params.unpaired_penalty)/params.dummy_scaling;
+    }
+
+    // Check that the w calculation produced a consistent result
+    mpq_class formula_energy = result.multiloops * params.multiloop_penalty + result.unpaired * params.unpaired_penalty + result.branches * params.branch_penalty + result.w * params.dummy_scaling;
+    formula_energy.canonicalize();
+
+    // And alert the user if not
+    if (result.energy != formula_energy) {
+        std::cerr << "Energy calculation is inconsistent!" << std::endl;
+        std::cerr << params << std::endl;
+        std::cerr << result << std::endl;
+        std::cerr << "Formula energy: " << formula_energy.get_str(10) << std::endl << std::endl;
+    };
+
+    // Write out the resulting structure
     save_ct_file(outputFile, seq, energy.classical);
 
+    // Clean up
     free_fold(seq.length());
 
     return result;

@@ -206,10 +206,10 @@ int initMiscloopValues(const string& fileName, const string& dirpath) {
             }
         }
         if (index == 4) {
-            eparam[1] = dummy_scaling * 0;
-            eparam[2] = dummy_scaling * 0;
-            eparam[3] = dummy_scaling * 0;
-            eparam[4] = dummy_scaling * 0;
+            eparam[1] = zero;
+            eparam[2] = zero;
+            eparam[3] = zero;
+            eparam[4] = zero;
             eparam[7] = dummy_scaling * mpq_class(3, 10);
             eparam[8] = dummy_scaling * mpq_class(3, 10);
             eparam[9] = dummy_scaling * mpq_class(-5);

@@ -75,7 +75,8 @@ int iB4e_main(std::string seq_file_path, std::string param_dir_path) {
     QVector zero(dim, CGAL::NULL_VECTOR);
     QPoint null_mfe = vertex_finder(zero);
     CH.insert(null_mfe);
-    test_vectors.push_back(LVector(null_mfe.cartesian_begin(), null_mfe.cartesian_end()));
+    LVector zero_structure_point = LVector(null_mfe.cartesian_begin(), null_mfe.cartesian_end());
+    test_vectors.push_back(zero_structure_point);
 
     // Huggins' initialization loop
     while (CH.current_dimension() < dim) {
@@ -119,6 +120,7 @@ int iB4e_main(std::string seq_file_path, std::string param_dir_path) {
 
             test_vectors.push_back(new_test_vector);
         } else { // If no orthogonal vector was found, the polytope is not full-dimensional and the algorithm will fail
+            std::cerr << "Failed to bootstrap full-dimensional polytope!" << std::endl;
             exit(1);
         }
     }
@@ -152,14 +154,14 @@ int iB4e_main(std::string seq_file_path, std::string param_dir_path) {
                     break;
 
                 case CGAL::ON_NEGATIVE_SIDE:
-                    std::cout << "Failed vector test!" << std::endl;
-                    std::cout << "Hyperplane: " << hp << std::endl;
-                    std::cout << "Inner normal: " << innernormal << std::endl;
-                    std::cout << "MFE point: " << mfe_point << std::endl;
-                    std::cout << "MFE energy: " << std::inner_product(mfe_point.cartesian_begin(), mfe_point.cartesian_end(), innernormal.cartesian_begin(), CGAL::Gmpq(0)) << std::endl;
+                    std::cerr << "Failed vector test!" << std::endl;
+                    std::cerr << "Hyperplane: " << hp << std::endl;
+                    std::cerr << "Inner normal: " << innernormal << std::endl;
+                    std::cerr << "MFE point: " << mfe_point << std::endl;
+                    std::cerr << "MFE energy: " << std::inner_product(mfe_point.cartesian_begin(), mfe_point.cartesian_end(), innernormal.cartesian_begin(), CGAL::Gmpq(0)) << std::endl;
                     QPoint known_v =  CH.vertex_of_facet(f, 0)->point();
-                    std::cout << "Example known vertex: " << known_v << std::endl;
-                    std::cout << "Known vertex energy: " << std::inner_product(known_v.cartesian_begin(), known_v.cartesian_end(), innernormal.cartesian_begin(), CGAL::Gmpq(0)) << std::endl << std::endl;
+                    std::cerr << "Example known vertex: " << known_v << std::endl;
+                    std::cerr << "Known vertex energy: " << std::inner_product(known_v.cartesian_begin(), known_v.cartesian_end(), innernormal.cartesian_begin(), CGAL::Gmpq(0)) << std::endl << std::endl;
                     f->confirm();
                     break;
                 }

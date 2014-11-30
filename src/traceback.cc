@@ -74,7 +74,7 @@ void traceW(int j) {
         if ( wim1 != W[i-1] && canSSregion(0,i)) flag = 0;
 
         if (g_dangles == 2) {
-            energy_pair e_dangles;
+            energy_pair e_dangles = zero;
             if (i>1) e_dangles +=  Ed3(j,i,i-1);
             if (j<length) e_dangles += Ed5(j,i,j+1);
             if ((W[j] == V_f(i,j) + auPenalty(i, j) + e_dangles + wim1 && canSS(i) && canSS(j) && canStack(i+1,j-1)) || forcePair(i+1,j-1)) {
@@ -196,7 +196,7 @@ energy_pair traceVBI(int i, int j) {
 
 energy_pair traceVM(int i, int j) {
     int done = 0;
-    energy_pair eVM;
+    energy_pair eVM = zero;
 
     if (g_dangles == 2) {
         if (V_f(i,j) ==  WMPrime[i + 1][j - 1] + multConst[0] + multConst[2] + auPenalty(i,j) + Ed5(i,j,i + 1) + Ed3(i,j,j - 1) && canSS(i+1) && canSS(j-1) ) {
@@ -245,7 +245,7 @@ energy_pair traceVM(int i, int j) {
 
 energy_pair traceWMPrime(int i, int j) {
     int done=0, h;
-    energy_pair energy;
+    energy_pair energy = zero;
 
     for (h = i; h < j && !done; h++) {
         if (WM_f(i,h) + WM_f(h + 1,j) == WMPrime_f(i,j)) {
@@ -261,7 +261,7 @@ energy_pair traceWMPrime(int i, int j) {
 energy_pair traceWM(int i, int j) {
     assert(i < j);
     int done=0;
-    energy_pair eWM;
+    energy_pair eWM = zero;
 
     if (!done && WM_f(i,j) == WMPrime[i][j]) {
         eWM += traceWMPrime(i,j);

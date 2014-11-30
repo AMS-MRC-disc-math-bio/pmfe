@@ -42,7 +42,7 @@ void init_global_params(int len, ParameterVector params) {
     exit(-1);
   }
 
-  dummy_scaling = energy_pair(params.dummy_scaling, 1);
+  dummy_scaling = energy_pair(params.dummy_scaling, dummy_default);
   multiloop_penalty = energy_pair(params.multiloop_penalty, multiloop_default);
   unpaired_penalty = energy_pair(params.unpaired_penalty, unpaired_default);
   branch_penalty = energy_pair(params.branch_penalty, branch_default);
@@ -51,7 +51,7 @@ void init_global_params(int len, ParameterVector params) {
 
   mpq_class OLD_INFINITY_ = INFINITY_;
 
-  if (abs(params.dummy_scaling) > 1) {
+  if (abs(params.dummy_scaling > 1)) {
       INFINITY_ *= abs(params.dummy_scaling);
   }
 
