@@ -44,7 +44,7 @@ parametrizer: $(OBJ-PARAM)
 	$(CXX) $(INCLUDES) $(LDFLAGS) $(CXXFLAGS) -MM $*.cc $(LIBS) | sed -e 's@^\(.*\)\.o:@src/\1.d src/\1.o:@' > $*.d
 
 CGAL/Makefile:
-	cmake CGAL
+	cd CGAL && cmake .
 
 cgal: CGAL/Makefile
 	$(MAKE) -C CGAL
