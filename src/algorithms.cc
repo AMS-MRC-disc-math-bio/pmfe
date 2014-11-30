@@ -199,7 +199,7 @@ energy_pair calculate(int len) {
                     vals.push_back(VM_f(i,j));
                     vals.push_back(WMPrime[i+1][j-1] + auPenalty(i,j) + multConst[0] + multConst[2]);
                     VM_f(i,j) = *std::min_element(vals.begin(), vals.end());
-                }	else { // default
+                } else { // default
                     std::vector<energy_pair> vals;
                     vals.push_back(VM_f(i,j));
                     vals.push_back(WMPrime[i+1][j-1] + auPenalty(i,j) + multConst[0] + multConst[2]);
@@ -231,6 +231,7 @@ energy_pair calculate(int len) {
                 vals.push_back(WMPrime[i][j]);
                 vals.push_back(WMU_f(i,h-1) + WML_f(h,j));
                 WMPrime[i][j] = *std::min_element(vals.begin(), vals.end());
+
             }
 
             // WM begin
@@ -369,7 +370,7 @@ energy_pair calculate(int len) {
     int ii, jj;
     for (ii = 1; ii <= len; ++ii) {
         for (jj = len; jj > ii; --jj) {
-            fprintf(file, "%d %d %d\n",ii,jj,VBI_f(ii,jj));
+            fprintf(file, "%d %d %f\n",ii,jj,VBI_f(ii,jj).classical.get_d());
         }
     }
     fclose(file);
@@ -379,7 +380,7 @@ energy_pair calculate(int len) {
         for (jj = len; jj > ii; --jj) {
             energy_pair eh = inf;
             if (PP[ii][jj])	eh = eH(ii,jj);
-            fprintf(file, "%d %d %d\n",ii,jj,eh>=inf?inf:eh);
+            fprintf(file, "%d %d %f\n",ii,jj,eh>=inf?inf.classical.get_d():eh.classical.get_d());
         }
     }
     fclose(file);
@@ -389,7 +390,7 @@ energy_pair calculate(int len) {
         for (jj = len; jj > ii; --jj) {
             energy_pair es = inf;
             if (PP[ii][jj] && PP[ii+1][jj-1]) es = eS(ii,jj);
-            fprintf(file, "%d %d %d\n",ii,jj,es>=inf?inf:es);
+            fprintf(file, "%d %d %f\n",ii,jj,es>=inf?inf.classical.get_d():es.classical.get_d());
         }
     }
     fclose(file);
@@ -405,7 +406,7 @@ energy_pair calculate(int len) {
     file = fopen("VM.txt", "w");
     for (ii = 1; ii <= len; ++ii) {
         for (jj = len; jj > ii; --jj) {
-            fprintf(file, "%d %d %d\n",ii,jj,VM_f(ii,jj));
+            fprintf(file, "%d %d %f\n",ii,jj,VM_f(ii,jj).classical.get_d());
         }
     }
     fclose(file);
@@ -413,7 +414,7 @@ energy_pair calculate(int len) {
     file = fopen("WM.txt", "w");
     for (ii = 1; ii <= len; ++ii) {
         for (jj = len; jj > ii; --jj) {
-            fprintf(file, "%d %d %d\n",ii,jj,WM_f(ii,jj));
+            fprintf(file, "%d %d %f\n",ii,jj,WM_f(ii,jj).classical.get_d());
         }
     }
     fclose(file);

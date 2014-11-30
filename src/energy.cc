@@ -16,7 +16,7 @@ std::vector<energy_pair> VBI;
 std::vector<energy_pair> VM;
 std::vector< std::vector<energy_pair> > WM;
 std::vector< std::vector<energy_pair> > WMPrime;
-std::vector< std::vector<mpq_class> > PP;
+std::vector< std::vector<int> > PP;
 
 int *indx;
 
@@ -31,7 +31,7 @@ void create_tables(int len) {
     VM.resize((len+1)*len/2 + 1);
 
     WM.resize(len+1, std::vector<energy_pair>(len+1));
-    PP.resize(len+1, std::vector<mpq_class>(len+1));
+    PP.resize(len+1, std::vector<int>(len+1));
     WMPrime.resize(len+1, std::vector<energy_pair>(len+1));
 
     indx = new int[len+1];

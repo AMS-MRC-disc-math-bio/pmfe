@@ -14,7 +14,7 @@ extern std::vector<energy_pair> VM;
 extern std::vector< std::vector<energy_pair> > WM;
 extern std::vector< std::vector<energy_pair> > WMPrime;
 
-extern std::vector< std::vector<mpq_class> > PP;
+extern std::vector< std::vector<int> > PP;
 extern int *indx;
 
 #define V_f(i,j) V[indx[j]+i]
