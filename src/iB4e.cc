@@ -219,7 +219,7 @@ int iB4e_main(std::string seq_file_path, std::string param_dir_path) {
     NL::Template::OutputString result_buffer;
     t.render(result_buffer);
 
-    fs::path polytope_file_path = seq_base_name;
+    fs::path polytope_file_path = seq_file;
     polytope_file_path.replace_extension(".polytope.sage");
 
     fs::ofstream polytope_file(polytope_file_path);
