@@ -4,8 +4,8 @@ OBJ = $(SRC:.cc=.o)
 DEP = $(SRC:.cc=.d)
 HDR = $(wildcard include/*.h)
 
-OBJ-GTMFE = $(filter-out src/iB4e_main.o, $(OBJ))
-OBJ-PARAM = $(filter-out src/gtmfe_main.o, $(OBJ))
+OBJ-GTMFE = $(filter-out src/iB4e_wrapper.o, $(OBJ))
+OBJ-PARAM = $(filter-out src/gtmfe_wrapper.o, $(OBJ))
 EXEC = gtmfe-param parametrizer
 
 # include directories
