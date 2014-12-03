@@ -32,14 +32,8 @@ namespace rnascoring
             // then add the energy for both a 3' and 5' dangling end
             // for the first and last nucleotides in the unpaired region, respectively.
             //printf("A\n");
-            if(D2MODE==1){
-                energy = param->dangle[RNA[j1]][RNA[i1]][RNA[j1+1]][0] + param->dangle[RNA[j2]][RNA[i2]][RNA[i2-1]][1];
-                if(printOn1)printf("i1=%d,j1=%d,i2=%d,j2=%d, param->dangle[RNA[j1]][RNA[i1]][RNA[j1+1]][0]/100=%f,  param->dangle[RNA[j2]][RNA[i2]][RNA[i2-1]][1]/100=%f\n", i1,j1,i2,j2,param->dangle[RNA[j1]][RNA[i1]][RNA[j1+1]][0]/100.0, param->dangle[RNA[j2]][RNA[i2]][RNA[i2-1]][1]/100.0);
-            } else if (DEFAULTMODE==1) {
-                int d3 = param->dangle[RNA[j1]][RNA[i1]][RNA[j1+1]][0];
-                int d5 = param->dangle[RNA[j2]][RNA[i2]][RNA[i2-1]][1];
-                energy = MIN(MIN(d3, d5), d3+d5);
-            }
+            energy = param->dangle[RNA[j1]][RNA[i1]][RNA[j1+1]][0] + param->dangle[RNA[j2]][RNA[i2]][RNA[i2-1]][1];
+            if(printOn1)printf("i1=%d,j1=%d,i2=%d,j2=%d, param->dangle[RNA[j1]][RNA[i1]][RNA[j1+1]][0]/100=%f,  param->dangle[RNA[j2]][RNA[i2]][RNA[i2-1]][1]/100=%f\n", i1,j1,i2,j2,param->dangle[RNA[j1]][RNA[i1]][RNA[j1+1]][0]/100.0, param->dangle[RNA[j2]][RNA[i2]][RNA[i2-1]][1]/100.0);
 	} else if (j1+1 == i2-1) { //ZS: fixed limits
             // if there is only one nucleotide in the unpaired region,
             // then add which energy is more favorable,
