@@ -10,12 +10,12 @@
 #include <gmpxx.h>
 #include <vector>
 
-std::vector<energy_pair> V;
-std::vector<energy_pair> W;
-std::vector<energy_pair> VBI;
-std::vector<energy_pair> VM;
-std::vector< std::vector<energy_pair> > WM;
-std::vector< std::vector<energy_pair> > WMPrime;
+std::vector<mpq_class> V;
+std::vector<mpq_class> W;
+std::vector<mpq_class> VBI;
+std::vector<mpq_class> VM;
+std::vector< std::vector<mpq_class> > WM;
+std::vector< std::vector<mpq_class> > WMPrime;
 std::vector< std::vector<int> > PP;
 
 int *indx;
@@ -30,9 +30,9 @@ void create_tables(int len) {
     VBI.resize((len+1)*len/2 + 1);
     VM.resize((len+1)*len/2 + 1);
 
-    WM.resize(len+1, std::vector<energy_pair>(len+1));
+    WM.resize(len+1, std::vector<mpq_class>(len+1));
     PP.resize(len+1, std::vector<int>(len+1));
-    WMPrime.resize(len+1, std::vector<energy_pair>(len+1));
+    WMPrime.resize(len+1, std::vector<mpq_class>(len+1));
 
     indx = new int[len+1];
     if (indx == NULL) {
@@ -50,10 +50,10 @@ void init_tables(int len) {
     int i, j, LLL;
 
     for (i = 0; i <= len; i++) {
-        W[i] = inf;
+        W[i] = INFINITY_;
         for (j = 0; j <= len; j++) {
-            WM[i][j] = inf;
-            WMPrime[i][j] = inf;
+            WM[i][j] = INFINITY_;
+            WMPrime[i][j] = INFINITY_;
 
             PP[i][j] = 0;
         }
@@ -61,9 +61,9 @@ void init_tables(int len) {
 
     LLL = (len)*(len+1)/2 + 1;
     for (i = 0; i < LLL; i++) {
-        V[i] = inf;
-        VM[i] = inf;
-        VBI[i] = inf;
+        V[i] = INFINITY_;
+        VM[i] = INFINITY_;
+        VBI[i] = INFINITY_;
     }
 
     for (i = 1; i <= len; i++)
@@ -86,31 +86,31 @@ void free_tables(int len) {
 }
 
 
-energy_pair Ed3(int i, int j, int k) {
+mpq_class Ed3(int i, int j, int k) {
     return dangle[RNA[i]][RNA[j]][RNA[k]][1];
 }
 
-energy_pair Ed5(int i, int j, int k) {
+mpq_class Ed5(int i, int j, int k) {
     return dangle[RNA[i]][RNA[j]][RNA[k]][0];
 }
 
-energy_pair auPen(int i, int j) {
-    mpq_class val = ((( (i)==BASE_U || (j)==BASE_U ) && ( (i)==BASE_A || (i)==BASE_G || (j)==BASE_A || (j)==BASE_G )) ? auend.classical : 0);
+mpq_class auPen(int i, int j) {
+    mpq_class val = ((( (i)==BASE_U || (j)==BASE_U ) && ( (i)==BASE_A || (i)==BASE_G || (j)==BASE_A || (j)==BASE_G )) ? auend : 0);
     return dummy_scaling * val;
 }
 
-energy_pair auPenalty(int i, int j) {
+mpq_class auPenalty(int i, int j) {
     return auPen(RNA[i], RNA[j]);
 }
 
-energy_pair eL1(int i, int j, int ip, int jp) {
-    energy_pair energy;
+mpq_class eL1(int i, int j, int ip, int jp) {
+    mpq_class energy;
     int size1, size2, size;
-    energy_pair loginc;
+    mpq_class loginc;
     int lopsided; /* define the asymmetry of an interior loop */
 
-    energy = inf;
-    loginc = zero;
+    energy = INFINITY_;
+    loginc = 0;
 
     /*SH: These calculations used to incorrectly be within the bulge loop code, moved out here. */
     size1 = ip - i - 1;
@@ -142,7 +142,7 @@ energy_pair eL1(int i, int j, int ip, int jp) {
                 energy = tstki[fourBaseIndex(RNA[i], RNA[j], RNA[i + 1], RNA[j - 1])] +
                     tstki[fourBaseIndex(RNA[jp], RNA[ip], RNA[jp + 1], RNA[ip - 1])] + inter[30] + loginc +
                     eparam[3] + MIN(maxpen, (lopsided * poppen[MIN(2, MIN(size1, size2))]));
-            } else { /* if size is more than 30 and it is a grossely asymmetric internal loop and gail is not zero*/
+            } else { /* if size is more than 30 and it is a grossely asymmetric internal loop and gail is not 0*/
                 energy = tstki[fourBaseIndex(RNA[i], RNA[j], BASE_A, BASE_A)] + tstki[fourBaseIndex(RNA[jp], RNA[ip], BASE_A,
                                                                                                               BASE_A)] + inter[30] + loginc + eparam[3] + MIN(maxpen, (lopsided * poppen[MIN(2, MIN(size1, size2))]));
             }
@@ -171,14 +171,14 @@ energy_pair eL1(int i, int j, int ip, int jp) {
     return energy;
 }
 
-energy_pair eL(int i, int j, int ip, int jp) {
-    energy_pair energy;
+mpq_class eL(int i, int j, int ip, int jp) {
+    mpq_class energy;
     int size1, size2, size;
-    energy_pair loginc;
+    mpq_class loginc;
     int lopsided; /* define the asymmetry of an interior loop */
 
-    energy = inf;
-    loginc = zero;
+    energy = INFINITY_;
+    loginc = 0;
 
     /*SH: These calculations used to incorrectly be within the bulge loop code, moved out here. */
     size1 = ip - i - 1;
@@ -210,7 +210,7 @@ energy_pair eL(int i, int j, int ip, int jp) {
                 energy = tstki[fourBaseIndex(RNA[i], RNA[j], RNA[i + 1], RNA[j - 1])] +
                     tstki[fourBaseIndex(RNA[jp], RNA[ip], RNA[jp + 1], RNA[ip - 1])] + inter[30] + loginc +
                     eparam[3] + MIN(maxpen, (lopsided * poppen[MIN(2, MIN(size1, size2))]));
-            } else { /* if size is more than 30 and it is a grossely asymmetric internal loop and gail is not zero*/
+            } else { /* if size is more than 30 and it is a grossely asymmetric internal loop and gail is not 0*/
                 energy = tstki[fourBaseIndex(RNA[i], RNA[j], BASE_A, BASE_A)] + tstki[fourBaseIndex(RNA[jp], RNA[ip], BASE_A, BASE_A)]
                     + inter[30] + loginc + eparam[3] + MIN(maxpen, (lopsided * poppen[MIN(2, MIN(size1, size2))]));
             }
@@ -240,16 +240,16 @@ energy_pair eL(int i, int j, int ip, int jp) {
     return energy;
 }
 
-energy_pair eH(int i, int j) {
+mpq_class eH(int i, int j) {
     /*  Hairpin loop for all the bases between i and j */
     /*  size for size of the loop, energy is the result, loginc is for the extrapolation for loops bigger than 30 */
     int size;
-    energy_pair loginc;
-    energy_pair energy;
+    mpq_class loginc;
+    mpq_class energy;
     int key, index, count, kmult;
     mpq_class tlink;
 
-    energy = inf;
+    energy = INFINITY_;
 
     size = j - i - 1; /*  size is the number of bases in the loop, when the closing pair is excluded */
 
@@ -315,7 +315,7 @@ energy_pair eH(int i, int j) {
         /*  no terminal mismatch */
         energy = hairpin[size] + eparam[4];
     } else if (size == 0)
-        energy = inf;
+        energy = INFINITY_;
 
     /*  GGG Bonus => GU closure preceded by GG */
     /*  i-2 = i-1 = i = G, and j = U; i < j */
@@ -345,15 +345,15 @@ energy_pair eH(int i, int j) {
     return energy;
 }
 
-energy_pair eS(int i, int j) {
+mpq_class eS(int i, int j) {
     /*  not sure about eparam[1], come from MFold.. = 0 */
     return stack[fourBaseIndex(RNA[i], RNA[j], RNA[i+1], RNA[j-1])] + eparam[1];
 }
 
-energy_pair Estackm(int i, int j) {
+mpq_class Estackm(int i, int j) {
     return tstackm[RNA[i]][RNA[j]][RNA[i + 1]][RNA[j - 1]];
 }
 
-energy_pair Estacke(int i, int j) {
+mpq_class Estacke(int i, int j) {
     return tstacke[RNA[i]][RNA[j]][RNA[i + 1]][RNA[j - 1]];
 }

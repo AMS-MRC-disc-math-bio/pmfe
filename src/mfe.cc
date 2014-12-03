@@ -36,6 +36,9 @@
 #include "algorithms.h"
 #include "traceback.h"
 #include "parametrizer_types.h"
+
+#include "RNAScoring.h"
+
 #include <gmpxx.h>
 
 using namespace std;
@@ -84,15 +87,13 @@ ScoreVector mfe(string seq_file, string output_file, string param_dir, int dangl
 
 ScoreVector mfe(string seq_file, string output_file, string param_dir, ParameterVector params, int dangle_model) {
     std::string seq;
-    energy_pair energy;
+    mpq_class energy;
 
     dangles = dangle_model;
 
     if (!(dangles == 0 || dangles == 1 || dangles == 2)) {
         dangles = -1;
     }
-
-    outputFile = output_file;
 
     if (read_sequence_file(seq_file.c_str(), seq) == FAILURE) {
         printf("Failed to open sequence file: %s.\n\n", seqfile.c_str());
@@ -110,16 +111,17 @@ ScoreVector mfe(string seq_file, string output_file, string param_dir, Parameter
     // Find the associated structure
     ScoreVector result;
     result = trace(seq.length());
-    result.energy = energy.param;
+    result.energy = energy;
+
+    // Write out the resulting structure
+    save_ct_file(output_file, seq, energy);
+
+    // Find the classical energy
+    mpq_class classical_energy = rnascoring::get_classical_score(output_file, "rna-scoring/data/Turner99");
+    classical_energy.canonicalize();
 
     // Calculate w
-    // Unfortunately, the mechanism used to compute classical energy is unreliable due to a quirk of std::min_element.
-    // This should not apply when d=0, so we include two different methods.
-    if (params.dummy_scaling == 0) {
-        result.w = energy.classical - (result.multiloops * multiloop_default + result.unpaired * unpaired_default + result.branches * branch_default);
-    } else {
-        result.w = (energy.param - result.multiloops * params.multiloop_penalty - result.branches * params.branch_penalty - result.unpaired * params.unpaired_penalty)/params.dummy_scaling;
-    }
+    result.w = classical_energy - (result.multiloops * multiloop_default + result.unpaired * unpaired_default + result.branches * branch_default);
 
     // Check that the w calculation produced a consistent result
     mpq_class formula_energy = result.multiloops * params.multiloop_penalty + result.unpaired * params.unpaired_penalty + result.branches * params.branch_penalty + result.w * params.dummy_scaling;
@@ -130,11 +132,9 @@ ScoreVector mfe(string seq_file, string output_file, string param_dir, Parameter
         std::cerr << "Energy calculation is inconsistent!" << std::endl;
         std::cerr << params << std::endl;
         std::cerr << result << std::endl;
-        std::cerr << "Formula energy: " << formula_energy.get_str(10) << std::endl << std::endl;
+        std::cerr << "Formula energy: " << formula_energy.get_str(10) << std::endl;
+        std::cerr << "Classical energy: " << classical_energy.get_str(10) << std::endl << std::endl;
     };
-
-    // Write out the resulting structure
-    save_ct_file(outputFile, seq, energy.classical);
 
     // Clean up
     free_fold(seq.length());

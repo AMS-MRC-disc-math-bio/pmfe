@@ -43,7 +43,7 @@ int main(int argc, char * argv[]) {
     param_dir = fs::path(vm["paramdir"].as<std::string>());
 
     if (vm.count("outfile")) {
-        output_file = fs::path(vm["outputfile"].as<std::string>());
+        output_file = fs::path(vm["outfile"].as<std::string>());
     } else {
         output_file = seq_file;
         output_file.replace_extension(".ct");

@@ -46,22 +46,22 @@ using namespace std;
 
 std::string EN_DATADIR;
 
-energy_pair poppen[5];
-energy_pair maxpen;
-energy_pair eparam[11];
-energy_pair multConst[3]; /* for multiloop penalties. */
-energy_pair dangle[4][4][4][2]; /* Contain dangling energy values */
-energy_pair inter[31]; /* Contains size penalty for internal loops */
-energy_pair bulge[31]; /* Contain the size penalty for bulges */
-energy_pair hairpin[31]; /* Contains the size penalty for hairpin loops */
-energy_pair stack[256]; /* Stacking energy used to calculate energy of stack loops */
-energy_pair tstkh[256]; /* Terminal mismatch energy used in the calculations of hairpin loops */
-energy_pair tstki[256]; /* Terminal mismatch energy used in the calculations of internal loops */
+mpq_class poppen[5];
+mpq_class maxpen;
+mpq_class eparam[11];
+mpq_class multConst[3]; /* for multiloop penalties. */
+mpq_class dangle[4][4][4][2]; /* Contain dangling energy values */
+mpq_class inter[31]; /* Contains size penalty for internal loops */
+mpq_class bulge[31]; /* Contain the size penalty for bulges */
+mpq_class hairpin[31]; /* Contains the size penalty for hairpin loops */
+mpq_class stack[256]; /* Stacking energy used to calculate energy of stack loops */
+mpq_class tstkh[256]; /* Terminal mismatch energy used in the calculations of hairpin loops */
+mpq_class tstki[256]; /* Terminal mismatch energy used in the calculations of internal loops */
 int tloop[maxtloop + 1][2];
 int numoftloops;
-energy_pair iloop21[5][5][5][5][5][5][5]; /* 2*1 internal loops */
-energy_pair iloop22[5][5][5][5][5][5][5][5]; /* 2*2 internal looops */
-energy_pair iloop11[5][5][5][5][5][5]; /* 1*1 internal loops */
+mpq_class iloop21[5][5][5][5][5][5][5]; /* 2*1 internal loops */
+mpq_class iloop22[5][5][5][5][5][5][5][5]; /* 2*2 internal looops */
+mpq_class iloop11[5][5][5][5][5][5]; /* 1*1 internal loops */
 
 //int coax[6][6][6][6];
 //int tstackcoax[6][6][6][6];
@@ -69,29 +69,29 @@ energy_pair iloop11[5][5][5][5][5][5]; /* 1*1 internal loops */
 //int tstack[6][6][6][6];
 //int tstkm[6][6][6][6];
 
-energy_pair tstackm[5][5][6][6];
-energy_pair tstacke[5][5][6][6];
+mpq_class tstackm[5][5][6][6];
+mpq_class tstacke[5][5][6][6];
 
-energy_pair tstacki23[5][5][5][5];
+mpq_class tstacki23[5][5][5][5];
 
-energy_pair auend;
-energy_pair gubonus;
-energy_pair cint; /* cint, cslope, c3 are used for poly C hairpin loops */
-energy_pair cslope;
-energy_pair c3;
-energy_pair efn2a;
-energy_pair efn2b;
-energy_pair efn2c;
-energy_pair triloop[maxtloop + 1][2];
+mpq_class auend;
+mpq_class gubonus;
+mpq_class cint; /* cint, cslope, c3 are used for poly C hairpin loops */
+mpq_class cslope;
+mpq_class c3;
+mpq_class efn2a;
+mpq_class efn2b;
+mpq_class efn2c;
+mpq_class triloop[maxtloop + 1][2];
 int numoftriloops;
-energy_pair init;
+mpq_class init;
 int gail; /* It is either 0 or 1. It is used for grosely asymmetric internal loops */
-energy_pair prelog;
+mpq_class prelog;
 
-energy_pair dummy_scaling;
-energy_pair multiloop_penalty;
-energy_pair unpaired_penalty;
-energy_pair branch_penalty;
+mpq_class dummy_scaling;
+mpq_class multiloop_penalty;
+mpq_class unpaired_penalty;
+mpq_class branch_penalty;
 
 void readThermodynamicParameters(const char *userdatadir) {
     struct stat buf;
@@ -137,7 +137,7 @@ int initStackValues(const string& fileName, const string& dirPath)  {
         for (int j = 0; j < 4; j++) {
             for (int k = 0; k < 4; k++) {
                 for (int l = 0; l < 4; l++) {
-                    stack[fourBaseIndex(i,j,k,l)] = inf;
+                    stack[fourBaseIndex(i,j,k,l)] = INFINITY_;
                 }
             }
         }
@@ -206,10 +206,10 @@ int initMiscloopValues(const string& fileName, const string& dirpath) {
             }
         }
         if (index == 4) {
-            eparam[1] = zero;
-            eparam[2] = zero;
-            eparam[3] = zero;
-            eparam[4] = zero;
+            eparam[1] = 0;
+            eparam[2] = 0;
+            eparam[3] = 0;
+            eparam[4] = 0;
             eparam[7] = dummy_scaling * mpq_class(3, 10);
             eparam[8] = dummy_scaling * mpq_class(3, 10);
             eparam[9] = dummy_scaling * mpq_class(-5);
@@ -283,7 +283,7 @@ int initDangleValues(const std::string& fileName,
         for (int j = 0; j < 4; j++) {
             for (int k = 0; k < 4; k++) {
                 for (int l = 0; l < 2; l++) {
-                    dangle[i][j][k][l] = inf;
+                    dangle[i][j][k][l] = INFINITY_;
                 }
             }
         }
@@ -332,7 +332,7 @@ int initLoopValues( const string& fileName, const string& dirPath) {
     char currentWord[256];
     string s;
     int index= 0;
-    energy_pair tempValue;
+    mpq_class tempValue;
 
     if (cf.fail()) {
         cerr << "File open failed " << filePath << endl;
@@ -348,7 +348,7 @@ int initLoopValues( const string& fileName, const string& dirPath) {
                 if (strcmp(currentWord, "inf")) {
                     tempValue = dummy_scaling * get_mpq_from_word(currentWord);
                 } else {
-                    tempValue = inf;
+                    tempValue = INFINITY_;
                 }
             }
             switch (j) {
@@ -388,13 +388,13 @@ int initTstk23Values(const std::string& fileName, const std::string& dirPath) {
             for (j1 = 0; j1 < 5; ++j1)
                 for (j2 = 0; j2 < 5; ++j2)
                     if (i1 == 4 || j1 == 4)
-                        tstacki23[i1][j1][i2][j2] = inf;
+                        tstacki23[i1][j1][i2][j2] = INFINITY_;
                     else if (i2 == 4 || j2 == 4)
                         tstacki23[i1][j1][i2][j2] = dummy_scaling * 0;
                     else {
                         cf >> val;
                         if (val == "inf") {
-                            tstacki23[i1][j1][i2][j2] = inf;
+                            tstacki23[i1][j1][i2][j2] = INFINITY_;
                         } else {
                             tstacki23[i1][j1][i2][j2] = dummy_scaling * get_mpq_from_word(val.c_str());
                         }
@@ -426,15 +426,15 @@ int initTstkeValues(const std::string& fileName, const std::string& dirPath) {
             for (j1 = 0; j1 < 5; ++j1) {
                 for (j2 = 0; j2 < 6; ++j2) {
                     if (i1 == 4 || j1 == 4)
-                        tstacke[i1][j1][i2][j2] = inf;
+                        tstacke[i1][j1][i2][j2] = INFINITY_;
                     else if (i2 == 5 || j2 == 5)
-                        tstacke[i1][j1][i2][j2] = inf;
+                        tstacke[i1][j1][i2][j2] = INFINITY_;
                     else if (i2 == 4 || j2 == 4)
                         tstacke[i1][j1][i2][j2] = dummy_scaling * 0;
                     else {
                         cf >> val;
                         if (val == "inf") {
-                            tstacke[i1][j1][i2][j2] = inf;
+                            tstacke[i1][j1][i2][j2] = INFINITY_;
                         } else {
                             tstacke[i1][j1][i2][j2] = dummy_scaling * get_mpq_from_word(val.c_str());
                         }
@@ -468,15 +468,15 @@ int initTstkmValues(const std::string& fileName, const std::string& dirPath) {
             for (j1 = 0; j1 < 5; ++j1) {
                 for (j2 = 0; j2 < 6; ++j2) {
                     if (i1 == 4 || j1 == 4)
-                        tstackm[i1][j1][i2][j2] = inf;
+                        tstackm[i1][j1][i2][j2] = INFINITY_;
                     else if (i2 == 5 || j2 == 5)
-                        tstackm[i1][j1][i2][j2] = inf;
+                        tstackm[i1][j1][i2][j2] = INFINITY_;
                     else if (i2 == 4 || j2 == 4)
                         tstackm[i1][j1][i2][j2] = dummy_scaling * 0;
                     else {
                         cf >> val;
                         if (val == "inf") {
-                            tstackm[i1][j1][i2][j2] = inf;
+                            tstackm[i1][j1][i2][j2] = INFINITY_;
                         } else {
                             tstackm[i1][j1][i2][j2] = dummy_scaling * get_mpq_from_word(val.c_str());
                         }
@@ -502,7 +502,7 @@ int initTstkhValues(const std::string& fileName, const std::string& dirPath) {
         for (int j = 0; j < 4; j++) {
             for (int k = 0; k < 4; k++) {
                 for (int l = 0; l < 2; l++) {
-                    tstkh[fourBaseIndex(i,j,k,l)] = inf;
+                    tstkh[fourBaseIndex(i,j,k,l)] = INFINITY_;
                 }
             }
         }
@@ -550,7 +550,7 @@ int initTstkiValues(const std::string& fileName, const std::string& dirPath) {
         for (int j = 0; j < 4; j++) {
             for (int k = 0; k < 4; k++) {
                 for (int l = 0; l < 2; l++) {
-                    tstki[fourBaseIndex(i,j,k,l)] = inf;
+                    tstki[fourBaseIndex(i,j,k,l)] = INFINITY_;
                 }
             }
         }
@@ -649,7 +649,7 @@ int initInt22Values(const std::string& fileName, const std::string& dirPath) {
                         for (t = 0; t < 4; t++)
                             for (y = 0; y < 4; y++)
                                 for (z = 0; z < 4; z++)
-                                    iloop22[i][j][k][r][q][t][y][z] = inf;
+                                    iloop22[i][j][k][r][q][t][y][z] = INFINITY_;
 
     ifstream cf;
     char currentLine[256], currentValue[6];
@@ -739,7 +739,7 @@ int initInt21Values(const std::string& fileName, const std::string& dirPath) {
                     for (q = 0; q < 4; q++)
                         for (t = 0; t < 4; t++)
                             for (y = 0; y < 4; y++)
-                                iloop21[i][j][k][r][q][t][y] = inf;
+                                iloop21[i][j][k][r][q][t][y] = INFINITY_;
     a = 0;
     b = 0;
     c = 0;
@@ -789,7 +789,7 @@ int initInt21Values(const std::string& fileName, const std::string& dirPath) {
                 for (z = 1; z <=24 ; z++) {
                     char value[32];
                     ss >> value;
-                    energy_pair temp = dummy_scaling * get_mpq_from_word(value);
+                    mpq_class temp = dummy_scaling * get_mpq_from_word(value);
                     a = base1[i];
                     b = base2[i];
                     f = base1[jj];
@@ -824,7 +824,7 @@ int initInt11Values(const std::string& fileName, const std::string& dirPath) {
                 for (r = 0; r < 4; r++)
                     for (q = 0; q < 4; q++)
                         for (t = 0; t < 4; t++)
-                            iloop11[i][j][k][r][q][t] = inf;
+                            iloop11[i][j][k][r][q][t] = INFINITY_;
 
     ifstream cf;
     char currentLine[256];
@@ -876,7 +876,7 @@ int initInt11Values(const std::string& fileName, const std::string& dirPath) {
             for (int z=1; z <= 24; ++z) {
                 char value[32];
                 ss >> value;
-                energy_pair temp = dummy_scaling * get_mpq_from_word(value);
+                mpq_class temp = dummy_scaling * get_mpq_from_word(value);
                 a = base1[k];
                 d = base2[k];
                 c = base1[jj];

@@ -64,32 +64,6 @@ QPoint ScoreVector::get_q4point() {
     return result;
 };
 
-std::ostream& operator<<(std::ostream& os, const energy_pair& energy) {
-    os << "(" << energy.param.get_str(10) << ", " << energy.classical.get_str(10) << ")";
-    return os;
-};
-
-bool operator< (const energy_pair &a, const energy_pair &b) {
-    return (a.param < b.param);
-};
-bool operator<= (const energy_pair &a, const energy_pair &b) {
-    return (a.param <= b.param);
-};
-
-bool operator== (const energy_pair &a, const energy_pair &b) {
-    return (a.param == b.param);
-};
-bool operator!= (const energy_pair &a, const energy_pair &b) {
-    return not (a == b);
-};
-
-bool operator> (const energy_pair &a, const energy_pair &b) {
-    return (a.param > b.param);
-};
-bool operator>= (const energy_pair &a, const energy_pair &b) {
-    return (a.param >= b.param);
-};
-
 mpq_class get_mpq_from_word(std::string word) {
   mpq_class result;
   std::size_t decimalpoint = word.find('.');

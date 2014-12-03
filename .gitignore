@@ -2,6 +2,7 @@
 *.ct
 *.poly
 *.o
+*.so
 *.d
 output/
 *.polytope.sage

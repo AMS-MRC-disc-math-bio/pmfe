@@ -76,25 +76,31 @@ int iB4e_main(std::string seq_file_path, std::string param_dir_path) {
     // We keep a list of vectors which have been tested or are in the polytope
     std::vector<LVector> test_vectors;
 
-    // To bootstrap the process, we manually check the zero parameter vector
-    QVector zero(dim, CGAL::NULL_VECTOR);
-    QPoint null_mfe = vertex_finder(zero);
-    CH.insert(null_mfe);
-    LVector zero_structure_point = LVector(null_mfe.cartesian_begin(), null_mfe.cartesian_end());
-    test_vectors.push_back(zero_structure_point);
+    // To bootstrap the process, we compute the classical scores here
+    // (we'll need them later anyway)
+    QVector classical = ParameterVector().as_QVector();
+    QPoint classical_mfe = vertex_finder(classical);
+    CH.insert(classical_mfe);
+    LVector classical_structure_point = LVector(classical_mfe.cartesian_begin(), classical_mfe.cartesian_end());
 
     // Huggins' initialization loop
     while (CH.current_dimension() < dim) {
+        LMatrix A;
         // Construct some helper objects
-        LMatrix A(test_vectors);
+        if (test_vectors.size() > 0) {
+            A = LMatrix(test_vectors);
+        } else {
+            A = LMatrix(dim, dim);
+        }
+
         A = LinearAlgebra::transpose(A); // Transpose due to design choices in CGAL
         LMatrix orthogonal_vectors;
-        LVector x;
+        LVector x = LVector(dim);
         bool done = false;
 
         // Find a vector orthogonal to all the test vectors
         if (LinearAlgebra::homogeneous_linear_solver(A, orthogonal_vectors)) {
-            LVector x = orthogonal_vectors.column(0);
+            x = orthogonal_vectors.column(0);
             QVector c(dim, x.begin(), x.end());
             LVector new_test_vector;
 
@@ -103,7 +109,7 @@ int iB4e_main(std::string seq_file_path, std::string param_dir_path) {
                 QPoint mfe_point = vertex_finder(c);
                 if (CH.number_of_vertices() == 0 || CH.is_dimension_jump(mfe_point)) {
                     CH.insert(mfe_point);
-                    new_test_vector = LVector(mfe_point.cartesian_begin(), mfe_point.cartesian_end());
+                    new_test_vector = LVector(mfe_point.cartesian_begin(), mfe_point.cartesian_end()) - classical_structure_point;
                     done = true;
                 }
             }
@@ -112,7 +118,7 @@ int iB4e_main(std::string seq_file_path, std::string param_dir_path) {
                 QPoint mfe_point = vertex_finder(-c);
                 if (CH.is_dimension_jump(mfe_point)) {
                     CH.insert(mfe_point);
-                    new_test_vector = LVector(mfe_point.cartesian_begin(), mfe_point.cartesian_end());
+                    new_test_vector = LVector(mfe_point.cartesian_begin(), mfe_point.cartesian_end()) - classical_structure_point;
                     done = true;
                 }
             }
@@ -132,12 +138,6 @@ int iB4e_main(std::string seq_file_path, std::string param_dir_path) {
 
     assert(CH.is_valid());
     assert(CH.current_dimension() == dim);
-
-    // We compute the classical scores here, because we'll need them later anyway
-    QVector classical = ParameterVector().as_QVector();
-    QPoint classical_mfe = vertex_finder(classical);
-    CH.insert(classical_mfe);
-    LVector classical_structure_point = LVector(classical_mfe.cartesian_begin(), classical_mfe.cartesian_end());
 
     // MAIN LOOP
     bool all_confirmed_so_far = false;

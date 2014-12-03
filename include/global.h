@@ -29,13 +29,13 @@ extern int g_LIMIT_DISTANCE;
 extern int g_contactDistance;
 
 extern mpz_class INFINITY_;
-extern energy_pair inf;
-extern energy_pair zero;
+extern mpq_class inf;
+extern mpq_class zero;
 
-extern energy_pair dummy_scaling;
-extern energy_pair multiloop_penalty;
-extern energy_pair unpaired_penalty;
-extern energy_pair branch_penalty;
+extern mpq_class dummy_scaling;
+extern mpq_class multiloop_penalty;
+extern mpq_class unpaired_penalty;
+extern mpq_class branch_penalty;
 
 // The possible base pairs are (A,U), (U,A), (C,G), (G,C), (G,U)
 //  and (U,G).

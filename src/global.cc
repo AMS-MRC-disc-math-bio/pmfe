@@ -27,8 +27,6 @@ int g_contactDistance;
 int g_bignumprecision = 512;
 
 mpz_class INFINITY_;
-energy_pair inf;
-energy_pair zero;
 
 void init_global_params(int len, ParameterVector params) {
   RNA = new unsigned char[len+1];
@@ -42,22 +40,16 @@ void init_global_params(int len, ParameterVector params) {
     exit(-1);
   }
 
-  dummy_scaling = energy_pair(params.dummy_scaling, dummy_default);
-  multiloop_penalty = energy_pair(params.multiloop_penalty, multiloop_default);
-  unpaired_penalty = energy_pair(params.unpaired_penalty, unpaired_default);
-  branch_penalty = energy_pair(params.branch_penalty, branch_default);
+  dummy_scaling = params.dummy_scaling;
+  multiloop_penalty = params.multiloop_penalty;
+  unpaired_penalty = params.unpaired_penalty;
+  branch_penalty = params.branch_penalty;
 
-  INFINITY_ = mpz_class("9999999999999", 10);
-
-  mpq_class OLD_INFINITY_ = INFINITY_;
+  INFINITY_ = mpz_class("9999999999999");
 
   if (abs(params.dummy_scaling > 1)) {
       INFINITY_ *= abs(params.dummy_scaling);
   }
-
-  inf = energy_pair(INFINITY_, OLD_INFINITY_);
-
-  zero = energy_pair(0, 0);
 
   init_checkPair();
 }
@@ -254,7 +246,7 @@ int canPair(int a, int b) {
   printf("\nBETA OPTIONS\n");
   printf("   --bpp                Calculate base pair probabilities.\n");
   printf("   --partition          Calculate the partition function.\n");
-  printf("   --pf_count          Calculate the structure count using partition function and zero energy value.\n");
+  printf("   --pf_count          Calculate the structure count using partition function and 0 energy value.\n");
   printf("   --subopt NUM         Calculate suboptimal structures within NUM kcal/mol\n");
   printf("                        of the MFE. (Uses -d 2 treatment of dangling energies.)\n");
   printf("   -s, --useSHAPE FILE  Use SHAPE constraints from FILE.\n");
