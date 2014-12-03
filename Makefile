@@ -28,7 +28,7 @@ LIBS += -lboost_program_options
 LIBS += -L./rna-scoring -Wl,-R./rna-scoring -lrnascoring
 
 # Optional OpenMP-related flags
-HAS_OPENMP = $(shell $(CXX) -lgomp test.cc 2>&1 > /dev/null ; echo $$?)
+HAS_OPENMP = $(shell $(CXX) -lgomp test.cc -o /dev/null 2>&1 > /dev/null ; echo $$?)
 $(info Exit code: $(HAS_OPENMP))
 ifeq ($(HAS_OPENMP), 0)
 #	$(info OpenMP detected!)
