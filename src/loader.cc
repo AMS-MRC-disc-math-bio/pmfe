@@ -57,7 +57,7 @@ mpq_class hairpin[31]; /* Contains the size penalty for hairpin loops */
 mpq_class stack[256]; /* Stacking energy used to calculate energy of stack loops */
 mpq_class tstkh[256]; /* Terminal mismatch energy used in the calculations of hairpin loops */
 mpq_class tstki[256]; /* Terminal mismatch energy used in the calculations of internal loops */
-int tloop[maxtloop + 1][2];
+mpq_class tloop[maxtloop + 1][2];
 int numoftloops;
 mpq_class iloop21[5][5][5][5][5][5][5]; /* 2*1 internal loops */
 mpq_class iloop22[5][5][5][5][5][5][5][5]; /* 2*2 internal looops */
@@ -246,7 +246,7 @@ int initMiscloopValues(const string& fileName, const string& dirpath) {
         }
         if (index == 8) {
             cf >> currentWord;
-            cslope = dummy_scaling * get_mpq_from_word(currentWord);
+            cslope = dummy_scaling * (get_mpq_from_word(currentWord) + mpq_class(1,100));
         }
         if (index == 9) {
             cf >> currentWord;
@@ -258,7 +258,7 @@ int initMiscloopValues(const string& fileName, const string& dirpath) {
         }
         if (index == 11) {
             cf >> currentWord;
-            init = dummy_scaling * get_mpq_from_word(currentWord);
+            init = dummy_scaling * (get_mpq_from_word(currentWord) + mpq_class(1,100));
         }
         if (index == 12) {
             cf >> currentWord;
@@ -628,7 +628,7 @@ int initTloopValues(const std::string& fileName, const std::string& dirPath) {
         tloop[numoftloops][0] = atoi(currentSeqNumbers);
 
         if (!(strcmp(currentValue,"inf")==0))
-            tloop[numoftloops][1] = atoi(currentValue);
+            tloop[numoftloops][1] = dummy_scaling * get_mpq_from_word(currentValue);
     }
     cf.close();
     return 0;

@@ -95,8 +95,7 @@ mpq_class Ed5(int i, int j, int k) {
 }
 
 mpq_class auPen(int i, int j) {
-    mpq_class val = ((( (i)==BASE_U || (j)==BASE_U ) && ( (i)==BASE_A || (i)==BASE_G || (j)==BASE_A || (j)==BASE_G )) ? auend : 0);
-    return dummy_scaling * val;
+    return ((( (i)==BASE_U || (j)==BASE_U ) && ( (i)==BASE_A || (i)==BASE_G || (j)==BASE_A || (j)==BASE_G )) ? auend : 0);
 }
 
 mpq_class auPenalty(int i, int j) {
@@ -296,7 +295,7 @@ mpq_class eH(int i, int j) {
                 tlink = tloop[count][1];
             }
         }
-        energy = dummy_scaling * tlink + hairpin[size] + tstkh[fourBaseIndex(RNA[i], RNA[j],
+        energy = tlink + hairpin[size] + tstkh[fourBaseIndex(RNA[i], RNA[j],
                                                              RNA[i + 1], RNA[j - 1])] + eparam[4];
     }
 

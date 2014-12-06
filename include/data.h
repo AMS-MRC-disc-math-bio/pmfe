@@ -37,7 +37,7 @@ extern mpq_class hairpin[31]; /* Contains the size penalty for hairpin loops */
 extern mpq_class stack[256]; /* Stacking energy used to calculate energy of stack loops */
 extern mpq_class tstkh[256]; /* Terminal mismatch energy used in the calculations of hairpin loops */
 extern mpq_class tstki[256]; /* Terminal mismatch energy used in the calculations of internal loops */
-extern int tloop[maxtloop + 1][2];
+extern mpq_class tloop[maxtloop + 1][2];
 extern int numoftloops;
 extern mpq_class iloop22[5][5][5][5][5][5][5][5]; /* 2*2 internal looops */
 extern mpq_class iloop21[5][5][5][5][5][5][5]; /* 2*1 internal loops */
