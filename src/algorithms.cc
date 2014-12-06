@@ -309,7 +309,7 @@ mpq_class calculate(int len) {
             Wim1 = MIN(0, W[i-1]);
 
             if (g_dangles == 2) { // -d2 option
-                mpq_class energy = V_f(i,j) +	 auPenalty(i,j) + Wim1;
+                mpq_class energy = V_f(i,j) + auPenalty(i,j) + Wim1;
                 if (i>1) energy +=  Ed3(j,i,i-1);
                 if (j<len) energy += Ed5(j,i,j+1);
                 if (canSS(i)&&canSS(j)) Widjd = energy;
@@ -319,7 +319,7 @@ mpq_class calculate(int len) {
                 vals.push_back(Widjd);
 
                 Wij = *std::min_element(vals.begin(), vals.end());
-            }	else if (g_dangles == 0) { // -d0 option
+            } else if (g_dangles == 0) { // -d0 option
                 Wij = V_f(i, j) + auPenalty(i, j) + Wim1;
             } else { // default
                 Wij = V_f(i, j) + auPenalty(i, j) + Wim1;
@@ -379,7 +379,7 @@ mpq_class calculate(int len) {
     for (ii = 1; ii <= len; ++ii) {
         for (jj = len; jj > ii; --jj) {
             mpq_class eh = INFINITY_;
-            if (PP[ii][jj])	eh = eH(ii,jj);
+            if (PP[ii][jj]) eh = eH(ii,jj);
             fprintf(file, "%d %d %f\n",ii,jj,eh>=INFINITY_?INFINITY_.get_d():eh.get_d());
         }
     }
