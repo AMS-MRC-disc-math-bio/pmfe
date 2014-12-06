@@ -74,7 +74,7 @@ void traceW(int j) {
 
         wim1 = MIN(0, W[i-1]);
         flag = 1;
-        if ( wim1 != W[i-1] && canSSregion(0,i)) flag = 0;
+        //if ( wim1 != W[i-1] && canSSregion(0,i)) flag = 0;
 
         if (g_dangles == 2) {
             mpq_class e_dangles = 0;
@@ -100,25 +100,25 @@ void traceW(int j) {
                 done = 1;
                 total_ex += auPenalty(i, j);
                 traceV(i, j);
-                if (flag ) traceW(i - 1);
+                if (flag ) traceW(i-1);
                 break;
             } else if ((W[j] ==  V_f(i,j-1) + auPenalty(i,j-1) + Ed5(j-1,i,j) + wim1 && canSS(j) && canStack(i,j-1)) || forcePair(i, j-1)) {
                 done = 1;
                 total_ex += (auPenalty(i,j-1) + Ed5(j-1,i,j));
                 traceV(i, j - 1);
-                if (flag ) traceW(i - 1);
+                if (flag ) traceW(i-1);
                 break;
             } else if ((W[j] == V_f(i+1,j) + auPenalty(i+1,j) + Ed3(j,i+1,i) + wim1 && canSS(i) && canStack(i+1,j)) || forcePair(i+1,j)){
                 done = 1;
                 total_ex += (auPenalty(i+1,j) + Ed3(j,i+1,i));
                 traceV(i + 1, j);
-                if (flag ) traceW(i - 1);
+                if (flag ) traceW(i);
                 break;
             } else if ((W[j] == V_f(i+1,j-1) + auPenalty(i+1, j-1) + Ed3(j-1,i+1,i) + Ed5(j-1,i+1,j) + wim1 && canSS(i) && canSS(j) && canStack(i+1,j-1)) || forcePair(i+1,j-1)) {
                 done = 1;
                 total_ex += (auPenalty(i+1, j-1) + Ed3(j-1,i+1,i) + Ed5(j-1,i+1,j));
                 traceV(i + 1, j - 1);
-                if (flag ) traceW(i - 1);
+                if (flag ) traceW(i);
                 break;
             }
         }
