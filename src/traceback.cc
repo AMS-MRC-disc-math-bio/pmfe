@@ -30,13 +30,13 @@
 #include "utils.h"
 #include <gmpxx.h>
 
-mpq_class total_en;
-mpq_class total_ex;
+mpq_class total_en; // Total internal loop energy
+mpq_class total_ex; // Total external loop energy
 
 int count_multiloops;
 int count_unpaired;
 int count_branches;
-int length = 0;
+int length;
 
 ScoreVector trace(int len) {
     int i;
@@ -47,6 +47,8 @@ ScoreVector trace(int len) {
     count_multiloops = 0;
     count_unpaired = 0;
     count_branches = 0;
+    total_en = 0;
+    total_ex = 0;
 
     traceW(len);
 
@@ -54,6 +56,7 @@ ScoreVector trace(int len) {
     result.multiloops = count_multiloops;
     result.unpaired = count_unpaired;
     result.branches = count_branches;
+    result.energy = total_ex + total_en;
 
     return result;
 }

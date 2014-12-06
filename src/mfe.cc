@@ -111,7 +111,14 @@ ScoreVector mfe(string seq_file, string output_file, string param_dir, Parameter
     // Find the associated structure
     ScoreVector result;
     result = trace(seq.length());
-    result.energy = energy;
+
+    if (result.energy != energy) {
+        std::cerr << "Energy traceback is inconsistent!" << std::endl;
+        std::cerr << params << std::endl;
+        std::cerr << result << std::endl;
+        std::cerr << "DP energy: " << energy.get_str(10) << std::endl;
+        std::cerr << "Traceback energy: " << result.energy.get_str(10) << std::endl << std::endl;
+    }
 
     // Write out the resulting structure
     save_ct_file(output_file, seq, energy);

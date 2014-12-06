@@ -82,6 +82,7 @@ void free_tables(int len) {
         WM.clear();
         PP.clear();
         WMPrime.clear();
+        alloc_flag = 0;
     }
 }
 
