@@ -58,6 +58,7 @@ namespace rnascoring
 
         int tree_score_fixed = ScoreNode(tree, resultBundle->RNA_seq, param, length);
         mpq_class tree_score = mpq_class(tree_score_fixed, 100);
+        tree_score.canonicalize();
         return tree_score;
     }
 }

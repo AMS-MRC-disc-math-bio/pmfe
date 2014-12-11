@@ -129,6 +129,7 @@ ScoreVector mfe(string seq_file, string output_file, string param_dir, Parameter
 
     // Calculate w
     result.w = classical_energy - (result.multiloops * multiloop_default + result.unpaired * unpaired_default + result.branches * branch_default);
+    result.canonicalize();
 
     // Check that the w calculation produced a consistent result
     mpq_class formula_energy = result.multiloops * params.multiloop_penalty + result.unpaired * params.unpaired_penalty + result.branches * params.branch_penalty + result.w * params.dummy_scaling;
