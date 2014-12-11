@@ -21,7 +21,7 @@ int main(int argc, char * argv[]) {
         ("unpaired-penalty,b", po::value<std::string>(), "Unpaired base penalty parameter")
         ("branch-penalty,c", po::value<std::string>(), "Branching helix penalty parameter")
         ("dummy-scaling,d", po::value<std::string>(), "Dummy scaling parameter")
-        ("dangle-model,m", po::value<int>(), "Dangle model")
+        ("dangle-model,m", po::value<int>()->default_value(1), "Dangle model")
         ("help,h", "Display this help message")
         ;
 
@@ -73,10 +73,7 @@ int main(int argc, char * argv[]) {
     params.canonicalize();
 
     // Setup dangle model
-    int dangle_model = 1;
-    if (vm.count("dangle-model")) {
-        dangle_model = vm["dangle-model"].as<int>();;
-    }
+    int dangle_model = vm["dangle-model"].as<int>();
 
     ScoreVector result = mfe(seq_file.native(), output_file.native(), param_dir.native(), params, dangle_model);
     std::cout << result << std::endl;
