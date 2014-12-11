@@ -34,6 +34,6 @@ typedef ConvexHull::Facet_iterator Facet_iterator;
 typedef ConvexHull::Vertex_handle Vertex;
 typedef ConvexHull::Vertex_iterator Vertex_iterator;
 
-int iB4e_main(std::string seq_file_path, std::string param_dir = "Turner99");
+int iB4e_main(std::string seq_file_path, std::string param_dir = "Turner99", int dangle_model=-1);
 
 #endif

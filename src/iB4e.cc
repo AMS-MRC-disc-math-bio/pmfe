@@ -19,7 +19,7 @@
 
 namespace fs = boost::filesystem;
 
-QPoint run_gtmfe_on_q4vector(QVector param_vector, fs::path seq_file, fs::path output_dir, fs::path param_dir) {
+QPoint run_gtmfe_on_q4vector(QVector param_vector, fs::path seq_file, fs::path output_dir, fs::path param_dir, int dangle_model) {
     ParameterVector params;
     ScoreVector scores;
 
@@ -30,7 +30,7 @@ QPoint run_gtmfe_on_q4vector(QVector param_vector, fs::path seq_file, fs::path o
     initial_output_file.replace_extension(structure_ext);
 
     params = ParameterVector(param_vector);
-    scores = mfe(seq_file.string(), initial_output_file.string(), param_dir.string(), params);
+    scores = mfe(seq_file.string(), initial_output_file.string(), param_dir.string(), params, dangle_model);
 
     std::string score_sep (", ");
     std::string w_score_string (boost::lexical_cast<std::string>(mpf_class(scores.w).get_d()));
@@ -49,7 +49,7 @@ QPoint run_gtmfe_on_q4vector(QVector param_vector, fs::path seq_file, fs::path o
     return scores.get_q4point();
 }
 
-int iB4e_main(std::string seq_file_path, std::string param_dir_path) {
+int iB4e_main(std::string seq_file_path, std::string param_dir_path, int dangle_model) {
     // Work in four dimensions
     int dim = 4;
 
@@ -68,7 +68,7 @@ int iB4e_main(std::string seq_file_path, std::string param_dir_path) {
 
     // Fancy functional trick to create a vertex oracle function
     boost::function<QPoint (QVector param_vector)> vertex_finder =
-        boost::bind(&run_gtmfe_on_q4vector, _1, seq_file, struct_dir, param_dir);
+        boost::bind(&run_gtmfe_on_q4vector, _1, seq_file, struct_dir, param_dir, dangle_model);
 
     // BEGIN LOGIC
     // INITIALIZATION

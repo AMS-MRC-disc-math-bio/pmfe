@@ -11,7 +11,7 @@ namespace rnascoring
     int PFMODE=0;//boltzman sampling or stochastic sampling and  partition function mode or dS mode, it is mode as defined and used for partition function of sfold
     int NODANGLEMODE=0;//no dangling at all means d0
     int D2MODE=0;//d2 mode
-    int DEFAULTMODE=1;//default mode
+    int DEFAULTMODE=0;//default mode
 
     char seqfile[200];
     char paramDir[200] = {'\0'};

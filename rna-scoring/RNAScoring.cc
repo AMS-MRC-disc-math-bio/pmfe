@@ -27,10 +27,20 @@ namespace rnascoring
 {
     extern char paramDir[200];
 
-    mpq_class get_classical_score(std::string structfile, std::string paramdir) {
+    mpq_class get_classical_score(std::string structfile, std::string paramdir, int dangle_model) {
         // Force parameters for iB4e use
-        //D2MODE=1;
-        //DEFAULTMODE=1;
+
+        switch (dangle_model) {
+        case 0:
+            NODANGLEMODE=1;
+            break;
+        case 2:
+            D2MODE=1;
+            break;
+        default: // includes dangle_model=1
+            DEFAULTMODE=1;
+            break;
+        }
 
         // This code uses char arrays, and I don't feel like rewriting the whole thing
         // to use C++ strings

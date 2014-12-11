@@ -14,7 +14,7 @@
 namespace rnascoring
 {
 
-    mpq_class get_classical_score(std::string structfile, std::string paramdir);
+    mpq_class get_classical_score(std::string structfile, std::string paramdir, int dangle_model = 1);
 
 }
 
