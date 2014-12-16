@@ -38,6 +38,8 @@ int count_unpaired;
 int count_branches;
 int length;
 
+//#define DEBUG
+
 ScoreVector trace(int len) {
     int i;
     for (i = 0; i <= len; i++) structure[i] = 0;
@@ -89,6 +91,9 @@ void traceW(int j) {
             }
         }	else if (g_dangles == 0) {
             if ((W[j] == V_f(i,j) + auPenalty(i, j) + wim1 && canStack(i,j)) || forcePair(i,j)) {
+                #ifdef DEBUG
+                printf("i %5d j %5d ExtLoop   %12.2f\n", i, j, auPenalty(i, j).get_d());
+                #endif
                 done = 1;
                 total_ex += auPenalty(i, j);
                 traceV(i, j);
@@ -154,17 +159,29 @@ mpq_class traceV(int i, int j) {
 
 
     if (Vij == a ) {
+        #ifdef DEBUG
+        printf("i %5d j %5d Hairpin   %12.2f\n", i, j, eH(i, j).get_d());
+        #endif
         total_en += eH(i,j);
         return Vij;
     } else if (Vij == b) {
+        #ifdef DEBUG
+        printf("i %5d j %5d Stack     %12.2f\n", i, j, eS(i, j).get_d());
+        #endif
         total_en += eS(i,j);
         traceV(i + 1, j - 1);
         return Vij;
     } else if (Vij == c) {
+        #ifdef DEBUG
+        printf("i %5d j %5d IntLoop  ", i, j);
+        #endif
         traceVBI(i, j);
         return Vij;
     } else if (Vij == d) {
         mpq_class eVM = traceVM(i, j);
+        #ifdef DEBUG
+        printf("i %5d j %5d MultiLoop %12.2f\n", i, j, Vij.get_d()-eVM.get_d());
+        #endif
         total_en += (Vij-eVM);
         return Vij;
     }
@@ -192,6 +209,10 @@ mpq_class traceVBI(int i, int j) {
         if (jp != j) break;
     }
 
+
+    #ifdef DEBUG
+    printf(" %12.2f, ifinal %5d, jfinal %5d\n", eL(i, j, ifinal, jfinal).get_d(), ifinal, jfinal);
+    #endif
     total_en += eL(i, j, ifinal, jfinal);
 
     return traceV(ifinal, jfinal);
