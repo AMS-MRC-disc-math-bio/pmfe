@@ -29,12 +29,10 @@ LIBS += -L./rna-scoring -Wl,-R./rna-scoring -lrnascoring
 
 # Optional OpenMP-related flags
 HAS_OPENMP = $(shell $(CXX) -lgomp test.cc -o /dev/null 2>&1 > /dev/null ; echo $$?)
-$(info Exit code: $(HAS_OPENMP))
 ifeq ($(HAS_OPENMP), 0)
-#	$(info OpenMP detected!)
-	CXXFLAGS += -fopenmp
-	CXXFLAGS += -DHAVE_OPENMP
-	LIBS += -lgomp
+CXXFLAGS += -fopenmp
+CXXFLAGS += -DHAVE_OPENMP
+LIBS += -lgomp
 endif
 
 all: rnascoring $(OBJ) $(EXEC)
