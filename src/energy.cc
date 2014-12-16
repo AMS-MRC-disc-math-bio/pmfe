@@ -185,6 +185,21 @@ mpq_class eL(int i, int j, int ip, int jp) {
     size2 = j - jp - 1;
     size = size1 + size2;
 
+    lopsided = abs(size1 - size2);
+    int dummy_sign = (dummy_scaling > 0) - (dummy_scaling < 0);
+    mpq_class minterm;
+    switch ( dummy_sign ) {
+    case 1:
+        minterm = MIN(maxpen, (lopsided * poppen[MIN(2, MIN(size1, size2))]));
+        break;
+    case -1:
+        minterm = MAX(maxpen, (lopsided * poppen[MIN(2, MIN(size1, size2))]));
+        break;
+    case 0:
+        minterm = 0;
+        break;
+    }
+
     if (size1 == 0 || size2 == 0) {
         if (size > 30) {
             /* AM: Does not depend upon i and j and ip and jp - Stacking Energies */
@@ -201,7 +216,6 @@ mpq_class eL(int i, int j, int ip, int jp) {
         }
     } else {
         /* Internal loop */
-        lopsided = abs(size1 - size2);
 
         if (size > 30) {
             loginc = prelog * log((double) size / 30.0);
@@ -209,10 +223,10 @@ mpq_class eL(int i, int j, int ip, int jp) {
             if (!((size1 == 1 || size2 == 1) && gail)) { /* normal internal loop with size > 30*/
                 energy = tstki[fourBaseIndex(RNA[i], RNA[j], RNA[i + 1], RNA[j - 1])] +
                     tstki[fourBaseIndex(RNA[jp], RNA[ip], RNA[jp + 1], RNA[ip - 1])] + inter[30] + loginc +
-                    eparam[3] + MIN(maxpen, (lopsided * poppen[MIN(2, MIN(size1, size2))]));
+                    eparam[3] + minterm;
             } else { /* if size is more than 30 and it is a grossely asymmetric internal loop and gail is not 0*/
                 energy = tstki[fourBaseIndex(RNA[i], RNA[j], BASE_A, BASE_A)] + tstki[fourBaseIndex(RNA[jp], RNA[ip], BASE_A, BASE_A)]
-                    + inter[30] + loginc + eparam[3] + MIN(maxpen, (lopsided * poppen[MIN(2, MIN(size1, size2))]));
+                    + inter[30] + loginc + eparam[3] + minterm;
             }
         }
         else if (size1 == 2 && size2 == 2) { /* 2x2 internal loop */
@@ -230,10 +244,10 @@ mpq_class eL(int i, int j, int ip, int jp) {
         //}
         else if ((size1 == 1 || size2 == 1) && gail) { /* gail = (Grossly Asymmetric Interior Loop Rule) (on/off <-> 1/0)  */
             energy = tstki[fourBaseIndex(RNA[i], RNA[j], BASE_A, BASE_A)] + tstki[fourBaseIndex(RNA[jp], RNA[ip], BASE_A, BASE_A)]
-                + inter[size] + loginc + eparam[3] + MIN(maxpen, (lopsided * poppen[MIN(2, MIN(size1, size2))]));
+                + inter[size] + loginc + eparam[3] + minterm;
         } else { /* General Internal loops */
             energy = tstki[fourBaseIndex(RNA[i], RNA[j], RNA[i + 1], RNA[j - 1])] + tstki[fourBaseIndex(RNA[jp], RNA[ip], RNA[jp + 1], RNA[ip - 1])] + inter[size]
-                + loginc + eparam[3] + MIN(maxpen, (lopsided * poppen[MIN(2, MIN(size1, size2))]));
+                + loginc + eparam[3] + minterm;
         }
     }
 
