@@ -88,10 +88,11 @@ mpq_class get_mpq_from_word(std::string word) {
     mpq_class thevalue (word);
     result = thevalue;
   }
+  result.canonicalize();
   return result;
 };
 
-mpq_class multiloop_default = mpq_class(34, 10);
+mpq_class multiloop_default = mpq_class(17, 5);
 mpq_class unpaired_default = mpq_class(0);
-mpq_class branch_default = mpq_class(4, 10);
+mpq_class branch_default = mpq_class(2, 5);
 mpq_class dummy_default = mpq_class(1);
