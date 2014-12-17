@@ -4,9 +4,10 @@ OBJ = $(SRC:.cc=.o)
 DEP = $(SRC:.cc=.d)
 HDR = $(wildcard include/*.h)
 
-OBJ-GTMFE = $(filter-out src/iB4e_wrapper.o, $(OBJ))
-OBJ-PARAM = $(filter-out src/gtmfe_wrapper.o, $(OBJ))
-EXEC = gtmfe-param parametrizer
+OBJ-GTMFE = $(filter-out src/iB4e_wrapper.o src/rnascorer_wrapper.o, $(OBJ))
+OBJ-PARAM = $(filter-out src/gtmfe_wrapper.o src/rnascorer_wrapper.o, $(OBJ))
+OBJ-RNASCORING = $(filter-out src/gtmfe_wrapper.o src/iB4e_wrapper.o, $(OBJ))
+EXEC = gtmfe-param parametrizer rnascorer
 
 # include directories
 INCLUDES += -Iinclude -Irna-scoring/
@@ -42,6 +43,9 @@ gtmfe-param: $(OBJ-GTMFE)
 
 parametrizer: $(OBJ-PARAM)
 	$(CXX) $(INCLUDES) $(LDFLAGS) $(CXXFLAGS) $(OBJ-PARAM) -o $@ $(LIBS)
+
+rnascorer: $(OBJ-RNASCORING)
+	$(CXX) $(INCLUDES) $(LDFLAGS) $(CXXFLAGS) $(OBJ-RNASCORING) -o $@ $(LIBS)
 
 -include $(DEP)
 
