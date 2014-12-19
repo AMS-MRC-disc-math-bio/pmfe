@@ -30,7 +30,7 @@ QPoint run_gtmfe_on_q4vector(QVector param_vector, fs::path seq_file, fs::path o
     initial_output_file.replace_extension(structure_ext);
 
     params = ParameterVector(param_vector);
-    scores = mfe(seq_file.string(), initial_output_file.string(), param_dir.string(), params, dangle_model);
+    scores = mfe(seq_file.string(), initial_output_file.string(), params, param_dir.string(), dangle_model);
 
     std::string score_sep (", ");
     std::string w_score_string (boost::lexical_cast<std::string>(mpf_class(scores.w).get_d()));

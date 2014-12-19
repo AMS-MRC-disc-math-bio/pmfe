@@ -75,7 +75,7 @@ int main(int argc, char * argv[]) {
     // Setup dangle model
     int dangle_model = vm["dangle-model"].as<int>();
 
-    ScoreVector result = mfe(seq_file.native(), output_file.native(), param_dir.native(), params, dangle_model);
+    ScoreVector result = mfe(seq_file.native(), output_file.native(), params, param_dir.native(), dangle_model);
     std::cout << result << std::endl;
     return(0);
 }

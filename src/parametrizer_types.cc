@@ -1,12 +1,60 @@
 // Copyright (c) 2014 Andrew Gainer-Dewar.
 
 #include <utility>
+#include <vector>
 #include <gmpxx.h>
 #include <cmath>
 #include <iostream>
 
 #include "iB4e.h"
 #include "parametrizer_types.h"
+
+#include <boost/python/tuple.hpp>
+#include <boost/python/extract.hpp>
+
+namespace py = boost::python;
+
+mpq_class mpq_from_pair(py::tuple pair) {
+    mpz_class num(0), den(1);
+    py::extract<mpz_class> numext(pair[0]), denext(pair[1]);
+
+    if (numext.check() && denext.check())
+    {
+        num = numext();
+        den = denext();
+    }
+
+    return mpq_class(num, den);
+};
+
+mpz_class mpz_from_pair(py::tuple pair) {
+    mpz_class num(0), den(1);
+    py::extract<mpz_class> numext(pair[0]), denext(pair[1]);
+
+    if (numext.check() && denext.check())
+    {
+        num = numext();
+        den = denext();
+    }
+
+    return num;
+};
+
+py::tuple pair_from_mpq(mpq_class value) {
+    // Warning: this is limited to long precision!
+    py::tuple pair =
+        py::make_tuple(value.get_num().get_si(), value.get_den().get_si());
+
+    return pair;
+};
+
+py::tuple pair_from_mpz(mpz_class value) {
+    // Warning: this is limited to long precision!
+    py::tuple pair =
+        py::make_tuple(value.get_si(), 1);
+
+    return pair;
+};
 
 std::ostream& operator<<(std::ostream& os, const ParameterVector& params) {
     os << "Multiloop penalty: " << params.multiloop_penalty.get_str(10) << std::endl
@@ -40,6 +88,25 @@ QVector ParameterVector::as_QVector() {
     return result;
 };
 
+py::tuple ParameterVector::as_pairs() {
+    py::tuple pairs =
+        py::make_tuple(
+                       pair_from_mpq(multiloop_penalty),
+                       pair_from_mpq(unpaired_penalty),
+                       pair_from_mpq(branch_penalty),
+                       pair_from_mpq(dummy_scaling)
+                       );
+
+    return pairs;
+};
+
+void ParameterVector::from_pairs(py::tuple p_multiloop_penalty, py::tuple p_unpaired_penalty, py::tuple p_branch_penalty, py::tuple p_dummy_scaling) {
+    multiloop_penalty = mpq_from_pair(p_multiloop_penalty);
+    branch_penalty = mpq_from_pair(p_unpaired_penalty);
+    unpaired_penalty = mpq_from_pair(p_branch_penalty);
+    dummy_scaling = mpq_from_pair(p_dummy_scaling);
+};
+
 std::ostream& operator<<(std::ostream& os, const ScoreVector& score) {
     os << "Multiloops: " << score.multiloops.get_str(10) << std::endl
        << "Unpaired bases: " << score.unpaired.get_str(10) << std::endl
@@ -63,6 +130,27 @@ QPoint ScoreVector::get_q4point() {
     mpq_clears(values[0], values[1], values[2], values[3], NULL);
     return result;
 };
+
+py::tuple ScoreVector::as_pairs() {
+    py::tuple pairs =
+        py::make_tuple(
+                       pair_from_mpz(multiloops),
+                       pair_from_mpq(unpaired),
+                       pair_from_mpz(branches),
+                       pair_from_mpq(w),
+                       pair_from_mpq(energy)
+                       );
+    return pairs;
+};
+
+void ScoreVector::from_pairs(py::tuple p_multiloops, py::tuple p_unpaired, py::tuple p_branches, py::tuple p_w, py::tuple p_energy) {
+    multiloops = mpz_from_pair(p_multiloops);
+    unpaired = mpz_from_pair(p_unpaired);
+    branches = mpz_from_pair(p_branches);
+    w = mpq_from_pair(p_w);
+    energy = mpq_from_pair(p_energy);
+};
+
 
 mpq_class get_mpq_from_word(std::string word) {
   mpq_class result;

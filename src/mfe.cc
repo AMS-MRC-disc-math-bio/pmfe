@@ -80,12 +80,16 @@ void free_fold(int len) {
     free_global_params();
 }
 
-ScoreVector mfe(string seq_file, string output_file, string param_dir, int dangle_model) {
-    ParameterVector params = ParameterVector();
-    return mfe(seq_file, output_file, param_dir, params, dangle_model);
+ScoreVector mfe_pywrap(string seq_file, string output_file, ParameterVector params, string param_dir, int dangle_model) {
+    return mfe(seq_file, output_file, params, param_dir, dangle_model);
 }
 
-ScoreVector mfe(string seq_file, string output_file, string param_dir, ParameterVector params, int dangle_model) {
+ScoreVector mfe(string seq_file, string output_file, string param_dir, int dangle_model) {
+    ParameterVector params = ParameterVector();
+    return mfe(seq_file, output_file, params, param_dir, dangle_model);
+}
+
+ScoreVector mfe(string seq_file, string output_file, ParameterVector params, string param_dir, int dangle_model) {
     std::string seq;
     mpq_class energy;
 
