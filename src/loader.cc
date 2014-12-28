@@ -254,7 +254,7 @@ int initMiscloopValues(const string& fileName, const string& dirpath) {
         }
         if (index == 10) {
             cf >> currentWord;
-            c3 = dummy_scaling * get_mpq_from_word(currentWord);
+            c3 = dummy_scaling * (get_mpq_from_word(currentWord) + mpq_class(1, 100));
         }
         if (index == 11) {
             cf >> currentWord;
