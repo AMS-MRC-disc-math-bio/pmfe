@@ -226,7 +226,7 @@ mpq_class calculate(int len) {
 
             // Added auxillary storage WMPrime to speedup multiloop calculations
             int h;
-            for (h = i+TURN+1 ; h <= j-TURN-2; h++) {
+            for (h = i+TURN+1 ; h <= j-TURN; h++) {
                 std::vector<mpq_class> vals;
                 vals.push_back(WMPrime[i][j]);
                 vals.push_back(WMU_f(i,h-1) + WML_f(h,j));
@@ -255,6 +255,7 @@ mpq_class calculate(int len) {
                 }
 
                 /*if (j<len)*/ energy += Ed5(j,i,j+1);
+
                 if (canSS(i)&&canSS(j)){
                     std::vector<mpq_class> vals;
                     vals.push_back(energy);
