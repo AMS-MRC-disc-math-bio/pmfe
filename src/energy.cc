@@ -186,19 +186,7 @@ mpq_class eL(int i, int j, int ip, int jp) {
     size = size1 + size2;
 
     lopsided = abs(size1 - size2);
-    int dummy_sign = (dummy_scaling > 0) - (dummy_scaling < 0);
-    mpq_class minterm;
-    switch ( dummy_sign ) {
-    case 1:
-        minterm = MIN(maxpen, (lopsided * poppen[MIN(2, MIN(size1, size2))]));
-        break;
-    case -1:
-        minterm = MAX(maxpen, (lopsided * poppen[MIN(2, MIN(size1, size2))]));
-        break;
-    case 0:
-        minterm = 0;
-        break;
-    }
+    mpq_class minterm = MIN(maxpen, (lopsided * poppen[MIN(2, MIN(size1, size2))]));
 
     if (size1 == 0 || size2 == 0) {
         if (size > 30) {

@@ -15,7 +15,8 @@ int main(int argc, char * argv[]) {
     desc.add_options()
         ("structure", po::value<std::string>()->required(), "Structure file")
         ("paramdir,p", po::value<std::string>()->default_value("rna-scoring/data/Turner99"), "Turner99 parameter directory")
-        ("dangle-model,m", po::value<int>()->default_value(1), "Dangle model")
+        ("dangle-model,m", po::value<int>()->default_value(1), "Dangle model (0, 1, 2)")
+        ("maxdangle", "Use dangle maximizer instead of default minimizer")
         ("help,h", "Display this help message")
         ;
 
@@ -40,7 +41,12 @@ int main(int argc, char * argv[]) {
     // Setup dangle model
     int dangle_model = vm["dangle-model"].as<int>();
 
-    mpq_class result = rnascoring::get_classical_score(struct_file.native(), param_dir.native(), dangle_model);
+    bool maxdangle = false;
+    if (vm.count("maxdangle")) {
+        maxdangle = true;
+    }
+
+    mpq_class result = rnascoring::get_classical_score(struct_file.native(), param_dir.native(), dangle_model, maxdangle);
     printf("Computed energy %s = %5.3f\n", result.get_str(10).c_str(), result.get_d());
     return(0);
 }

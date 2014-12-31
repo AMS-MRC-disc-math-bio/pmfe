@@ -107,7 +107,7 @@ void traceW(int j) {
             if ((W[j] == V_f(i,j) + auPenalty(i, j) + wim1 && canStack(i,j)) || forcePair(i,j)) {
                 done = 1;
                 #ifdef DEBUG
-                printf("i %5d j %5d Extloop A  %12f\n", i, j, auPenalty(i, j).get_d());
+                printf("i %5d j %5d Extloop A  %12.2f\n", i, j, auPenalty(i, j).get_d());
                 #endif
                 total_ex += auPenalty(i, j);
                 traceV(i, j);
@@ -116,7 +116,7 @@ void traceW(int j) {
             } else if ((W[j] ==  V_f(i,j-1) + auPenalty(i,j-1) + Ed5(j-1,i,j) + wim1 && canSS(j) && canStack(i,j-1)) || forcePair(i, j-1)) {
                 done = 1;
                 #ifdef DEBUG
-                printf("i %5d j %5d Extloop B  %12f\n", i, j, auPenalty(i, j).get_d() + Ed5(j-1, i, j).get_d());
+                printf("i %5d j %5d Extloop B  %12.2f\n", i, j, auPenalty(i, j).get_d() + Ed5(j-1, i, j).get_d());
                 #endif
                 total_ex += (auPenalty(i,j-1) + Ed5(j-1,i,j));
                 traceV(i, j - 1);
@@ -125,7 +125,7 @@ void traceW(int j) {
             } else if ((W[j] == V_f(i+1,j) + auPenalty(i+1,j) + Ed3(j,i+1,i) + wim1 && canSS(i) && canStack(i+1,j)) || forcePair(i+1,j)){
                 done = 1;
                 #ifdef DEBUG
-                printf("i %5d j %5d Extloop C  %12f\n", i, j, auPenalty(i+1, j).get_d() + Ed3(j, i+1, i).get_d());
+                printf("i %5d j %5d Extloop C  %12.2f\n", i, j, auPenalty(i+1, j).get_d() + Ed3(j, i+1, i).get_d());
                 #endif
                 total_ex += (auPenalty(i+1,j) + Ed3(j,i+1,i));
                 traceV(i + 1, j);
@@ -134,7 +134,7 @@ void traceW(int j) {
             } else if ((W[j] == V_f(i+1,j-1) + auPenalty(i+1, j-1) + Ed3(j-1,i+1,i) + Ed5(j-1,i+1,j) + wim1 && canSS(i) && canSS(j) && canStack(i+1,j-1)) || forcePair(i+1,j-1)) {
                 done = 1;
                 #ifdef DEBUG
-                printf("i %5d j %5d Extloop D  %12f\n", i, j, auPenalty(i+1, j-1).get_d() + Ed3(j-1, i+1, i).get_d() + Ed5(j-1, i+1, j).get_d());
+                printf("i %5d j %5d Extloop D  %12.2f\n", i, j, auPenalty(i+1, j-1).get_d() + Ed3(j-1, i+1, i).get_d() + Ed5(j-1, i+1, j).get_d());
                 printf("a");
                 #endif
                 total_ex += (auPenalty(i+1, j-1) + Ed3(j-1,i+1,i) + Ed5(j-1,i+1,j));

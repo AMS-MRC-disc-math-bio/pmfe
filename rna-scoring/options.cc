@@ -13,6 +13,8 @@ namespace rnascoring
     int D2MODE=0;//d2 mode
     int DEFAULTMODE=0;//default mode
 
+    bool MAXDANGLE = false; // If true, maximize dangle energies instead of minimizing
+
     char seqfile[200];
     char paramDir[200] = {'\0'};
 

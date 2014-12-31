@@ -13,6 +13,8 @@ namespace rnascoring
     extern int D2MODE;//d2 mode
     extern int DEFAULTMODE;//default mode
 
+    extern bool MAXDANGLE;
+
     extern char seqfile[200];
 }
 

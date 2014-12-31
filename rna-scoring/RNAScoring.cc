@@ -27,7 +27,7 @@ namespace rnascoring
 {
     extern char paramDir[200];
 
-    mpq_class get_classical_score(std::string structfile, std::string paramdir, int dangle_model) {
+    mpq_class get_classical_score(std::string structfile, std::string paramdir, int dangle_model, bool maxdangle) {
         // Force parameters for iB4e use
 
         switch (dangle_model) {
@@ -41,6 +41,8 @@ namespace rnascoring
             DEFAULTMODE=1;
             break;
         }
+
+        MAXDANGLE = maxdangle;
 
         // This code uses char arrays, and I don't feel like rewriting the whole thing
         // to use C++ strings

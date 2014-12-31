@@ -1,5 +1,7 @@
 #include <stdio.h>
 #include <math.h>
+#include <vector>
+#include <algorithm>
 #include "LoopScoring.h"
 #include "TreeScoring.h"
 
@@ -17,6 +19,8 @@ namespace rnascoring
 	// M.Sc., Academy of Economic Studies, Bucharest, Romania, 2000,
 	// pg 32.)
 	int energy = 0;
+        int e5 = param->dangle[RNA[j1]][RNA[i1]][RNA[j1+1]][0];
+        int e3 = param->dangle[RNA[j2]][RNA[i2]][RNA[i2-1]][1];
 	/*
           int PFMODE=0;//boltzman sampling or stochastic sampling and  partition function mode or dS mode, it is mode as defined and used for partition function of sfold
           int NODANGLEMODE=0;//no dangling at all means d0
@@ -24,15 +28,19 @@ namespace rnascoring
           int DEFAULTMODE=1;//default mode
 	*/
 
+        std::vector<int> vals;
+        vals.push_back(0);
+
 	if(NODANGLEMODE==1){
             energy = 0;
 	}
+
 	else if (j1+1 < i2-1 || D2MODE==1) {
             // if there are at least two nucleotides in the unpaired region,
             // then add the energy for both a 3' and 5' dangling end
             // for the first and last nucleotides in the unpaired region, respectively.
             //printf("A\n");
-            energy = param->dangle[RNA[j1]][RNA[i1]][RNA[j1+1]][0] + param->dangle[RNA[j2]][RNA[i2]][RNA[i2-1]][1];
+            vals.push_back(e3+e5);
             if(printOn1)printf("i1=%d,j1=%d,i2=%d,j2=%d, param->dangle[RNA[j1]][RNA[i1]][RNA[j1+1]][0]/100=%f,  param->dangle[RNA[j2]][RNA[i2]][RNA[i2-1]][1]/100=%f\n", i1,j1,i2,j2,param->dangle[RNA[j1]][RNA[i1]][RNA[j1+1]][0]/100.0, param->dangle[RNA[j2]][RNA[i2]][RNA[i2-1]][1]/100.0);
 	} else if (j1+1 == i2-1) { //ZS: fixed limits
             // if there is only one nucleotide in the unpaired region,
@@ -44,21 +52,26 @@ namespace rnascoring
             //int e3 = param->dangle[RNA[j2]][RNA[i2]][RNA[i2-1]][1];
             //printf("In eMUnpairedRegion, e5=%d, e3=%d\n",e5,e3);
             if(PFMODE==1){
-                energy = param->dangle[RNA[j1]][RNA[i1]][RNA[j1+1]][0];
+                vals.push_back(e5);
             }
             else if(DEFAULTMODE==1){
-                energy = MIN(param->dangle[RNA[j1]][RNA[i1]][RNA[j1+1]][0], param->dangle[RNA[j2]][RNA[i2]][RNA[i2-1]][1]);
+                vals.push_back(e3);
+                vals.push_back(e5);
             }
-            else energy=0;
-	} else {
-            // if the unpaire region is empty, there can be no dangling ends.
-            //	printf("No dangling\n");
-            energy = 0;
 	}
+
+        if (MAXDANGLE) {
+            if(printOn1)printf("Max dangle! ");
+            energy = *std::max_element(vals.begin(), vals.end());
+        } else {
+            if(printOn1)printf("Min dangle! ");
+            energy = *std::min_element(vals.begin(), vals.end());
+        }
+
 	//printf("between branch %d - %d and %d - %d, \n 3dangle has energy %d, and \n 5dangle energy %d\n",
 	//	   i1, j1, i2, j2, param->dangle[RNA[j1]][RNA[i1]][RNA[j1+1]][0],  param->dangle[RNA[j2]][RNA[i2]][RNA[i2-1]][1]);
-	//printf("Nucleotides were: %d-%d and %d-%d \n", RNA[i1], RNA[j1], RNA[i2], RNA[j2]);
-	//printf("Returning energy = %i \n", energy);
+       //printf("Nucleotides were: %d-%d and %d-%d \n", RNA[i1], RNA[j1], RNA[i2], RNA[j2]);
+       //printf("Returning energy = %i \n", energy);
         if(printOn1)printf("eMUnpairedRegion(i1=%d,j1=%d,i2=%d,j2=%d)=%f\n", i1, j1, i2, j2, (double)energy/100);
 	return energy;
     }
@@ -78,6 +91,14 @@ namespace rnascoring
 	size2 = j - jp - 1;
 	size = size1 + size2;
 
+        lopsided = abs(size1 - size2);
+        int minterm;
+        if (MAXDANGLE) {
+            minterm = MAX(param->maxpen, (lopsided * param->poppen[MIN(2, MIN(size1, size2))]));
+        } else {
+            minterm = MIN(param->maxpen, (lopsided * param->poppen[MIN(2, MIN(size1, size2))]));
+        }
+
 	if (size1 == 0 || size2 == 0) {
             if (size > 30) {
                 loginc = (int) floor(param->prelog * log((double) size / 30.0));
@@ -95,7 +116,6 @@ namespace rnascoring
             }
 	} else {
             //Internal loop
-            lopsided = abs(size1 - size2);
             if (size > 30) {
                 loginc = (int) floor(param->prelog * log((double) size / 30.0));
                 //ZS: Somebody else's previous comment follows, I don't know the answer:
@@ -105,12 +125,12 @@ namespace rnascoring
                     energy = param->tstki[fourBaseIndex(RNA[i], RNA[j], RNA[i + 1], RNA[j - 1])]
                         + param->tstki[fourBaseIndex(RNA[jp], RNA[ip], RNA[jp + 1],
                                                      RNA[ip - 1])] + param->inter[30] + loginc + param->eparam[3]   //ZS: I have no idea about eparam here
-                        + MIN(param->maxpen, (lopsided * param->poppen[MIN(2, MIN(size1, size2))]));
+                        + minterm;
                 } else {
                     energy = param->tstki[fourBaseIndex(RNA[i], RNA[j], BASE_A, BASE_A)]
                         + param->tstki[fourBaseIndex(RNA[jp], RNA[ip], BASE_A,
                                                      BASE_A)] + param->inter[30] + loginc + param->eparam[3] +
-                        MIN(param->maxpen, (lopsided	* param->poppen[MIN(2, MIN(size1, size2))]));
+                        minterm;
                 }
             }
             /* if size is not > 30, we have a lot of cases... */
@@ -128,8 +148,7 @@ namespace rnascoring
             } else if ((size1 == 1 || size2 == 1) && param->gail) {
                 energy = param->tstki[fourBaseIndex(RNA[i], RNA[j], BASE_A, BASE_A)]
                     + param->tstki[fourBaseIndex(RNA[jp], RNA[ip], BASE_A, BASE_A)]
-                    + param->inter[size] + loginc + param->eparam[3] + MIN(param->maxpen,
-                                                                           (lopsided * param->poppen[MIN(2, MIN(size1, size2))]));
+                    + param->inter[size] + loginc + param->eparam[3] + minterm;
             } else { /* General Internal loops */
                 energy = param-> tstki[fourBaseIndex(RNA[i], RNA[j], RNA[i + 1], RNA[j - 1])]
                     + param->tstki[fourBaseIndex(RNA[jp], RNA[ip], RNA[jp + 1],
@@ -140,7 +159,7 @@ namespace rnascoring
                        have been assinged to various elements of eparam array */
                     //ZS: I don't understand it either and I think we should just
                     //delete it
-                    + MIN(param->maxpen, (lopsided * param->poppen[MIN(2, MIN(size1, size2))]));
+                    + minterm;
             }
 	}
         if(printOn1)printf("eL(i=%d, j=%d, ip=%d, jp=%d)=%f\n",i,j,ip,jp,(double)energy/100);
@@ -340,8 +359,10 @@ namespace rnascoring
             //so we just call it
             energy += param->auend*auPen(RNA[node->children[pairedChildren[i]]->lowBase.index], RNA[node->children[pairedChildren[i]]->highBase.index]);
             if(auPen(RNA[node->children[pairedChildren[i]]->lowBase.index], RNA[node->children[pairedChildren[i]]->highBase.index]) != 0){
-                if(printOn1)printf("AU penalty awarded for branch nr. %i (%i, %i%%): %i  \n", i,
+                if(printOn1)printf("AU penalty awarded for branch nr. %i (%i: %i, %i: %i): %i  \n", i,
+                                   node->children[pairedChildren[i]]->lowBase.index,
                                    RNA[node->children[pairedChildren[i]]->lowBase.index],
+                                   node->children[pairedChildren[i]]->highBase.index,
                                    RNA[node->children[pairedChildren[i]]->highBase.index],
                                    param->auend*auPen(RNA[node->children[pairedChildren[i]]->lowBase.index],
                                                       RNA[node->children[pairedChildren[i]]->highBase.index]) );
@@ -351,8 +372,10 @@ namespace rnascoring
         //Check the same node for dangling
         energy += param->auend*auPen(RNA[node->lowBase.index], RNA[node->highBase.index]);
         if(auPen(RNA[node->lowBase.index],RNA[node->highBase.index])>0){
-            if(printOn1)printf("AU penalty awarded for root branch with bases (%i, %i%%): %i  \n",
+            if(printOn1)printf("AU penalty awarded for root branch with bases (%i: %i, %i: %i): %i  \n",
+                               node->lowBase.index,
                                RNA[node->lowBase.index],
+                               node->highBase.index,
                                RNA[node->highBase.index],
                                param->auend*auPen(RNA[node->lowBase.index], RNA[node->highBase.index]));
         }
@@ -371,7 +394,7 @@ namespace rnascoring
             //so we just call it
             energy += param->auend*auPen(RNA[node->children[pairedChildren[i]]->lowBase.index], RNA[node->children[pairedChildren[i]]->highBase.index]);
             if(auPen(RNA[node->children[pairedChildren[i]]->lowBase.index], RNA[node->children[pairedChildren[i]]->highBase.index]) != 0){
-                if(printOn1)printf("AU penalty awarded for exterior branch nr. %i (%i, %i%%): %i  \n", i,
+                if(printOn1)printf("AU penalty awarded for exterior branch nr. %i (%i, %i): %i  \n", i,
 				   RNA[node->children[pairedChildren[i]]->lowBase.index],
 				   RNA[node->children[pairedChildren[i]]->highBase.index],
 				   param->auend*auPen(RNA[node->children[pairedChildren[i]]->lowBase.index],
@@ -387,11 +410,20 @@ namespace rnascoring
             else {
                 //if(i==1){ if(D2MODE==1) energy+=0; else energy += param->dangle[RNA[j]][RNA[i]][RNA[length]][1];}//TODO Manoj Changed it for D2
                 if(i==1){
-                    energy += param->dangle[RNA[j]][RNA[i]][RNA[length]][1];
+                    if (MAXDANGLE) {
+                        energy += MAX(0, param->dangle[RNA[j]][RNA[i]][RNA[length]][1]);
+                    } else {
+                        energy += MIN(0, param->dangle[RNA[j]][RNA[i]][RNA[length]][1]);
+                    }
+
                     if(printOn1)printf("i=%d,j=%d,param->dangle[RNA[j]][RNA[i]][RNA[length]][1]/100=%f\n",i,j,param->dangle[RNA[j]][RNA[i]][RNA[length]][1]/100.0);
                 }
                 else{
-                    energy += param->dangle[RNA[j]][RNA[i]][RNA[i-1]][1];
+                    if (MAXDANGLE) {
+                        energy += MAX(0, param->dangle[RNA[j]][RNA[i]][RNA[i-1]][1]);
+                    } else {
+                        energy += MIN(0, param->dangle[RNA[j]][RNA[i]][RNA[i-1]][1]);
+                    }
                     if(printOn1)printf("i=%d,j=%d,param->dangle[RNA[j]][RNA[i]][RNA[i-1]][1]/100=%f\n",i,j,param->dangle[RNA[j]][RNA[i]][RNA[i-1]][1]/100.0);
                 }
             }
@@ -415,11 +447,19 @@ namespace rnascoring
             else{
                 //if(j==length){ if(D2MODE==1) energy+=0; else energy += param->dangle[RNA[j]][RNA[i]][RNA[1]][0];}//TODO Manoj Changed it for D2
                 if(j==length){
-                    energy += param->dangle[RNA[j]][RNA[i]][RNA[1]][0];
+                    if (MAXDANGLE) {
+                        energy += MAX(0, param->dangle[RNA[j]][RNA[i]][RNA[1]][0]);
+                    } else {
+                        energy += MIN(0, param->dangle[RNA[j]][RNA[i]][RNA[1]][0]);
+                    }
                     if(printOn1)printf("i=%d,j=%d,param->dangle[RNA[j]][RNA[i]][RNA[1]][0]/100=%f\n",i,j,param->dangle[RNA[j]][RNA[i]][RNA[1]][0]/100.0);
                 }
                 else{
-                    energy += param->dangle[RNA[j]][RNA[i]][RNA[j+1]][0];
+                    if (MAXDANGLE) {
+                        energy += MAX(0, param->dangle[RNA[j]][RNA[i]][RNA[j+1]][0]);
+                    } else {
+                        energy += MIN(0, param->dangle[RNA[j]][RNA[i]][RNA[j+1]][0]);
+                    }
                     if(printOn1)printf("i=%d,j=%d,param->dangle[RNA[j]][RNA[i]][RNA[j+1]][0]/100=%f\n",i,j,param->dangle[RNA[j]][RNA[i]][RNA[j+1]][0]/100.0);
                 }
             }

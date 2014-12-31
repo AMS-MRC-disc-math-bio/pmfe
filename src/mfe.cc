@@ -128,7 +128,8 @@ ScoreVector mfe(string seq_file, string output_file, ParameterVector params, str
     save_ct_file(output_file, seq, energy);
 
     // Find the classical energy
-    mpq_class classical_energy = rnascoring::get_classical_score(output_file, "rna-scoring/data/Turner99", dangle_model);
+    bool maxdangle = (params.dummy_scaling < 0);
+    mpq_class classical_energy = rnascoring::get_classical_score(output_file, "rna-scoring/data/Turner99", dangle_model, maxdangle);
     classical_energy.canonicalize();
 
     // Calculate w
