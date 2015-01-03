@@ -1,6 +1,7 @@
 ## Synopsis
 
-iB4e-GTFold-parametrizer determines the sensitivity of RNA folding to multibranch-loop-related parameters.
+`iB4e-GTFold-parametrizer` determines the sensitivity of RNA folding to multibranch-loop-related parameters.
+It relies on an implementation of Zucker's dynamic-programming algorithm for RNA secondary structure prediction, using adapted code from the `gtmfe` program from the [GTFold][gtfold] project.
 
 ## Installation
 
@@ -72,3 +73,4 @@ The source for iB4e-GTfold-parametrizer is released under the GNU General Public
 [boost-getstarted]: //www.boost.org/doc/libs/1_57_0/more/getting_started/unix-variants.html
 [cmake]: //www.cmake.org/download/
 [NLTemplate]: //github.com/catnapgames/NLTemplate
+[gtfold]: //gtfold.sourceforge.net/
