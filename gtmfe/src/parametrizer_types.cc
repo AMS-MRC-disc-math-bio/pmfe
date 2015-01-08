@@ -16,7 +16,7 @@ namespace py = boost::python;
 
 mpq_class mpq_from_pair(py::tuple pair) {
     mpz_class num(0), den(1);
-    py::extract<mpz_class> numext(pair[0]), denext(pair[1]);
+    py::extract<int> numext(pair[0]), denext(pair[1]);
 
     if (numext.check() && denext.check())
     {
@@ -24,12 +24,14 @@ mpq_class mpq_from_pair(py::tuple pair) {
         den = denext();
     }
 
-    return mpq_class(num, den);
+    mpq_class result (num, den);
+
+    return result;
 };
 
 mpz_class mpz_from_pair(py::tuple pair) {
     mpz_class num(0), den(1);
-    py::extract<mpz_class> numext(pair[0]), denext(pair[1]);
+    py::extract<int> numext(pair[0]), denext(pair[1]);
 
     if (numext.check() && denext.check())
     {
@@ -37,7 +39,9 @@ mpz_class mpz_from_pair(py::tuple pair) {
         den = denext();
     }
 
-    return num;
+    // TODO: Deal with case that den != 1
+    mpz_class result (num);
+    return result;
 };
 
 py::tuple pair_from_mpq(mpq_class value) {
@@ -62,6 +66,19 @@ std::ostream& operator<<(std::ostream& os, const ParameterVector& params) {
        << "Branch penalty: " << params.branch_penalty.get_str(10) << std::endl
        << "Dummy scaling: " << params.dummy_scaling.get_str(10) << std::endl;
     return os;
+};
+
+bool operator==(const ParameterVector& a, const ParameterVector& b) {
+    return (
+            a.multiloop_penalty == b.multiloop_penalty &&
+            a.unpaired_penalty == b.unpaired_penalty &&
+            a.branch_penalty == b.branch_penalty &&
+            a.dummy_scaling == b.dummy_scaling
+            );
+};
+
+bool operator!=(const ParameterVector& a, const ParameterVector& b) {
+    return !(a == b);
 };
 
 ParameterVector::ParameterVector(QVector v) {
@@ -100,11 +117,12 @@ py::tuple ParameterVector::as_pairs() {
     return pairs;
 };
 
-void ParameterVector::from_pairs(py::tuple p_multiloop_penalty, py::tuple p_unpaired_penalty, py::tuple p_branch_penalty, py::tuple p_dummy_scaling) {
+ParameterVector::ParameterVector(py::tuple p_multiloop_penalty, py::tuple p_unpaired_penalty, py::tuple p_branch_penalty, py::tuple p_dummy_scaling) {
     multiloop_penalty = mpq_from_pair(p_multiloop_penalty);
     branch_penalty = mpq_from_pair(p_unpaired_penalty);
     unpaired_penalty = mpq_from_pair(p_branch_penalty);
     dummy_scaling = mpq_from_pair(p_dummy_scaling);
+    this->canonicalize();
 };
 
 std::ostream& operator<<(std::ostream& os, const ScoreVector& score) {
@@ -115,6 +133,20 @@ std::ostream& operator<<(std::ostream& os, const ScoreVector& score) {
        << "Parametrized energy: " << score.energy.get_str(10) << std::endl;
     return os;
 };
+
+bool operator==(const ScoreVector& a, const ScoreVector& b) {
+    return (
+            a.multiloops == b.multiloops &&
+            a.unpaired == b.unpaired &&
+            a.branches == b.branches &&
+            a.w == b.w &&
+            a.energy == b.energy
+            );
+};
+
+bool operator!=(const ScoreVector& a, const ScoreVector& b) {
+    return !(a == b);
+}
 
 QPoint ScoreVector::get_q4point() {
     this->canonicalize();
@@ -143,12 +175,13 @@ py::tuple ScoreVector::as_pairs() {
     return pairs;
 };
 
-void ScoreVector::from_pairs(py::tuple p_multiloops, py::tuple p_unpaired, py::tuple p_branches, py::tuple p_w, py::tuple p_energy) {
+ScoreVector::ScoreVector(py::tuple p_multiloops, py::tuple p_unpaired, py::tuple p_branches, py::tuple p_w, py::tuple p_energy) {
     multiloops = mpz_from_pair(p_multiloops);
     unpaired = mpz_from_pair(p_unpaired);
     branches = mpz_from_pair(p_branches);
     w = mpq_from_pair(p_w);
     energy = mpq_from_pair(p_energy);
+    this->canonicalize();
 };
 
 

@@ -1,39 +1,36 @@
 # source files
-SRC = $(wildcard *.cc)
+SRC = $(wildcard src/*.cc)
 OBJ = $(SRC:.cc=.o)
 DEP = $(SRC:.cc=.d)
-HDR = $(wildcard *.h)
+HDR = $(wildcard include/*.h)
 
-LIBRARY = librnascoring.so
+LIBRARY = librnascoring.a
 
 # include directories
 INCLUDES += -Iinclude
 
 # C++ compiler flags
 CXXFLAGS += -fPIC
-#CXXFLAGS += -Wall
+CXXFLAGS += -Wall
 CXXFLAGS += -g
 CXXFLAGS += -O2
 
-# Additional flags for building library
-LIBFLAGS += -shared
-
 # library paths
 LIBS += -lgmp
-
 
 all: $(OBJ) $(LIBRARY)
 
 -include $(DEP)
 
-%.so: $(OBJ)
-	$(CXX) $(INCLUDES) $(LDFLAGS) $(CXXFLAGS) $(LIBFLAGS) -Wl,-soname,$@ $^ -o $@
+$(LIBRARY): $(OBJ)
+	ar rcs $@ $^
+	ranlib $@
 
 %.o: %.cc
 	$(CXX) $(INCLUDES) $(LDFLAGS) $(CXXFLAGS) -c $*.cc -o $*.o $(LIBS)
 	$(CXX) $(INCLUDES) $(LDFLAGS) $(CXXFLAGS) -MM $*.cc $(LIBS) | sed -e 's@^\(.*\)\.o:@src/\1.d src/\1.o:@' > $*.d
 
 clean:
-	-rm -vf $(EXEC) $(OBJ) $(DEP)
+	-rm -vf $(EXEC) $(OBJ) $(DEP) $(LIBRARY)
 
 .PHONY: clean

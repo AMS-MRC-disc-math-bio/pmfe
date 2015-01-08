@@ -26,6 +26,7 @@ class ParameterVector {
     mpq_class multiloop_penalty, unpaired_penalty, branch_penalty, dummy_scaling;
 
     ParameterVector(QVector v);
+    ParameterVector(py::tuple p_multiloop_penalty, py::tuple p_unpaired_penalty, py::tuple p_branch_penalty, py::tuple p_dummy_scaling);
 
     void canonicalize() {
         multiloop_penalty.canonicalize();
@@ -37,9 +38,10 @@ class ParameterVector {
     QVector as_QVector();
 
     boost::python::tuple as_pairs();
-    void from_pairs(py::tuple p_multiloop_penalty, py::tuple p_unpaired_penalty, py::tuple p_branch_penalty, py::tuple p_dummy_scaling);
 
     friend std::ostream& operator<<(std::ostream& os, const ParameterVector& params);
+    friend bool operator==(const ParameterVector& a, const ParameterVector& b);
+    friend bool operator!=(const ParameterVector& a, const ParameterVector& b);
 };
 
 class ScoreVector {
@@ -50,10 +52,11 @@ class ScoreVector {
     mpz_class multiloops, branches, unpaired;
     mpq_class w, energy;
 
+    ScoreVector(py::tuple p_multiloops, py::tuple p_unpaired, py::tuple p_branches, py::tuple p_w, py::tuple p_energy);
+
     QPoint get_q4point();
 
     boost::python::tuple as_pairs();
-    void from_pairs(py::tuple p_multiloops, py::tuple p_unpaired, py::tuple p_branches, py::tuple p_w, py::tuple p_energy);
 
     void canonicalize(){
         w.canonicalize();
@@ -61,6 +64,8 @@ class ScoreVector {
     }
 
     friend std::ostream& operator<<(std::ostream& os, const ScoreVector& score);
+    friend bool operator==(const ScoreVector& a, const ScoreVector& b);
+    friend bool operator!=(const ScoreVector& a, const ScoreVector& b);
 };
 
 mpq_class get_mpq_from_word(std::string word);
