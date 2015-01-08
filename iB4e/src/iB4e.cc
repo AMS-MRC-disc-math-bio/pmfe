@@ -194,10 +194,10 @@ int iB4e_main(std::string seq_file_path, std::string param_dir_path, int dangle_
 
     for (Vertex_iterator v = CH.vertices_begin(); v != CH.vertices_end(); v++) {
         QPoint p = v->point();
-        point_stream << "[" << p[0] << ", " << p[1] << ", " << p[2] << ", " << p[3] << "], ";
+        point_stream << "    [" << p[0] << ", " << p[1] << ", " << p[2] << ", " << p[3] << "], " << std::endl;
     }
 
-    point_stream << "]";
+    point_stream << "    ]";
 
     // Build string encoding classical scores
     std::ostringstream classical_score_stream;
