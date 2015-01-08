@@ -26,13 +26,14 @@ It has been included here under the terms of the MIT license.
 
 
 ### Building the project code
-Next, you will need to build our custom version of `GTFold`.
+Next, you will need to build our custom version of `GTFold` and the parametrizer.
 To do so, simply run `make` from the `iB4e-GTfold-parametrizer` directory.
 If you have multiple cores or processors, you can build in parallel by running
 
     nice make -j
 
 instead.
+The resulting binaries can be found in the `bin/` subdirectory.
 
 ## Updating
 
@@ -45,14 +46,14 @@ Given a FASTA file representing an RNA sequence, the program will produce a Sage
 
 To run the calculation on the sequence in `testseq.fasta`, type
 
-    ./parametrizer testseq.fasta
+    bin/parametrizer testseq.fasta
 
 The result will be a file `testseq.polytope.sage` containing the required Sage commands and a directory called `testseq` containing structure files representing the MFE structures for each set of parameters.
 
 We also supply a program which can be used to find an MFE structure for a single set of parameters.
 To use it on the sequence in `testseq.fasta` with parameters `A`, `B`, `C`, and `D`, type
 
-    ./gtmfe-param testseq.fasta -a A -b B -c C -d D
+    bin/gtmfe-param testseq.fasta -a A -b B -c C -d D
 
 The result will be printed to your terminal.
 
