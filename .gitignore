@@ -4,9 +4,12 @@
 *.o
 *.so
 *.d
-output/
+*.a
+*.sobj
+*.nopct
+*.pyc
+*.constraint
 *.polytope.sage
-CGAL/*
 gtmfe-param
 parametrizer
 rnascorer
