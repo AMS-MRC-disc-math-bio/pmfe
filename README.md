@@ -59,6 +59,16 @@ The result will be printed to your terminal.
 
 For more information about either program, run it with the `-h` option.
 
+## Python interface
+
+The project also includes a Python testing interface called `pyparam`.
+To use it, just run the following from your favorite Python shell or Sage:
+
+    import pyparam
+
+You can now construct `pyparam.ParameterVector` and `pyparam.ScoreVector` objects (representing folding parameters and structure scores respectively), as well as call the `pyparam.get_mfe_score()` method to run `GTMFE` on a sequence of your choice.
+See the files `pyparam/example.*.py` for examples of how to use these methods.
+
 ## License
 
 The source for iB4e-GTfold-parametrizer is released under the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.

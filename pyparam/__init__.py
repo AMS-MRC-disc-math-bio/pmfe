@@ -3,7 +3,7 @@ from fractions import Fraction
 from decimal import Decimal
 
 try:
-    from sage.rings import rational_field
+    from sage.rings.rational_field import RationalField
     QQ = RationalField()
     IN_SAGE = True
 except ImportError:
