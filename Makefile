@@ -1,5 +1,5 @@
 # Subdirectories to recurse in build order
-SUBDIR = rnascoring gtmfe iB4e bin
+SUBDIR = rnascoring gtmfe bin
 
 .PHONY: $(SUBDIR) recurse
 

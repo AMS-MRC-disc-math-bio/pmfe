@@ -6,7 +6,6 @@
 #include <cmath>
 #include <iostream>
 
-#include "iB4e.h"
 #include "parametrizer_types.h"
 
 #include <boost/python/tuple.hpp>
@@ -81,30 +80,6 @@ bool operator!=(const ParameterVector& a, const ParameterVector& b) {
     return !(a == b);
 };
 
-ParameterVector::ParameterVector(QVector v) {
-    assert(v.dimension() == 4);
-    multiloop_penalty = mpq_class(v.cartesian(0).mpq());
-    unpaired_penalty = mpq_class(v.cartesian(1).mpq());
-    branch_penalty = mpq_class(v.cartesian(2).mpq());
-    dummy_scaling = mpq_class(v.cartesian(3).mpq());
-    this->canonicalize();
-};
-
-QVector ParameterVector::as_QVector() {
-    this->canonicalize();
-    mpq_t values [4];
-    mpq_inits(values[0], values[1], values[2], values[3], NULL);
-
-    mpq_set(values[0], multiloop_penalty.get_mpq_t());
-    mpq_set(values[1], unpaired_penalty.get_mpq_t());
-    mpq_set(values[2], branch_penalty.get_mpq_t());
-    mpq_set(values[3], dummy_scaling.get_mpq_t());
-
-    QVector result(4, values, values+4);
-    mpq_clears(values[0], values[1], values[2], values[3], NULL);
-    return result;
-};
-
 py::tuple ParameterVector::as_pairs() {
     py::tuple pairs =
         py::make_tuple(
@@ -147,21 +122,6 @@ bool operator==(const ScoreVector& a, const ScoreVector& b) {
 bool operator!=(const ScoreVector& a, const ScoreVector& b) {
     return !(a == b);
 }
-
-QPoint ScoreVector::get_q4point() {
-    this->canonicalize();
-    mpq_t values [4];
-    mpq_inits(values[0], values[1], values[2], values[3], NULL);
-
-    mpq_set_z(values[0], multiloops.get_mpz_t());
-    mpq_set_z(values[1], unpaired.get_mpz_t());
-    mpq_set_z(values[2], branches.get_mpz_t());
-    mpq_set(values[3], w.get_mpq_t());
-
-    QPoint result(4, values, values+4);
-    mpq_clears(values[0], values[1], values[2], values[3], NULL);
-    return result;
-};
 
 py::tuple ScoreVector::as_pairs() {
     py::tuple pairs =

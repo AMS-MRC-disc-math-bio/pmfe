@@ -69,6 +69,12 @@ To use it, just run the following from your favorite Python shell or Sage:
 You can now construct `pyparam.ParameterVector` and `pyparam.ScoreVector` objects (representing folding parameters and structure scores respectively), as well as call the `pyparam.get_mfe_score()` method to run `GTMFE` on a sequence of your choice.
 See the files `pyparam/example.*.py` for examples of how to use these methods.
 
+## iB4e
+
+This project includes "BBPolytope.h", a headers-only implementation of Huggins' `iB4e` algorithm.
+It can be found in the `iB4e` subdirectory.
+Note that it requires a replacement for one header file in the CGAL library; this is a small but necessary modification to support the algorithm.
+
 ## License
 
 The source for iB4e-GTfold-parametrizer is released under the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.

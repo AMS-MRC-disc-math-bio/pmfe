@@ -1,7 +1,7 @@
 # include directories
 INCLUDES += -Iinclude
 INCLUDES += -I../gtmfe/include
-INCLUDES += -I../iB4e/include
+INCLUDES += -I../iB4e
 INCLUDES += -I/usr/include/python2.7
 
 # C++ compiler flags
@@ -12,7 +12,6 @@ CXXFLAGS += -O2
 
 # library paths
 LIBS += -L../gtmfe -lgtmfe
-LIBS += -L../iB4e -liB4e
 LIBS += -L../rnascoring -lrnascoring
 LIBS += -lgmp
 LIBS += -lCGAL

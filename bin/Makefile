@@ -1,7 +1,7 @@
 # include directories
 INCLUDES += -I../gtmfe/include
 INCLUDES += -I../rnascoring/include
-INCLUDES += -I../iB4e/include
+INCLUDES += -I../iB4e
 INCLUDES += -I/usr/include/python2.7
 
 # C++ compiler flags
@@ -21,7 +21,7 @@ LIBS += -lboost_filesystem
 LIBS += -lboost_program_options
 
 LIBS += -L../gtmfe -lgtmfe
-LIBS += -L../iB4e -liB4e
+#LIBS += -L../iB4e -liB4e
 LIBS += -L../rnascoring -lrnascoring
 
 #LDFLAGS += -static
@@ -40,7 +40,7 @@ gtmfe-param: gtmfe_wrapper.o
 	$(CXX) $(INCLUDES) $(LDFLAGS) $(CXXFLAGS) $^ -o $@ $(LIBS)
 
 parametrizer: parametrizer_wrapper.o
-	$(CXX) $(INCLUDES) $(LDFLAGS) $(CXXFLAGS) $^ -o $@ $(LIBS) $(LIBS) # Some sort of ld glitch requires doubling $(LIBS) on my machine-AGD
+	$(CXX) $(INCLUDES) $(LDFLAGS) $(CXXFLAGS) $^ -o $@ $(LIBS)
 
 rnascorer: rnascorer_wrapper.o
 	$(CXX) $(INCLUDES) $(LDFLAGS) $(CXXFLAGS) $^ -o $@ $(LIBS)

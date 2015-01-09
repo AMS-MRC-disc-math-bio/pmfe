@@ -9,8 +9,6 @@
 #include <iostream>
 #include <boost/python/tuple.hpp>
 
-#include "iB4e.h"
-
 extern mpq_class multiloop_default;
 extern mpq_class unpaired_default;
 extern mpq_class branch_default;
@@ -25,7 +23,6 @@ class ParameterVector {
     };
     mpq_class multiloop_penalty, unpaired_penalty, branch_penalty, dummy_scaling;
 
-    ParameterVector(QVector v);
     ParameterVector(py::tuple p_multiloop_penalty, py::tuple p_unpaired_penalty, py::tuple p_branch_penalty, py::tuple p_dummy_scaling);
 
     void canonicalize() {
@@ -34,8 +31,6 @@ class ParameterVector {
         branch_penalty.canonicalize();
         dummy_scaling.canonicalize();
     }
-
-    QVector as_QVector();
 
     boost::python::tuple as_pairs();
 
@@ -53,8 +48,6 @@ class ScoreVector {
     mpq_class w, energy;
 
     ScoreVector(py::tuple p_multiloops, py::tuple p_unpaired, py::tuple p_branches, py::tuple p_w, py::tuple p_energy);
-
-    QPoint get_q4point();
 
     boost::python::tuple as_pairs();
 

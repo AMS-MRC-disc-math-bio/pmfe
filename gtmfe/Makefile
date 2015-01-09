@@ -9,7 +9,6 @@ LIBRARY = libgtmfe.a
 # include directories
 INCLUDES += -Iinclude
 INCLUDES += -I/usr/include/python2.7
-INCLUDES += -I../iB4e/include
 INCLUDES += -I../rnascoring/include
 
 # C++ compiler flags
