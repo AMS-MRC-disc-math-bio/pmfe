@@ -226,10 +226,10 @@ mpq_class calculate(int len) {
 
             // Added auxillary storage WMPrime to speedup multiloop calculations
             int h;
-            for (h = i+TURN+1 ; h <= j-TURN; h++) {
+            for (h = i+TURN+1 ; h <= j-TURN-2; h++) {
                 std::vector<mpq_class> vals;
                 vals.push_back(WMPrime[i][j]);
-                vals.push_back(WMU_f(i,h-1) + WML_f(h,j));
+                vals.push_back(WMU_f(i,h) + WML_f(h+1,j));
                 WMPrime[i][j] = *std::min_element(vals.begin(), vals.end());
 
             }
