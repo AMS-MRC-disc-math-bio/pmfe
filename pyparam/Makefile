@@ -1,6 +1,6 @@
 # include directories
 INCLUDES += -Iinclude
-INCLUDES += -I../gtmfe/include
+INCLUDES += -I../pmfe/include
 INCLUDES += -I../iB4e
 INCLUDES += -I/usr/include/python2.7
 
@@ -11,7 +11,7 @@ CXXFLAGS += -g
 CXXFLAGS += -O2
 
 # library paths
-LIBS += -L../gtmfe -lgtmfe
+LIBS += -L../pmfe -lpmfe
 LIBS += -L../rnascoring -lrnascoring
 LIBS += -lgmp
 LIBS += -lCGAL
@@ -19,7 +19,7 @@ LIBS += -lboost_python
 LIBS += -lpython2.7
 
 # Optional OpenMP-related flags
-HAS_OPENMP = $(shell $(CXX) -lgomp ../gtmfe/openmp-test.cc -o /dev/null 2>&1 > /dev/null ; echo $$?)
+HAS_OPENMP = $(shell $(CXX) -lgomp ../pmfe/openmp-test.cc -o /dev/null 2>&1 > /dev/null ; echo $$?)
 ifeq ($(HAS_OPENMP), 0)
 CXXFLAGS += -fopenmp
 CXXFLAGS += -DHAVE_OPENMP

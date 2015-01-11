@@ -4,7 +4,7 @@ OBJ = $(SRC:.cc=.o)
 DEP = $(SRC:.cc=.d)
 HDR = $(wildcard src/*.h)
 
-LIBRARY = libgtmfe.a
+LIBRARY = libpmfe.a
 
 # include directories
 INCLUDES += -Iinclude

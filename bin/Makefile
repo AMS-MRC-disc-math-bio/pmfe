@@ -1,5 +1,5 @@
 # include directories
-INCLUDES += -I../gtmfe/include
+INCLUDES += -I../pmfe/include
 INCLUDES += -I../rnascoring/include
 INCLUDES += -I../iB4e
 INCLUDES += -I/usr/include/python2.7
@@ -20,23 +20,23 @@ LIBS += -lboost_system
 LIBS += -lboost_filesystem
 LIBS += -lboost_program_options
 
-LIBS += -L../gtmfe -lgtmfe
+LIBS += -L../pmfe -lpmfe
 #LIBS += -L../iB4e -liB4e
 LIBS += -L../rnascoring -lrnascoring
 
 #LDFLAGS += -static
 
 # Optional OpenMP-related flags
-HAS_OPENMP = $(shell $(CXX) -lgomp ../gtmfe/openmp-test.cc -o /dev/null 2>&1 > /dev/null ; echo $$?)
+HAS_OPENMP = $(shell $(CXX) -lgomp ../pmfe/openmp-test.cc -o /dev/null 2>&1 > /dev/null ; echo $$?)
 ifeq ($(HAS_OPENMP), 0)
 CXXFLAGS += -fopenmp
 CXXFLAGS += -DHAVE_OPENMP
 LIBS += -lgomp
 endif
 
-all: gtmfe-param parametrizer rnascorer
+all: pmfe-param parametrizer rnascorer
 
-gtmfe-param: gtmfe_wrapper.o
+pmfe-param: pmfe_wrapper.o
 	$(CXX) $(INCLUDES) $(LDFLAGS) $(CXXFLAGS) $^ -o $@ $(LIBS)
 
 parametrizer: parametrizer_wrapper.o
@@ -49,6 +49,6 @@ rnascorer: rnascorer_wrapper.o
 	$(CXX) $(INCLUDES) $(LDFLAGS) $(CXXFLAGS) -c $^ -o $@ $(LIBS)
 
 clean:
-	-rm -vf $(wildcard *.o) gtmfe-param parametrizer
+	-rm -vf $(wildcard *.o) pmfe-param parametrizer
 
 .PHONY: clean

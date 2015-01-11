@@ -1,7 +1,7 @@
 import pyparam
 from fractions import Fraction
 
-# This example shows how to run gtmfe with a single specified set of parameters
+# This example shows how to run pmfe with a single specified set of parameters
 
 # First, we construct a ParameterVector representing our parameters.
 # This may include any combination of Python ints, Python Fractions, and Sage Rationals (as long as we're in Sage, of course!)

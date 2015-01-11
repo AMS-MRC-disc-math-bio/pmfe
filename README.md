@@ -53,7 +53,7 @@ The result will be a file `testseq.polytope.sage` containing the required Sage c
 We also supply a program which can be used to find an MFE structure for a single set of parameters.
 To use it on the sequence in `testseq.fasta` with parameters `A`, `B`, `C`, and `D`, type
 
-    bin/gtmfe-param testseq.fasta -a A -b B -c C -d D
+    bin/pmfe-param testseq.fasta -a A -b B -c C -d D
 
 The result will be printed to your terminal.
 
@@ -66,7 +66,7 @@ To use it, just run the following from your favorite Python shell or Sage:
 
     import pyparam
 
-You can now construct `pyparam.ParameterVector` and `pyparam.ScoreVector` objects (representing folding parameters and structure scores respectively), as well as call the `pyparam.get_mfe_score()` method to run `GTMFE` on a sequence of your choice.
+You can now construct `pyparam.ParameterVector` and `pyparam.ScoreVector` objects (representing folding parameters and structure scores respectively), as well as call the `pyparam.get_mfe_score()` method to run `pmfe` (our modified `gtmfe`) on a sequence of your choice.
 See the files `pyparam/example.*.py` for examples of how to use these methods.
 
 ## iB4e

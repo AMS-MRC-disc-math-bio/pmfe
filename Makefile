@@ -1,5 +1,5 @@
 # Subdirectories to recurse in build order
-SUBDIR = rnascoring gtmfe bin
+SUBDIR = rnascoring pmfe bin
 
 .PHONY: $(SUBDIR) recurse
 

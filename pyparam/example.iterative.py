@@ -2,7 +2,7 @@ import pyparam
 from fractions import Fraction
 import itertools
 
-# This example shows how we can run gtmfe iteratively on a large collection of scores
+# This example shows how we can run pmfe iteratively on a large collection of scores
 
 # For this example, we'll use the "test_tRNA.fasta" sequence in the "test_data" folder
 seqfile = "test_data/test_tRNA.fasta"
