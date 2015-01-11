@@ -23,16 +23,18 @@
 #ifndef _TRACEBACK_H
 #define _TRACEBACK_H
 
-#include "parametrizer_types.h"
+#include "pmfe_types.h"
 #include <gmpxx.h>
 
-ScoreVector trace(int len);
+namespace pmfe {
+    ScoreVector trace(int len);
 
-void traceW(int i);
-mpq_class traceV(int i, int j);
-mpq_class traceVM(int i, int j);
-mpq_class traceVBI(int i, int j);
-mpq_class traceWM(int i, int j);
-mpq_class traceWMPrime(int i, int j);
+    void traceW(int i);
+    mpq_class traceV(int i, int j);
+    mpq_class traceVM(int i, int j);
+    mpq_class traceVBI(int i, int j);
+    mpq_class traceWM(int i, int j);
+    mpq_class traceWMPrime(int i, int j);
+}
 
 #endif

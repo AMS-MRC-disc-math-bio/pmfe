@@ -30,335 +30,337 @@
 #include "utils.h"
 #include <gmpxx.h>
 
-mpq_class total_en; // Total internal loop energy
-mpq_class total_ex; // Total external loop energy
+namespace pmfe {
+    mpq_class total_en; // Total internal loop energy
+    mpq_class total_ex; // Total external loop energy
 
-int count_multiloops;
-int count_unpaired;
-int count_branches;
-int length;
+    int count_multiloops;
+    int count_unpaired;
+    int count_branches;
+    int length;
 
-//#define DEBUG
+    //#define DEBUG
 
-ScoreVector trace(int len) {
-    int i;
-    for (i = 0; i <= len; i++) structure[i] = 0;
+    ScoreVector trace(int len) {
+        int i;
+        for (i = 0; i <= len; i++) structure[i] = 0;
 
-    length = len;
+        length = len;
 
-    count_multiloops = 0;
-    count_unpaired = 0;
-    count_branches = 0;
-    total_en = 0;
-    total_ex = 0;
+        count_multiloops = 0;
+        count_unpaired = 0;
+        count_branches = 0;
+        total_en = 0;
+        total_ex = 0;
 
-    traceW(len);
+        traceW(len);
 
-    ScoreVector result;
-    result.multiloops = count_multiloops;
-    result.unpaired = count_unpaired;
-    result.branches = count_branches;
-    result.energy = total_ex + total_en;
+        ScoreVector result;
+        result.multiloops = count_multiloops;
+        result.unpaired = count_unpaired;
+        result.branches = count_branches;
+        result.energy = total_ex + total_en;
 
-    return result;
-}
+        return result;
+    }
 
-void traceW(int j) {
-    int done = 0, i;
-    int flag = 1;
-    mpq_class wim1;
+    void traceW(int j) {
+        int done = 0, i;
+        int flag = 1;
+        mpq_class wim1;
 
-    if (j == 0 || j == 1)
+        if (j == 0 || j == 1)
+            return;
+
+        for (i = 1; i < j && !done; i++) {
+            if (j-i < TURN) continue;
+
+            wim1 = MIN(0, W[i-1]);
+            flag = 1;
+            //if ( wim1 != W[i-1] && canSSregion(0,i)) flag = 0;
+
+            if (g_dangles == 2) {
+                mpq_class e_dangles = 0;
+                if (i>1) e_dangles +=  Ed3(j,i,i-1);
+                if (j<length) e_dangles += Ed5(j,i,j+1);
+                if ((W[j] == V_f(i,j) + auPenalty(i, j) + e_dangles + wim1 && canSS(i) && canSS(j) && canStack(i+1,j-1)) || forcePair(i+1,j-1)) {
+                    done = 1;
+#ifdef DEBUG
+                    printf("i %5d j %5d ExtLoop   %12.2f\n", i, j, auPenalty(i, j).get_d() + e_dangles.get_d());
+#endif
+                    total_ex += (auPenalty(i, j) + e_dangles);
+                    traceV(i, j);
+                    if (flag ) traceW(i - 1);
+                    break;
+                }
+            }	else if (g_dangles == 0) {
+                if ((W[j] == V_f(i,j) + auPenalty(i, j) + wim1 && canStack(i,j)) || forcePair(i,j)) {
+#ifdef DEBUG
+                    printf("i %5d j %5d ExtLoop   %12.2f\n", i, j, auPenalty(i, j).get_d());
+#endif
+                    done = 1;
+                    total_ex += auPenalty(i, j);
+                    traceV(i, j);
+                    if (flag ) traceW(i - 1);
+                    break;
+                }
+            } else { // default
+                if ((W[j] == V_f(i,j) + auPenalty(i, j) + wim1 && canStack(i,j)) || forcePair(i,j)) {
+                    done = 1;
+#ifdef DEBUG
+                    printf("i %5d j %5d Extloop A  %12.2f\n", i, j, auPenalty(i, j).get_d());
+#endif
+                    total_ex += auPenalty(i, j);
+                    traceV(i, j);
+                    if (flag ) traceW(i-1);
+                    break;
+                } else if ((W[j] ==  V_f(i,j-1) + auPenalty(i,j-1) + Ed5(j-1,i,j) + wim1 && canSS(j) && canStack(i,j-1)) || forcePair(i, j-1)) {
+                    done = 1;
+#ifdef DEBUG
+                    printf("i %5d j %5d Extloop B  %12.2f\n", i, j, auPenalty(i, j).get_d() + Ed5(j-1, i, j).get_d());
+#endif
+                    total_ex += (auPenalty(i,j-1) + Ed5(j-1,i,j));
+                    traceV(i, j - 1);
+                    if (flag ) traceW(i-1);
+                    break;
+                } else if ((W[j] == V_f(i+1,j) + auPenalty(i+1,j) + Ed3(j,i+1,i) + wim1 && canSS(i) && canStack(i+1,j)) || forcePair(i+1,j)){
+                    done = 1;
+#ifdef DEBUG
+                    printf("i %5d j %5d Extloop C  %12.2f\n", i, j, auPenalty(i+1, j).get_d() + Ed3(j, i+1, i).get_d());
+#endif
+                    total_ex += (auPenalty(i+1,j) + Ed3(j,i+1,i));
+                    traceV(i + 1, j);
+                    if (flag ) traceW(i);
+                    break;
+                } else if ((W[j] == V_f(i+1,j-1) + auPenalty(i+1, j-1) + Ed3(j-1,i+1,i) + Ed5(j-1,i+1,j) + wim1 && canSS(i) && canSS(j) && canStack(i+1,j-1)) || forcePair(i+1,j-1)) {
+                    done = 1;
+#ifdef DEBUG
+                    printf("i %5d j %5d Extloop D  %12.2f\n", i, j, auPenalty(i+1, j-1).get_d() + Ed3(j-1, i+1, i).get_d() + Ed5(j-1, i+1, j).get_d());
+                    printf("a");
+#endif
+                    total_ex += (auPenalty(i+1, j-1) + Ed3(j-1,i+1,i) + Ed5(j-1,i+1,j));
+                    traceV(i + 1, j - 1);
+                    if (flag ) traceW(i);
+                    break;
+                }
+            }
+        }
+
+        if (W[j] == W[j - 1] && !done) traceW(j-1);
+
         return;
+    }
 
-    for (i = 1; i < j && !done; i++) {
-        if (j-i < TURN) continue;
+    mpq_class traceV(int i, int j) {
+        mpq_class a, b, c, d;
+        mpq_class Vij;
+        if (j-i < TURN)  return INFINITY_;
 
-        wim1 = MIN(0, W[i-1]);
-        flag = 1;
-        //if ( wim1 != W[i-1] && canSSregion(0,i)) flag = 0;
+        if (canHairpin(i,j)) {
+            a = eH(i, j);
+        } else {
+            a = INFINITY_;
+        }
+
+        if (canStack(i,j)) {
+            b = eS(i, j) + V_f(i + 1, j - 1);
+            c = VBI_f(i,j);
+            d = VM_f(i,j);
+        } else {
+            b = c = d = INFINITY_;
+        }
+
+        Vij = V_f(i,j);
+        structure[i] = j;
+        structure[j] = i;
+
+
+        if (Vij == a ) {
+#ifdef DEBUG
+            printf("i %5d j %5d Hairpin   %12.2f\n", i, j, eH(i, j).get_d());
+#endif
+            total_en += eH(i,j);
+            return Vij;
+        } else if (Vij == b) {
+#ifdef DEBUG
+            printf("i %5d j %5d Stack     %12.2f\n", i, j, eS(i, j).get_d());
+#endif
+            total_en += eS(i,j);
+            traceV(i + 1, j - 1);
+            return Vij;
+        } else if (Vij == c) {
+#ifdef DEBUG
+            printf("i %5d j %5d IntLoop  ", i, j);
+#endif
+            traceVBI(i, j);
+            return Vij;
+        } else if (Vij == d) {
+            mpq_class eVM = traceVM(i, j);
+#ifdef DEBUG
+            printf("i %5d j %5d MultiLoop %12.2f\n", i, j, Vij.get_d()-eVM.get_d());
+#endif
+            total_en += (Vij-eVM);
+            return Vij;
+        }
+
+        return 0;
+    }
+
+    mpq_class traceVBI(int i, int j) {
+        mpq_class VBIij;
+        int ip, jp;
+        int ifinal, jfinal;
+
+        ifinal = 0;
+        jfinal = 0;
+
+        for (ip = i + 1; ip < j - 1; ip++) {
+            for (jp = ip + 1; jp < j; jp++) {
+                VBIij = eL(i, j, ip, jp)+ V_f(ip,jp);
+                if (VBIij == VBI_f(i,j) || forcePair(ip,jp)){
+                    ifinal = ip;
+                    jfinal = jp;
+                    break;
+                }
+            }
+            if (jp != j) break;
+        }
+
+
+#ifdef DEBUG
+        printf(" %12.2f, ifinal %5d, jfinal %5d\n", eL(i, j, ifinal, jfinal).get_d(), ifinal, jfinal);
+#endif
+        total_en += eL(i, j, ifinal, jfinal);
+
+        return traceV(ifinal, jfinal);
+    }
+
+    mpq_class traceVM(int i, int j) {
+        int done = 0;
+        mpq_class eVM = 0;
 
         if (g_dangles == 2) {
-            mpq_class e_dangles = 0;
-            if (i>1) e_dangles +=  Ed3(j,i,i-1);
-            if (j<length) e_dangles += Ed5(j,i,j+1);
-            if ((W[j] == V_f(i,j) + auPenalty(i, j) + e_dangles + wim1 && canSS(i) && canSS(j) && canStack(i+1,j-1)) || forcePair(i+1,j-1)) {
+            if (V_f(i,j) ==  WMPrime[i + 1][j - 1] + multConst[0] + multConst[2] + auPenalty(i,j) + Ed5(i,j,i + 1) + Ed3(i,j,j - 1) && canSS(i+1) && canSS(j-1) ) {
                 done = 1;
-                #ifdef DEBUG
-                printf("i %5d j %5d ExtLoop   %12.2f\n", i, j, auPenalty(i, j).get_d() + e_dangles.get_d());
-                #endif
-                total_ex += (auPenalty(i, j) + e_dangles);
-                traceV(i, j);
-                if (flag ) traceW(i - 1);
-                break;
+                eVM += traceWMPrime(i + 1, j - 1);
+                count_multiloops++;
+                count_branches++;
             }
         }	else if (g_dangles == 0) {
-            if ((W[j] == V_f(i,j) + auPenalty(i, j) + wim1 && canStack(i,j)) || forcePair(i,j)) {
-                #ifdef DEBUG
-                printf("i %5d j %5d ExtLoop   %12.2f\n", i, j, auPenalty(i, j).get_d());
-                #endif
+            if (VM_f(i,j) == WMPrime[i+1][j - 1] + multConst[0] + multConst[2] + auPenalty(i, j) ) {
                 done = 1;
-                total_ex += auPenalty(i, j);
-                traceV(i, j);
-                if (flag ) traceW(i - 1);
-                break;
-            }
-        } else { // default
-            if ((W[j] == V_f(i,j) + auPenalty(i, j) + wim1 && canStack(i,j)) || forcePair(i,j)) {
-                done = 1;
-                #ifdef DEBUG
-                printf("i %5d j %5d Extloop A  %12.2f\n", i, j, auPenalty(i, j).get_d());
-                #endif
-                total_ex += auPenalty(i, j);
-                traceV(i, j);
-                if (flag ) traceW(i-1);
-                break;
-            } else if ((W[j] ==  V_f(i,j-1) + auPenalty(i,j-1) + Ed5(j-1,i,j) + wim1 && canSS(j) && canStack(i,j-1)) || forcePair(i, j-1)) {
-                done = 1;
-                #ifdef DEBUG
-                printf("i %5d j %5d Extloop B  %12.2f\n", i, j, auPenalty(i, j).get_d() + Ed5(j-1, i, j).get_d());
-                #endif
-                total_ex += (auPenalty(i,j-1) + Ed5(j-1,i,j));
-                traceV(i, j - 1);
-                if (flag ) traceW(i-1);
-                break;
-            } else if ((W[j] == V_f(i+1,j) + auPenalty(i+1,j) + Ed3(j,i+1,i) + wim1 && canSS(i) && canStack(i+1,j)) || forcePair(i+1,j)){
-                done = 1;
-                #ifdef DEBUG
-                printf("i %5d j %5d Extloop C  %12.2f\n", i, j, auPenalty(i+1, j).get_d() + Ed3(j, i+1, i).get_d());
-                #endif
-                total_ex += (auPenalty(i+1,j) + Ed3(j,i+1,i));
-                traceV(i + 1, j);
-                if (flag ) traceW(i);
-                break;
-            } else if ((W[j] == V_f(i+1,j-1) + auPenalty(i+1, j-1) + Ed3(j-1,i+1,i) + Ed5(j-1,i+1,j) + wim1 && canSS(i) && canSS(j) && canStack(i+1,j-1)) || forcePair(i+1,j-1)) {
-                done = 1;
-                #ifdef DEBUG
-                printf("i %5d j %5d Extloop D  %12.2f\n", i, j, auPenalty(i+1, j-1).get_d() + Ed3(j-1, i+1, i).get_d() + Ed5(j-1, i+1, j).get_d());
-                printf("a");
-                #endif
-                total_ex += (auPenalty(i+1, j-1) + Ed3(j-1,i+1,i) + Ed5(j-1,i+1,j));
-                traceV(i + 1, j - 1);
-                if (flag ) traceW(i);
-                break;
-            }
-        }
-    }
-
-    if (W[j] == W[j - 1] && !done) traceW(j-1);
-
-    return;
-}
-
-mpq_class traceV(int i, int j) {
-    mpq_class a, b, c, d;
-    mpq_class Vij;
-    if (j-i < TURN)  return INFINITY_;
-
-    if (canHairpin(i,j)) {
-        a = eH(i, j);
-    } else {
-        a = INFINITY_;
-    }
-
-    if (canStack(i,j)) {
-        b = eS(i, j) + V_f(i + 1, j - 1);
-        c = VBI_f(i,j);
-        d = VM_f(i,j);
-    } else {
-        b = c = d = INFINITY_;
-    }
-
-    Vij = V_f(i,j);
-    structure[i] = j;
-    structure[j] = i;
-
-
-    if (Vij == a ) {
-        #ifdef DEBUG
-        printf("i %5d j %5d Hairpin   %12.2f\n", i, j, eH(i, j).get_d());
-        #endif
-        total_en += eH(i,j);
-        return Vij;
-    } else if (Vij == b) {
-        #ifdef DEBUG
-        printf("i %5d j %5d Stack     %12.2f\n", i, j, eS(i, j).get_d());
-        #endif
-        total_en += eS(i,j);
-        traceV(i + 1, j - 1);
-        return Vij;
-    } else if (Vij == c) {
-        #ifdef DEBUG
-        printf("i %5d j %5d IntLoop  ", i, j);
-        #endif
-        traceVBI(i, j);
-        return Vij;
-    } else if (Vij == d) {
-        mpq_class eVM = traceVM(i, j);
-        #ifdef DEBUG
-        printf("i %5d j %5d MultiLoop %12.2f\n", i, j, Vij.get_d()-eVM.get_d());
-        #endif
-        total_en += (Vij-eVM);
-        return Vij;
-    }
-
-    return 0;
-}
-
-mpq_class traceVBI(int i, int j) {
-    mpq_class VBIij;
-    int ip, jp;
-    int ifinal, jfinal;
-
-    ifinal = 0;
-    jfinal = 0;
-
-    for (ip = i + 1; ip < j - 1; ip++) {
-        for (jp = ip + 1; jp < j; jp++) {
-            VBIij = eL(i, j, ip, jp)+ V_f(ip,jp);
-            if (VBIij == VBI_f(i,j) || forcePair(ip,jp)){
-                ifinal = ip;
-                jfinal = jp;
-                break;
-            }
-        }
-        if (jp != j) break;
-    }
-
-
-    #ifdef DEBUG
-    printf(" %12.2f, ifinal %5d, jfinal %5d\n", eL(i, j, ifinal, jfinal).get_d(), ifinal, jfinal);
-    #endif
-    total_en += eL(i, j, ifinal, jfinal);
-
-    return traceV(ifinal, jfinal);
-}
-
-mpq_class traceVM(int i, int j) {
-    int done = 0;
-    mpq_class eVM = 0;
-
-    if (g_dangles == 2) {
-        if (V_f(i,j) ==  WMPrime[i + 1][j - 1] + multConst[0] + multConst[2] + auPenalty(i,j) + Ed5(i,j,i + 1) + Ed3(i,j,j - 1) && canSS(i+1) && canSS(j-1) ) {
-            done = 1;
-            eVM += traceWMPrime(i + 1, j - 1);
-            count_multiloops++;
-            count_branches++;
-        }
-    }	else if (g_dangles == 0) {
-        if (VM_f(i,j) == WMPrime[i+1][j - 1] + multConst[0] + multConst[2] + auPenalty(i, j) ) {
-            done = 1;
-            eVM += traceWMPrime(i + 1, j - 1);
-            count_multiloops++;
-            count_branches++;
-        }
-    } else {
-        if (VM_f(i,j) == WMPrime[i+1][j - 1] + multConst[0] + multConst[2] + auPenalty(i, j) ) {
-            done = 1;
-            eVM += traceWMPrime(i + 1, j - 1);
-            count_multiloops++;
-            count_branches++;
-        } else if (VM_f(i,j) == WMPrime[i + 2][j - 1] + multConst[0] + multConst[2] + auPenalty(i,j) + Ed5(i,j,i + 1) + multConst[1] && canSS(i+1) ) {
-            done = 1;
-            eVM += traceWMPrime(i + 2, j - 1);
-            count_multiloops++;
-            count_branches++;
-            count_unpaired++;
-        }
-        else if ( VM_f(i,j) == WMPrime[i + 1][j - 2] + multConst[0] + multConst[2] + auPenalty(i, j) + Ed3(i,j,j - 1) + multConst[1] && canSS(j-1)) {
-            done = 1;
-            eVM += traceWMPrime(i + 1, j - 2);
-            count_multiloops++;
-            count_branches++;
-            count_unpaired++;
-        } else if (V_f(i,j) ==  WMPrime[i + 2][j - 2] + multConst[0] + multConst[2] + auPenalty(i,j) + Ed5(i,j,i + 1) + Ed3(i,j,j - 1) + multConst[1]*2 && canSS(i+1) && canSS(j-1) ) {
-            done = 1;
-            eVM += traceWMPrime(i + 2, j - 2);
-            count_multiloops++;
-            count_branches++;
-            count_unpaired += 2;
-        }
-    }
-
-    return eVM;
-}
-
-mpq_class traceWMPrime(int i, int j) {
-    int done=0, h;
-    mpq_class energy = 0;
-
-    for (h = i; h < j && !done; h++) {
-        if (WM_f(i,h) + WM_f(h + 1,j) == WMPrime_f(i,j)) {
-            energy += traceWM(i, h);
-            energy += traceWM(h + 1, j);
-            done = 1;
-            break;
-        }
-    }
-    return energy;
-}
-
-mpq_class traceWM(int i, int j) {
-    assert(i < j);
-    int done=0;
-    mpq_class eWM = 0;
-
-    if (!done && WM_f(i,j) == WMPrime[i][j]) {
-        eWM += traceWMPrime(i,j);
-        done = 1;
-    }
-
-    if (!done){
-        if (g_dangles == 2) {
-            mpq_class energy = V_f(i,j) + auPenalty(i, j) + multConst[2];
-            energy += (i==1)?Ed3(j,i,length):Ed3(j,i,i-1);
-            /*if (j<len)*/ energy += Ed5(j,i,j+1);
-            if (WM_f(i,j) ==  energy && canSS(i) && canSS(j) && canStack(i+1,j-1)) {
-                eWM += traceV(i, j);
+                eVM += traceWMPrime(i + 1, j - 1);
+                count_multiloops++;
                 count_branches++;
-                done = 1;
             }
-        } else if (g_dangles == 0) {
-            if (WM_f(i,j) == V_f(i,j) + auPenalty(i, j) + multConst[2] && canStack(i,j)) {
-                eWM += traceV(i, j);
-                count_branches++;
+        } else {
+            if (VM_f(i,j) == WMPrime[i+1][j - 1] + multConst[0] + multConst[2] + auPenalty(i, j) ) {
                 done = 1;
-            }
-        } else  {
-            if (WM_f(i,j) == V_f(i,j) + auPenalty(i, j) + multConst[2] && canStack(i,j)) {
-                eWM += traceV(i, j);
+                eVM += traceWMPrime(i + 1, j - 1);
+                count_multiloops++;
                 count_branches++;
+            } else if (VM_f(i,j) == WMPrime[i + 2][j - 1] + multConst[0] + multConst[2] + auPenalty(i,j) + Ed5(i,j,i + 1) + multConst[1] && canSS(i+1) ) {
                 done = 1;
-            } else if (WM_f(i,j) == V_f(i+1, j) + Ed3(j,i + 1,i) + auPenalty(i+1, j) + multConst[2] + multConst[1] && canSS(i) &&  canStack(i+1,j)) {
-                eWM += traceV(i + 1, j);
+                eVM += traceWMPrime(i + 2, j - 1);
+                count_multiloops++;
                 count_branches++;
                 count_unpaired++;
+            }
+            else if ( VM_f(i,j) == WMPrime[i + 1][j - 2] + multConst[0] + multConst[2] + auPenalty(i, j) + Ed3(i,j,j - 1) + multConst[1] && canSS(j-1)) {
                 done = 1;
-            } else if (WM_f(i,j) == V_f(i,j-1) + Ed5(j-1,i,j) + auPenalty(i,j-1) +  multConst[2] + multConst[1] && canSS(j) && canStack(i,j-1)) {
-                eWM += traceV(i, j - 1);
+                eVM += traceWMPrime(i + 1, j - 2);
+                count_multiloops++;
                 count_branches++;
                 count_unpaired++;
+            } else if (V_f(i,j) ==  WMPrime[i + 2][j - 2] + multConst[0] + multConst[2] + auPenalty(i,j) + Ed5(i,j,i + 1) + Ed3(i,j,j - 1) + multConst[1]*2 && canSS(i+1) && canSS(j-1) ) {
                 done = 1;
-            } else if (WM_f(i,j) == V_f(i+1,j-1) + Ed3(j-1,i+1,i) + Ed5(j-1,i+1,j) + auPenalty(i+1, j-1) + multConst[2] + multConst[1]*2 && canSS(i) && canSS(j) && canStack(i+1,j-1)) {
-                eWM += traceV(i + 1, j - 1);
+                eVM += traceWMPrime(i + 2, j - 2);
+                count_multiloops++;
                 count_branches++;
                 count_unpaired += 2;
-                done = 1;
             }
         }
+
+        return eVM;
     }
 
-    if (!done){
-        if (WM_f(i,j) == WM_f(i + 1,j) + multConst[1] && canSS(i)) {
-            done = 1;
-            eWM += traceWM(i + 1, j);
-            count_unpaired++;
-        } else if (WM_f(i,j) == WM_f(i,j - 1) + multConst[1] && canSS(j)) {
-            done = 1;
-            eWM += traceWM(i, j - 1);
-            count_unpaired++;
+    mpq_class traceWMPrime(int i, int j) {
+        int done=0, h;
+        mpq_class energy = 0;
+
+        for (h = i; h < j && !done; h++) {
+            if (WM_f(i,h) + WM_f(h + 1,j) == WMPrime_f(i,j)) {
+                energy += traceWM(i, h);
+                energy += traceWM(h + 1, j);
+                done = 1;
+                break;
+            }
         }
+        return energy;
     }
 
-    return eWM;
+    mpq_class traceWM(int i, int j) {
+        assert(i < j);
+        int done=0;
+        mpq_class eWM = 0;
+
+        if (!done && WM_f(i,j) == WMPrime[i][j]) {
+            eWM += traceWMPrime(i,j);
+            done = 1;
+        }
+
+        if (!done){
+            if (g_dangles == 2) {
+                mpq_class energy = V_f(i,j) + auPenalty(i, j) + multConst[2];
+                energy += (i==1)?Ed3(j,i,length):Ed3(j,i,i-1);
+                /*if (j<len)*/ energy += Ed5(j,i,j+1);
+                if (WM_f(i,j) ==  energy && canSS(i) && canSS(j) && canStack(i+1,j-1)) {
+                    eWM += traceV(i, j);
+                    count_branches++;
+                    done = 1;
+                }
+            } else if (g_dangles == 0) {
+                if (WM_f(i,j) == V_f(i,j) + auPenalty(i, j) + multConst[2] && canStack(i,j)) {
+                    eWM += traceV(i, j);
+                    count_branches++;
+                    done = 1;
+                }
+            } else  {
+                if (WM_f(i,j) == V_f(i,j) + auPenalty(i, j) + multConst[2] && canStack(i,j)) {
+                    eWM += traceV(i, j);
+                    count_branches++;
+                    done = 1;
+                } else if (WM_f(i,j) == V_f(i+1, j) + Ed3(j,i + 1,i) + auPenalty(i+1, j) + multConst[2] + multConst[1] && canSS(i) &&  canStack(i+1,j)) {
+                    eWM += traceV(i + 1, j);
+                    count_branches++;
+                    count_unpaired++;
+                    done = 1;
+                } else if (WM_f(i,j) == V_f(i,j-1) + Ed5(j-1,i,j) + auPenalty(i,j-1) +  multConst[2] + multConst[1] && canSS(j) && canStack(i,j-1)) {
+                    eWM += traceV(i, j - 1);
+                    count_branches++;
+                    count_unpaired++;
+                    done = 1;
+                } else if (WM_f(i,j) == V_f(i+1,j-1) + Ed3(j-1,i+1,i) + Ed5(j-1,i+1,j) + auPenalty(i+1, j-1) + multConst[2] + multConst[1]*2 && canSS(i) && canSS(j) && canStack(i+1,j-1)) {
+                    eWM += traceV(i + 1, j - 1);
+                    count_branches++;
+                    count_unpaired += 2;
+                    done = 1;
+                }
+            }
+        }
+
+        if (!done){
+            if (WM_f(i,j) == WM_f(i + 1,j) + multConst[1] && canSS(i)) {
+                done = 1;
+                eWM += traceWM(i + 1, j);
+                count_unpaired++;
+            } else if (WM_f(i,j) == WM_f(i,j - 1) + multConst[1] && canSS(j)) {
+                done = 1;
+                eWM += traceWM(i, j - 1);
+                count_unpaired++;
+            }
+        }
+
+        return eWM;
+    }
 }

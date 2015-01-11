@@ -21,17 +21,12 @@
 #define _ALGORITHMS_H
 
 #include <gmpxx.h>
-#include "parametrizer_types.h"
+#include "pmfe_types.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+namespace pmfe {
     mpq_class calculate(int len);//, int nThreads, int unamode ,int t_mismatch);
-#ifdef __cplusplus
+    void calcWM(int i, int j);
+    void calcW(int j);
+    void calcVBIVMVWM(int i, int j);
 }
-#endif
-
-void calcWM(int i, int j);
-void calcW(int j);
-void calcVBIVMVWM(int i, int j);
 #endif

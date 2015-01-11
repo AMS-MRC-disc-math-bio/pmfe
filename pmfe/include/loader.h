@@ -25,24 +25,26 @@
 #include "constants.h"
 #include "data.h"
 #include "global.h"
-#include "parametrizer_types.h"
+#include "pmfe_types.h"
 
-void readThermodynamicParameters(const char *userdatadir);
+namespace pmfe {
+    void readThermodynamicParameters(const char *userdatadir);
 
-int initStackValues(const std::string& fileName, const std::string& dirPath);
-int initMiscloopValues(const std::string& fileName, const std::string& dirPath);
-int initDangleValues(const std::string& fileName, const std::string& dirPath);
-int initLoopValues(const std::string& fileName, const std::string& dirPath);
-int initTstkhValues(const std::string& fileName, const std::string& dirPath);
-int initTstkiValues(const std::string& fileName, const std::string& dirPath);
-int initTloopValues(const std::string& fileName, const std::string& dirPath);
-int initInt21Values(const std::string& fileName, const std::string& dirPath);
-int initInt22Values(const std::string& fileName, const std::string& dirPath);
-int initInt11Values(const std::string& fileName, const std::string& dirPath);
-int initTstkmValues(const std::string& fileName, const std::string& dirPath);
-int initTstkeValues(const std::string& fileName, const std::string& dirPath);
-int initTstk23Values(const std::string& fileName, const std::string& dirPath);
+    int initStackValues(const std::string& fileName, const std::string& dirPath);
+    int initMiscloopValues(const std::string& fileName, const std::string& dirPath);
+    int initDangleValues(const std::string& fileName, const std::string& dirPath);
+    int initLoopValues(const std::string& fileName, const std::string& dirPath);
+    int initTstkhValues(const std::string& fileName, const std::string& dirPath);
+    int initTstkiValues(const std::string& fileName, const std::string& dirPath);
+    int initTloopValues(const std::string& fileName, const std::string& dirPath);
+    int initInt21Values(const std::string& fileName, const std::string& dirPath);
+    int initInt22Values(const std::string& fileName, const std::string& dirPath);
+    int initInt11Values(const std::string& fileName, const std::string& dirPath);
+    int initTstkmValues(const std::string& fileName, const std::string& dirPath);
+    int initTstkeValues(const std::string& fileName, const std::string& dirPath);
+    int initTstk23Values(const std::string& fileName, const std::string& dirPath);
 
-extern std::string EN_DATADIR;
+    extern std::string EN_DATADIR;
+}
 
 #endif

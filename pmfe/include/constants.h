@@ -22,9 +22,7 @@
 
 #include <gmpxx.h>
 
-// Moved to globals
-//#define INFINITY_ mpz_class("9999999999999", 10)
-
+namespace pmfe {
 #define maxfil 100    /* maximum length of file names */
 #define maxtloop 100 /* maximum tetraloops allowed (info read from tloop) */
 #define maxstructures 1010 /* maximum number of structures in ct file */
@@ -48,5 +46,6 @@
 
 #define SUCCESS 1
 #define FAILURE 0
+}
 
 #endif

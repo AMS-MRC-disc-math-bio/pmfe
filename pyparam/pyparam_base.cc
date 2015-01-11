@@ -1,7 +1,7 @@
 // Copyright (c) 2014 Andrew Gainer-Dewar.
 
 #include "mfe.h"
-#include "parametrizer_types.h"
+#include "pmfe_types.h"
 #include <gmpxx.h>
 
 #include <boost/python.hpp>

@@ -2,7 +2,7 @@
 
 #include "BBPolytope.h"
 #include "mfe.h"
-#include "parametrizer_types.h"
+#include "pmfe_types.h"
 #include <iostream>
 #include <string>
 #include "boost/filesystem.hpp"
@@ -16,12 +16,12 @@ namespace fs = boost::filesystem;
 typedef CGAL::Gmpq Q; // We'll do all the geometry over Q
 typedef iB4e::BBPolytope<Q> BBP;
 
-ParameterVector fv_to_pv(BBP::FVector v) {
-    ParameterVector pv (mpq_class(v.cartesian(0).mpq()), mpq_class(v.cartesian(1).mpq()), mpq_class(v.cartesian(2).mpq()), mpq_class(v.cartesian(3).mpq()));
+pmfe::ParameterVector fv_to_pv(BBP::FVector v) {
+    pmfe::ParameterVector pv (mpq_class(v.cartesian(0).mpq()), mpq_class(v.cartesian(1).mpq()), mpq_class(v.cartesian(2).mpq()), mpq_class(v.cartesian(3).mpq()));
     return pv;
 };
 
-BBP::FPoint sv_to_fp(ScoreVector v) {
+BBP::FPoint sv_to_fp(pmfe::ScoreVector v) {
     mpq_t values [4];
     mpq_inits(values[0], values[1], values[2], values[3], NULL);
 
@@ -56,8 +56,8 @@ public:
         fs::path initial_output_file = struct_dir / seq_file.stem();
         initial_output_file.replace_extension(structure_ext);
 
-        ParameterVector params = fv_to_pv(objective);
-        ScoreVector scores = mfe(seq_file.string(), initial_output_file.string(), params, param_dir.string(), dangle_model);
+        pmfe::ParameterVector params = fv_to_pv(objective);
+        pmfe::ScoreVector scores = pmfe::mfe(seq_file.string(), initial_output_file.string(), params, param_dir.string(), dangle_model);
 
         std::string score_sep (", ");
         std::string w_score_string (boost::lexical_cast<std::string>(mpf_class(scores.w).get_d()));

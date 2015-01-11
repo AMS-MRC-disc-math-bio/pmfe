@@ -1,7 +1,7 @@
 // Copyright (c) 2014 Andrew Gainer-Dewar.
 
 #include "mfe.h"
-#include "parametrizer_types.h"
+#include "pmfe_types.h"
 #include <iostream>
 #include <string>
 #include "boost/filesystem.hpp"
@@ -52,22 +52,22 @@ int main(int argc, char * argv[]) {
     }
 
     // Set up the parameter vector
-    ParameterVector params = ParameterVector();
+    pmfe::ParameterVector params = pmfe::ParameterVector();
 
     if (vm.count("multiloop-penalty")) {
-        params.multiloop_penalty = get_mpq_from_word(vm["multiloop-penalty"].as<std::string>());
+        params.multiloop_penalty = pmfe::get_mpq_from_word(vm["multiloop-penalty"].as<std::string>());
     };
 
     if (vm.count("unpaired-penalty")) {
-        params.unpaired_penalty = get_mpq_from_word(vm["unpaired-penalty"].as<std::string>());
+        params.unpaired_penalty = pmfe::get_mpq_from_word(vm["unpaired-penalty"].as<std::string>());
     };
 
     if (vm.count("branch-penalty")) {
-        params.branch_penalty = get_mpq_from_word(vm["branch-penalty"].as<std::string>());
+        params.branch_penalty = pmfe::get_mpq_from_word(vm["branch-penalty"].as<std::string>());
     };
 
     if (vm.count("dummy-scaling")) {
-        params.dummy_scaling = get_mpq_from_word(vm["dummy-scaling"].as<std::string>());
+        params.dummy_scaling = pmfe::get_mpq_from_word(vm["dummy-scaling"].as<std::string>());
     };
 
     params.canonicalize();
@@ -75,7 +75,7 @@ int main(int argc, char * argv[]) {
     // Setup dangle model
     int dangle_model = vm["dangle-model"].as<int>();
 
-    ScoreVector result = mfe(seq_file.native(), output_file.native(), params, param_dir.native(), dangle_model);
+    pmfe::ScoreVector result = pmfe::mfe(seq_file.native(), output_file.native(), params, param_dir.native(), dangle_model);
     std::cout << result << std::endl;
     return(0);
 }
