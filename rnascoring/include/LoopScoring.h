@@ -2,8 +2,8 @@
   A class to score an RNA structure reading in from a file.
 */
 
-#ifndef RNASCROING_H
-#define RNASCORING_H
+#ifndef LOOPSCORING_H
+#define LOOPSCORING_H
 #include "TreeScoring.h"
 #include "rna-data.h"
 #include "options.h"
