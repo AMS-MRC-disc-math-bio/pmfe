@@ -5,5 +5,11 @@ SUBDIR = rnascoring pmfe bin
 
 $(MAKECMDGOALS) recurse: $(SUBDIR)
 
+rnascoring: # no dependencies
+
+pmfe: rnascoring
+
+bin: pmfe rnascoring
+
 $(SUBDIR):
 	$(MAKE) -C $@ $(MAKECMDGOALS)
