@@ -20,6 +20,13 @@ To install the required dependencies on a Debian system, run
 
     sudo apt-get install libgmp-dev libboost-filesystem-dev libboost-program-options-dev libboost-python-dev libcgal-dev
 
+To install the required dependencies on OSX using Homebrew, run
+
+    brew install boost --with-python
+    brew install gmp
+    brew install cgal
+
+If you have previously installed `boost` without the `boost_python` component, the first command should be called with `reinstall` instead of `install`.
 
 This project also depends on the [NLTemplate] string templating library.
 It has been included here under the terms of the MIT license.
@@ -44,16 +51,16 @@ Just run `git pull` in a terminal from anywhere inside the repository to fetch t
 
 Given a FASTA file representing an RNA sequence, the program will produce a Sage file representing the regions of ℝ<sup>3</sup> in which given structures are optimal.
 
-To run the calculation on the sequence in `testseq.fasta`, type
+To run the calculation on the sequence in `test.fasta`, type
 
-    bin/parametrizer testseq.fasta
+    bin/parametrizer test.fasta
 
-The result will be a file `testseq.polytope.sage` containing the required Sage commands and a directory called `testseq` containing structure files representing the MFE structures for each set of parameters.
+The result will be a file `test.polytope.sage` containing the required Sage commands and a directory called `test` containing structure files representing the MFE structures for each set of parameters.
 
 We also supply a program which can be used to find an MFE structure for a single set of parameters.
-To use it on the sequence in `testseq.fasta` with parameters `A`, `B`, `C`, and `D`, type
+To use it on the sequence in `test.fasta` with parameters `A`, `B`, `C`, and `D`, type
 
-    bin/pmfe-param testseq.fasta -a A -b B -c C -d D
+    bin/pmfe-param test.fasta -a A -b B -c C -d D
 
 The result will be printed to your terminal.
 

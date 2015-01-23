@@ -21,10 +21,7 @@ LIBS += -lboost_filesystem
 LIBS += -lboost_program_options
 
 LIBS += -L../pmfe -lpmfe
-#LIBS += -L../iB4e -liB4e
 LIBS += -L../rnascoring -lrnascoring
-
-#LDFLAGS += -static
 
 # Optional OpenMP-related flags
 HAS_OPENMP = $(shell $(CXX) -lgomp ../pmfe/openmp-test.cc -o /dev/null 2>&1 > /dev/null ; echo $$?)
@@ -34,9 +31,12 @@ CXXFLAGS += -DHAVE_OPENMP
 LIBS += -lgomp
 endif
 
-all: pmfe-param parametrizer rnascorer
+all: pmfe-param pmfe-subopt parametrizer rnascorer
 
 pmfe-param: pmfe_wrapper.o
+	$(CXX) $(INCLUDES) $(LDFLAGS) $(CXXFLAGS) $^ -o $@ $(LIBS)
+
+pmfe-subopt: psubopt_wrapper.o
 	$(CXX) $(INCLUDES) $(LDFLAGS) $(CXXFLAGS) $^ -o $@ $(LIBS)
 
 parametrizer: parametrizer_wrapper.o

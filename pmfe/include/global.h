@@ -28,7 +28,6 @@ namespace pmfe {
 
     extern mpz_class INFINITY_;
     extern mpq_class inf;
-    extern mpq_class zero;
 
     extern mpq_class dummy_scaling;
     extern mpq_class multiloop_penalty;

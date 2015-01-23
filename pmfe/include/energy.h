@@ -7,7 +7,8 @@
 #include <gmpxx.h>
 #include <vector>
 
-namespace pmfe {extern std::vector<mpq_class> V;
+namespace pmfe {
+    extern std::vector<mpq_class> V;
     extern std::vector<mpq_class> W;
     extern std::vector<mpq_class> VBI;
     extern std::vector<mpq_class> VM;
