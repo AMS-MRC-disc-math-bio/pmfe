@@ -1,3 +1,7 @@
+# {{ SEQNAME }}
+# {{ POINTCOUNT }} points
+# {{ FACETCOUNT }} facets
+
 points = {{ POINTS }}
 classical_scores = {{ CLASSICAL_SCORES }}
 
@@ -6,11 +10,3 @@ try:
 except IOError:
     poly = Polyhedron(points, base_ring = QQ)
     poly.dump("{{ POLYDUMP }}", -1)
-
-slice = Polyhedron(eqns=[(1,0,0,0,1)])
-fan = NormalFan(poly)
-regions4 = [slice.intersection(cone.polyhedron()) for cone in fan.cones()[-1]]
-regions4 = filter(lambda region: not region.is_empty(), regions4)
-vecprojector = lambda vec: vec[:-1]
-polyprojector = lambda polyslice: Polyhedron(ieqs = [vecprojector(ieq) for ieq in polyslice.Hrepresentation()[1:]])
-regions = [polyprojector(region) for region in regions4]

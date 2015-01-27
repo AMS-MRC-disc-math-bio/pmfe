@@ -30,6 +30,7 @@ namespace iB4e
         typedef CGAL::Point_d<K> FPoint;
         typedef CGAL::Vector_d<K> FVector;
         typedef typename ConvexHull::R R;
+        typedef typename ConvexHull::Hull_vertex_iterator Hull_vertex_iterator;
 
     BBPolytope(int dim):
         ConvexHull(dim, R())

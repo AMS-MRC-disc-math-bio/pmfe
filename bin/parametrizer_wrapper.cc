@@ -7,18 +7,50 @@
 #include <string>
 #include "boost/filesystem.hpp"
 #include "boost/program_options.hpp"
+#include "NLTemplate.h"
+#include <fstream>
 
 #include <CGAL/Gmpq.h>
 
 namespace po = boost::program_options;
 namespace fs = boost::filesystem;
+namespace nlt = NL::Template;
 
 typedef CGAL::Gmpq Q; // We'll do all the geometry over Q
 typedef iB4e::BBPolytope<Q> BBP;
 
 pmfe::ParameterVector fv_to_pv(BBP::FVector v) {
-    pmfe::ParameterVector pv (mpq_class(v.cartesian(0).mpq()), mpq_class(v.cartesian(1).mpq()), mpq_class(v.cartesian(2).mpq()), mpq_class(v.cartesian(3).mpq()));
+    pmfe::ParameterVector pv (
+                              mpq_class(v.cartesian(0).mpq()),
+                              mpq_class(v.cartesian(1).mpq()),
+                              mpq_class(v.cartesian(2).mpq()),
+                              mpq_class(v.cartesian(3).mpq())
+                              );
     return pv;
+};
+
+BBP::FVector pv_to_fv(pmfe::ParameterVector v) {
+    mpq_t values [4];
+    mpq_inits(values[0], values[1], values[2], values[3], NULL);
+
+    mpq_set(values[0], v.multiloop_penalty.get_mpq_t());
+    mpq_set(values[1], v.unpaired_penalty.get_mpq_t());
+    mpq_set(values[2], v.branch_penalty.get_mpq_t());
+    mpq_set(values[3], v.dummy_scaling.get_mpq_t());
+
+    BBP::FVector result(4, values, values+4);
+    mpq_clears(values[0], values[1], values[2], values[3], NULL);
+    return result;
+};
+
+pmfe::ScoreVector fp_to_sv(BBP::FPoint v) {
+    pmfe::ScoreVector sv (
+                          mpz_class(mpq_class(v.cartesian(0).mpq())),
+                          mpz_class(mpq_class(v.cartesian(1).mpq())),
+                          mpz_class(mpq_class(v.cartesian(2).mpq())),
+                          mpq_class(v.cartesian(3).mpq())
+                          );
+    return sv;
 };
 
 BBP::FPoint sv_to_fp(pmfe::ScoreVector v) {
@@ -43,13 +75,17 @@ class RNAPolytope: public BBP {
     int dangle_model;
 
 public:
+    pmfe::ScoreVector classical_scores;
+
     RNAPolytope(fs::path seq_file, fs::path param_dir, fs::path struct_dir, int dangle_model, int dim = 4):
         BBPolytope(dim),
         seq_file(seq_file),
         param_dir(param_dir),
         struct_dir(struct_dir),
         dangle_model(dangle_model)
-    {};
+    {
+        init();
+    };
 
     FPoint vertex_oracle(FVector objective) {
         std::string structure_ext = ".ct";
@@ -75,6 +111,53 @@ public:
 
         return sv_to_fp(scores);
     };
+
+private:
+    void init() {
+        pmfe::ParameterVector classical_params;
+        fs::path classical_output_file = struct_dir / seq_file.stem();
+        classical_output_file.replace_extension(".classical.ct");
+        classical_scores = pmfe::mfe(seq_file.string(), classical_output_file.string(), classical_params, param_dir.string(), dangle_model);
+    };
+};
+
+void create_poly_file(RNAPolytope* poly, fs::path template_file, fs::path poly_file) {
+    // Load the output template
+    nlt::LoaderFile loader;
+    nlt::Template t(loader);
+    t.load(template_file.c_str());
+
+    // Set relevant variables
+    fs::path poly_base = poly_file.stem();
+    t.set("SEQNAME", poly_base.string());
+    t.set("POLYDUMP", poly_base.string());
+    t.set("POINTCOUNT", boost::lexical_cast<std::string>(poly->number_of_vertices()));
+    t.set("FACETCOUNT", boost::lexical_cast<std::string>(poly->number_of_simplices()));
+    t.set("CLASSICAL_SCORES", poly->classical_scores.print_as_list());
+
+    // Build the Python list of points
+    std::string pointslist = "[";
+    for (BBP::Hull_vertex_iterator v = poly->hull_vertices_begin(); v != poly->hull_vertices_end(); ++v) {
+        pmfe::ScoreVector sv = fp_to_sv(v->point());
+        pointslist += sv.print_as_list();
+        pointslist += ", ";
+    }
+    pointslist += "]";
+    t.set("POINTS", pointslist);
+
+    // Render the results to an NLTemplate OutputString
+    nlt::OutputString result;
+    t.render(result);
+
+    // Write the string to the output file
+    std::ofstream outfile (poly_file.c_str());
+    outfile << result.buf.str();
+    outfile.close();
+
+    // Delete the sobj file if it exists (so we don't accidentally use an outdated one)
+    fs::path poly_sobj = poly_base;
+    poly_sobj += ".sobj";
+    fs::remove(poly_sobj);
 };
 
 
@@ -102,6 +185,7 @@ int main(int argc, char * argv[]) {
 
     // Process file-related options
     fs::path seq_file, param_dir;
+    fs::path template_file = "output.template";
 
     // Setup dangle model
     int dangle_model = vm["dangle-model"].as<int>();
@@ -117,6 +201,9 @@ int main(int argc, char * argv[]) {
     poly->build();
 
     poly->print_statistics();
+
+    fs::path poly_file = seq_file.replace_extension(".sage");
+    create_poly_file(poly, template_file, poly_file);
 
     return 0;
 };

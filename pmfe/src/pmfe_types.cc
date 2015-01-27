@@ -93,10 +93,24 @@ namespace pmfe {
         return pairs;
     };
 
+    std::string ParameterVector::print_as_list() {
+        std::ostringstream res;
+        res << "["
+            << multiloop_penalty.get_str(10)
+            << ", "
+            << unpaired_penalty.get_str(10)
+            << ", "
+            << branch_penalty.get_str(10)
+            << ", "
+            << dummy_scaling.get_str(10)
+            << "]";
+        return res.str();
+    };
+
     ParameterVector::ParameterVector(py::tuple p_multiloop_penalty, py::tuple p_unpaired_penalty, py::tuple p_branch_penalty, py::tuple p_dummy_scaling) {
         multiloop_penalty = mpq_from_pair(p_multiloop_penalty);
-        branch_penalty = mpq_from_pair(p_unpaired_penalty);
-        unpaired_penalty = mpq_from_pair(p_branch_penalty);
+        unpaired_penalty = mpq_from_pair(p_unpaired_penalty);
+        branch_penalty = mpq_from_pair(p_branch_penalty);
         dummy_scaling = mpq_from_pair(p_dummy_scaling);
         this->canonicalize();
     };
@@ -134,6 +148,20 @@ namespace pmfe {
                            pair_from_mpq(energy)
                            );
         return pairs;
+    };
+
+    std::string ScoreVector::print_as_list() {
+        std::ostringstream res;
+        res << "["
+            << multiloops.get_str(10)
+            << ", "
+            << unpaired.get_str(10)
+            << ", "
+            << branches.get_str(10)
+            << ", "
+            << w.get_str(10)
+            << "]";
+        return res.str();
     };
 
     ScoreVector::ScoreVector(py::tuple p_multiloops, py::tuple p_unpaired, py::tuple p_branches, py::tuple p_w, py::tuple p_energy) {

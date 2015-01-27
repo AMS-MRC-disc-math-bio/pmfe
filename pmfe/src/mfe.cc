@@ -101,7 +101,7 @@ namespace pmfe {
         }
 
         if (read_sequence_file(seq_file.c_str(), seq) == FAILURE) {
-            printf("Failed to open sequence file: %s.\n\n", seqfile.c_str());
+            printf("Failed to open sequence file: %s.\n\n", seq_file.c_str());
             exit(-1);
         }
 

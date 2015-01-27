@@ -36,6 +36,8 @@ namespace pmfe {
 
         boost::python::tuple as_pairs();
 
+        std::string print_as_list();
+
         friend std::ostream& operator<<(std::ostream& os, const ParameterVector& params);
         friend bool operator==(const ParameterVector& a, const ParameterVector& b);
         friend bool operator!=(const ParameterVector& a, const ParameterVector& b);
@@ -43,7 +45,7 @@ namespace pmfe {
 
     class ScoreVector {
     public:
-    ScoreVector(mpz_class multiloops = 0, mpz_class branches = 0, mpz_class unpaired = 0, mpq_class w = mpq_class(0), mpq_class energy = mpq_class(0)) : multiloops(multiloops), branches(branches), unpaired(unpaired), w(w), energy(energy) {
+    ScoreVector(mpz_class multiloops = 0, mpz_class unpaired = 0, mpz_class branches = 0, mpq_class w = mpq_class(0), mpq_class energy = mpq_class(0)) : multiloops(multiloops), branches(branches), unpaired(unpaired), w(w), energy(energy) {
             this->canonicalize();
         };
         mpz_class multiloops, branches, unpaired;
@@ -52,6 +54,8 @@ namespace pmfe {
         ScoreVector(py::tuple p_multiloops, py::tuple p_unpaired, py::tuple p_branches, py::tuple p_w, py::tuple p_energy);
 
         boost::python::tuple as_pairs();
+
+        std::string print_as_list();
 
         void canonicalize(){
             w.canonicalize();

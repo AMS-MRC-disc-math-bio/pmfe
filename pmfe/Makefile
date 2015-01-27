@@ -37,7 +37,8 @@ all: $(OBJ) $(LIBRARY)
 -include $(DEP)
 
 $(LIBRARY): $(OBJ)
-	$(AR) ${ARFLAGS} $@ $^
+	$(RM) $@
+	$(AR) $(ARFLAGS) $@ $^
 	ranlib $@
 
 %.o: %.cc

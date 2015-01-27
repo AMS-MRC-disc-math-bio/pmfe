@@ -23,6 +23,10 @@ LIBS += -lboost_program_options
 LIBS += -L../pmfe -lpmfe
 LIBS += -L../rnascoring -lrnascoring
 
+# library build dependencies
+LIBDEP += ../pmfe/libpmfe.a
+LIBDEP += ../rnascoring/librnascoring.a
+
 # Optional OpenMP-related flags
 HAS_OPENMP = $(shell $(CXX) -lgomp ../pmfe/openmp-test.cc -o /dev/null 2>&1 > /dev/null ; echo $$?)
 ifeq ($(HAS_OPENMP), 0)
@@ -33,19 +37,19 @@ endif
 
 all: pmfe-param pmfe-subopt parametrizer rnascorer
 
-pmfe-param: pmfe_wrapper.o
+pmfe-param: pmfe_wrapper.o $(LIBDEP)
 	$(CXX) $(INCLUDES) $(LDFLAGS) $(CXXFLAGS) $^ -o $@ $(LIBS)
 
-pmfe-subopt: psubopt_wrapper.o
+pmfe-subopt: psubopt_wrapper.o $(LIBDEP)
 	$(CXX) $(INCLUDES) $(LDFLAGS) $(CXXFLAGS) $^ -o $@ $(LIBS)
 
-parametrizer: parametrizer_wrapper.o
+parametrizer: parametrizer_wrapper.o NLTemplate.o $(LIBDEP)
 	$(CXX) $(INCLUDES) $(LDFLAGS) $(CXXFLAGS) $^ -o $@ $(LIBS)
 
-rnascorer: rnascorer_wrapper.o
+rnascorer: rnascorer_wrapper.o $(LIBDEP)
 	$(CXX) $(INCLUDES) $(LDFLAGS) $(CXXFLAGS) $^ -o $@ $(LIBS)
 
-%.o: %.cc
+%.o: %.cc $(LIBDEP)
 	$(CXX) $(INCLUDES) $(LDFLAGS) $(CXXFLAGS) -c $^ -o $@ $(LIBS)
 
 clean:
