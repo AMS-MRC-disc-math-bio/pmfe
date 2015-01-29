@@ -2,6 +2,7 @@
 
 #include "RNAScoring.h"
 #include <string>
+#include <iostream>
 #include "boost/filesystem.hpp"
 #include "boost/program_options.hpp"
 #include <gmpxx.h>
