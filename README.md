@@ -22,11 +22,7 @@ To install the required dependencies on a Debian system, run
 
 To install the required dependencies on OSX using Homebrew, run
 
-    brew install boost --with-python
-    brew install gmp
-    brew install cgal
-
-If you have previously installed `boost` without the `boost_python` component, the first command should be called with `reinstall` instead of `install`.
+    brew install boost boost-python cgal gmp
 
 This project also depends on the [NLTemplate] string templating library.
 It has been included here under the terms of the MIT license.
