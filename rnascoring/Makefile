@@ -33,4 +33,8 @@ $(LIBRARY): $(OBJ)
 clean:
 	-rm -vf $(EXEC) $(OBJ) $(DEP) $(LIBRARY)
 
+install:
+
+uninstall:
+
 .PHONY: clean

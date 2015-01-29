@@ -3,7 +3,7 @@
 `iB4e-GTFold-parametrizer` determines the sensitivity of RNA folding to multibranch-loop-related parameters.
 It relies on an implementation of Zucker's dynamic-programming algorithm for RNA secondary structure prediction, using adapted code from the `gtmfe` program from the [GTFold][gtfold] project.
 
-## Installation
+## Getting started
 
 This project is under active development, so we recommend downloading it using Git.
 To do this, run the following in your terminal:
@@ -38,10 +38,18 @@ If you have multiple cores or processors, you can build in parallel by running
 instead.
 The resulting binaries can be found in the `bin/` subdirectory.
 
+### Installing
+You may elect to install the project code so that you can run it from any directory.
+To do so, simply run `sudo make install` from the `iB4e-GTFold-parametrizer` directory.
+
+To undo this process, run `sudo make uninstall`.
+
 ## Updating
 
 If you used Git to download your copy of this software, you can update it easily.
 Just run `git pull` in a terminal from anywhere inside the repository to fetch the latest version.
+Afterwards, run `make clean` and then `make` to build the new version.
+Be sure to re-run `make install` if you want an installed copy!
 
 ## Usage
 
@@ -49,14 +57,14 @@ Given a FASTA file representing an RNA sequence, the program will produce a Sage
 
 To run the calculation on the sequence in `test_data/test_tRNA.fasta`, type
 
-    bin/parametrizer test_data/test_tRNA.fasta
+    pmfe-parametrizer test_data/test_tRNA.fasta
 
 The result will be a file `test_data/test_tRNA.sage` containing the required Sage commands and a directory called `test_data/test_tRNA` containing structure files representing the MFE structures for each set of parameters.
 
 We also supply a program which can be used to find an MFE structure for a single set of parameters.
 To use it on the sequence in `test_data/test_tRNA.fasta` with parameters `A`, `B`, `C`, and `D`, type
 
-    bin/pmfe-param test_data/test_tRNA.fasta -a A -b B -c C -d D
+    pmfe-findmfe test_data/test_tRNA.fasta -a A -b B -c C -d D
 
 The result will be printed to your terminal.
 

@@ -130,7 +130,7 @@ namespace pmfe {
 
         // Find the classical energy
         bool maxdangle = (params.dummy_scaling < 0);
-        mpq_class classical_energy = rnascoring::get_classical_score(output_file, "rnascoring/data/Turner99", dangle_model, maxdangle);
+        mpq_class classical_energy = rnascoring::get_classical_score(output_file, "/usr/local/share/pmfe/Turner99/rnascorer", dangle_model, maxdangle);
         classical_energy.canonicalize();
 
         // Calculate w

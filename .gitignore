@@ -10,6 +10,4 @@
 *.pyc
 *.constraint
 *.polytope.sage
-pmfe-param
-parametrizer
-rnascorer
+bin/pmfe-*

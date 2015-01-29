@@ -166,7 +166,7 @@ int main(int argc, char * argv[]) {
     po::options_description desc("Options");
     desc.add_options()
         ("sequence", po::value<std::string>()->required(), "Sequence file")
-        ("paramdir,p", po::value<std::string>()->default_value("Turner99"), "Turner99 parameter directory")
+        ("paramdir,p", po::value<std::string>()->default_value("/usr/local/share/pmfe/Turner99/pmfe"), "Turner99 parameter directory")
         ("dangle-model,m", po::value<int>()->default_value(1), "Dangle model")
         ("help,h", "Display this help message")
         ;

@@ -15,7 +15,7 @@ int main(int argc, char * argv[]) {
     po::options_description desc("Options");
     desc.add_options()
         ("structure", po::value<std::string>()->required(), "Structure file")
-        ("paramdir,p", po::value<std::string>()->default_value("rnascoring/data/Turner99"), "Turner99 parameter directory")
+        ("paramdir,p", po::value<std::string>()->default_value("rnascoring/data/Turner99/rnascorer"), "Turner99 parameter directory")
         ("dangle-model,m", po::value<int>()->default_value(1), "Dangle model (0, 1, 2)")
         ("maxdangle", "Use dangle maximizer instead of default minimizer")
         ("help,h", "Display this help message")

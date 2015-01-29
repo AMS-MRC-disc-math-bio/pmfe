@@ -16,7 +16,7 @@ int main(int argc, char * argv[]) {
     desc.add_options()
         ("sequence", po::value<std::string>()->required(), "Sequence file")
         ("outfile,o", po::value<std::string>(), "Output structure file")
-        ("paramdir,p", po::value<std::string>()->default_value("Turner99"), "Turner99 parameter directory")
+        ("paramdir,p", po::value<std::string>()->default_value("/usr/local/share/pmfe/Turner99/pmfe"), "Turner99 parameter directory")
         ("multiloop-penalty,a", po::value<std::string>(), "Multiloop penalty parameter")
         ("unpaired-penalty,b", po::value<std::string>(), "Unpaired base penalty parameter")
         ("branch-penalty,c", po::value<std::string>(), "Branching helix penalty parameter")

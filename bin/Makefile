@@ -1,3 +1,7 @@
+# Binaries
+BINS = pmfe-findmfe pmfe-subopt pmfe-parametrizer pmfe-rnascorer
+OLDBINS = parametrizer rnascorer pmfe-param # Old binaries that should be deleted
+
 # include directories
 INCLUDES += -I../pmfe/include
 INCLUDES += -I../rnascoring/include
@@ -35,24 +39,30 @@ CXXFLAGS += -DHAVE_OPENMP
 LIBS += -lgomp
 endif
 
-all: pmfe-param pmfe-subopt parametrizer rnascorer
+all: $(BINS)
 
-pmfe-param: pmfe_wrapper.o $(LIBDEP)
+pmfe-findmfe: pmfe_wrapper.o $(LIBDEP)
 	$(CXX) $(INCLUDES) $(LDFLAGS) $(CXXFLAGS) $^ -o $@ $(LIBS)
 
 pmfe-subopt: psubopt_wrapper.o $(LIBDEP)
 	$(CXX) $(INCLUDES) $(LDFLAGS) $(CXXFLAGS) $^ -o $@ $(LIBS)
 
-parametrizer: parametrizer_wrapper.o NLTemplate.o $(LIBDEP)
+pmfe-parametrizer: parametrizer_wrapper.o NLTemplate.o $(LIBDEP)
 	$(CXX) $(INCLUDES) $(LDFLAGS) $(CXXFLAGS) $^ -o $@ $(LIBS)
 
-rnascorer: rnascorer_wrapper.o $(LIBDEP)
+pmfe-rnascorer: rnascorer_wrapper.o $(LIBDEP)
 	$(CXX) $(INCLUDES) $(LDFLAGS) $(CXXFLAGS) $^ -o $@ $(LIBS)
 
 %.o: %.cc $(LIBDEP)
 	$(CXX) $(INCLUDES) $(LDFLAGS) $(CXXFLAGS) -c $^ -o $@ $(LIBS)
 
 clean:
-	-rm -vf $(wildcard *.o) pmfe-param parametrizer
+	-rm -vf $(wildcard *.o) $(BINS) $(OLDBINS)
+
+install:
+	-install -m 0755 $(BINS) $(PREFIXBIN)
+
+uninstall:
+	-rm -vf $(addprefix $(PREFIXBIN), $(BINS) $(OLDBINS))
 
 .PHONY: clean
