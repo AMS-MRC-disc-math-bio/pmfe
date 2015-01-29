@@ -45,18 +45,18 @@ Just run `git pull` in a terminal from anywhere inside the repository to fetch t
 
 ## Usage
 
-Given a FASTA file representing an RNA sequence, the program will produce a Sage file representing the regions of ℝ<sup>3</sup> in which given structures are optimal.
+Given a FASTA file representing an RNA sequence, the program will produce a Sage file containing the generated points and initializing the parameter polytope.
 
-To run the calculation on the sequence in `test.fasta`, type
+To run the calculation on the sequence in `test_data/test_tRNA.fasta`, type
 
-    bin/parametrizer test.fasta
+    bin/parametrizer test_data/test_tRNA.fasta
 
-The result will be a file `test.polytope.sage` containing the required Sage commands and a directory called `test` containing structure files representing the MFE structures for each set of parameters.
+The result will be a file `test_data/test_tRNA.sage` containing the required Sage commands and a directory called `test_data/test_tRNA` containing structure files representing the MFE structures for each set of parameters.
 
 We also supply a program which can be used to find an MFE structure for a single set of parameters.
-To use it on the sequence in `test.fasta` with parameters `A`, `B`, `C`, and `D`, type
+To use it on the sequence in `test_data/test_tRNA.fasta` with parameters `A`, `B`, `C`, and `D`, type
 
-    bin/pmfe-param test.fasta -a A -b B -c C -d D
+    bin/pmfe-param test_data/test_tRNA.fasta -a A -b B -c C -d D
 
 The result will be printed to your terminal.
 
