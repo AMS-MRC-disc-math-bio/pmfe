@@ -1,6 +1,6 @@
 ## Synopsis
 
-`iB4e-GTFold-parametrizer` determines the sensitivity of RNA folding to multibranch-loop-related parameters.
+`pmfe` determines the sensitivity of RNA folding to multibranch-loop-related parameters.
 It relies on an implementation of Zucker's dynamic-programming algorithm for RNA secondary structure prediction, using adapted code from the `gtmfe` program from the [GTFold][gtfold] project.
 
 ## Getting started
@@ -9,7 +9,7 @@ This project is under active development, so we recommend downloading it using G
 To do this, run the following in your terminal:
 
 ```
-git clone https://github.com/AMS-MRC-disc-math-bio/iB4e-GTfold-parametrizer.git
+git clone https://github.com/AMS-MRC-disc-math-bio/pmfe.git
 ```
 
 This will download the code and extract it into a directory called `iB4e-GTfold-parameterizer`.
@@ -30,7 +30,7 @@ It has been included here under the terms of the MIT license.
 
 ### Building the project code
 Next, you will need to build our custom version of `GTFold` and the parametrizer.
-To do so, simply run `make` from the `iB4e-GTfold-parametrizer` directory.
+To do so, simply run `make` from the `pmfe` directory.
 If you have multiple cores or processors, you can build in parallel by running
 
     nice make -j
@@ -40,7 +40,7 @@ The resulting binaries can be found in the `bin/` subdirectory.
 
 ### Installing
 You may elect to install the project code so that you can run it from any directory.
-To do so, simply run `sudo make install` from the `iB4e-GTFold-parametrizer` directory.
+To do so, simply run `sudo make install` from the `pmfe` directory.
 
 To undo this process, run `sudo make uninstall`.
 
@@ -88,7 +88,7 @@ Note that it requires a replacement for one header file in the CGAL library; thi
 
 ## License
 
-The source for iB4e-GTfold-parametrizer is released under the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+The source for pmfe is released under the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 
 [macports]: //www.macports.org/
 [openmp]: http://openmp.org/
