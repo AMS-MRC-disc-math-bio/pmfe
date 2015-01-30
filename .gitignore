@@ -1,6 +1,7 @@
 *.seq
 *.ct
-*.poly
+*.sage
+*.log
 *.o
 *.so
 *.d
