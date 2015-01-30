@@ -86,6 +86,13 @@ This project includes "BBPolytope.h", a headers-only implementation of Huggins' 
 It can be found in the `iB4e` subdirectory.
 Note that it requires a replacement for one header file in the CGAL library; this is a small but necessary modification to support the algorithm.
 
+## Docker container
+
+This project is also available as a [Docker][docker] container.
+You can install it by running the following:
+
+    docker pull agdphd/pmfe
+
 ## License
 
 The source for pmfe is released under the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
@@ -102,3 +109,4 @@ The source for pmfe is released under the GNU General Public License as publishe
 [cmake]: //www.cmake.org/download/
 [NLTemplate]: //github.com/catnapgames/NLTemplate
 [gtfold]: //gtfold.sourceforge.net/
+[docker]: //docker.io/
