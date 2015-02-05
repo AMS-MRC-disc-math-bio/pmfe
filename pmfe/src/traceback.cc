@@ -79,7 +79,7 @@ namespace pmfe {
             flag = 1;
             //if ( wim1 != W[i-1] && canSSregion(0,i)) flag = 0;
 
-            if (g_dangles == 2) {
+            if (g_dangles == BOTH_DANGLE) {
                 mpq_class e_dangles = 0;
                 if (i>1) e_dangles +=  Ed3(j,i,i-1);
                 if (j<length) e_dangles += Ed5(j,i,j+1);
@@ -93,7 +93,7 @@ namespace pmfe {
                     if (flag ) traceW(i - 1);
                     break;
                 }
-            }	else if (g_dangles == 0) {
+            }	else if (g_dangles == NO_DANGLE) {
                 if ((W[j] == V_f(i,j) + auPenalty(i, j) + wim1 && canStack(i,j)) || forcePair(i,j)) {
 #ifdef DEBUG
                     printf("i %5d j %5d ExtLoop   %12.2f\n", i, j, auPenalty(i, j).get_d());
@@ -239,14 +239,14 @@ namespace pmfe {
         int done = 0;
         mpq_class eVM = 0;
 
-        if (g_dangles == 2) {
+        if (g_dangles == BOTH_DANGLE) {
             if (V_f(i,j) ==  WMPrime[i + 1][j - 1] + multConst[0] + multConst[2] + auPenalty(i,j) + Ed5(i,j,i + 1) + Ed3(i,j,j - 1) && canSS(i+1) && canSS(j-1) ) {
                 done = 1;
                 eVM += traceWMPrime(i + 1, j - 1);
                 count_multiloops++;
                 count_branches++;
             }
-        }	else if (g_dangles == 0) {
+        }	else if (g_dangles == NO_DANGLE) {
             if (VM_f(i,j) == WMPrime[i+1][j - 1] + multConst[0] + multConst[2] + auPenalty(i, j) ) {
                 done = 1;
                 eVM += traceWMPrime(i + 1, j - 1);
@@ -310,7 +310,7 @@ namespace pmfe {
         }
 
         if (!done){
-            if (g_dangles == 2) {
+            if (g_dangles == BOTH_DANGLE) {
                 mpq_class energy = V_f(i,j) + auPenalty(i, j) + multConst[2];
                 energy += (i==1)?Ed3(j,i,length):Ed3(j,i,i-1);
                 /*if (j<len)*/ energy += Ed5(j,i,j+1);
@@ -319,7 +319,7 @@ namespace pmfe {
                     count_branches++;
                     done = 1;
                 }
-            } else if (g_dangles == 0) {
+            } else if (g_dangles == NO_DANGLE) {
                 if (WM_f(i,j) == V_f(i,j) + auPenalty(i, j) + multConst[2] && canStack(i,j)) {
                     eWM += traceV(i, j);
                     count_branches++;

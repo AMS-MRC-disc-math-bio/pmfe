@@ -63,10 +63,7 @@ namespace pmfe {
         }
 
         init_fold(seq.c_str(), params);
-        if (dangle_model == 0 || dangle_model == 2)
-            g_dangles = dangle_model;
-        else
-            exit(EXIT_FAILURE);
+        g_dangles = convert_to_dangle_mode(dangle_model);
 
         readThermodynamicParameters(param_dir.c_str());
 

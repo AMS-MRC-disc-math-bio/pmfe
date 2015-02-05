@@ -8,13 +8,21 @@
 namespace pmfe {
     using namespace std;
 
+    enum dangle_mode {
+        NO_DANGLE = 0,
+        CHOOSE_DANGLE = 1,
+        BOTH_DANGLE = 2,
+    };
+
+    dangle_mode convert_to_dangle_mode(int n);
+
     extern unsigned char *RNA;
     extern int *structure;
     extern int* constraints;
 
     extern int g_nthreads;
     extern int g_unamode;
-    extern int g_dangles;
+    extern dangle_mode g_dangles;
     extern int g_mismatch;
     extern int g_verbose;
     extern int g_prefilter_mode;

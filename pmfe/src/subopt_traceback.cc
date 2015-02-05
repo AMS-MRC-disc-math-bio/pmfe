@@ -67,12 +67,21 @@ namespace pmfe {
                     mpq_class d5 = Ed5_new(i,l,i-1);
                     mpq_class d3 = Ed3_new(i,l,l+1);
 
-                    mpq_class fm1;
-                    if (g_dangles == 0)
-                        fm1 = V_f(i,l) + auPenalty(i,l) + multConst[1]*(j-l) + multConst[2];
-                    else if (g_dangles == 2)
-                        fm1 = V_f(i,l) + auPenalty(i,l) + d5 + d3 + multConst[1]*(j-l) + multConst[2];
+                    mpq_class fm1 = 0, bonus = 0;
+                    switch (g_dangles) {
+                    case NO_DANGLE:
+                        bonus = auPenalty(i,l) + multConst[1]*(j-l) + multConst[2];
+                        break;
 
+                    case BOTH_DANGLE:
+                        bonus = auPenalty(i,l) + d5 + d3 + multConst[1]*(j-l) + multConst[2];
+                        break;
+
+                    default:
+                        exit(EXIT_FAILURE);
+                        break;
+                    }
+                    fm1 = V_f(i,l) + bonus;
                     min = std::min(min, fm1);
                 }
                 FM1[i][j] = min;
@@ -210,11 +219,21 @@ namespace pmfe {
             mpq_class d3 = Ed3(i, j, j-1);
             mpq_class aup = auPenalty(i,j);
 
-            mpq_class kenergy2;
-            if (g_dangles == 0)
+            mpq_class kenergy2 = 0;
+
+            switch (g_dangles) {
+            case NO_DANGLE:
                 kenergy2 = aup + multConst[0] + multConst[2];
-            else if (g_dangles == 2)
+                break;
+
+            case BOTH_DANGLE:
                 kenergy2 = d5 + d3 + aup + multConst[0] + multConst[2];
+                break;
+
+            default:
+                        exit(EXIT_FAILURE);
+                        break;
+            };
 
             mpq_class kenergy_total = kenergy1 + kenergy2;
             if (kenergy_total + ps.total() <= mfe_ + delta_) {
@@ -265,20 +284,26 @@ namespace pmfe {
             mpq_class d3 = (l>i)?Ed3(j,l,l-1):mpq_class(0);
             mpq_class d5 = (j<length)?Ed5(j,l,j+1):mpq_class(0);
 
-            mpq_class Wij;
-            if (g_dangles == 0)
-                Wij = V_f(l,j) + auPenalty(l, j) + wim1;
-            else if (g_dangles == 2)
-                Wij = V_f(l,j) + auPenalty(l, j) + d3 + d5 + wim1;
+            mpq_class bonus = 0;
+            switch (g_dangles){
+            case NO_DANGLE:
+                bonus = auPenalty(l, j);
+                break;
 
-            if (Wij + ps.total() <= mfe_ + delta_ ) {
+            case BOTH_DANGLE:
+                bonus = auPenalty(l, j) + d3 + d5;
+                break;
+
+            default:
+                exit(EXIT_FAILURE);
+                break;
+            };
+
+            if (V_f(l,j) + bonus + wim1 + ps.total() <= mfe_ + delta_ ) {
                 ps_t ps1(ps);
                 ps1.push(segment(l, j, lV, V_f(l,j)));
                 if (wim1 == W[l-1]) ps1.push(segment(i, l-1, lW, W[l-1]));
-                if (g_dangles == 0)
-                    ps1.accumulate(auPenalty(l, j));
-                else if (g_dangles == 2)
-                    ps1.accumulate(auPenalty(l, j) + d3 + d5);
+                ps1.accumulate(bonus);
                 push_to_gstack(gstack, ps1);
             }
         }
@@ -303,16 +328,26 @@ namespace pmfe {
         mpq_class d3 = Ed3_new(i, j, j+1);
         mpq_class aup = auPenalty(i,j);
 
-        if (
-            (g_dangles == 0 && V_f(i,j) + aup + multConst[2] + ps.total() <= mfe_ + delta_) ||
-            (g_dangles == 2 && V_f(i,j) + d5 + d3 + aup + multConst[2] + ps.total() <= mfe_ + delta_)
-            ) {
+        mpq_class bonus = 0;
+
+        switch (g_dangles) {
+        case NO_DANGLE:
+            bonus = aup + multConst[2];
+            break;
+
+        case BOTH_DANGLE:
+            bonus = d5 + d3 + aup + multConst[2];
+            break;
+
+        default:
+            exit(EXIT_FAILURE);
+            break;
+        };
+
+        if ( V_f(i,j) + bonus + ps.total() <= mfe_ + delta_) {
             ps_t ps1(ps);
             ps1.push(segment(i, j, lV, V_f(i,j)));
-            if (g_dangles == 0)
-                ps1.accumulate(aup + multConst[2]);
-            else if (g_dangles == 2)
-                ps1.accumulate(d5 + d3 + aup + multConst[2]);
+            ps1.accumulate(bonus);
             ps1.update(i,j,'(',')');
             push_to_gstack(gstack, ps1);
         }
@@ -331,16 +366,26 @@ namespace pmfe {
         mpq_class d3 = Ed3_new(i, j, j+1);
         mpq_class aup = auPenalty(i,j);
 
-        if (
-            (g_dangles == 0 && V_f(i,j) + multConst[2] + aup + ps.total() <= mfe_ + delta_) ||
-            (g_dangles == 2 && V_f(i,j) + d5 + d3 + multConst[2] + aup + ps.total() <= mfe_ + delta_)
-            ) {
+        mpq_class bonus = 0;
+
+        switch (g_dangles) {
+        case NO_DANGLE:
+            bonus = multConst[2] + aup;
+            break;
+
+        case BOTH_DANGLE:
+            bonus = d5 + d3 + multConst[2] + aup;
+            break;
+
+        default:
+            exit(EXIT_FAILURE);
+            break;
+        };
+
+        if (V_f(i,j) + bonus + ps.total() <= mfe_ + delta_) {
             ps_t ps1(ps);
             ps1.push(segment(i, j, lV, V_f(i,j)));
-            if (g_dangles == 0)
-                ps1.accumulate(multConst[2] + aup);
-            else if (g_dangles == 2)
-                ps1.accumulate(d5 + d3 + multConst[2] + aup);
+            ps1.accumulate(bonus);
             ps1.update(i,j,'(',')');
             push_to_gstack(gstack, ps1);
         }
@@ -352,17 +397,27 @@ namespace pmfe {
             d3 = Ed3_new(k+1, j, j+1);
             aup = auPenalty(k+1, j);
 
-            if (
-                (g_dangles == 0 && FM[i][k] + V_f(k+1,j) + multConst[2] + aup + ps.total() <= mfe_ + delta_) ||
-                (g_dangles == 2 && FM[i][k] + V_f(k+1,j) + d5 + d3 + multConst[2] + aup + ps.total() <= mfe_ + delta_)
-                ){
+            mpq_class bonus = 0;
+
+            switch (g_dangles) {
+            case NO_DANGLE:
+                bonus = multConst[2] + aup;
+                break;
+
+            case BOTH_DANGLE:
+                bonus = d5 + d3 + multConst[2] + aup;
+                break;
+
+            default:
+                exit(EXIT_FAILURE);
+                break;
+            };
+
+            if (FM[i][k] + V_f(k+1,j) + bonus + ps.total() <= mfe_ + delta_) {
                 ps_t ps1(ps);
                 ps1.push(segment(i, k, lM, FM[i][k]));
                 ps1.push(segment(k+1, j, lV, V_f(k+1,j)));
-                if (g_dangles == 0)
-                    ps1.accumulate(multConst[2] + aup);
-                else if (g_dangles == 2)
-                    ps1.accumulate(d5 + d3 + multConst[2] + aup);
+                ps1.accumulate(bonus);
                 ps1.update(k+1,j,'(',')');
                 push_to_gstack(gstack, ps1);
             }
@@ -374,16 +429,26 @@ namespace pmfe {
             d3 = Ed3_new(k+1, j, j+1);
             aup = auPenalty(k+1, j);
 
-            if (
-                (g_dangles == 0 && V_f(k+1,j) + multConst[2] + multConst[1]*(k-i+1) + aup + ps.total() <= mfe_+delta_) ||
-                (g_dangles == 2 && V_f(k+1,j) + d5 + d3 + multConst[2] + multConst[1]*(k-i+1) + aup + ps.total() <= mfe_+delta_)
-                ) {
+            mpq_class bonus = 0;
+
+            switch (g_dangles) {
+            case NO_DANGLE:
+                bonus = multConst[2] + multConst[1]*(k-i+1) + aup;
+                break;
+
+            case BOTH_DANGLE:
+                bonus = d5 + d3 + multConst[2] + multConst[1]*(k-i+1) + aup;
+                break;
+
+            default:
+                exit(EXIT_FAILURE);
+                break;
+            };
+
+            if (V_f(k+1,j) + bonus + ps.total() <= mfe_+delta_) {
                 ps_t ps1(ps);
                 ps1.push(segment(k+1, j, lV, V_f(k+1,j)));
-                if (g_dangles == 0)
-                    ps1.accumulate(multConst[2] + multConst[1]*(k-i+1) + aup);
-                else if (g_dangles == 2)
-                    ps1.accumulate(d5 + d3 + multConst[2] + multConst[1]*(k-i+1) + aup);
+                ps1.accumulate(bonus);
                 ps1.update(k+1, j, '(', ')');
                 push_to_gstack(gstack, ps1);
             }
@@ -394,15 +459,25 @@ namespace pmfe {
         mpq_class d3 = (i==1)?Ed3(j,i,length):Ed3(j,i,i-1);
         mpq_class d5 = Ed5(j,i,j+1);
 
-        if (
-            (g_dangles == 0 && V_f(i,j) + auPenalty(i, j) + multConst[2] + ps.total() <= mfe_ + delta_) ||
-            (g_dangles == 2 && V_f(i,j) + auPenalty(i, j) + multConst[2] + d3 + d5 + ps.total() <= mfe_ + delta_)
-            ){
+        mpq_class bonus = 0;
+
+        switch (g_dangles) {
+        case NO_DANGLE:
+            bonus = auPenalty(i, j) + multConst[2];
+            break;
+
+        case BOTH_DANGLE:
+            bonus = auPenalty(i, j) + multConst[2] + d3 + d5;
+            break;
+
+        default:
+            exit(EXIT_FAILURE);
+            break;
+        };
+
+        if (V_f(i,j) + bonus + ps.total() <= mfe_ + delta_) {
             ps_t ps_new(ps);
-            if (g_dangles == 0)
-                ps_new.accumulate(auPenalty(i, j) + multConst[2]);
-            else if (g_dangles == 2)
-                ps_new.accumulate(auPenalty(i, j) + multConst[2] + d3 + d5);
+            ps_new.accumulate(bonus);
             ps_new.push(segment(i,j, lV, V_f(i,j)));
             push_to_gstack(gstack, ps_new);
         }
@@ -444,15 +519,25 @@ namespace pmfe {
         mpq_class d3 = Ed3(i,j,j-1);
         mpq_class d5 = Ed5(i,j,i+1);
 
-        if (
-            (g_dangles == 0 && WMPrime[i+1][j-1] + multConst[0] + multConst[2] + auPenalty(i, j) + ps.total() <= mfe_ + delta_) ||
-            (g_dangles == 2 && WMPrime[i+1][j-1] + multConst[0] + multConst[2] + auPenalty(i, j) + d3 + d5 + ps.total() <= mfe_ + delta_)
-            ) {
+        mpq_class bonus = 0;
+
+        switch (g_dangles) {
+        case NO_DANGLE:
+            bonus = multConst[0] + multConst[2] + auPenalty(i, j);
+            break;
+
+        case BOTH_DANGLE:
+            bonus = multConst[0] + multConst[2] + auPenalty(i, j) + d3 + d5;
+            break;
+
+        default:
+            exit(EXIT_FAILURE);
+            break;
+        };
+
+        if (WMPrime[i+1][j-1] + bonus + ps.total() <= mfe_ + delta_) {
             ps_t ps_new(ps);
-            if (g_dangles == 0)
-                ps_new.accumulate(multConst[0] + multConst[2] + auPenalty(i, j));
-            else if (g_dangles == 2)
-                ps_new.accumulate(multConst[0] + multConst[2] + auPenalty(i, j) + d3 + d5);
+            ps_new.accumulate(bonus);
             ps_new.push(segment(i+1,j-1, lWMPrime,WMPrime[i+1][j-1] ));
             push_to_gstack(gstack, ps_new);
         }

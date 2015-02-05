@@ -48,7 +48,7 @@ namespace pmfe {
     static string outputFile = "";
     static string outputDir = "";
 
-    static int dangles=-1;
+    static dangle_mode dangles = CHOOSE_DANGLE;
 
     static int nThreads = -1;
 
@@ -94,11 +94,7 @@ namespace pmfe {
         std::string seq;
         mpq_class energy;
 
-        dangles = dangle_model;
-
-        if (!(dangles == 0 || dangles == 1 || dangles == 2)) {
-            dangles = -1;
-        }
+        dangles = convert_to_dangle_mode(dangle_model);
 
         if (read_sequence_file(seq_file.c_str(), seq) == FAILURE) {
             printf("Failed to open sequence file: %s.\n\n", seq_file.c_str());
@@ -130,7 +126,7 @@ namespace pmfe {
 
         // Find the classical energy
         bool maxdangle = (params.dummy_scaling < 0);
-        mpq_class classical_energy = rnascoring::get_classical_score(output_file, "/usr/local/share/pmfe/Turner99/rnascorer", dangle_model, maxdangle);
+        mpq_class classical_energy = rnascoring::get_classical_score(output_file, "/usr/local/share/pmfe/Turner99/rnascorer", dangles, maxdangle);
         classical_energy.canonicalize();
 
         // Calculate w

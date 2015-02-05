@@ -14,7 +14,7 @@ namespace pmfe {
     unsigned int chPairKey;
 
     int g_nthreads;
-    int g_dangles;
+    dangle_mode g_dangles;
     int g_unamode;
     int g_mismatch;
     int g_verbose = 0;
@@ -213,5 +213,25 @@ namespace pmfe {
 
     int canPair(int a, int b) {
         return (chPairKey & (1 << (((a)<<2) + (b))));
+    }
+
+    dangle_mode convert_to_dangle_mode(int n) {
+        switch (n) {
+        case 0:
+            return NO_DANGLE;
+            break;
+
+        case 1:
+            return CHOOSE_DANGLE;
+            break;
+
+        case 2:
+            return BOTH_DANGLE;
+            break;
+
+        default:
+            exit(EXIT_FAILURE);
+            break;
+        }
     }
 }

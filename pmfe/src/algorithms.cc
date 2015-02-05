@@ -190,12 +190,12 @@ namespace pmfe {
                         d5 = INFINITY_;
                     }
 
-                    if (g_dangles == 2) { // -d2
+                    if (g_dangles == BOTH_DANGLE) { // -d2
                         std::vector<mpq_class> vals;
                         vals.push_back(VM_f(i, j));
                         vals.push_back(WMPrime[i+1][j-1] + d3 + d5 + auPenalty(i,j) + multConst[0] + multConst[2]);
                         VM_f(i,j) = *std::min_element(vals.begin(), vals.end());
-                    } else if (g_dangles == 0) { // -d0
+                    } else if (g_dangles == NO_DANGLE) { // -d0
                         std::vector<mpq_class> vals;
                         vals.push_back(VM_f(i,j));
                         vals.push_back(WMPrime[i+1][j-1] + auPenalty(i,j) + multConst[0] + multConst[2]);
@@ -247,7 +247,7 @@ namespace pmfe {
                     newWM = *std::min_element(vals.begin(), vals.end());
                 }
 
-                if (g_dangles == 2) {
+                if (g_dangles == BOTH_DANGLE) {
                     mpq_class energy = V_f(i,j) + auPenalty(i,j) + multConst[2];
                     if (i == 1) {
                         energy += Ed3(j,i,len);
@@ -263,7 +263,7 @@ namespace pmfe {
                         vals.push_back(newWM);
                         newWM = *std::min_element(vals.begin(), vals.end());
                     }
-                } else if (g_dangles == 0) {
+                } else if (g_dangles == NO_DANGLE) {
                     std::vector<mpq_class> vals;
                     vals.push_back(V_f(i,j) + auPenalty(i,j) + multConst[2]);
                     vals.push_back(newWM);
@@ -310,7 +310,7 @@ namespace pmfe {
                 Wij = Widjd = Wijd = Widj = INFINITY_;
                 Wim1 = MIN(0, W[i-1]);
 
-                if (g_dangles == 2) { // -d2 option
+                if (g_dangles == BOTH_DANGLE) { // -d2 option
                     mpq_class energy = V_f(i,j) + auPenalty(i,j) + Wim1;
                     if (i>1) energy +=  Ed3(j,i,i-1);
                     if (j<len) energy += Ed5(j,i,j+1);
@@ -321,7 +321,7 @@ namespace pmfe {
                     vals.push_back(Widjd);
 
                     Wij = *std::min_element(vals.begin(), vals.end());
-                } else if (g_dangles == 0) { // -d0 option
+                } else if (g_dangles == NO_DANGLE) { // -d0 option
                     Wij = V_f(i, j) + auPenalty(i, j) + Wim1;
                 } else { // default
                     Wij = V_f(i, j) + auPenalty(i, j) + Wim1;
