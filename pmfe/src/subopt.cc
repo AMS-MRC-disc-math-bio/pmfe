@@ -67,9 +67,9 @@ namespace pmfe {
 
         readThermodynamicParameters(param_dir.c_str());
 
-        std::string subopt_file = subopt_filename(seq_file, output_dir);
+        mpq_class energy = calculate(seq.length());
 
-        mpq_class energy = calculate(seq.length()) ;
+        std::string subopt_file = subopt_filename(seq_file, output_dir);
         write_header_subopt_file(subopt_file, seq, energy);
 
         ss_map_t subopt_data = subopt_traceback(seq.length(), delta, subopt_file, max_structure_count);
