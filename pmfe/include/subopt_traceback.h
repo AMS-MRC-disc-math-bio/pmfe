@@ -43,28 +43,28 @@ namespace pmfe{
 
     struct segment
     {
-	int i_;
-	int j_;
-	int label_;
-	mpq_class en_;
+        int i_;
+        int j_;
+        int label_;
+        mpq_class en_;
 
-	segment(int i, int j, enum label lbl, mpq_class en)
-	{
+        segment(int i, int j, enum label lbl, mpq_class en)
+        {
             i_= i; j_ = j;
             label_ = lbl;
             en_= en;
-	}
+        }
 
-	segment(const segment& ss)
-	{
+        segment(const segment& ss)
+        {
             i_ = ss.i_;
             j_ = ss.j_;
             label_ = ss.label_;
             en_ = ss.en_;
-	}
+        }
 
-	segment& operator = (const segment& ss)
-	{
+        segment& operator = (const segment& ss)
+        {
             if (this != &ss)
             {
                 i_ = ss.i_;
@@ -73,14 +73,14 @@ namespace pmfe{
                 en_ = ss.en_;
             }
             return *this;
-	}
+        }
 
             friend std::ostream& operator<<(std::ostream& out, const segment& seg)
-	{
+        {
             out << "<(" << seg.i_ << ',' << seg.j_ << ')' << " "
                 << lstr[seg.label_] << " dG=" << seg.en_ << ">";
             return out;
-	}
+        }
     };
 
     typedef segment SEG;
@@ -88,28 +88,28 @@ namespace pmfe{
 
     struct pstruct
     {
-	std::string str;
-	SEGSTACK st_segment;
-	SEGSTACK st_v; /* used for backtracking in traceWM */
+        std::string str;
+        SEGSTACK st_segment;
+        SEGSTACK st_v; /* used for backtracking in traceWM */
 
-	mpq_class ae_;
-	mpq_class le_;
+        mpq_class ae_;
+        mpq_class le_;
 
-	mpq_class total() const { return ae_ + le_; }
+        mpq_class total() const { return ae_ + le_; }
 
-	pstruct() {}
+        pstruct() {}
 
-	pstruct(const pstruct& ps)
-	{
+        pstruct(const pstruct& ps)
+        {
             str = ps.str;
             st_segment = ps.st_segment;
             st_v = ps.st_v;
             ae_ = ps.ae_;
             le_ = ps.le_;
-	}
+        }
 
-	pstruct& operator = (const pstruct& ps)
-	{
+        pstruct& operator = (const pstruct& ps)
+        {
             if (&ps != this)
             {
                 str = ps.str;
@@ -119,74 +119,74 @@ namespace pmfe{
                 le_ = ps.le_;
             }
             return *this;
-	}
+        }
 
 
             void update(int i, int j, char c1, char c2)
-	{
+        {
             str[i-1] = c1; str[j-1] = c2;
-	}
+        }
 
     pstruct(mpq_class ae, int len) : ae_(ae)
-	{
+        {
             le_ = 0;
             str = std::string(len, '.');
-	}
+        }
 
-	void accumulate(mpq_class en)
-	{
+        void accumulate(mpq_class en)
+        {
             ae_ += en;
-	}
+        }
 
-	void push(segment seg)
-	{
+        void push(segment seg)
+        {
             st_segment.push(seg);
             le_ += seg.en_;
-	}
+        }
 
-	void push_v(segment seg)
-	{
+        void push_v(segment seg)
+        {
             st_v.push(seg);
             le_ += seg.en_;
-	}
+        }
 
-	void pop()
-	{
+        void pop()
+        {
             segment seg = st_segment.top();
             le_ -= seg.en_;
             st_segment.pop();
-	}
+        }
 
-	void pop_v()
-	{
+        void pop_v()
+        {
             segment seg = st_v.top();
             le_ -= seg.en_;
             st_v.pop();
-	}
+        }
 
-	segment top()
-	{
+        segment top()
+        {
             return st_segment.top();
-	}
+        }
 
 
-	segment top_v()
-	{
+        segment top_v()
+        {
             return st_v.top();
-	}
+        }
 
-	bool empty()
-	{
+        bool empty()
+        {
             return st_segment.empty();
-	}
+        }
 
-	bool empty_v()
-	{
+        bool empty_v()
+        {
             return st_v.empty();
-	}
+        }
 
-	void print() const
-	{
+        void print() const
+        {
             SEGSTACK st = st_segment;
             std::cout <<'[' << ' ' ;
             while (!st.empty())
@@ -206,7 +206,7 @@ namespace pmfe{
             }
             std::cout << ']' << ' ' << str << ' ' ;
             std::cout << " ae=" << ae_ << " le=" << le_ << " te=" << ae_+le_  ;
-	}
+        }
     };
 
     /* partial structure */
