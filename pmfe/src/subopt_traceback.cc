@@ -165,14 +165,14 @@ namespace pmfe {
     }
 
     ss_map_t subopt_traceback(int len, mpq_class delta, string suboptFile,  int max_structure_count) {
-        trace_func[0] = traceW;
-        trace_func[1] = traceV;
-        trace_func[2] = traceVBI;
-        trace_func[3] = traceVM;
-        trace_func[4] = traceWM;
-        trace_func[5] = traceWMPrime;
-        trace_func[6] = traceM;
-        trace_func[7] = traceM1;
+        trace_func[lW] = traceW;
+        trace_func[lV] = traceV;
+        trace_func[lVBI] = traceVBI;
+        trace_func[lVM] = traceVM;
+        trace_func[lWM] = traceWM;
+        trace_func[lWMPrime] = traceWMPrime;
+        trace_func[lM] = traceM;
+        trace_func[lM1] = traceM1;
 
         mfe_ = W[len];
         delta_ = delta;
