@@ -127,8 +127,7 @@ namespace pmfe {
         first.push(segment(1, len, lW, W[len]));
         gstack.push(first); // initialize the partial structure stack
 
-        while (1) {
-            if (gstack.empty()) break; // exit
+        while (!gstack.empty()) {
             ps_t ps = gstack.top();
             gstack.pop();
 
