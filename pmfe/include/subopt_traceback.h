@@ -127,6 +127,11 @@ namespace pmfe{
             str[i-1] = c1; str[j-1] = c2;
         }
 
+        void update(int i, char c)
+        {
+            str[i-1] = c;
+        }
+
     pstruct(mpq_class ae, int len) : ae_(ae)
         {
             le_ = 0;
@@ -164,23 +169,23 @@ namespace pmfe{
             st_v.pop();
         }
 
-        segment top()
+        segment top() const
         {
             return st_segment.top();
         }
 
 
-        segment top_v()
+        segment top_v() const
         {
             return st_v.top();
         }
 
-        bool empty()
+        bool empty() const
         {
             return st_segment.empty();
         }
 
-        bool empty_v()
+        bool empty_v() const
         {
             return st_v.empty();
         }
@@ -225,12 +230,14 @@ namespace pmfe{
 
     ss_map_t subopt_traceback(int len, mpq_class delta, std::string suboptFile, int max_structure_count);
 
+    void VMhelper(int i, int k, int j, mpq_class dangle_bonus, ps_t& ps, ps_stack_t& gstack);
+
     void traceV(int i, int j, ps_t & ps, ps_stack_t & gs);
     void traceVBI(int i, int j, ps_t & ps, ps_stack_t & gs);
     void traceW(int i, int j, ps_t & ps, ps_stack_t & gs);
-    void traceVM(int i, int j, ps_t & ps, ps_stack_t & gs);
-    void traceWM(int i, int j, ps_t &  ps, ps_stack_t & gs);
-    void traceWMPrime(int i, int j, ps_t &  ps, ps_stack_t & gs);
+    //void traceVM(int i, int j, ps_t & ps, ps_stack_t & gs);
+    //void traceWM(int i, int j, ps_t &  ps, ps_stack_t & gs);
+    //void traceWMPrime(int i, int j, ps_t &  ps, ps_stack_t & gs);
 
     void traceM(int i, int j, ps_t & ps, ps_stack_t & gs);
     void traceM1(int i, int j, ps_t & ps, ps_stack_t & gs);
