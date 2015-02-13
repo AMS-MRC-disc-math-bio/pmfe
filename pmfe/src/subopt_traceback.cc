@@ -307,7 +307,7 @@ namespace pmfe {
                     mpq_class d3 = Ed3_pair(i, j, true);
                     mpq_class d53 = d5 + d3;
                     if (FM[i+1][k] + FM1[k+1][j-1] + auPenalty(i,j) + multConst[0] + multConst[2] + ps.total() <= mfe_ + delta_) {
-                        printf("traceV multiloop no dangle (%i, %i, %i)\n", i, k, j);
+                        if (DEBUG) printf("traceV multiloop no dangle (%i, %i, %i)\n", i, k, j);
                         ps_t ps1(ps);
                         ps1.push(segment(i+1, k, lM, FM[i+1][k]));
                         ps1.push(segment(k+1, j-1, lM1, FM1[k+1][j-1]));
@@ -316,7 +316,7 @@ namespace pmfe {
                         push_to_gstack(gstack, ps1);
                     }
                     if (FM[i+2][k] + FM1[k+1][j-1] + auPenalty(i,j) + d5 + multConst[0] + multConst[1] + multConst[2] + ps.total() <= mfe_ + delta_) {
-                        printf("traceV multiloop d5 (%i, %i, %i)\n", i, k, j);
+                        if (DEBUG) printf("traceV multiloop d5 (%i, %i, %i)\n", i, k, j);
                         ps_t ps1(ps);
                         ps1.push(segment(i+2,k, lM, FM[i+2][k]));
                         ps1.push(segment(k+1,j-1, lM1, FM1[k+1][j-1]));
@@ -326,7 +326,7 @@ namespace pmfe {
                         push_to_gstack(gstack, ps1);
                     }
                     if (FM[i+1][k] + FM1[k+1][j-2] + auPenalty(i,j) + d3 + multConst[0] + multConst[1] + multConst[2] + ps.total() <= mfe_ + delta_) {
-                        printf("traceV multiloop d3 (%i, %i, %i)\n", i, k, j);
+                        if (DEBUG) printf("traceV multiloop d3 (%i, %i, %i)\n", i, k, j);
                         ps_t ps1(ps);
                         ps1.push(segment(i+1,k, lM, FM[i+1][k]));
                         ps1.push(segment(k+1,j-2, lM1, FM1[k+1][j-2]));
@@ -336,7 +336,7 @@ namespace pmfe {
                         push_to_gstack(gstack, ps1);
                     }
                     if (FM[i+2][k] + FM1[k+1][j-2] + auPenalty(i,j) + d53 + multConst[0] + 2*multConst[1] + multConst[2] + ps.total() <= mfe_ + delta_) {
-                        printf("traceV multiloop d53 (%i, %i, %i)\n", i, k, j);
+                        if (DEBUG) printf("traceV multiloop d53 (%i, %i, %i)\n", i, k, j);
                         ps_t ps1(ps);
                         ps1.push(segment(i+2,k, lM, FM[i+2][k]));
                         ps1.push(segment(k+1,j-2, lM1, FM1[k+1][j-2]));
