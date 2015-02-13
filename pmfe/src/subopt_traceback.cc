@@ -40,7 +40,7 @@ namespace pmfe {
     using std::cout;
     using std::endl;
 
-    const char* lstr[] = {"W", "V", "VBI", "VM", "WM", "WMPrime", "M", "M1"};
+    const char* lstr[] = {"W", "V", "VBI", "M", "M1"};
     const char d3symb = '>';
     const char d5symb = '<';
 
@@ -121,7 +121,6 @@ namespace pmfe {
 
                     case CHOOSE_DANGLE:
                         {
-                            // Experimental d1 version; allows the stem start to move so the dangles are included in the substructure
                             mpq_class d5 = Ed5_pair(i+1,l);
                             mpq_class d3 = Ed3_pair(i,l-1);
                             mpq_class d53 = Ed5_pair(i+1, l-1) + Ed3_pair(i+1, l-1);
@@ -202,7 +201,6 @@ namespace pmfe {
             if (ps.empty()) {
                 count++;
                 if (DEBUG) printf("Sequence complete; writing!\nOutput:%d\t%s\t%f\n", count, (ps.str).c_str(), ps.ae_.get_d());
-                //cout << ps.str << endl;
                 sprintf(buff,"%d\t%s\t%f", count, (ps.str).c_str(), ps.ae_.get_d());
                 outfile << buff << std::endl;
                 if(max_structure_count>0 && count>=max_structure_count) break;//exit
@@ -240,9 +238,6 @@ namespace pmfe {
         trace_func[lW] = traceW;
         trace_func[lV] = traceV;
         trace_func[lVBI] = traceVBI;
-        //trace_func[lVM] = traceVM;
-        //trace_func[lWM] = traceWM;
-        //trace_func[lWMPrime] = traceWMPrime;
         trace_func[lM] = traceM;
         trace_func[lM1] = traceM1;
 
@@ -564,7 +559,6 @@ namespace pmfe {
                 break;
             }
 
-            //case CHOOSE_DANGLE:
         case BOTH_DANGLE:
             {
                 mpq_class d5 = Ed5_new(i, j, i-1);
@@ -659,7 +653,6 @@ namespace pmfe {
                 break;
             }
 
-            //case CHOOSE_DANGLE:
         case BOTH_DANGLE:
             {
                 mpq_class d5 = Ed5_new (i, j, i-1);
@@ -851,163 +844,6 @@ namespace pmfe {
             };
         };
     };
-
-    /*
-    // Helper method to manage mess in traceWM
-    void pushV(ps_t& ps, ps_stack_t& gstack, int i, int j, mpq_class bonus) {
-        if (V_f(i, j) + bonus + ps.total() <= mfe_ + delta_) {
-            ps_t ps_new(ps);
-            ps_new.accumulate(bonus);
-            ps_new.push(segment(i, j, lV, V_f(i, j)));
-            push_to_gstack(gstack, ps_new);
-        }
-
-        if (WMPrime[i][j] + ps.total() <= mfe_ + delta_) {
-            ps_t ps_new(ps);
-            ps_new.push(segment(i, j, lWMPrime, WMPrime[i][j]));
-            push_to_gstack(gstack, ps_new);
-        }
-
-        if (WM_f(i+1,j) + multConst[1] + ps.total() <= mfe_ + delta_) {
-            ps_t ps_new(ps);
-            ps_new.accumulate(multConst[1]);
-            ps_new.push(segment(i+1, j, lWM, WM_f(i+1, j)));
-            push_to_gstack(gstack, ps_new);
-        }
-
-        if (WM_f(i, j-1) + multConst[1] + ps.total() <= mfe_ + delta_) {
-            ps_t ps_new(ps);
-            ps_new.accumulate(multConst[1]);
-            ps_new.push(segment(i, j-1, lWM, WM_f(i, j-1)));
-            push_to_gstack(gstack, ps_new);
-        }
-    }
-
-    void traceWM(int i, int j, ps_t& ps, ps_stack_t& gstack) {
-        if (DEBUG) printf("traceWM(%i, %i):\n\tpartial structure %s\n", i, j, ps.str.c_str());
-
-        switch (g_dangles) {
-        case NO_DANGLE:
-            {
-                pushV(ps, gstack, i, j, auPenalty(i, j) + multConst[2]);
-                break;
-            }
-
-        case CHOOSE_DANGLE:
-            {
-                mpq_class d5 = Ed5_pair(i, j-1);
-                mpq_class d3 = Ed3_pair(i+1, j);
-                mpq_class d53 = Ed5_pair(i+1, j-1) + Ed3_pair(i+1, j-1);
-                pushV(ps, gstack, i, j, auPenalty(i, j) + multConst[2]);
-                pushV(ps, gstack, i+1, j, auPenalty(i+1, j) + multConst[2] + multConst[1] + d5);
-                pushV(ps, gstack, i, j-1, auPenalty(i, j-1) + multConst[2] + multConst[1] + d3);
-                pushV(ps, gstack, i+1, j-1, auPenalty(i+1, j-1) + multConst[2] + 2*multConst[1] + d53);
-                break;
-            }
-
-        case BOTH_DANGLE:
-            {
-                mpq_class d5 = Ed5(j,i,j+1);
-                mpq_class d3 = (i==1)?Ed3(j,i,length):Ed3(j,i,i-1);
-                pushV(ps, gstack, i, j, auPenalty(i, j) + multConst[2] + d5 + d3);
-                break;
-            }
-
-        default:
-            {
-                exit(EXIT_FAILURE);
-                break;
-            }
-        };
-    }
-
-    void traceWMPrime(int i, int j, ps_t& ps, ps_stack_t& gstack) {
-        if (DEBUG) printf("traceWMPrime(%i, %i):\n\tpartial structure %s\n", i, j, ps.str.c_str());
-        for (int h = i+TURN+1 ; h <= j-TURN-2; h++) {
-            if (WM_f(i,h-1) + WM_f(h,j) + ps.total() <= mfe_ + delta_) {
-                ps_t ps_new(ps);
-                ps_new.push(segment(i,h-1, lWM, WM_f(i,h-1)));
-                ps_new.push(segment(h,j, lWM, WM_f(h,j)));
-                push_to_gstack(gstack, ps_new);
-            }
-        }
-    }
-
-    void traceVM(int i, int j, ps_t& ps, ps_stack_t& gstack) {
-        if (DEBUG) printf("traceVM(%i, %i):\n\tpartial structure %s\n", i, j, ps.str.c_str());
-
-        mpq_class bonus = 0;
-
-        switch (g_dangles) {
-        case NO_DANGLE:
-            {
-                bonus = multConst[0] + multConst[2] + auPenalty(i, j);
-                if (WMPrime[i+1][j-1] + bonus + ps.total() <= mfe_ + delta_) {
-                    ps_t ps_new(ps);
-                    ps_new.accumulate(bonus);
-                    ps_new.push(segment(i+1,j-1, lWMPrime,WMPrime[i+1][j-1] ));
-                    push_to_gstack(gstack, ps_new);
-                }
-                break;
-            }
-
-        case CHOOSE_DANGLE:
-            {
-                mpq_class d5 = Ed5_pair(i+2, j-1);
-                mpq_class d3 = Ed3_pair(i+1, j-2);
-                mpq_class d53 = Ed5_pair(i+2, j-2) + Ed3_pair(i+2, j-2);
-                if (WMPrime[i+1][j - 1] + multConst[0] + multConst[2] + auPenalty(i,j) + ps.total() <= mfe_ + delta_) {
-                    ps_t ps_new(ps);
-                    ps_new.accumulate(multConst[0] + multConst[2] + auPenalty(i,j));
-                    ps_new.push(segment(i+1,j-1, lWMPrime,WMPrime[i+1][j-1] ));
-                    push_to_gstack(gstack, ps_new);
-                }
-                if (WMPrime[i + 2][j - 1] + multConst[0] + multConst[2] + multConst[1] + auPenalty(i+1,j) + d5 + multConst[1] + ps.total() <= mfe_ + delta_) {
-                    ps_t ps_new(ps);
-                    ps_new.accumulate(multConst[0] + multConst[2] + multConst[1] + auPenalty(i+1,j) + d5 + multConst[1]);
-                    ps_new.push(segment(i+2,j-1, lWMPrime,WMPrime[i+2][j-1] ));
-                    ps_new.update(i+1, d5symb);
-                    push_to_gstack(gstack, ps_new);
-                }
-                if (WMPrime[i + 1][j - 2] + multConst[0] + multConst[2] + multConst[1] + auPenalty(i, j-1) + d3 + multConst[1] + ps.total() <= mfe_ + delta_) {
-                    ps_t ps_new(ps);
-                    ps_new.accumulate(multConst[0] + multConst[2] + multConst[1] + auPenalty(i, j-1) + d3 + multConst[1]);
-                    ps_new.push(segment(i+1,j-2, lWMPrime,WMPrime[i+1][j-2]));
-                    ps_new.update(j-1, d3symb);
-                    push_to_gstack(gstack, ps_new);
-                }
-                if ( WMPrime[i + 2][j - 2] + multConst[0] + multConst[2] + 2*multConst[1] + auPenalty(i+1, j-1) + d53 + multConst[1]*2 + ps.total() <= mfe_ + delta_) {
-                    ps_t ps_new(ps);
-                    ps_new.accumulate(multConst[0] + multConst[2] + 2*multConst[1] + auPenalty(i+1, j-1) + d53 + multConst[1]*2);
-                    ps_new.push(segment(i+2,j-2, lWMPrime,WMPrime[i+2][j-2] ));
-                    ps_new.update(i+1, j-1, d5symb, d3symb);
-                    push_to_gstack(gstack, ps_new);
-                }
-                break;
-            }
-
-        case BOTH_DANGLE:
-            {
-                mpq_class d3 = Ed3(i,j,j-1);
-                mpq_class d5 = Ed5(i,j,i+1);
-                bonus = multConst[0] + multConst[2] + auPenalty(i, j) + d5 + d3;
-                if (WMPrime[i+1][j-1] + bonus + ps.total() <= mfe_ + delta_) {
-                    ps_t ps_new(ps);
-                    ps_new.accumulate(bonus);
-                    ps_new.push(segment(i+1,j-1, lWMPrime,WMPrime[i+1][j-1] ));
-                    push_to_gstack(gstack, ps_new);
-                }
-                break;
-            }
-
-        default:
-            {
-                exit(EXIT_FAILURE);
-                break;
-            }
-        };
-    }
-    */
 
     void push_to_gstack(ps_stack_t& gstack, const ps_t& v) {
         if (DEBUG)

@@ -38,7 +38,7 @@
 
 namespace pmfe{
 
-    enum label {lW=0, lV, lVBI, lVM, lWM, lWMPrime, lM, lM1};
+    enum label {lW=0, lV, lVBI, lM, lM1};
     extern const char* lstr[];
 
     struct segment
