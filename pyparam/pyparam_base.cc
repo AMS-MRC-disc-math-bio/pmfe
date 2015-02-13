@@ -53,7 +53,7 @@ BOOST_PYTHON_MODULE(pyparam_base)
              py::arg("seq_file"),
              py::arg("output_file"),
              py::arg("params"),
-             py::arg("param_dir") = "Turner99",
+             py::arg("param_dir") = "/usr/local/share/pmfe/Turner99/pmfe",
              py::arg("dangle_model") = 1
              )
             );
