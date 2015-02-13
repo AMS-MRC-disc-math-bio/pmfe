@@ -235,11 +235,11 @@ namespace pmfe {
     }
 
     ss_map_t subopt_traceback(int len, mpq_class delta, string suboptFile,  int max_structure_count) {
-        trace_func[lW] = traceW;
-        trace_func[lV] = traceV;
-        trace_func[lVBI] = traceVBI;
-        trace_func[lM] = traceM;
-        trace_func[lM1] = traceM1;
+        trace_func[lW] = subopt_traceW;
+        trace_func[lV] = subopt_traceV;
+        trace_func[lVBI] = subopt_traceVBI;
+        trace_func[lM] = subopt_traceM;
+        trace_func[lM1] = subopt_traceM1;
 
         mfe_ = W[len];
         delta_ = delta;
@@ -250,8 +250,8 @@ namespace pmfe {
         return subopt_data;
     }
 
-    void traceV(int i, int j, ps_t& ps, ps_stack_t& gstack) {
-        if (DEBUG) printf("traceV(%i, %i):\n\tpartial structure %s\n", i, j, ps.str.c_str());
+    void subopt_traceV(int i, int j, ps_t& ps, ps_stack_t& gstack) {
+        if (DEBUG) printf("subopt_traceV(%i, %i):\n\tpartial structure %s\n", i, j, ps.str.c_str());
         // Hairpin Loop
         if (eH(i,j) + ps.total()  <= mfe_ + delta_) {
             if (DEBUG) printf("Hairpin (%i, %i)\n", i, j);
@@ -274,7 +274,7 @@ namespace pmfe {
         // Internal Loop
         if (VBI_f(i,j) + ps.total() <= mfe_ + delta_) {
             if (DEBUG) printf("Intloop (%i, %i)\n", i, j);
-            traceVBI(i,j,ps,gstack);
+            subopt_traceVBI(i,j,ps,gstack);
         }
 
         // Multiloop
@@ -307,7 +307,7 @@ namespace pmfe {
                     mpq_class d3 = Ed3_pair(i, j, true);
                     mpq_class d53 = d5 + d3;
                     if (FM[i+1][k] + FM1[k+1][j-1] + auPenalty(i,j) + multConst[0] + multConst[2] + ps.total() <= mfe_ + delta_) {
-                        if (DEBUG) printf("traceV multiloop no dangle (%i, %i, %i)\n", i, k, j);
+                        if (DEBUG) printf("subopt_traceV multiloop no dangle (%i, %i, %i)\n", i, k, j);
                         ps_t ps1(ps);
                         ps1.push(segment(i+1, k, lM, FM[i+1][k]));
                         ps1.push(segment(k+1, j-1, lM1, FM1[k+1][j-1]));
@@ -316,7 +316,7 @@ namespace pmfe {
                         push_to_gstack(gstack, ps1);
                     }
                     if (FM[i+2][k] + FM1[k+1][j-1] + auPenalty(i,j) + d5 + multConst[0] + multConst[1] + multConst[2] + ps.total() <= mfe_ + delta_) {
-                        if (DEBUG) printf("traceV multiloop d5 (%i, %i, %i)\n", i, k, j);
+                        if (DEBUG) printf("subopt_traceV multiloop d5 (%i, %i, %i)\n", i, k, j);
                         ps_t ps1(ps);
                         ps1.push(segment(i+2,k, lM, FM[i+2][k]));
                         ps1.push(segment(k+1,j-1, lM1, FM1[k+1][j-1]));
@@ -326,7 +326,7 @@ namespace pmfe {
                         push_to_gstack(gstack, ps1);
                     }
                     if (FM[i+1][k] + FM1[k+1][j-2] + auPenalty(i,j) + d3 + multConst[0] + multConst[1] + multConst[2] + ps.total() <= mfe_ + delta_) {
-                        if (DEBUG) printf("traceV multiloop d3 (%i, %i, %i)\n", i, k, j);
+                        if (DEBUG) printf("subopt_traceV multiloop d3 (%i, %i, %i)\n", i, k, j);
                         ps_t ps1(ps);
                         ps1.push(segment(i+1,k, lM, FM[i+1][k]));
                         ps1.push(segment(k+1,j-2, lM1, FM1[k+1][j-2]));
@@ -336,7 +336,7 @@ namespace pmfe {
                         push_to_gstack(gstack, ps1);
                     }
                     if (FM[i+2][k] + FM1[k+1][j-2] + auPenalty(i,j) + d53 + multConst[0] + 2*multConst[1] + multConst[2] + ps.total() <= mfe_ + delta_) {
-                        if (DEBUG) printf("traceV multiloop d53 (%i, %i, %i)\n", i, k, j);
+                        if (DEBUG) printf("subopt_traceV multiloop d53 (%i, %i, %i)\n", i, k, j);
                         ps_t ps1(ps);
                         ps1.push(segment(i+2,k, lM, FM[i+2][k]));
                         ps1.push(segment(k+1,j-2, lM1, FM1[k+1][j-2]));
@@ -356,7 +356,7 @@ namespace pmfe {
                     mpq_class kenergy2 = d5 + d3 + auPenalty(i,j) + multConst[0] + multConst[2];
                     mpq_class kenergy_total = kenergy1 + kenergy2;
                     if (kenergy_total + ps.total() <= mfe_ + delta_) {
-                        if (DEBUG) printf("traceV multiloop (%i, %i, %i)\n", i, k, j);
+                        if (DEBUG) printf("subopt_traceV multiloop (%i, %i, %i)\n", i, k, j);
                         ps_t ps1(ps);
                         ps1.push(segment(i+1,k, lM, FM[i+1][k]));
                         ps1.push(segment(k+1,j-1, lM1, FM1[k+1][j-1]));
@@ -376,8 +376,8 @@ namespace pmfe {
         }
     }
 
-    void traceVBI(int i, int j, ps_t& ps, ps_stack_t& gstack) {
-        if (DEBUG) printf("traceVBI(%i, %i):\n\tpartial structure %s\n", i, j, ps.str.c_str());
+    void subopt_traceVBI(int i, int j, ps_t& ps, ps_stack_t& gstack) {
+        if (DEBUG) printf("subopt_traceVBI(%i, %i):\n\tpartial structure %s\n", i, j, ps.str.c_str());
         int p,q;
 
         for (p = i+1; p <= std::min(j-2-TURN,i+MAXLOOP+1) ; p++) {
@@ -396,8 +396,8 @@ namespace pmfe {
         }
     }
 
-    void traceW(int i, int j, ps_t& ps, ps_stack_t& gstack) {
-        if (DEBUG) printf("traceW(%i, %i):\n\tpartial structure %s\n", i, j, ps.str.c_str());
+    void subopt_traceW(int i, int j, ps_t& ps, ps_stack_t& gstack) {
+        if (DEBUG) printf("subopt_traceW(%i, %i):\n\tpartial structure %s\n", i, j, ps.str.c_str());
         for (int l = i; l < j-TURN; ++l) {
             mpq_class wim1 = W[l-1];
 
@@ -406,7 +406,7 @@ namespace pmfe {
                 {
                     mpq_class bonus = auPenalty(l, j);
                     if (V_f(l,j) + wim1 + bonus + ps.total() <= mfe_ + delta_ ) {
-                        if (DEBUG) printf("traceW: (%i, %i, %i)\n", i, l, j);
+                        if (DEBUG) printf("subopt_traceW: (%i, %i, %i)\n", i, l, j);
                         ps_t ps1(ps);
                         ps1.push(segment(l, j, lV, V_f(l,j)));
                         if (l > i) ps1.push(segment(i, l-1, lW, wim1));
@@ -423,7 +423,7 @@ namespace pmfe {
                     mpq_class d53 = Ed5_pair(l+1, j-1) + Ed3_pair(l+1, j-1);
 
                     if (V_f(l,j) + auPenalty(l, j) + wim1 + ps.total() <= mfe_ + delta_) {
-                        if (DEBUG) printf("traceW no dangle: (%i, %i, %i)\n", i, l, j);
+                        if (DEBUG) printf("subopt_traceW no dangle: (%i, %i, %i)\n", i, l, j);
                         ps_t ps1(ps);
                         ps1.push(segment(l, j, lV, V_f(l,j)));
                         if (l > i) ps1.push(segment(i, l-1, lW, wim1));
@@ -431,7 +431,7 @@ namespace pmfe {
                         push_to_gstack(gstack, ps1);
                     }
                     if (V_f(l+1,j) + auPenalty(l+1,j) + multConst[1] + d5 + wim1 + ps.total() <= mfe_ + delta_) {
-                        if (DEBUG) printf("traceW d5: (%i, %i, %i)\n", i, l, j);
+                        if (DEBUG) printf("subopt_traceW d5: (%i, %i, %i)\n", i, l, j);
                         ps_t ps1(ps);
                         ps1.push(segment(l+1, j, lV, V_f(l+1,j)));
                         ps1.update(l, d5symb);
@@ -440,7 +440,7 @@ namespace pmfe {
                         push_to_gstack(gstack, ps1);
                     }
                     if (V_f(l,j-1) + auPenalty(l,j-1) + multConst[1] + d3 + wim1 + ps.total() <= mfe_ + delta_) {
-                        if (DEBUG) printf("traceW d3: (%i, %i, %i)\n", i, l, j);
+                        if (DEBUG) printf("subopt_traceW d3: (%i, %i, %i)\n", i, l, j);
                         ps_t ps1(ps);
                         ps1.push(segment(l, j-1, lV, V_f(l,j-1)));
                         ps1.update(j, d3symb);
@@ -449,7 +449,7 @@ namespace pmfe {
                         push_to_gstack(gstack, ps1);
                     }
                     if (V_f(l+1,j-1) + auPenalty(l+1, j-1) + 2*multConst[1] + d53 + wim1 + ps.total() <= mfe_ + delta_) {
-                        if (DEBUG) printf("traceW d53: (%i, %i, %i)\n", i, l, j);
+                        if (DEBUG) printf("subopt_traceW d53: (%i, %i, %i)\n", i, l, j);
                         ps_t ps1(ps);
                         ps1.push(segment(l+1, j-1, lV, V_f(l+1,j-1)));
                         ps1.update(l, j, d5symb, d3symb);
@@ -482,17 +482,17 @@ namespace pmfe {
         };
 
         if (W[j-1] + ps.total() <= mfe_ + delta_) {
-            if (DEBUG) printf("traceW final branch: (%i, %i)\n", i, j);
+            if (DEBUG) printf("subopt_traceW final branch: (%i, %i)\n", i, j);
             ps_t ps1(ps);
             ps1.push(segment(i, j-1, lW, W[j-1]));
             push_to_gstack(gstack, ps1);
         }
     }
 
-    void traceM1(int i, int j, ps_t& ps, ps_stack_t& gstack) {
-        if (DEBUG) printf("traceM1(%i, %i):\n\tpartial structure %s\n", i, j, ps.str.c_str());
+    void subopt_traceM1(int i, int j, ps_t& ps, ps_stack_t& gstack) {
+        if (DEBUG) printf("subopt_traceM1(%i, %i):\n\tpartial structure %s\n", i, j, ps.str.c_str());
         if (FM1[i][j-1] + multConst[1] + ps.total() <= mfe_ + delta_) {
-            if (DEBUG) printf("traceM1 nibble: (%i, %i)\n", i, j);
+            if (DEBUG) printf("subopt_traceM1 nibble: (%i, %i)\n", i, j);
             ps_t ps1(ps);
             ps1.push(segment(i, j-1, lM1, FM1[i][j-1]));
             ps1.accumulate(multConst[1]);
@@ -522,7 +522,7 @@ namespace pmfe {
                 mpq_class d3 = Ed3_pair(i, j-1);
                 mpq_class d53 = Ed5_pair(i+1, j-1) + Ed3_pair(i+1, j-1);
                 if (V_f(i,j) + auPenalty(i,j) + multConst[2] + ps.total() <= mfe_ + delta_) {
-                    if (DEBUG) printf("traceM1 no dangle: (%i, %i)\n", i, j);
+                    if (DEBUG) printf("subopt_traceM1 no dangle: (%i, %i)\n", i, j);
                     ps_t ps1(ps);
                     ps1.push(segment(i, j, lV, V_f(i,j)));
                     ps1.accumulate(auPenalty(i,j) + multConst[2]);
@@ -530,7 +530,7 @@ namespace pmfe {
                     push_to_gstack(gstack, ps1);
                 }
                 if (V_f(i+1,j) + auPenalty(i+1,j) + multConst[2] + multConst[1] + d5 + ps.total() <= mfe_ + delta_) {
-                    if (DEBUG) printf("traceM1 d5: (%i, %i)\n", i, j);
+                    if (DEBUG) printf("subopt_traceM1 d5: (%i, %i)\n", i, j);
                     ps_t ps1(ps);
                     ps1.push(segment(i+1, j, lV, V_f(i+1,j)));
                     ps1.accumulate(auPenalty(i+1,j) + multConst[2] + multConst[1] + d5);
@@ -539,7 +539,7 @@ namespace pmfe {
                     push_to_gstack(gstack, ps1);
                 }
                 if (V_f(i,j-1) + auPenalty(i,j-1) + multConst[2] + multConst[1] + d3 + ps.total() <= mfe_ + delta_) {
-                    if (DEBUG) printf("traceM1 d3: (%i, %i)\n", i, j);
+                    if (DEBUG) printf("subopt_traceM1 d3: (%i, %i)\n", i, j);
                     ps_t ps1(ps);
                     ps1.push(segment(i, j-1, lV, V_f(i,j-1)));
                     ps1.accumulate(auPenalty(i,j-1) + multConst[2] + multConst[1] + d3);
@@ -548,7 +548,7 @@ namespace pmfe {
                     push_to_gstack(gstack, ps1);
                 }
                 if (V_f(i+1,j-1) + auPenalty(i+1,j-1) + multConst[2] + 2*multConst[1] + d53 + ps.total() <= mfe_ + delta_) {
-                    if (DEBUG) printf("traceM1 d53: (%i, %i)\n", i, j);
+                    if (DEBUG) printf("subopt_traceM1 d53: (%i, %i)\n", i, j);
                     ps_t ps1(ps);
                     ps1.push(segment(i+1, j-1, lV, V_f(i+1,j-1)));
                     ps1.accumulate(auPenalty(i+1,j-1) + multConst[2] + 2*multConst[1] + d53);
@@ -585,8 +585,8 @@ namespace pmfe {
 
     }
 
-    void traceM(int i, int j, ps_t& ps, ps_stack_t& gstack) {
-        if (DEBUG) printf("traceM(%i, %i):\n\tpartial structure %s\n", i, j, ps.str.c_str());
+    void subopt_traceM(int i, int j, ps_t& ps, ps_stack_t& gstack) {
+        if (DEBUG) printf("subopt_traceM(%i, %i):\n\tpartial structure %s\n", i, j, ps.str.c_str());
 
         if (FM[i][j-1] + multConst[1] + ps.total() <= mfe_ + delta_) {
             if (DEBUG) printf("Multiloop (%i, %i)\n", i, j);
@@ -854,7 +854,7 @@ namespace pmfe {
                 }
                 else {
                     segment smt = v.top();
-                    printf("Pushing partial structure %s with top segment (%i, %i) to stack for trace %s\n", v.str.c_str(), smt.i_, smt.j_, lstr[smt.label_]);
+                    printf("Pushing partial structure %s with top segment (%i, %i) to stack for subopt_trace %s\n", v.str.c_str(), smt.i_, smt.j_, lstr[smt.label_]);
                 }
             }
         gflag = 1;

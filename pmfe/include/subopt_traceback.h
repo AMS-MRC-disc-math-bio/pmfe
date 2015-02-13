@@ -230,16 +230,13 @@ namespace pmfe{
 
     ss_map_t subopt_traceback(int len, mpq_class delta, std::string suboptFile, int max_structure_count);
 
-    void VMhelper(int i, int k, int j, mpq_class dangle_bonus, ps_t& ps, ps_stack_t& gstack);
+    void subopt_VMhelper(int i, int k, int j, mpq_class dangle_bonus, ps_t& ps, ps_stack_t& gstack);
 
-    void traceV(int i, int j, ps_t & ps, ps_stack_t & gs);
-    void traceVBI(int i, int j, ps_t & ps, ps_stack_t & gs);
-    void traceW(int i, int j, ps_t & ps, ps_stack_t & gs);
-    //void traceVM(int i, int j, ps_t & ps, ps_stack_t & gs);
-    //void traceWM(int i, int j, ps_t &  ps, ps_stack_t & gs);
-    //void traceWMPrime(int i, int j, ps_t &  ps, ps_stack_t & gs);
+    void subopt_traceV(int i, int j, ps_t & ps, ps_stack_t & gs);
+    void subopt_traceVBI(int i, int j, ps_t & ps, ps_stack_t & gs);
+    void subopt_traceW(int i, int j, ps_t & ps, ps_stack_t & gs);
 
-    void traceM(int i, int j, ps_t & ps, ps_stack_t & gs);
-    void traceM1(int i, int j, ps_t & ps, ps_stack_t & gs);
+    void subopt_traceM(int i, int j, ps_t & ps, ps_stack_t & gs);
+    void subopt_traceM1(int i, int j, ps_t & ps, ps_stack_t & gs);
 }
 #endif
