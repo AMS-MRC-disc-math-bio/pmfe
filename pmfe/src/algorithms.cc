@@ -255,7 +255,8 @@ namespace pmfe {
                         energy += Ed3(j,i,i-1);
                     }
 
-                    /*if (j<len)*/ energy += Ed5(j,i,j+1);
+                    if (j<len)
+                        energy += Ed5(j,i,j+1);
 
                     if (canSS(i)&&canSS(j)){
                         std::vector<mpq_class> vals;
