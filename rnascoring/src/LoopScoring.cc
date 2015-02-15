@@ -29,12 +29,10 @@ namespace rnascoring
 	*/
 
         std::vector<int> vals;
-        vals.push_back(0);
+        if (DEFAULTMODE)
+            vals.push_back(0); // In default (d1) mode, not dangling is an option
 
-	if(NODANGLEMODE==1){
-            energy = 0;
-	}
-
+	if(NODANGLEMODE) {} // Do nothing in this mode
 	else if (j1+1 < i2-1 || D2MODE==1) {
             // if there are at least two nucleotides in the unpaired region,
             // then add the energy for both a 3' and 5' dangling end
@@ -410,7 +408,9 @@ namespace rnascoring
             else {
                 //if(i==1){ if(D2MODE==1) energy+=0; else energy += param->dangle[RNA[j]][RNA[i]][RNA[length]][1];}//TODO Manoj Changed it for D2
                 if(i==1){
-                    if (MAXDANGLE) {
+                    if (D2MODE) {
+                        energy += param->dangle[RNA[j]][RNA[i]][RNA[length]][1];
+                    } else if (MAXDANGLE) {
                         energy += MAX(0, param->dangle[RNA[j]][RNA[i]][RNA[length]][1]);
                     } else {
                         energy += MIN(0, param->dangle[RNA[j]][RNA[i]][RNA[length]][1]);
@@ -419,7 +419,9 @@ namespace rnascoring
                     if(printOn1)printf("i=%d,j=%d,param->dangle[RNA[j]][RNA[i]][RNA[length]][1]/100=%f\n",i,j,param->dangle[RNA[j]][RNA[i]][RNA[length]][1]/100.0);
                 }
                 else{
-                    if (MAXDANGLE) {
+                    if (D2MODE) {
+                        energy += param->dangle[RNA[j]][RNA[i]][RNA[i-1]][1];
+                    } else if (MAXDANGLE) {
                         energy += MAX(0, param->dangle[RNA[j]][RNA[i]][RNA[i-1]][1]);
                     } else {
                         energy += MIN(0, param->dangle[RNA[j]][RNA[i]][RNA[i-1]][1]);
