@@ -402,7 +402,7 @@ namespace rnascoring
             }
 	}
         //Here the dangling bases are also taken into account
-	if ((node->children[0])->isPair == 0 || D2MODE==1) {//If there is a initial dangling end
+	if ((node->children[0])->isPair == 0) {//If there is a initial dangling end
             int j;
             i = (node->children[pairedChildren[0]])->lowBase.index;
             j = (node->children[pairedChildren[0]])->highBase.index;
@@ -439,7 +439,7 @@ namespace rnascoring
                 //printf("Energy so far: %i \n", energy);
             }
 	}
-	if(pairedChildren[numPairedChildren-1] < node->numChildren - 1 || D2MODE==1){ //If there is a trailing dangling end
+	if(pairedChildren[numPairedChildren-1] < node->numChildren - 1){ //If there is a trailing dangling end
             int j;
             i = (node->children[pairedChildren[numPairedChildren-1]])->lowBase.index;
             j = (node->children[pairedChildren[numPairedChildren-1]])->highBase.index;
