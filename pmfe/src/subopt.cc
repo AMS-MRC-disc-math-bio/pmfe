@@ -13,6 +13,8 @@
 #include "utils.h"
 #include "pmfe_types.h"
 
+#include <boost/filesystem.hpp>
+
 namespace pmfe {
     using namespace std;
 
@@ -45,6 +47,7 @@ namespace pmfe {
 
         // If output dir specified
         if (!output_dir.empty()) {
+            boost::filesystem::create_directories(output_dir);
             subopt_file += output_dir;
             subopt_file += "/";
         }
