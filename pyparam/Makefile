@@ -40,4 +40,7 @@ $(LIBRARY): $(OBJ)
 clean:
 	-rm -vf pyparam_base.so
 
+install:
+
+
 .PHONY: clean
