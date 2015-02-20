@@ -29,16 +29,15 @@ endif
 #LIBS += -shared
 
 LIBRARY = pyparam_base.so
-OBJ = pyparam_base.o
 
-$(LIBRARY): $(OBJ)
-	$(CXX) $(INCLUDES) $(LDFLAGS) $(CXXFLAGS) $^ -shared -Wl,-soname,$@ -o $@ $(LIBS)
+all: $(LIBRARY)
 
-%.o: %.cc
-	$(CXX) $(INCLUDES) $(LDFLAGS) $(CXXFLAGS) -c $^ -o $@ $(LIBS)
+%.so: %.cc
+	$(CXX) $(INCLUDES) $(LDFLAGS) $(CXXFLAGS) $^ -shared -o $@ $(LIBS)
+
 
 clean:
-	-rm -vf pyparam_base.so
+	-rm -vf $(LIBRARY)
 
 install:
 
