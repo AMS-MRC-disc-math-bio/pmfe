@@ -1,5 +1,5 @@
 # Subdirectories to recurse in build order
-SUBDIR = bin pmfe rnascoring
+SUBDIR = bin pmfe rnascoring pyparam
 
 # Install prefix
 export PREFIX = /usr/local
