@@ -15,7 +15,7 @@ int main(int argc, char * argv[]) {
     po::options_description desc("Options");
     desc.add_options()
         ("sequence", po::value<std::string>()->required(), "Sequence file")
-        ("outdir,o", po::value<std::string>(), "Output structure directory")
+        ("outfile,o", po::value<std::string>(), "Output file")
         ("delta", po::value<std::string>()->default_value("0"), "Energy delta value")
         ("paramdir,p", po::value<std::string>()->default_value("/usr/local/share/pmfe/Turner99/pmfe"), "Turner99 parameter directory")
         ("multiloop-penalty,a", po::value<std::string>(), "Multiloop penalty parameter")
@@ -40,18 +40,10 @@ int main(int argc, char * argv[]) {
     po::notify(vm);
 
     // Process file-related options
-    fs::path seq_file, output_dir, param_dir;
+    fs::path seq_file, output_file, param_dir;
 
     seq_file = fs::path(vm["sequence"].as<std::string>());
     param_dir = fs::path(vm["paramdir"].as<std::string>());
-
-
-    if (vm.count("outdir")) {
-        output_dir = fs::path(vm["outfile"].as<std::string>());
-    } else {
-        output_dir = seq_file;
-        output_dir.replace_extension("");
-    }
 
     mpq_class delta = mpq_class(vm["delta"].as<std::string>());
 
@@ -82,6 +74,11 @@ int main(int argc, char * argv[]) {
     // Set up max count
     int max_count = vm["max-count"].as<int>();
 
-    pmfe::generate_subopt(seq_file.native(), output_dir.native(), delta, params, param_dir.native(), max_count, dangle_model);
+    if (vm.count("outfile")) {
+        output_file = fs::path(vm["outfile"].as<std::string>());
+        pmfe::generate_subopt(seq_file.native(), output_file.native(), delta, params, param_dir.native(), max_count, dangle_model);
+    } else {
+        pmfe::generate_subopt(seq_file.native(), delta, params, param_dir.native(), max_count, dangle_model);
+    }
     return(0);
 }

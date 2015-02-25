@@ -227,7 +227,8 @@ namespace pmfe {
             }
         }
         outfile.close();
-        printf("Counts of structure generated=%d\n", count);
+        printf("Wrote %d structures to %s\n", count, suboptFile.c_str());
+
 
 #ifdef DEBUG
         if (DEBUG) printf("# SS = %d\n", count);
