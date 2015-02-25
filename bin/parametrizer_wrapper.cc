@@ -154,6 +154,8 @@ void create_poly_file(RNAPolytope* poly, fs::path template_file, fs::path poly_f
     outfile << result.buf.str();
     outfile.close();
 
+    std::cout << "Wrote polytope to " << poly_file.native() << "." << std::endl;
+
     // Delete the sobj file if it exists (so we don't accidentally use an outdated one)
     fs::path poly_sobj = poly_base;
     poly_sobj += ".sobj";
@@ -166,6 +168,7 @@ int main(int argc, char * argv[]) {
     po::options_description desc("Options");
     desc.add_options()
         ("sequence", po::value<std::string>()->required(), "Sequence file")
+        ("outfile,o", po::value<std::string>(), "Output file")
         ("paramdir,p", po::value<std::string>()->default_value("/usr/local/share/pmfe/Turner99/pmfe"), "Turner99 parameter directory")
         ("dangle-model,m", po::value<int>()->default_value(1), "Dangle model")
         ("help,h", "Display this help message")
@@ -202,7 +205,14 @@ int main(int argc, char * argv[]) {
 
     poly->print_statistics();
 
-    fs::path poly_file = seq_file.replace_extension(".sage");
+    fs::path poly_file;
+    if (vm.count("outfile")) {
+        poly_file = fs::path(vm["outfile"].as<std::string>());
+    } else {
+        poly_file = seq_file;
+        poly_file.replace_extension(".sage");
+    }
+
     create_poly_file(poly, template_file, poly_file);
 
     return 0;
