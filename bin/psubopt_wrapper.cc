@@ -45,7 +45,7 @@ int main(int argc, char * argv[]) {
     seq_file = fs::path(vm["sequence"].as<std::string>());
     param_dir = fs::path(vm["paramdir"].as<std::string>());
 
-    mpq_class delta = mpq_class(vm["delta"].as<std::string>());
+    mpq_class delta = pmfe::get_mpq_from_word(vm["delta"].as<std::string>());
 
     // Set up the parameter vector
     pmfe::ParameterVector params = pmfe::ParameterVector();
