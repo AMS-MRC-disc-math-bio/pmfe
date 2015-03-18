@@ -28,6 +28,8 @@
 #include "global.h"
 #include "subopt_traceback.h"
 
+#include "boost/multi_array.hpp"
+
 #include <iostream>
 #include <iterator>
 #include <cstdlib>
@@ -51,9 +53,8 @@ namespace pmfe {
 
     bool DEBUG = false;
 
-    //TODO: Make these dynamic to eliminate hard ceiling at len=1500
-    static mpq_class FM1[1500][1500] = {{mpq_class(0)}};
-    static mpq_class FM[1500][1500] = {{mpq_class(0)}};
+    typedef boost::multi_array<mpq_class, 2> FM_array;
+    FM_array FM1(boost::extents[1][1]), FM(boost::extents[1][1]); // Initialize arrays as 1x1 to start
 
     // k dangles on 5' end of (i, j)
     static inline mpq_class Ed5_new(int i, int j, int k) {
@@ -104,6 +105,8 @@ namespace pmfe {
     // Per Wuchty et al., compute MFE for a final branch in a multiloop which
     // begins at i and ends at j, possibly including free bases at the 3' end
     void calculate_fm1() {
+        FM1.resize(boost::extents[length][length]); // Initialize to length x length
+        FM1.reindex(1); // Set array to be 1-indexed
 
         for (int i = 1; i <= length; ++i) {
             for (int j = i+1; j <= length; ++j) {
@@ -163,6 +166,9 @@ namespace pmfe {
     }
 
     void calculate_fm() {
+        FM.resize(boost::extents[length][length]); // Initialize to length x length
+        FM.reindex(1); // Set array to be 1-indexed
+
         for (int i = 1; i <= length; ++i) {
             for (int j = i+1; j <= length;++j) {
                 mpq_class min1 = INFINITY_;
@@ -183,7 +189,7 @@ namespace pmfe {
     void process(ss_map_t& subopt_data, int len, string suboptFile, int max_structure_count) {
         ofstream outfile;
         outfile.open(suboptFile.c_str(), ios::out | ios::app);
-        char buff[4096]; // TODO: make dynamic to avoid hard ceiling
+        char buff[len+64]; // 64 extra characters for metadata in file
 
         int count = 0;
         length = len;
@@ -235,7 +241,6 @@ namespace pmfe {
         }
         outfile.close();
         printf("Wrote %d structures to %s\n", count, suboptFile.c_str());
-
 
 #ifdef DEBUG
         if (DEBUG) printf("# SS = %d\n", count);
