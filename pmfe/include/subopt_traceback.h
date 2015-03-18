@@ -35,11 +35,18 @@
 #include <cstdlib>
 #include <fstream>
 #include <gmpxx.h>
+#include <assert.h>
 
 namespace pmfe{
 
     enum label {lW=0, lV, lVBI, lM, lM1};
     extern const char* lstr[];
+
+    const char d3symb = '>';
+    const char d5symb = '<';
+    const char p3symb = ')';
+    const char p5symb = '(';
+    const char blanksymb = '.';
 
     struct segment
     {
@@ -122,20 +129,41 @@ namespace pmfe{
         }
 
 
-            void update(int i, int j, char c1, char c2)
-        {
-            str[i-1] = c1; str[j-1] = c2;
-        }
+        void update(int i, int j, char c1, char c2)
+            {
+                str[i-1] = c1; str[j-1] = c2;
+            }
 
         void update(int i, char c)
-        {
-            str[i-1] = c;
-        }
+            {
+                str[i-1] = c;
+            }
+
+        void mark_pair(int i, int j)
+            {
+                assert (str[i-1] == blanksymb);
+                str[i-1] = p5symb;
+
+                assert (str[j-1] == blanksymb);
+                str[j-1] = p3symb;
+            }
+
+        void mark_d5(int i)
+            {
+                assert (str[i-1] == blanksymb);
+                str[i-1] = d5symb;
+            }
+
+        void mark_d3(int i)
+            {
+                assert (str[i-1] == blanksymb);
+                str[i-1] = d3symb;
+            }
 
     pstruct(mpq_class ae, int len) : ae_(ae)
         {
             le_ = 0;
-            str = std::string(len, '.');
+            str = std::string(len, blanksymb);
         }
 
         void accumulate(mpq_class en)

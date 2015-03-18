@@ -34,6 +34,7 @@
 #include <algorithm>
 #include <vector>
 #include <gmpxx.h>
+#include <assert.h>
 
 namespace pmfe {
     using std::pair;
@@ -41,8 +42,6 @@ namespace pmfe {
     using std::endl;
 
     const char* lstr[] = {"W", "V", "VBI", "M", "M1"};
-    const char d3symb = '>';
-    const char d5symb = '<';
 
     void (*trace_func[8]) (int i, int j, ps_t& ps, ps_stack_t& gs);
     static mpq_class mfe_ = INFINITY_;
@@ -71,7 +70,7 @@ namespace pmfe {
     static inline mpq_class Ed5_pair(int i, int j, bool inside = false) {
         if (i >= 2) {
             if (inside)
-                return Ed5(i, j, i+1);
+               return Ed5(i, j, i+1);
             else
                 return Ed3(j, i, i-1);
         } else if (i == 1) {
@@ -109,7 +108,8 @@ namespace pmfe {
         for (int i = 1; i <= length; ++i) {
             for (int j = i+1; j <= length; ++j) {
                 mpq_class min = INFINITY_;
-                for (int l = i+TURN+1; l <= j; ++l) {
+                int minl = i+TURN+1;
+                for (int l = minl; l <= j; ++l) {
 
                     mpq_class fm1 = 0;
                     switch (g_dangles) {
@@ -126,9 +126,16 @@ namespace pmfe {
                             mpq_class d53 = Ed5_pair(i+1, l-1) + Ed3_pair(i+1, l-1);
                             std::vector<mpq_class> vals;
                             vals.push_back(V_f(i,l) + auPenalty(i,l) + multConst[1]*(j - l) + multConst[2]);
-                            vals.push_back(V_f(i+1,l) + auPenalty(i+1,l) + d5 + multConst[1]*(j - l + 1) + multConst[2]);
-                            vals.push_back(V_f(i,l-1) + auPenalty(i,l-1) + d3 + multConst[1]*(j - (l-1)) + multConst[2]);
-                            vals.push_back(V_f(i+1,l-1) + auPenalty(i+1,l-1) + d53 + multConst[1]*(j - (l-1) + 1) + multConst[2]);
+
+                            if (l >= minl + 1)
+                                vals.push_back(V_f(i+1,l) + auPenalty(i+1,l) + d5 + multConst[1]*(j - l + 1) + multConst[2]);
+
+                            if (l >= minl + 1)
+                                vals.push_back(V_f(i,l-1) + auPenalty(i,l-1) + d3 + multConst[1]*(j - (l-1)) + multConst[2]);
+
+                            if (l >= minl + 2)
+                                vals.push_back(V_f(i+1,l-1) + auPenalty(i+1,l-1) + d53 + multConst[1]*(j - (l-1) + 1) + multConst[2]);
+
                             fm1 = *std::min_element(vals.begin(), vals.end());
                             break;
                         }
@@ -253,12 +260,13 @@ namespace pmfe {
 
     void subopt_traceV(int i, int j, ps_t& ps, ps_stack_t& gstack) {
         if (DEBUG) printf("subopt_traceV(%i, %i):\n\tpartial structure %s\n", i, j, ps.str.c_str());
+
         // Hairpin Loop
         if (eH(i,j) + ps.total()  <= mfe_ + delta_) {
             if (DEBUG) printf("Hairpin (%i, %i)\n", i, j);
             ps_t ps1(ps);
             ps1.accumulate(eH(i,j));
-            ps1.update(i, j, '(', ')');
+            ps1.mark_pair(i, j);
             push_to_gstack(gstack, ps1);
         }
 
@@ -268,7 +276,7 @@ namespace pmfe {
             ps_t ps1(ps);
             ps1.push(segment(i+1, j-1, lV, V_f(i+1, j-1)));
             ps1.accumulate(eS(i,j));
-            ps1.update(i, j , '(', ')');
+            ps1.mark_pair(i, j);
             push_to_gstack(gstack, ps1);
         }
 
@@ -279,7 +287,6 @@ namespace pmfe {
         }
 
         // Multiloop
-
         int k;
 
         for (k = i+2; k <= j-TURN-1; ++k) {
@@ -296,13 +303,14 @@ namespace pmfe {
                         ps1.push(segment(i+1,k, lM, FM[i+1][k]));
                         ps1.push(segment(k+1,j-1, lM1, FM1[k+1][j-1]));
                         ps1.accumulate(kenergy2);
-                        ps1.update(i,j,'(',')');
+                        ps1.mark_pair(i, j);
                         push_to_gstack(gstack, ps1);
                     }
                     break;
                 }
 
             case CHOOSE_DANGLE:
+                // In CHOOSE_DANGLE mode, we need to consider dangles on the initiating pair of a multiloop
                 {
                     mpq_class d5 = Ed5_pair(i, j, true);
                     mpq_class d3 = Ed3_pair(i, j, true);
@@ -313,37 +321,38 @@ namespace pmfe {
                         ps1.push(segment(i+1, k, lM, FM[i+1][k]));
                         ps1.push(segment(k+1, j-1, lM1, FM1[k+1][j-1]));
                         ps1.accumulate(auPenalty(i,j) + multConst[0] + multConst[2]);
-                        ps1.update(i,j,'(',')');
+                        ps1.mark_pair(i, j);
                         push_to_gstack(gstack, ps1);
                     }
-                    if (FM[i+2][k] + FM1[k+1][j-1] + auPenalty(i,j) + d5 + multConst[0] + multConst[1] + multConst[2] + ps.total() <= mfe_ + delta_) {
+                    if (k > i+2 && FM[i+2][k] + FM1[k+1][j-1] + auPenalty(i,j) + d5 + multConst[0] + multConst[1] + multConst[2] + ps.total() <= mfe_ + delta_) {
                         if (DEBUG) printf("subopt_traceV multiloop d5 (%i, %i, %i)\n", i, k, j);
                         ps_t ps1(ps);
                         ps1.push(segment(i+2,k, lM, FM[i+2][k]));
                         ps1.push(segment(k+1,j-1, lM1, FM1[k+1][j-1]));
                         ps1.accumulate(auPenalty(i,j) + d5 + multConst[0] + multConst[1] + multConst[2]);
-                        ps1.update(i,j,'(',')');
-                        ps1.update(i+1,d3symb);
+                        ps1.mark_pair(i, j);
+                        ps1.mark_d3(i+1);
                         push_to_gstack(gstack, ps1);
                     }
-                    if (FM[i+1][k] + FM1[k+1][j-2] + auPenalty(i,j) + d3 + multConst[0] + multConst[1] + multConst[2] + ps.total() <= mfe_ + delta_) {
+                    if (k <= j-TURN-2 && FM[i+1][k] + FM1[k+1][j-2] + auPenalty(i,j) + d3 + multConst[0] + multConst[1] + multConst[2] + ps.total() <= mfe_ + delta_) {
                         if (DEBUG) printf("subopt_traceV multiloop d3 (%i, %i, %i)\n", i, k, j);
                         ps_t ps1(ps);
                         ps1.push(segment(i+1,k, lM, FM[i+1][k]));
                         ps1.push(segment(k+1,j-2, lM1, FM1[k+1][j-2]));
                         ps1.accumulate(auPenalty(i,j) + d3 + multConst[0] + multConst[1] + multConst[2]);
-                        ps1.update(i,j,'(',')');
-                        ps1.update(j,d5symb);
+                        ps1.mark_pair(i, j);
+                        ps1.mark_d5(j-1);
                         push_to_gstack(gstack, ps1);
                     }
-                    if (FM[i+2][k] + FM1[k+1][j-2] + auPenalty(i,j) + d53 + multConst[0] + 2*multConst[1] + multConst[2] + ps.total() <= mfe_ + delta_) {
+                    if (k > i+2 && k <= j-TURN-2 && FM[i+2][k] + FM1[k+1][j-2] + auPenalty(i,j) + d53 + multConst[0] + 2*multConst[1] + multConst[2] + ps.total() <= mfe_ + delta_) {
                         if (DEBUG) printf("subopt_traceV multiloop d53 (%i, %i, %i)\n", i, k, j);
                         ps_t ps1(ps);
                         ps1.push(segment(i+2,k, lM, FM[i+2][k]));
                         ps1.push(segment(k+1,j-2, lM1, FM1[k+1][j-2]));
                         ps1.accumulate(auPenalty(i,j) + d53 + multConst[0] + 2*multConst[1] + multConst[2]);
-                        ps1.update(i,j,'(',')');
-                        ps1.update(i,j,d3symb,d5symb);
+                        ps1.mark_pair(i, j);
+                        ps1.mark_d3(i+1);
+                        ps1.mark_d5(j-1);
                         push_to_gstack(gstack, ps1);
                     }
                     break;
@@ -362,7 +371,7 @@ namespace pmfe {
                         ps1.push(segment(i+1,k, lM, FM[i+1][k]));
                         ps1.push(segment(k+1,j-1, lM1, FM1[k+1][j-1]));
                         ps1.accumulate(kenergy2);
-                        ps1.update(i,j,'(',')');
+                        ps1.mark_pair(i, j);
                         push_to_gstack(gstack, ps1);
                     }
                     break;
@@ -389,7 +398,7 @@ namespace pmfe {
                 if (V_f(p, q) + eL(i, j, p, q) + ps.total() <= mfe_ + delta_) {
                     ps_t ps1(ps);
                     ps1.push(segment(p, q, lV, V_f(p, q)));
-                    ps1.update(i, j , '(', ')');
+                    ps1.mark_pair(i, j);
                     ps1.accumulate(eL(i, j, p, q));
                     push_to_gstack(gstack, ps1);
                 }
@@ -397,7 +406,9 @@ namespace pmfe {
         }
     }
 
+    // Wuchty case E = F
     void subopt_traceW(int i, int j, ps_t& ps, ps_stack_t& gstack) {
+        assert (i == 1);
         if (DEBUG) printf("subopt_traceW(%i, %i):\n\tpartial structure %s\n", i, j, ps.str.c_str());
         for (int l = i; l < j-TURN; ++l) {
             mpq_class wim1 = W[l-1];
@@ -431,29 +442,30 @@ namespace pmfe {
                         ps1.accumulate(auPenalty(l, j));
                         push_to_gstack(gstack, ps1);
                     }
-                    if (V_f(l+1,j) + auPenalty(l+1,j) + d5 + wim1 + ps.total() <= mfe_ + delta_) {
+                    if (l+1 < j-TURN && V_f(l+1,j) + auPenalty(l+1,j) + d5 + wim1 + ps.total() <= mfe_ + delta_) {
                         if (DEBUG) printf("subopt_traceW d5: (%i, %i, %i)\n", i, l, j);
                         ps_t ps1(ps);
                         ps1.push(segment(l+1, j, lV, V_f(l+1,j)));
-                        ps1.update(l, d5symb);
+                        ps1.mark_d5(l);
                         if (l > i) ps1.push(segment(i, l-1, lW, wim1));
                         ps1.accumulate(auPenalty(l+1, j) + d5);
                         push_to_gstack(gstack, ps1);
                     }
-                    if (V_f(l,j-1) + auPenalty(l,j-1) +  d3 + wim1 + ps.total() <= mfe_ + delta_) {
+                    if (l < j-TURN-1 && V_f(l,j-1) + auPenalty(l,j-1) +  d3 + wim1 + ps.total() <= mfe_ + delta_) {
                         if (DEBUG) printf("subopt_traceW d3: (%i, %i, %i)\n", i, l, j);
                         ps_t ps1(ps);
                         ps1.push(segment(l, j-1, lV, V_f(l,j-1)));
-                        ps1.update(j, d3symb);
+                        ps1.mark_d3(j);
                         if (l > i) ps1.push(segment(i, l-1, lW, wim1));
                         ps1.accumulate(auPenalty(l, j-1) + d3);
                         push_to_gstack(gstack, ps1);
                     }
-                    if (V_f(l+1,j-1) + auPenalty(l+1, j-1) + d53 + wim1 + ps.total() <= mfe_ + delta_) {
+                    if (l+1 < j-TURN-1 && V_f(l+1,j-1) + auPenalty(l+1, j-1) + d53 + wim1 + ps.total() <= mfe_ + delta_) {
                         if (DEBUG) printf("subopt_traceW d53: (%i, %i, %i)\n", i, l, j);
                         ps_t ps1(ps);
                         ps1.push(segment(l+1, j-1, lV, V_f(l+1,j-1)));
-                        ps1.update(l, j, d5symb, d3symb);
+                        ps1.mark_d5(l);
+                        ps1.mark_d3(j);
                         if (l > i) ps1.push(segment(i, l-1, lW, wim1));
                         ps1.accumulate(auPenalty(l+1, j-1) + d53);
                         push_to_gstack(gstack, ps1);
@@ -511,7 +523,6 @@ namespace pmfe {
                     ps_t ps1(ps);
                     ps1.push(segment(i, j, lV, V_f(i,j)));
                     ps1.accumulate(bonus);
-                    ps1.update(i,j,'(',')');
                     push_to_gstack(gstack, ps1);
                 }
                 break;
@@ -527,34 +538,31 @@ namespace pmfe {
                     ps_t ps1(ps);
                     ps1.push(segment(i, j, lV, V_f(i,j)));
                     ps1.accumulate(auPenalty(i,j) + multConst[2]);
-                    ps1.update(i,j,'(',')');
                     push_to_gstack(gstack, ps1);
                 }
-                if (V_f(i+1,j) + auPenalty(i+1,j) + multConst[2] + multConst[1] + d5 + ps.total() <= mfe_ + delta_) {
+                if (i+1 < j && V_f(i+1,j) + auPenalty(i+1,j) + multConst[2] + multConst[1] + d5 + ps.total() <= mfe_ + delta_) {
                     if (DEBUG) printf("subopt_traceM1 d5: (%i, %i)\n", i, j);
                     ps_t ps1(ps);
                     ps1.push(segment(i+1, j, lV, V_f(i+1,j)));
                     ps1.accumulate(auPenalty(i+1,j) + multConst[2] + multConst[1] + d5);
-                    ps1.update(i+1,j,'(',')');
-                    ps1.update(i, d5symb);
+                    ps1.mark_d5(i);
                     push_to_gstack(gstack, ps1);
                 }
-                if (V_f(i,j-1) + auPenalty(i,j-1) + multConst[2] + multConst[1] + d3 + ps.total() <= mfe_ + delta_) {
+                if (i < j-1 && V_f(i,j-1) + auPenalty(i,j-1) + multConst[2] + multConst[1] + d3 + ps.total() <= mfe_ + delta_) {
                     if (DEBUG) printf("subopt_traceM1 d3: (%i, %i)\n", i, j);
                     ps_t ps1(ps);
                     ps1.push(segment(i, j-1, lV, V_f(i,j-1)));
                     ps1.accumulate(auPenalty(i,j-1) + multConst[2] + multConst[1] + d3);
-                    ps1.update(i,j-1,'(',')');
-                    ps1.update(j, d3symb);
+                    ps1.mark_d3(j);
                     push_to_gstack(gstack, ps1);
                 }
-                if (V_f(i+1,j-1) + auPenalty(i+1,j-1) + multConst[2] + 2*multConst[1] + d53 + ps.total() <= mfe_ + delta_) {
+                if (i+1 < j-1 && V_f(i+1,j-1) + auPenalty(i+1,j-1) + multConst[2] + 2*multConst[1] + d53 + ps.total() <= mfe_ + delta_) {
                     if (DEBUG) printf("subopt_traceM1 d53: (%i, %i)\n", i, j);
                     ps_t ps1(ps);
                     ps1.push(segment(i+1, j-1, lV, V_f(i+1,j-1)));
                     ps1.accumulate(auPenalty(i+1,j-1) + multConst[2] + 2*multConst[1] + d53);
-                    ps1.update(i+1,j-1,'(',')');
-                    ps1.update(i, j, d5symb, d3symb);
+                    ps1.mark_d5(i);
+                    ps1.mark_d3(j);
                     push_to_gstack(gstack, ps1);
                 }
                 break;
@@ -570,7 +578,6 @@ namespace pmfe {
                     ps_t ps1(ps);
                     ps1.push(segment(i, j, lV, V_f(i,j)));
                     ps1.accumulate(bonus);
-                    ps1.update(i,j,'(',')');
                     push_to_gstack(gstack, ps1);
                 }
                 break;
@@ -609,7 +616,6 @@ namespace pmfe {
                     ps_t ps1(ps);
                     ps1.push(segment(i, j, lV, V_f(i,j)));
                     ps1.accumulate(bonus);
-                    ps1.update(i,j,'(',')');
                     push_to_gstack(gstack, ps1);
                 }
                 break;
@@ -624,31 +630,28 @@ namespace pmfe {
                     ps_t ps1(ps);
                     ps1.push(segment(i, j, lV, V_f(i,j)));
                     ps1.accumulate(multConst[2] + auPenalty(i,j));
-                    ps1.update(i,j,'(',')');
                     push_to_gstack(gstack, ps1);
                 }
-                if (V_f(i+1,j) + multConst[2] + multConst[1] + auPenalty(i+1,j) + d5 + ps.total() <= mfe_ + delta_) {
+                if (i+1 < j && V_f(i+1,j) + multConst[2] + multConst[1] + auPenalty(i+1,j) + d5 + ps.total() <= mfe_ + delta_) {
                     ps_t ps1(ps);
                     ps1.push(segment(i+1, j, lV, V_f(i+1,j)));
                     ps1.accumulate(multConst[2] + multConst[1] + auPenalty(i+1,j) + d5);
-                    ps1.update(i+1,j,'(',')');
-                    ps1.update(i, d5symb);
+                    ps1.mark_d5(i);
                     push_to_gstack(gstack, ps1);
                 }
-                if (V_f(i,j-1) + multConst[2] + multConst[1] + auPenalty(i,j-1) + d3 + ps.total() <= mfe_ + delta_) {
+                if (i < j-1 && V_f(i,j-1) + multConst[2] + multConst[1] + auPenalty(i,j-1) + d3 + ps.total() <= mfe_ + delta_) {
                     ps_t ps1(ps);
                     ps1.push(segment(i, j-1, lV, V_f(i,j-1)));
                     ps1.accumulate(multConst[2] + multConst[1] + auPenalty(i,j-1) + d3);
-                    ps1.update(i,j-1,'(',')');
-                    ps1.update(j, d3symb);
+                    ps1.mark_d3(j);
                     push_to_gstack(gstack, ps1);
                 }
-                if (V_f(i+1,j-1) + multConst[2] + 2*multConst[1] + auPenalty(i+1,j-1) + d53 + ps.total() <= mfe_ + delta_) {
+                if (i+1 < j-1 && V_f(i+1,j-1) + multConst[2] + 2*multConst[1] + auPenalty(i+1,j-1) + d53 + ps.total() <= mfe_ + delta_) {
                     ps_t ps1(ps);
                     ps1.push(segment(i+1, j-1, lV, V_f(i+1,j-1)));
                     ps1.accumulate(multConst[2] + 2*multConst[1] + auPenalty(i+1,j-1) + d53);
-                    ps1.update(i+1,j-1,'(',')');
-                    ps1.update(i, j, d5symb, d3symb);
+                    ps1.mark_d5(i);
+                    ps1.mark_d3(j);
                     push_to_gstack(gstack, ps1);
                 }
                 break;
@@ -659,12 +662,11 @@ namespace pmfe {
                 mpq_class d5 = Ed5_new (i, j, i-1);
                 mpq_class d3 = Ed3_new (i, j, j+1);
                 mpq_class aup = auPenalty (i,j);
-                bonus = d5 + d3 + multConst [2] + aup;
+                bonus = d5 + d3 + multConst[2] + aup;
                 if (V_f(i,j) + bonus + ps.total() <= mfe_ + delta_) {
                     ps_t ps1(ps);
                     ps1.push(segment(i, j, lV, V_f(i,j)));
                     ps1.accumulate(bonus);
-                    ps1.update(i,j,'(',')');
                     push_to_gstack(gstack, ps1);
                 }
                 break;
@@ -692,7 +694,6 @@ namespace pmfe {
                         ps1.push(segment(i, k, lM, FM[i][k]));
                         ps1.push(segment(k+1, j, lV, V_f(k+1,j)));
                         ps1.accumulate(bonus);
-                        ps1.update(k+1,j,'(',')');
                         push_to_gstack(gstack, ps1);
                     }
                     break;
@@ -708,34 +709,31 @@ namespace pmfe {
                         ps1.push(segment(i, k, lM, FM[i][k]));
                         ps1.push(segment(k+1, j, lV, V_f(k+1,j)));
                         ps1.accumulate(multConst[2] + auPenalty(k+1, j));
-                        ps1.update(k+1,j,'(',')');
                         push_to_gstack(gstack, ps1);
                     }
-                    if (FM[i][k] + V_f(k+2,j) + multConst[2] + multConst[1] + auPenalty(k+2, j) + d5 + ps.total() <= mfe_ + delta_) {
+                    if (k+2 <= j-TURN && FM[i][k] + V_f(k+2,j) + multConst[2] + multConst[1] + auPenalty(k+2, j) + d5 + ps.total() <= mfe_ + delta_) {
                         ps_t ps1(ps);
                         ps1.push(segment(i, k, lM, FM[i][k]));
                         ps1.push(segment(k+2, j, lV, V_f(k+2,j)));
                         ps1.accumulate(multConst[2] + multConst[1] + auPenalty(k+2, j) + d5);
-                        ps1.update(k+2,j,'(',')');
-                        ps1.update(k+1, d5symb);
+                        ps1.mark_d5(k+1);
                         push_to_gstack(gstack, ps1);
                     }
-                    if (FM[i][k] + V_f(k+1,j-1) + multConst[2] + multConst[1] + auPenalty(k+1, j-1) + d3 + ps.total() <= mfe_ + delta_) {
+                    if (k+1 <= j-1-TURN && FM[i][k] + V_f(k+1,j-1) + multConst[2] + multConst[1] + auPenalty(k+1, j-1) + d3 + ps.total() <= mfe_ + delta_) {
                         ps_t ps1(ps);
                         ps1.push(segment(i, k, lM, FM[i][k]));
                         ps1.push(segment(k+1, j-1, lV, V_f(k+1,j-1)));
                         ps1.accumulate(multConst[2] + multConst[1] + auPenalty(k+1, j-1) + d3);
-                        ps1.update(k+1,j-1,'(',')');
-                        ps1.update(j, d3symb);
+                        ps1.mark_d3(j);
                         push_to_gstack(gstack, ps1);
                     }
-                    if (FM[i][k] + V_f(k+2,j-1) + multConst[2] + 2*multConst[1] + auPenalty(k+2, j-1) + d53 + ps.total() <= mfe_ + delta_) {
+                    if (k+2 <= j-1-TURN && FM[i][k] + V_f(k+2,j-1) + multConst[2] + 2*multConst[1] + auPenalty(k+2, j-1) + d53 + ps.total() <= mfe_ + delta_) {
                         ps_t ps1(ps);
                         ps1.push(segment(i, k, lM, FM[i][k]));
                         ps1.push(segment(k+2, j-1, lV, V_f(k+2,j-1)));
                         ps1.accumulate(multConst[2] + 2*multConst[1] + auPenalty(k+2, j-1) + d53);
-                        ps1.update(k+2,j-1,'(',')');
-                        ps1.update(k+1, j, d5symb, d3symb);
+                        ps1.mark_d5(k+1);
+                        ps1.mark_d3(j);
                         push_to_gstack(gstack, ps1);
                     }
                     break;
@@ -752,7 +750,6 @@ namespace pmfe {
                         ps1.push(segment(i, k, lM, FM[i][k]));
                         ps1.push(segment(k+1, j, lV, V_f(k+1,j)));
                         ps1.accumulate(bonus);
-                        ps1.update(k+1,j,'(',')');
                         push_to_gstack(gstack, ps1);
                     }
                     break;
@@ -777,7 +774,6 @@ namespace pmfe {
                         ps_t ps1(ps);
                         ps1.push(segment(k+1, j, lV, V_f(k+1,j)));
                         ps1.accumulate(bonus);
-                        ps1.update(k+1, j, '(', ')');
                         push_to_gstack(gstack, ps1);
                     }
                     break;
@@ -792,31 +788,28 @@ namespace pmfe {
                         ps_t ps1(ps);
                         ps1.push(segment(k+1, j, lV, V_f(k+1,j)));
                         ps1.accumulate(multConst[2] + multConst[1]*(k+1 - i) + auPenalty(k+1,j));
-                        ps1.update(k+1, j, '(', ')');
                         push_to_gstack(gstack, ps1);
                     }
-                    if (V_f(k+2,j) + multConst[2] + multConst[1]*(k+2 - i) + auPenalty(k+2,j) + d5 + ps.total() <= mfe_ + delta_) {
+                    if (k+2 <= j-TURN && V_f(k+2,j) + multConst[2] + multConst[1]*(k+2 - i) + auPenalty(k+2,j) + d5 + ps.total() <= mfe_ + delta_) {
                         ps_t ps1(ps);
                         ps1.push(segment(k+2, j, lV, V_f(k+2,j)));
                         ps1.accumulate(multConst[2] + multConst[1]*(k+2 - i) + auPenalty(k+2,j) + d5);
-                        ps1.update(k+2, j, '(', ')');
-                        ps1.update(k+1, d5symb);
+                        ps1.mark_d5(k+1);
                         push_to_gstack(gstack, ps1);
                     }
-                    if (V_f(k+1,j-1) + multConst[2] + multConst[1]*(k+1 - i + 1) + auPenalty(k+1,j-1) + d3 + ps.total() <= mfe_ + delta_) {
+                    if (k+1 <= j-1-TURN && V_f(k+1,j-1) + multConst[2] + multConst[1]*(k+1 - i + 1) + auPenalty(k+1,j-1) + d3 + ps.total() <= mfe_ + delta_) {
                         ps_t ps1(ps);
                         ps1.push(segment(k+1, j-1, lV, V_f(k+1,j-1)));
                         ps1.accumulate(multConst[2] + multConst[1]*(k+1 - i + 1) + auPenalty(k+1,j-1) + d3);
-                        ps1.update(k+1, j-1, '(', ')');
-                        ps1.update(j, d3symb);
+                        ps1.mark_d3(j);
                         push_to_gstack(gstack, ps1);
                     }
-                    if (V_f(k+2,j-1) + multConst[2] + multConst[1]*(k+2 - i + 1) + auPenalty(k+2,j-1) + d53 + ps.total() <= mfe_ + delta_) {
+                    if (k+2 <= j-1-TURN && V_f(k+2,j-1) + multConst[2] + multConst[1]*(k+2 - i + 1) + auPenalty(k+2,j-1) + d53 + ps.total() <= mfe_ + delta_) {
                         ps_t ps1(ps);
                         ps1.push(segment(k+2, j-1, lV, V_f(k+2,j-1)));
                         ps1.accumulate(multConst[2] + multConst[1]*(k+2 - i + 1) + auPenalty(k+2,j-1) + d53);
-                        ps1.update(k+2, j-1, '(', ')');
-                        ps1.update(k+1, j, d5symb, d3symb);
+                        ps1.mark_d5(k+1);
+                        ps1.mark_d3(j);
                         push_to_gstack(gstack, ps1);
                     }
                     break;
@@ -831,7 +824,6 @@ namespace pmfe {
                         ps_t ps1(ps);
                         ps1.push(segment(k+1, j, lV, V_f(k+1,j)));
                         ps1.accumulate(bonus);
-                        ps1.update(k+1, j, '(', ')');
                         push_to_gstack(gstack, ps1);
                     }
                     break;

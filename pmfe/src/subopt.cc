@@ -47,8 +47,8 @@ namespace pmfe {
             exit(-1);
         }
 
-        init_fold(seq.c_str(), params);
-        g_dangles = convert_to_dangle_mode(dangle_model);
+        dangle_mode dangles = convert_to_dangle_mode(dangle_model);
+        init_fold(seq.c_str(), params, dangles);
 
         readThermodynamicParameters(param_dir.c_str());
 

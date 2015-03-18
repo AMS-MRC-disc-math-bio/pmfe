@@ -48,11 +48,9 @@ namespace pmfe {
     static string outputFile = "";
     static string outputDir = "";
 
-    static dangle_mode dangles = CHOOSE_DANGLE;
-
     static int nThreads = -1;
 
-    void init_fold(const char* seq, ParameterVector params) {
+    void init_fold(const char* seq, ParameterVector params, dangle_mode dangles) {
         assert(seq != NULL);
         int len = strlen(seq);
 
@@ -94,14 +92,14 @@ namespace pmfe {
         std::string seq;
         mpq_class energy;
 
-        dangles = convert_to_dangle_mode(dangle_model);
+        dangle_mode dangles = convert_to_dangle_mode(dangle_model);
 
         if (read_sequence_file(seq_file.c_str(), seq) == FAILURE) {
             printf("Failed to open sequence file: %s.\n\n", seq_file.c_str());
             exit(-1);
         }
 
-        init_fold(seq.c_str(), params);
+        init_fold(seq.c_str(), params, dangles);
 
         // Read in thermodynamic parameters.
         readThermodynamicParameters(param_dir.c_str());
