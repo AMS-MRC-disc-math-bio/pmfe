@@ -26,6 +26,16 @@
 // debugging and templatization: M. Seel
 //---------------------------------------------------------------------
 
+//---------------------------------------------------------------------
+// This file was modified by Andrew Gainer-Dewar for use in the pmfe project.
+// Specifically, it adds extra members and methods to the RC_simplex_d
+// class to support an important features of the iB4e algorithm.
+// This is necessary because the dD_Convex_hull implementation in CGAL 4.5.2
+// does not support extending the facet or simplex types, as the 3D_Convex_hull
+// implementation does. If this is changed in the future, this modified file
+// should be eliminated and replaced with an extended facet implementation.
+//---------------------------------------------------------------------
+
 #ifndef CGAL_REGULAR_COMPLEX_D_H
 #define CGAL_REGULAR_COMPLEX_D_H
 
