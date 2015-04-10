@@ -1,31 +1,64 @@
-# Subdirectories to recurse in build order
-SUBDIR = bin pmfe rnascoring pyparam
+CXX = clang++
 
-# Install prefix
-export PREFIX = /usr/local
-export PREFIXSHARE = $(PREFIX)/share/pmfe/
-export PREFIXBIN = $(PREFIX)/bin/
+# source files
+SRC = $(wildcard src/*.cc)
+OBJ = $(SRC:.cc=.o)
+DEP = $(SRC:.cc=.d)
+HDR = $(wildcard src/*.h)
 
-.PHONY: $(SUBDIR) recurse
-.PHONY: install
+LIBRARY = libpmfe.a
 
-$(MAKECMDGOALS) recurse: $(SUBDIR)
+BIN = pmfe-findmfe
 
-rnascoring: # no dependencies
+# include directories
+INCLUDES += -Iinclude
+INCLUDES += -I/usr/include/python2.7
 
-pmfe: rnascoring
+# C++ compiler flags
+CXXFLAGS += -fPIC
+CXXFLAGS += -Wall
+CXXFLAGS += -g
+CXXFLAGS += -O0
 
-bin: pmfe rnascoring
+# library paths
+LIBS += -lgmp
+LIBS += -lCGAL
+LIBS += -lm
+LIBS += -lpython2.7
+LIBS += -lboost_python
+LIBS += -lboost_filesystem
+LIBS += -lboost_program_options
+LIBS += -lboost_system
 
-install: bin
-	-mkdir -p $(PREFIXSHARE)
-	-cp -rv Turner99 $(PREFIXSHARE)
+# Optional OpenMP-related flags
+HAS_OPENMP = $(shell $(CXX) -lgomp openmp-test.cc -o /dev/null 2>&1 > /dev/null ; echo $$?)
+ifeq ($(HAS_OPENMP), 0)
+CXXFLAGS += -fopenmp
+CXXFLAGS += -DHAVE_OPENMP
+LIBS += -lgomp
+endif
 
-uninstall:
-	-rm -vrf $(PREFIXSHARE)
+all: $(OBJ) $(BIN)
+
+-include $(DEP)
+
+pmfe-findmfe: $(OBJ)
+	$(CXX) $(INCLUDES) $(LDFLAGS) $(CXXFLAGS) $^ -o $@ $(LIBS)
+
+$(LIBRARY): $(OBJ)
+	$(RM) $@
+	$(AR) $(ARFLAGS) $@ $^
+	ranlib $@
+
+%.o: %.cc
+	$(CXX) $(INCLUDES) $(LDFLAGS) $(CXXFLAGS) -c $^ -o $@ $(LIBS)
+	$(CXX) $(INCLUDES) $(LDFLAGS) $(CXXFLAGS) -MM $^ $(LIBS) | sed -e 's@^\(.*\)\.o:@src/\1.d src/\1.o:@' > $*.d
 
 clean:
-	-rm -vf parametrizer # Delete any old binaries lying around
+	-rm -vf $(EXEC) $(OBJ) $(DEP) $(LIBRARY) $(BIN)
 
-$(SUBDIR):
-	$(MAKE) -C $@ $(MAKECMDGOALS)
+install:
+
+uninstall:
+
+.PHONY: clean
