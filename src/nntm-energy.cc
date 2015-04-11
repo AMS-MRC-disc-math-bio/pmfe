@@ -20,6 +20,9 @@ namespace pmfe {
     };
 
     RNASequenceWithTables NNTM::energy_tables(const RNASequence& inseq) const {
+        /*
+          Construct the energy tables for the DP algorithm
+         */
         RNASequenceWithTables seq(inseq, constants.INFINITY_);
 
         int b, i, j;
@@ -199,6 +202,9 @@ namespace pmfe {
     };
 
     mpq_class NNTM::minimum_energy(const RNASequenceWithTables& seq) const {
+        /*
+          Return the minimum energy of a structure on this sequence
+         */
         return seq.W[seq.len()];
     };
 
@@ -213,7 +219,9 @@ namespace pmfe {
     }
 
     mpq_class NNTM::auPenalty(int i, int j, const RNASequenceWithTables& seq) const {
-        // Return the penalty for non-GC pairs
+        /*
+          Return the pairing penalty for (i, j); this is nonzero unless it is a GC pair
+         */
         int base_i = seq.base(i);
         int base_j = seq.base(j);
         if (
@@ -227,6 +235,9 @@ namespace pmfe {
     }
 
     mpq_class NNTM::eL(int i, int j, int ip, int jp, const RNASequenceWithTables& seq) const {
+        /*
+          Compute the energy of an internal loop between pairs (i, j) and (ip, jp)
+         */
         mpq_class energy = constants.INFINITY_;
         mpq_class loginc = 0;
 
@@ -296,21 +307,18 @@ namespace pmfe {
     }
 
     mpq_class NNTM::eH(int i, int j, const RNASequenceWithTables& seq) const {
-        /*  Hairpin loop for all the bases between i and j */
-        /*  size for size of the loop, energy is the result, loginc is for the extrapolation for loops bigger than 30 */
-        int size;
-        mpq_class loginc;
-        mpq_class energy;
-        mpq_class tlink;
+        /*
+          Compute the energy of a hairpin loop based at pair (i, j)
+         */
 
-        energy = constants.INFINITY_;
+        mpq_class energy = constants.INFINITY_;
 
-        size = j - i - 1; /*  size is the number of bases in the loop, when the closing pair is excluded */
+        int size = j - i - 1; /*  size is the number of bases in the loop, when the closing pair is excluded */
 
         /*  look in hairpin, and be careful that there is only 30 values */
 
         if (size > 30) {
-            loginc = constants.prelog * log(((double) size) / 30.0);
+            mpq_class loginc = constants.prelog * log(((double) size) / 30.0);
             energy = constants.hairpin[30] + loginc + constants.tstkh[seq.base(i)][seq.base(j)][seq.base(i + 1)][seq.base(j - 1)] + constants.eparam[4]; /* size penalty + terminal mismatch stacking energy*/
         }
 
@@ -355,7 +363,7 @@ namespace pmfe {
         }
 
         /*  Poly-C loop => How many C are needed for being a poly-C loop */
-        tlink = 1;
+        mpq_class tlink = 1;
         for (int index = 1; (index <= size) && (tlink == 1); ++index) {
             if (seq.base(i + index) != BASE_C)
                 tlink = 0;
@@ -373,11 +381,16 @@ namespace pmfe {
     }
 
     mpq_class NNTM::eS(int i, int j, const RNASequenceWithTables& seq) const {
-        /*  not sure about constants.eparam[1], come from MFold.. = 0 */
+        /*
+          Compute the energy of a stack of pairs (i, j) and (i+1, j-1)
+        */
         return constants.stack[seq.base(i)][seq.base(j)][seq.base(i+1)][seq.base(j-1)] + constants.eparam[1];
     }
 
     mpq_class NNTM::calcVBI(int i, int j, const RNASequenceWithTables& seq) const {
+        /*
+          Helper method to populate the VBI array
+         */
         mpq_class VBIij = constants.INFINITY_;
 
         for (int p = i+1; p <= std::min(j-2-TURN, i+MAXLOOP+1) ; ++p) {
