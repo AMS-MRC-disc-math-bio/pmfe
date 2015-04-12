@@ -43,7 +43,7 @@ all: $(OBJ) $(BIN)
 -include $(DEP)
 
 pmfe-findmfe: $(OBJ)
-	$(CXX) $(INCLUDES) $(LDFLAGS) $(CXXFLAGS) $^ -o $@ $(LIBS)
+	$(CXX) $(LDFLAGS) $(CXXFLAGS) $^ -o $@ $(LIBS)
 
 $(LIBRARY): $(OBJ)
 	$(RM) $@

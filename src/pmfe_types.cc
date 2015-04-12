@@ -5,7 +5,9 @@
 #include <gmpxx.h>
 #include <cmath>
 #include <iostream>
+
 #include <set>
+#include <deque>
 
 #include <assert.h>
 
@@ -255,7 +257,7 @@ namespace pmfe {
     }
 
     const int RNASequence::base(int i) const {
-        char base = seq_txt[i-1];
+        char base = seq_txt[i];
         switch(base) {
         case 'A':
         case 'a':
@@ -277,14 +279,14 @@ namespace pmfe {
     }
 
     const std::string RNASequence::subsequence(int i, int j) const {
-        return seq_txt.substr(i-1, j-i);
+        return seq_txt.substr(i, j);
     }
 
     // The C++98 specification makes assigning sets quite fiddly, so we use a Boost hack
     std::set<std::string> valid_pairs = boost::assign::list_of("AU")("UA")("CG")("GC")("GU")("UG");
 
     const bool RNASequence::can_pair(int i, int j) const {
-        std::string thepair = seq_txt.substr(i-1, 1) + seq_txt.substr(j-1, 1);
+        std::string thepair = seq_txt.substr(i, 1) + seq_txt.substr(j, 1);
         if (valid_pairs.count(thepair) == 0) {
             return false;
         } else {
@@ -347,21 +349,68 @@ namespace pmfe {
     }
 
     void RNAStructure::mark_pair(int i, int j) {
-        assert (structure_as_chars[i-1] == blanksymb);
-        structure_as_chars[i-1] = p5symb;
+        assert (structure_as_chars[i] == blanksymb);
+        structure_as_chars[i] = p5symb;
 
-        assert (structure_as_chars[j-1] == blanksymb);
-        structure_as_chars[j-1] = p3symb;
+        assert (structure_as_chars[j] == blanksymb);
+        structure_as_chars[j] = p3symb;
     }
 
     void RNAStructure::mark_d5(int i) {
-        assert (structure_as_chars[i-1] == blanksymb);
-        structure_as_chars[i-1] = d5symb;
+        assert (structure_as_chars[i] == blanksymb);
+        structure_as_chars[i] = d5symb;
     }
 
     void RNAStructure::mark_d3(int i) {
-        assert (structure_as_chars[i-1] == blanksymb);
-        structure_as_chars[i-1] = d3symb;
+        assert (structure_as_chars[i] == blanksymb);
+        structure_as_chars[i] = d3symb;
+    }
+
+    const bool RNAStructure::does_d5(int i) const {
+        return (structure_as_chars[i] == d5symb);
+    }
+
+    const bool RNAStructure::does_d3(int i) const {
+        return (structure_as_chars[i] == d3symb);
+    }
+
+    const std::deque< std::pair<int, int> > RNAStructure::pairs() const {
+        /*
+          Return the pairs in this structure, sorted in increasing order of first base
+        */
+
+        // We find the pairs using a simple search algorithm.
+        // We read through the structure string once.
+        // Each time we find an open parenthesis, we add its index to the deque 'starts'.
+        // Each time we find a close parenthesis, we pop the last start off the deque,
+        // form a pair, and add it to the results.
+
+        std::deque<int> starts;
+        std::deque< std::pair<int, int> > results;
+        for (int i = 0; i < structure_as_chars.length(); ++i) {
+            char c = structure_as_chars[i];
+            switch (c) {
+            case p5symb:
+            {
+                starts.push_back(i);
+                break;
+            }
+
+            case p3symb:
+            {
+                int start = starts.back();
+                starts.pop_back();
+                results.push_back(std::make_pair(start, i));
+                break;
+            }
+
+            default:
+                break;
+            }
+        }
+
+        std::sort(results.begin(), results.end());
+        return results;
     }
 
     std::ostream& operator<<(std::ostream& os, const RNAStructure& structure) {
@@ -371,6 +420,16 @@ namespace pmfe {
 
     RNAStructureWithScore::RNAStructureWithScore(const RNAStructure& structure, const ScoreVector& score):
         RNAStructure(structure), score(score) {};
+
+    RNAStructureTree::RNAStructureTree(const RNAStructure& structure):
+        RNAStructure(structure)
+    {
+        root = IntervalTreeNode(-1, structure.len());
+        std::deque< std::pair<int, int> > pairs = structure.pairs();
+        for (std::deque< std::pair<int, int> >::const_iterator pair = pairs.begin(); pair != pairs.end(); ++pair) {
+            root.insert(pair->first, pair->second);
+        }
+    };
 
     dangle_mode convert_to_dangle_mode(int n) {
         switch (n) {

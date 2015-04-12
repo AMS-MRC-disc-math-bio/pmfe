@@ -15,7 +15,7 @@ namespace pmfe {
         RNAStructure structure(seq);
         ScoreVector score;
 
-        traceW(seq.len(), seq, structure, score);
+        traceW(seq.len()-1, seq, structure, score);
 
         RNAStructureWithScore result (structure, score);
         return result;
@@ -29,7 +29,7 @@ namespace pmfe {
         if (j == 0 || j == 1)
             return;
 
-        for (int i = 1; i < j && !done; i++) {
+        for (int i = 0; i < j && !done; i++) {
             if (j-i < TURN) continue;
 
             wim1 = std::min(mpq_class(0), seq.W[i-1]);
@@ -37,8 +37,8 @@ namespace pmfe {
 
             if (dangles == BOTH_DANGLE) {
                 mpq_class e_dangles = 0;
-                if (i>1) e_dangles +=  Ed3(j, i, i-1, seq);
-                if (j<seq.len()) e_dangles += Ed5(j, i, j+1, seq);
+                if (i>0) e_dangles +=  Ed3(j, i, i-1, seq);
+                if (j<seq.len()-1) e_dangles += Ed5(j, i, j+1, seq);
                 if (seq.W[j] == seq.V[i][j] + auPenalty(i, j, seq) + e_dangles + wim1) {
                     done = 1;
                     score.energy += (auPenalty(i, j, seq) + e_dangles);
@@ -172,14 +172,14 @@ namespace pmfe {
                 score.branches++;
             } else if (seq.VM[i][j] == seq.WMPrime[i+2][j-1] + constants.multConst[0] + constants.multConst[2] + auPenalty(i, j, seq) + Ed5(i, j, i+1, seq) + constants.multConst[1]) {
                 eVM += traceWMPrime(i+2, j-1, seq, structure, score);
-                structure.mark_d5(i+1);
+                structure.mark_d3(i+1);
                 score.multiloops++;
                 score.branches++;
                 score.unpaired++;
             }
             else if (seq.VM[i][j] == seq.WMPrime[i+1][j-2] + constants.multConst[0] + constants.multConst[2] + auPenalty(i, j, seq) + Ed3(i, j, j-1, seq) + constants.multConst[1]) {
                 eVM += traceWMPrime(i+1, j-2, seq, structure, score);
-                structure.mark_d3(j-1);
+                structure.mark_d5(j-1);
                 score.multiloops++;
                 score.branches++;
                 score.unpaired++;
@@ -224,7 +224,7 @@ namespace pmfe {
         if (!done){
             if (dangles == BOTH_DANGLE) {
                 mpq_class energy = seq.V[i][j] + auPenalty(i, j, seq) + constants.multConst[2];
-                if (i==1) {
+                if (i==0) {
                     energy += Ed3(j, i, seq.len(), seq);
                 } else {
                     energy += Ed3(j, i, i-1, seq);

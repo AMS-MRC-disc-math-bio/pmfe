@@ -78,6 +78,14 @@ namespace pmfe {
         std::cout << "Computing MFE structure...";
         RNAStructureWithScore scored_structure = energy_model.mfe_structure(seq_annotated);
         std::cout << "done. Structure: " << scored_structure << std::endl;
+
+        // Find the classical energy
+        std::cout << "Computing classical score...";
+        Turner99 classical_constants;
+        NNTM classical_model(classical_constants, dangles);
+        mpq_class classical_energy = classical_model.energy(scored_structure);
+        std::cout << "done. Score: " << classical_energy.get_str() << std::endl;
+
         return scored_structure.score;
 
         /*

@@ -30,7 +30,7 @@ namespace pmfe {
 #ifdef _OPENMP
 #pragma omp parallel for private (i,j) schedule(guided)
 #endif
-            for (i = 1; i <= seq.len() - b; ++i) {
+            for (i = 0; i <= seq.len() - 1 - b; ++i) {
                 j = i + b;
 
                 if (seq.can_pair(i, j)) {
@@ -99,13 +99,13 @@ namespace pmfe {
 
                 if (dangles == BOTH_DANGLE) {
                     mpq_class energy = seq.V[i][j] + auPenalty(i, j, seq) + constants.multConst[2];
-                    if (i == 1) {
+                    if (i == 0) {
                         energy += Ed3(j, i, seq.len(), seq);
                     } else {
                         energy += Ed3(j, i, i-1, seq);
                     }
 
-                    if (j < seq.len())
+                    if (j < seq.len() - 1)
                         energy += Ed5(j, i, j+1, seq);
 
                     std::vector<mpq_class> vals;
@@ -146,11 +146,11 @@ namespace pmfe {
         }
 
         seq.W[0] = 0;
-        for (j = 1; j <= seq.len(); j++) {
+        for (j = TURN+1; j <= seq.len() - 1; j++) {
             int i;
             mpq_class Wj, Widjd, Wijd, Widj, Wij, Wim1;
             Wj = 0;
-            for (i = 1; i < j-TURN; i++) {
+            for (i = 0; i < j-TURN; i++) {
                 Wij = Widjd = Wijd = Widj = constants.INFINITY_;
                 Wim1 = std::min(mpq_class(0), seq.W[i-1]);
 
@@ -205,20 +205,20 @@ namespace pmfe {
         /*
           Return the minimum energy of a structure on this sequence
          */
-        return seq.W[seq.len()];
+        return seq.W[seq.len()-1];
     };
 
 
     // TODO: Replace these with semantic Ed3 and Ed5
-    mpq_class NNTM::Ed3(int i, int j, int k, const RNASequenceWithTables& seq) const {
+    mpq_class NNTM::Ed3(int i, int j, int k, const RNASequence& seq) const {
         return constants.dangle[seq.base(i)][seq.base(j)][seq.base(k)][1];
     }
 
-    mpq_class NNTM::Ed5(int i, int j, int k, const RNASequenceWithTables& seq) const {
+    mpq_class NNTM::Ed5(int i, int j, int k, const RNASequence& seq) const {
         return constants.dangle[seq.base(i)][seq.base(j)][seq.base(k)][0];
     }
 
-    mpq_class NNTM::auPenalty(int i, int j, const RNASequenceWithTables& seq) const {
+    mpq_class NNTM::auPenalty(int i, int j, const RNASequence& seq) const {
         /*
           Return the pairing penalty for (i, j); this is nonzero unless it is a GC pair
          */
@@ -234,10 +234,10 @@ namespace pmfe {
         }
     }
 
-    mpq_class NNTM::eL(int i, int j, int ip, int jp, const RNASequenceWithTables& seq) const {
+    mpq_class NNTM::eL(int i, int j, int ip, int jp, const RNASequence& seq) const {
         /*
           Compute the energy of an internal loop between pairs (i, j) and (ip, jp)
-         */
+        */
         mpq_class energy = constants.INFINITY_;
         mpq_class loginc = 0;
 
@@ -306,7 +306,7 @@ namespace pmfe {
         return energy;
     }
 
-    mpq_class NNTM::eH(int i, int j, const RNASequenceWithTables& seq) const {
+    mpq_class NNTM::eH(int i, int j, const RNASequence& seq) const {
         /*
           Compute the energy of a hairpin loop based at pair (i, j)
          */
@@ -354,7 +354,7 @@ namespace pmfe {
 
         /*  GGG Bonus => GU closure preceded by GG */
         /*  i-2 = i-1 = i = G, and j = U; i < j */
-        if (i > 2) {
+        if (i >= 2) {
             if (seq.base(i - 2) == BASE_G && seq.base(i - 1) == BASE_G && seq.base(i) == BASE_G
                 && seq.base(j) == BASE_U) {
                 energy += constants.gubonus;
@@ -380,7 +380,7 @@ namespace pmfe {
         return energy;
     }
 
-    mpq_class NNTM::eS(int i, int j, const RNASequenceWithTables& seq) const {
+    mpq_class NNTM::eS(int i, int j, const RNASequence& seq) const {
         /*
           Compute the energy of a stack of pairs (i, j) and (i+1, j-1)
         */

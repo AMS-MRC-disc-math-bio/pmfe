@@ -7,8 +7,13 @@
 #include <utility>
 #include <gmpxx.h>
 #include <iostream>
+
+#include <deque>
+
 #include <boost/python/tuple.hpp>
 #include <boost/filesystem.hpp>
+
+#include "interval_tree.h"
 
 namespace pmfe {
     extern const mpq_class multiloop_default;
@@ -79,7 +84,7 @@ namespace pmfe {
         RNASequence(const fs::path& filename); // Construct from a FASTA file
 
         const int len() const; // Return the length of the sequence
-        const int base(int i) const; // Return the base at position i of the sequence (1-indexed)
+        const int base(int i) const; // Return the base at position i of the sequence
         const std::string subsequence(int i, int j) const; // Return the subsequence starting at position i and ending at j
         const bool can_pair(int i, int j) const; // Return true if the bases at i and j are a valid pair
 
@@ -113,23 +118,27 @@ namespace pmfe {
            Representation of an RNA secondary structure
          **/
     public:
+        const RNASequence seq;
         RNAStructure(const RNASequence& seq); // Construct a (blank) structure from a given sequence
 
         const int len() const; // Return the length of the sequence
 
         void mark_pair(int i, int j); // Record that (i, j) are paired
         void mark_d5(int i); // Record that i dangles from the 5' end of i+1
-        void mark_d3(int j); // Record that i dangles from the 3' end of i-1
+        void mark_d3(int i); // Record that i dangles from the 3' end of i-1
+
+        const bool does_d5(int i) const; // Return true if i dangles from the 5' end of i+1
+        const bool does_d3(int i) const; // Return true if i dangles from the 3' end of i-1
+
+        const std::deque< std::pair<int, int> > pairs() const; // Return a deque of the pairs in the structure
 
         const char& operator[](const int index) const; // Retrieve a single base using index notation
         friend std::ostream& operator<<(std::ostream& out, const RNAStructure& structure); // Output this structure as an ostream
 
     protected:
-        const RNASequence seq;
         std::string structure_as_chars;
     };
 
-    // TODO: Use inheritance?
     class RNAStructureWithScore: public RNAStructure {
         /**
 Representation of an RNA secondary structure that has been assigned a score
@@ -138,6 +147,13 @@ Representation of an RNA secondary structure that has been assigned a score
         const ScoreVector score;
 
         RNAStructureWithScore(const RNAStructure& structure, const ScoreVector& score);
+    };
+
+    class RNAStructureTree: public RNAStructure {
+    public:
+        IntervalTreeNode root;
+
+        RNAStructureTree(const RNAStructure& structure);
     };
 
     enum dangle_mode {
