@@ -3,7 +3,7 @@ CXX = clang++
 # source files
 SRC = $(wildcard src/*.cc)
 OBJ = $(SRC:.cc=.o)
-DEP = $(SRC:.cc=.d)
+DEP = $(SRC:.cc=.P)
 HDR = $(wildcard src/*.h)
 
 LIBRARY = libpmfe.a
@@ -51,8 +51,14 @@ $(LIBRARY): $(OBJ)
 	ranlib $@
 
 %.o: %.cc
-	$(CXX) $(INCLUDES) $(LDFLAGS) $(CXXFLAGS) -c $^ -o $@ $(LIBS)
-	$(CXX) $(INCLUDES) $(LDFLAGS) $(CXXFLAGS) -MM $^ $(LIBS) | sed -e 's@^\(.*\)\.o:@src/\1.d src/\1.o:@' > $*.d
+	$(CXX) -MD $(CXXFLAGS) $(INCLUDES) $(LIBS) $(LDFLAGS) -o $@ -c $<
+	@cp $*.d $*.P; \
+        sed -e 's/#.*//' -e 's/^[^:]*: *//' -e 's/ *\\$$//' \
+            -e '/^$$/ d' -e 's/$$/ :/' < $*.d >> $*.P; \
+        rm -f $*.d
+
+#	$(CXX) -MD $(INCLUDES) $(LDFLAGS) $(CXXFLAGS) -c $^ -o $@ $(LIBS)
+#	$(CXX) $(INCLUDES) $(LDFLAGS) $(CXXFLAGS) -MM $^ $(LIBS) | sed -e 's@^\(.*\)\.o:@src/\1.d src/\1.o:@' > $*.d
 
 clean:
 	-rm -vf $(EXEC) $(OBJ) $(DEP) $(LIBRARY) $(BIN)
