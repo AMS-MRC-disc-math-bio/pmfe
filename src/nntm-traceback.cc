@@ -185,8 +185,8 @@ namespace pmfe {
                 score.unpaired++;
             } else if (seq.V[i][j] ==  seq.WMPrime[i+2][j-2] + constants.multConst[0] + constants.multConst[2] + auPenalty(i, j, seq) + Ed5(i, j, i+1, seq) + Ed3(i, j, j-1, seq) + constants.multConst[1]*2) {
                 eVM += traceWMPrime(i+2, j-2, seq, structure, score);
-                structure.mark_d5(i+1);
-                structure.mark_d3(j-1);
+                structure.mark_d3(i+1);
+                structure.mark_d5(j-1);
                 score.multiloops++;
                 score.branches++;
                 score.unpaired += 2;
