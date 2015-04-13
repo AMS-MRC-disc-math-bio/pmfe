@@ -37,8 +37,7 @@ namespace pmfe
     namespace fs = boost::filesystem;
 
     Turner99::Turner99(const ParameterVector params):
-        NNDBConstants(),
-        params(params)
+        NNDBConstants(params)
     {
         initMiscValues();
 

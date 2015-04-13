@@ -250,7 +250,12 @@ namespace pmfe {
 
         int pindex = std::min(2, std::min(size1, size2));
         mpq_class lvalue = lopsided * constants.poppen[pindex];
-        mpq_class minterm = std::min(constants.maxpen, lvalue);
+        mpq_class penterm;
+        if (constants.params.dummy_scaling >= 0) {
+            penterm = std::min(constants.maxpen, lvalue);
+        } else {
+            penterm = std::max(constants.maxpen, lvalue);
+        }
 
         if (size1 == 0 || size2 == 0) {
             if (size > 30) {
@@ -275,10 +280,10 @@ namespace pmfe {
                 if (!((size1 == 1 || size2 == 1) && constants.gail)) { /* normal internal loop with size > 30*/
                     energy = constants.tstki[seq.base(i)][seq.base(j)][seq.base(i + 1)][seq.base(j - 1)] +
                         constants.tstki[seq.base(jp)][seq.base(ip)][seq.base(jp + 1)][seq.base(ip - 1)] + constants.inter[30] + loginc +
-                        constants.eparam[3] + minterm;
+                        constants.eparam[3] + penterm;
                 } else { /* if size is more than 30 and it is a grossely asymmetric internal loop and gail is not 0*/
                     energy = constants.tstki[seq.base(i)][seq.base(j)][BASE_A][BASE_A] + constants.tstki[seq.base(jp)][seq.base(ip)][BASE_A][BASE_A]
-                        + constants.inter[30] + loginc + constants.eparam[3] + minterm;
+                        + constants.inter[30] + loginc + constants.eparam[3] + penterm;
                 }
             }
             else if (size1 == 2 && size2 == 2) { /* 2x2 internal loop */
@@ -296,10 +301,10 @@ namespace pmfe {
             //}
             else if ((size1 == 1 || size2 == 1) && constants.gail) { /* gail = (Grossly Asymmetric Interior Loop Rule) (on/off <-> 1/0)  */
                 energy = constants.tstki[seq.base(i)][seq.base(j)][BASE_A][BASE_A] + constants.tstki[seq.base(jp)][seq.base(ip)][BASE_A][BASE_A]
-                    + constants.inter[size] + loginc + constants.eparam[3] + minterm;
+                    + constants.inter[size] + loginc + constants.eparam[3] + penterm;
             } else { /* General Internal loops */
                 energy = constants.tstki[seq.base(i)][seq.base(j)][seq.base(i + 1)][seq.base(j - 1)] + constants.tstki[seq.base(jp)][seq.base(ip)][seq.base(jp + 1)][seq.base(ip - 1)] + constants.inter[size]
-                    + loginc + constants.eparam[3] + minterm;
+                    + loginc + constants.eparam[3] + penterm;
             }
         }
 

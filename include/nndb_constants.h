@@ -46,6 +46,7 @@ namespace pmfe {
         bool gail;
         mpq_class prelog;
         mpq_class INFINITY_;
+        ParameterVector params;
 
         std::vector<mpq_class> poppen;
         std::vector<mpq_class> eparam;
@@ -66,7 +67,8 @@ namespace pmfe {
         boost::multi_array<mpq_class, 6> iloop11; /* 1*1 internal loops */
 
     NNDBConstants(const ParameterVector params = ParameterVector()):
-        poppen(5),
+        params(params),
+            poppen(5),
             eparam(11),
             multConst(3),
             inter(31),
@@ -92,7 +94,6 @@ namespace pmfe {
         Turner99(const ParameterVector params = ParameterVector());
 
     protected:
-        ParameterVector params;
         void initMiscValues();
         void initLoopValues();
         void initTstkValues();

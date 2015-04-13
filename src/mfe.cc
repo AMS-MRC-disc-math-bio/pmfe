@@ -86,7 +86,24 @@ namespace pmfe {
         mpq_class classical_energy = classical_model.energy(scored_structure);
         std::cout << "done. Score: " << classical_energy.get_str() << std::endl;
 
-        return scored_structure.score;
+        ScoreVector result = scored_structure.score;
+        result.w = classical_energy - (result.multiloops * classical_constants.multConst[0] + result.unpaired * classical_constants.multConst[1] + result.branches * classical_constants.multConst[2]);
+        result.canonicalize();
+
+        // Check that the w calculation produced a consistent result
+        mpq_class formula_energy = result.multiloops * params.multiloop_penalty + result.unpaired * params.unpaired_penalty + result.branches * params.branch_penalty + result.w * params.dummy_scaling;
+        formula_energy.canonicalize();
+
+        // And alert the user if not
+        if (result.energy != formula_energy) {
+            std::cerr << "Energy calculation is inconsistent!" << std::endl;
+            std::cerr << params << std::endl;
+            std::cerr << result << std::endl;
+            std::cerr << "Formula energy: " << formula_energy.get_str(10) << std::endl;
+            std::cerr << "Classical energy: " << classical_energy.get_str(10) << std::endl << std::endl;
+        };
+
+        return result;
 
         /*
         // Find the associated structure
