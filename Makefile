@@ -6,8 +6,6 @@ OBJ = $(SRC:.cc=.o)
 DEP = $(SRC:.cc=.P)
 HDR = $(wildcard src/*.h)
 
-LIBRARY = libpmfe.a
-
 BIN = pmfe-findmfe
 
 # include directories
@@ -45,11 +43,6 @@ all: $(OBJ) $(BIN)
 pmfe-findmfe: $(OBJ)
 	$(CXX) $(LDFLAGS) $(CXXFLAGS) $^ -o $@ $(LIBS)
 
-$(LIBRARY): $(OBJ)
-	$(RM) $@
-	$(AR) $(ARFLAGS) $@ $^
-	ranlib $@
-
 %.o: %.cc
 	$(CXX) -MD $(CXXFLAGS) $(INCLUDES) $(LIBS) $(LDFLAGS) -o $@ -c $<
 	@cp $*.d $*.P; \
@@ -61,7 +54,7 @@ $(LIBRARY): $(OBJ)
 #	$(CXX) $(INCLUDES) $(LDFLAGS) $(CXXFLAGS) -MM $^ $(LIBS) | sed -e 's@^\(.*\)\.o:@src/\1.d src/\1.o:@' > $*.d
 
 clean:
-	-rm -vf $(EXEC) $(OBJ) $(DEP) $(LIBRARY) $(BIN)
+	-rm -vf $(EXEC) $(OBJ) $(DEP) $(BIN)
 
 install:
 
