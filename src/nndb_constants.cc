@@ -94,11 +94,6 @@ namespace pmfe
         eparam[7] = params.dummy_scaling * mpq_class(3, 10);
         eparam[8] = params.dummy_scaling * mpq_class(3, 10);
         eparam[9] = params.dummy_scaling * mpq_class(-5);
-
-        // Scale infinity if needed
-        if (abs(params.dummy_scaling > 1)) {
-            INFINITY_ *= abs(params.dummy_scaling);
-        }
     }
 
     void Turner99::initLoopValues() {

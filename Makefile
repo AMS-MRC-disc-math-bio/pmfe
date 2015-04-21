@@ -1,25 +1,33 @@
-CXX = clang++
+#CXX = clang++
 
 # source files
 SRC = $(wildcard src/*.cc)
 OBJ = $(SRC:.cc=.o)
+
+BINSRC = $(wildcard src/bin-*.cc)
+BINOBJ = $(BINSRC:.cc=.o)
+
+LIBOBJ = $(filter-out $(BINOBJ),$(OBJ))
+
 DEP = $(SRC:.cc=.P)
 HDR = $(wildcard src/*.h)
 
-BIN = pmfe-findmfe
+BIN = pmfe-findmfe pmfe-parametrizer
 
 # include directories
 INCLUDES += -Iinclude
+INCLUDES += -IiB4e
 INCLUDES += -I/usr/include/python2.7
 
 # C++ compiler flags
+CXXFLAGS += --std=c++11
 CXXFLAGS += -fPIC
 CXXFLAGS += -Wall
 CXXFLAGS += -g
 CXXFLAGS += -O0
 
 # library paths
-LIBS += -lgmp
+LIBS += -lgmp -lgmpxx
 LIBS += -lCGAL
 LIBS += -lm
 LIBS += -lpython2.7
@@ -29,7 +37,7 @@ LIBS += -lboost_program_options
 LIBS += -lboost_system
 
 # Optional OpenMP-related flags
-HAS_OPENMP = $(shell $(CXX) -lgomp openmp-test.cc -o /dev/null 2>&1 > /dev/null ; echo $$?)
+HAS_OPENMP := $(shell $(CXX) -lgomp openmp-test.cc -o /dev/null 2>&1 > /dev/null ; echo $$?)
 ifeq ($(HAS_OPENMP), 0)
 CXXFLAGS += -fopenmp
 CXXFLAGS += -DHAVE_OPENMP
@@ -40,18 +48,18 @@ all: $(OBJ) $(BIN)
 
 -include $(DEP)
 
-pmfe-findmfe: $(OBJ)
+pmfe-findmfe: $(LIBOBJ) src/bin-findmfe.o
+	$(CXX) $(LDFLAGS) $(CXXFLAGS) $^ -o $@ $(LIBS)
+
+pmfe-parametrizer: $(LIBOBJ) src/bin-parametrizer.o
 	$(CXX) $(LDFLAGS) $(CXXFLAGS) $^ -o $@ $(LIBS)
 
 %.o: %.cc
-	$(CXX) -MD $(CXXFLAGS) $(INCLUDES) $(LIBS) $(LDFLAGS) -o $@ -c $<
+	$(CXX) -MD $(CXXFLAGS) $(INCLUDES) -o $@ -c $<
 	@cp $*.d $*.P; \
         sed -e 's/#.*//' -e 's/^[^:]*: *//' -e 's/ *\\$$//' \
             -e '/^$$/ d' -e 's/$$/ :/' < $*.d >> $*.P; \
         rm -f $*.d
-
-#	$(CXX) -MD $(INCLUDES) $(LDFLAGS) $(CXXFLAGS) -c $^ -o $@ $(LIBS)
-#	$(CXX) $(INCLUDES) $(LDFLAGS) $(CXXFLAGS) -MM $^ $(LIBS) | sed -e 's@^\(.*\)\.o:@src/\1.d src/\1.o:@' > $*.d
 
 clean:
 	-rm -vf $(EXEC) $(OBJ) $(DEP) $(BIN)

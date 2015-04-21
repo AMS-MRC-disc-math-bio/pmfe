@@ -350,9 +350,9 @@ namespace pmfe {
 
     void RNAStructure::mark_pair(int i, int j) {
         assert (structure_as_chars[i] == blanksymb);
-        structure_as_chars[i] = p5symb;
-
         assert (structure_as_chars[j] == blanksymb);
+
+        structure_as_chars[i] = p5symb;
         structure_as_chars[j] = p3symb;
     }
 
@@ -420,6 +420,16 @@ namespace pmfe {
 
     RNAStructureWithScore::RNAStructureWithScore(const RNAStructure& structure, const ScoreVector& score):
         RNAStructure(structure), score(score) {};
+
+    std::ostream& operator<<(std::ostream& os, const RNAStructureWithScore& structure) {
+        os << structure.structure_as_chars << "\t"
+           << structure.score.multiloops << "\t"
+           << structure.score.unpaired << "\t"
+           << structure.score.branches << "\t"
+           << structure.score.w << "\t"
+           << structure.score.energy << std::endl;
+        return os;
+    }
 
     RNAStructureTree::RNAStructureTree(const RNAStructure& structure):
         RNAStructure(structure)

@@ -80,6 +80,7 @@ namespace pmfe {
            Representation of an RNA sequence
          **/
     public:
+        RNASequence() {}; // Default constructor to satisfy compiler
         RNASequence(const std::string& seq); // Construct from a string encoding the sequence
         RNASequence(const fs::path& filename); // Construct from a FASTA file
 
@@ -101,6 +102,7 @@ namespace pmfe {
            Intermediate data store for NNTM dynamic programming results
         **/
     public:
+        RNASequenceWithTables() {}; // Default constructor for compiler
         RNASequenceWithTables(const RNASequence& seq, mpq_class infinity_value = mpq_class(9999999999999)); // TODO: This is a really gross way to handle this! Find a better one.
 
         std::vector<mpq_class> W;
@@ -118,7 +120,9 @@ namespace pmfe {
            Representation of an RNA secondary structure
          **/
     public:
-        const RNASequence seq;
+        RNASequence seq;
+
+        RNAStructure() {}; // Default constructor for compiler
         RNAStructure(const RNASequence& seq); // Construct a (blank) structure from a given sequence
 
         const int len() const; // Return the length of the sequence
@@ -144,15 +148,18 @@ namespace pmfe {
 Representation of an RNA secondary structure that has been assigned a score
         **/
     public:
-        const ScoreVector score;
+        ScoreVector score;
 
+        RNAStructureWithScore() {}; // Default constructor for compiler
         RNAStructureWithScore(const RNAStructure& structure, const ScoreVector& score);
+        friend std::ostream& operator<<(std::ostream& out, const RNAStructureWithScore& structure); // Output this structure and its scores as an ostream
     };
 
     class RNAStructureTree: public RNAStructure {
     public:
         IntervalTreeNode root;
 
+        RNAStructureTree() {}; // Default constructor for compiler
         RNAStructureTree(const RNAStructure& structure);
     };
 

@@ -152,12 +152,16 @@ namespace pmfe {
             Wj = 0;
             for (i = 0; i < j-TURN; i++) {
                 Wij = Widjd = Wijd = Widj = constants.INFINITY_;
-                Wim1 = std::min(mpq_class(0), seq.W[i-1]);
+                if (i > 0) {
+                    Wim1 = std::min(mpq_class(0), seq.W[i-1]);
+                } else {
+                    Wim1 = 0;
+                }
 
                 if (dangles == BOTH_DANGLE) { // -d2 option
                     mpq_class energy = seq.V[i][j] + auPenalty(i, j, seq) + Wim1;
-                    if (i>1) energy +=  Ed3(j, i, i-1, seq);
-                    if (j<seq.len()) energy += Ed5(j, i, j+1, seq);
+                    if (i>0) energy +=  Ed3(j, i, i-1, seq);
+                    if (j<seq.len()-1) energy += Ed5(j, i, j+1, seq);
                     Widjd = energy;
 
                     std::vector<mpq_class> vals;

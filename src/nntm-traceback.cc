@@ -26,13 +26,17 @@ namespace pmfe {
         int flag = 1;
         mpq_class wim1;
 
-        if (j == 0 || j == 1)
+        if (j <= 0)
             return;
 
         for (int i = 0; i < j && !done; i++) {
             if (j-i < TURN) continue;
 
-            wim1 = std::min(mpq_class(0), seq.W[i-1]);
+            if (i > 0) {
+                wim1 = std::min(mpq_class(0), seq.W[i-1]);
+            } else {
+                wim1 = 0;
+            }
             flag = 1;
 
             if (dangles == BOTH_DANGLE) {
@@ -43,7 +47,7 @@ namespace pmfe {
                     done = 1;
                     score.energy += (auPenalty(i, j, seq) + e_dangles);
                     traceV(i, j, seq, structure, score);
-                    if (flag ) traceW(i - 1, seq, structure, score);
+                    if (flag ) traceW(i-1, seq, structure, score);
                     break;
                 };
             } else if (dangles == NO_DANGLE) {
@@ -51,7 +55,7 @@ namespace pmfe {
                     done = 1;
                     score.energy += auPenalty(i, j, seq);
                     traceV(i, j, seq, structure, score);
-                    if (flag ) traceW(i - 1, seq, structure, score);
+                    if (flag ) traceW(i-1, seq, structure, score);
                     break;
                 };
             } else { // default
@@ -73,7 +77,7 @@ namespace pmfe {
                     score.energy += (auPenalty(i+1, j, seq) + Ed3(j, i+1, i, seq));
                     structure.mark_d5(i);
                     traceV(i + 1, j, seq, structure, score);
-                    if (flag ) traceW(i, seq, structure, score);
+                    if (flag ) traceW(i-1, seq, structure, score);
                     break;
                 } else if (seq.W[j] == seq.V[i+1][j-1] + auPenalty(i+1, j-1, seq) + Ed3(j-1, i+1, i, seq) + Ed5(j-1, i+1, j, seq) + wim1) {
                     done = 1;
@@ -81,7 +85,7 @@ namespace pmfe {
                     structure.mark_d3(j);
                     structure.mark_d5(i);
                     traceV(i+1, j-1, seq, structure, score);
-                    if (flag ) traceW(i, seq, structure, score);
+                    if (flag ) traceW(i-1, seq, structure, score);
                     break;
                 }
             }

@@ -83,7 +83,7 @@ namespace pmfe {
             iloop11(boost::extents[5][5][5][5][5][5])
             {
                 INFINITY_ = mpq_class(9999999999999);
-                if (abs(params.dummy_scaling > 1)) {
+                if (abs(params.dummy_scaling) > 1) {
                     INFINITY_ *= abs(params.dummy_scaling);
                 }
             };
