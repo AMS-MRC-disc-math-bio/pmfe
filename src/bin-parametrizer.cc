@@ -1,141 +1,18 @@
 // Copyright (c) 2014 Andrew Gainer-Dewar.
 
 #include "BBPolytope.h"
-#include "mfe.h"
 #include "nndb_constants.h"
 #include "nntm.h"
 #include "pmfe_types.h"
+#include "rna_polytope.h"
 
-#include <iostream>
 #include <string>
-#include <fstream>
-#include <map>
 
 #include "boost/filesystem.hpp"
-#include "boost/filesystem/fstream.hpp"
 #include "boost/program_options.hpp"
-
-#include <CGAL/Gmpq.h>
 
 namespace po = boost::program_options;
 namespace fs = boost::filesystem;
-
-typedef CGAL::Gmpq Q; // We'll do all the geometry over Q
-typedef iB4e::BBPolytope<Q> BBP;
-
-pmfe::ParameterVector fv_to_pv(BBP::FVector v) {
-    pmfe::ParameterVector pv (
-        mpq_class(v.cartesian(0).mpq()),
-        mpq_class(v.cartesian(1).mpq()),
-        mpq_class(v.cartesian(2).mpq()),
-        mpq_class(v.cartesian(3).mpq())
-        );
-    return pv;
-};
-
-BBP::FPoint scored_structure_to_fp(pmfe::RNAStructureWithScore structure) {
-    mpq_t values [4];
-    mpq_inits(values[0], values[1], values[2], values[3], NULL);
-
-    mpq_set_z(values[0], structure.score.multiloops.get_mpz_t());
-    mpq_set_z(values[1], structure.score.unpaired.get_mpz_t());
-   mpq_set_z(values[2], structure.score.branches.get_mpz_t());
-    mpq_set(values[3], structure.score.w.get_mpq_t());
-
-    BBP::FPoint result(4, values, values+4);
-    mpq_clears(values[0], values[1], values[2], values[3], NULL);
-    return result;
-};
-
-class compare_fp {
-public:
-    bool operator() (const BBP::FPoint& left, const BBP::FPoint& right) {
-        // Custom comparitor for the results map in the polytope
-        for (int i = 0; i < left.dimension(); ++i) {
-            if (left[i] < right[i]) {
-                return true;
-            } else if (left[i] > right[i]) {
-                return false;
-            }
-            // Otherwise, continue
-        }
-
-        // If we make it out of the loop, the points are equal
-        return false;
-    }
-};
-
-class RNAPolytope: public BBP {
-public:
-    pmfe::ScoreVector classical_scores;
-    pmfe::RNASequence sequence;
-    pmfe::dangle_mode dangles;
-    std::map<FPoint, pmfe::RNAStructureWithScore, compare_fp> structures;
-
-    RNAPolytope(pmfe::RNASequence sequence, pmfe::dangle_mode dangles):
-        BBPolytope(4),
-        sequence(sequence),
-        dangles(dangles)
-        {};
-
-    FPoint vertex_oracle(FVector objective) {
-        // Set up the computational environment
-        pmfe::ParameterVector params = fv_to_pv(objective);
-        pmfe::Turner99 constants(params);
-        pmfe::NNTM energy_model(constants, dangles);
-
-        // Compute the energy tables
-        pmfe::RNASequenceWithTables seq_annotated = energy_model.energy_tables(sequence);
-
-        // Find the MFE structure
-        pmfe::RNAStructureWithScore scored_structure = energy_model.mfe_structure(seq_annotated);
-
-        // Compute the classical score of the structure
-        pmfe::Turner99 classical_constants;
-        pmfe::NNTM classical_model(classical_constants, dangles);
-        mpq_class classical_energy = classical_model.energy(scored_structure);
-
-        // Build the score vector
-        scored_structure.score.w = classical_energy - (scored_structure.score.multiloops * classical_constants.multConst[0] + scored_structure.score.unpaired * classical_constants.multConst[1] + scored_structure.score.branches * classical_constants.multConst[2]);
-        scored_structure.score.canonicalize();
-
-        // Check that the w calculation produced a consistent result
-        mpq_class formula_energy = scored_structure.score.multiloops * params.multiloop_penalty + scored_structure.score.unpaired * params.unpaired_penalty + scored_structure.score.branches * params.branch_penalty + scored_structure.score.w * params.dummy_scaling;
-        formula_energy.canonicalize();
-
-        // And alert the user if not
-        if (scored_structure.score.energy != formula_energy) {
-            std::cerr << "Energy calculation is inconsistent!" << std::endl;
-            std::cerr << params << std::endl;
-            std::cerr << scored_structure.score << std::endl;
-            std::cerr << "Formula energy: " << formula_energy.get_str(10) << std::endl;
-            std::cerr << "Classical energy: " << classical_energy.get_str(10) << std::endl << std::endl;
-        };
-
-        FPoint result = scored_structure_to_fp(scored_structure);
-        // TODO: Handle storing stuctures in class after conversion to dD_triangulation
-        structures[result] = scored_structure;
-        return result;
-    };
-};
-
-void write_poly_file(RNAPolytope* poly, const fs::path poly_file) {
-    // TODO: Write this!
-    fs::ofstream outfile(poly_file);
-
-    if(!outfile.is_open()) {
-        std::cerr << "Couldn't open polytope file " << poly_file << "." << std::endl;
-        exit(EXIT_FAILURE);
-    }
-
-    outfile << "# Points: " << poly->number_of_vertices() << std::endl;
-    outfile << "# Facets: " << poly->number_of_simplices() << std::endl << std::endl;
-
-    for (BBP::Hull_vertex_iterator v = poly->hull_vertices_begin(); v != poly->hull_vertices_end(); ++v) {
-        outfile << poly->structures[poly->associated_point(v)];
-    }
-};
-
 
 int main(int argc, char * argv[]) {
     // Set up argument processing
@@ -166,7 +43,7 @@ int main(int argc, char * argv[]) {
     fs::path seq_file (vm["sequence"].as<std::string>());
     pmfe::RNASequence sequence(seq_file);
 
-    RNAPolytope* poly = new RNAPolytope(sequence, dangles);
+    pmfe::RNAPolytope* poly = new pmfe::RNAPolytope(sequence, dangles);
     poly->build();
 
     poly->print_statistics();
@@ -179,7 +56,7 @@ int main(int argc, char * argv[]) {
         poly_file.replace_extension(".rnapoly");
     }
 
-    write_poly_file(poly, poly_file);
+    poly->write_to_file(poly_file);
 
     return 0;
-};
+}
