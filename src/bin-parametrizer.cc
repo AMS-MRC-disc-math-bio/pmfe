@@ -43,10 +43,10 @@ int main(int argc, char * argv[]) {
     fs::path seq_file (vm["sequence"].as<std::string>());
     pmfe::RNASequence sequence(seq_file);
 
-    pmfe::RNAPolytope* poly = new pmfe::RNAPolytope(sequence, dangles);
-    poly->build();
+    pmfe::RNAPolytope poly(sequence, dangles);
+    poly.build();
 
-    poly->print_statistics();
+    poly.print_statistics();
 
     fs::path poly_file;
     if (vm.count("outfile")) {
@@ -56,7 +56,7 @@ int main(int argc, char * argv[]) {
         poly_file.replace_extension(".rnapoly");
     }
 
-    poly->write_to_file(poly_file);
+    poly.write_to_file(poly_file);
 
     return 0;
 }
