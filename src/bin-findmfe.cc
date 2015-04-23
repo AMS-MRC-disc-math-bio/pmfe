@@ -15,8 +15,6 @@ int main(int argc, char * argv[]) {
     po::options_description desc("Options");
     desc.add_options()
         ("sequence", po::value<std::string>()->required(), "Sequence file")
-        ("outfile,o", po::value<std::string>(), "Output structure file")
-        ("paramdir,p", po::value<std::string>()->default_value("/usr/local/share/pmfe/Turner99"), "Turner99 parameter directory")
         ("multiloop-penalty,a", po::value<std::string>(), "Multiloop penalty parameter")
         ("unpaired-penalty,b", po::value<std::string>(), "Unpaired base penalty parameter")
         ("branch-penalty,c", po::value<std::string>(), "Branching helix penalty parameter")
@@ -38,18 +36,7 @@ int main(int argc, char * argv[]) {
     po::notify(vm);
 
     // Process file-related options
-    fs::path seq_file, output_file, param_dir;
-
-    seq_file = vm["sequence"].as<std::string>();
-    param_dir = vm["paramdir"].as<std::string>();
-
-
-    if (vm.count("outfile")) {
-        output_file = vm["outfile"].as<std::string>();
-    } else {
-        output_file = seq_file;
-        output_file.replace_extension(".ct");
-    }
+    fs::path seq_file(vm["sequence"].as<std::string>());
 
     // Set up the parameter vector
     pmfe::ParameterVector params = pmfe::ParameterVector();
@@ -76,7 +63,7 @@ int main(int argc, char * argv[]) {
     pmfe::dangle_mode dangles = pmfe::convert_to_dangle_mode(vm["dangle-model"].as<int>());
 
     std::cout << "Starting analysis run!" << std::endl;
-    pmfe::ScoreVector result = pmfe::mfe(seq_file, output_file, params, param_dir, dangles);
+    pmfe::ScoreVector result = pmfe::mfe(seq_file, params, dangles);
     std::cout << result << std::endl;
     return(0);
 }
