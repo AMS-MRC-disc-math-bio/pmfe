@@ -241,6 +241,9 @@ namespace pmfe {
             // Remove any DOS-style line terminators
             line.erase(std::remove(line.begin(), line.end(), '\r'), line.end());
 
+            // As well as any spaces or tabs
+            line.erase(std::remove_if(line.begin(), line.end(), ::isspace), line.end()); // We use the C implementation of isspace to avoid goofy template problems
+
             // exclude lines starting with FASTA comment characters
             if(line[0] != ';' && line[0] != '>' && line.length() > 0)
                 tempseq += line;
@@ -454,7 +457,7 @@ namespace pmfe {
            << structure.score.multiloops << "\t"
            << structure.score.unpaired << "\t"
            << structure.score.branches << "\t"
-           << structure.score.w << "\t"
+           << structure.score.w << "j\t"
            << structure.score.energy;
         return os;
     }
