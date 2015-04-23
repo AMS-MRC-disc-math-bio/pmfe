@@ -93,8 +93,14 @@ namespace pmfe {
         outfile << "# Points: " << number_of_vertices() << std::endl;
         outfile << "# Facets: " << number_of_simplices() << std::endl << std::endl;
 
-        for (BBP::Hull_vertex_const_iterator v = hull_vertices_begin(); v != hull_vertices_end(); ++v) {
-            outfile << structures.at(associated_point(v));
+        outfile << "#\t" << sequence << "m\tu\th\tw\te" << std::endl;
+
+        // Initializing variables outside the loop is bad manners, but
+        // we need it in order to have both indices
+        int i;
+        BBP::Hull_vertex_const_iterator v;
+        for (i = 1, v = hull_vertices_begin(); v != hull_vertices_end(); ++i, ++v) {
+            outfile << i << "\t" << structures.at(associated_point(v)) << std::endl;
         }
     };
 };

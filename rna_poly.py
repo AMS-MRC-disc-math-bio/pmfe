@@ -57,11 +57,18 @@ class RNAPolytope(Polyhedron_QQ_ppl):
                 newline = line.split('#')[0] # Only use content before the comment symbol
                 if newline.strip() != '':
                     elts = newline.split()
-                    coords = (QQ(elts[1]), QQ(elts[2]), QQ(elts[3]), QQ(elts[4]))
+                    structure = elts[1]
+                    multiloops = QQ(elts[2])
+                    unpaired = QQ(elts[3])
+                    branches = QQ(elts[4])
+                    w = QQ(elts[5])
+                    energy = QQ(elts[6])
+                    coords = (multiloops, unpaired, branches, w)
 
-                    newpoint = namedtuple('RNApoint', ['structure', 'vector'])
+                    newpoint = namedtuple('RNApoint', ['structure', 'vector', 'energy'])
                     newpoint.vector = coords
-                    newpoint.structure = elts[0]
+                    newpoint.structure = structure
+                    newpoint.energy = energy
 
                     points.append(newpoint)
 

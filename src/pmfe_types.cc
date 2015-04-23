@@ -455,7 +455,7 @@ namespace pmfe {
            << structure.score.unpaired << "\t"
            << structure.score.branches << "\t"
            << structure.score.w << "\t"
-           << structure.score.energy << std::endl;
+           << structure.score.energy;
         return os;
     }
 
