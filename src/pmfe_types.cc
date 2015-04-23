@@ -5,6 +5,7 @@
 #include <gmpxx.h>
 #include <cmath>
 #include <iostream>
+#include <stdexcept>
 
 #include <set>
 #include <deque>
@@ -248,8 +249,31 @@ namespace pmfe {
     }
 
     void RNASequence::sanitize_string() {
-        // TODO: Add a verification step
-        boost::to_upper(seq_txt);
+        // Apply some processing to each character of the seq_txt string
+        for (unsigned int i = 0; i < seq_txt.length(); ++i) {
+            // Capitalize if the base is valid, throw an exception if not
+            switch(base(i)) {
+            case BASE_A:
+                seq_txt[i] = 'A';
+                break;
+
+            case BASE_C:
+                seq_txt[i] = 'C';
+                break;
+
+            case BASE_G:
+                seq_txt[i] = 'G';
+                break;
+
+            case BASE_U:
+                seq_txt[i] = 'U';
+                break;
+
+            default:
+                throw std::invalid_argument(subsequence(i, i) + " is not a valid RNA base.");
+                break;
+            }
+        }
     }
 
     const int RNASequence::len() const {
