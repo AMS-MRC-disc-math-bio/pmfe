@@ -411,7 +411,7 @@ namespace pmfe {
 
         std::deque<int> starts;
         std::deque< std::pair<int, int> > results;
-        for (int i = 0; i < structure_as_chars.length(); ++i) {
+        for (unsigned int i = 0; i < structure_as_chars.length(); ++i) {
             char c = structure_as_chars[i];
             switch (c) {
             case p5symb:
