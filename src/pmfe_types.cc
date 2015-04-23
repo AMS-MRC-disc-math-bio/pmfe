@@ -237,8 +237,10 @@ namespace pmfe {
         fs::ifstream filestream (filename);
 
         std::string line;
-        while(filestream.good()) {
-            std::getline(filestream, line);
+        while (std::getline(filestream, line)) {
+            // Remove any DOS-style line terminators
+            line.erase(std::remove(line.begin(), line.end(), '\r'), line.end());
+
             // exclude lines starting with FASTA comment characters
             if(line[0] != ';' && line[0] != '>' && line.length() > 0)
                 tempseq += line;
@@ -250,7 +252,7 @@ namespace pmfe {
 
     void RNASequence::sanitize_string() {
         // Apply some processing to each character of the seq_txt string
-        for (unsigned int i = 0; i < seq_txt.length(); ++i) {
+        for (int i = 0; i < len(); ++i) {
             // Capitalize if the base is valid, throw an exception if not
             switch(base(i)) {
             case BASE_A:
@@ -270,7 +272,9 @@ namespace pmfe {
                 break;
 
             default:
-                throw std::invalid_argument(subsequence(i, i) + " is not a valid RNA base.");
+                std::stringstream error_message;
+                error_message << "At position " << i << ", found " << seq_txt[i] << ", which is an invalid RNA base.";
+                throw std::invalid_argument(error_message.str());
                 break;
             }
         }
