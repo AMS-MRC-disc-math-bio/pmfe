@@ -71,9 +71,9 @@ namespace pmfe {
         if (scored_structure.score.energy != formula_energy) {
             std::cerr << "Energy calculation is inconsistent!" << std::endl;
             std::cerr << params << std::endl;
-            std::cerr << scored_structure.score << std::endl;
+            std::cerr << scored_structure << std::endl;
             std::cerr << "Formula energy: " << formula_energy.get_str(10) << std::endl;
-            std::cerr << "Classical energy: " << classical_energy.get_str(10) << std::endl << std::endl;
+            std::cerr << "Score energy: " << scored_structure.score.energy.get_str(10) << std::endl;
         };
 
         BBP::FPoint result = scored_structure_to_fp(scored_structure);

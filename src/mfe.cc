@@ -100,7 +100,7 @@ namespace pmfe {
             std::cerr << params << std::endl;
             std::cerr << scored_structure << std::endl;
             std::cerr << "Formula energy: " << formula_energy.get_str(10) << std::endl;
-            std::cerr << "Classical energy: " << classical_energy.get_str(10) << std::endl << std::endl;
+            std::cerr << "Score energy: " << scored_structure.score.energy.get_str(10) << std::endl;
         };
 
         return result;

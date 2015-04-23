@@ -85,10 +85,10 @@ namespace pmfe {
     };
 
     std::ostream& operator<<(std::ostream& os, const ParameterVector& params) {
-        os << "Multiloop penalty: " << params.multiloop_penalty.get_str(10) << std::endl
-           << "Unpaired penalty: " << params.unpaired_penalty.get_str(10) << std::endl
-           << "Branch penalty: " << params.branch_penalty.get_str(10) << std::endl
-           << "Dummy scaling: " << params.dummy_scaling.get_str(10) << std::endl;
+        os << "Multiloop penalty: " << params.multiloop_penalty.get_str(10) << " ≈ " << params.multiloop_penalty.get_d() << std::endl
+           << "Unpaired penalty: " << params.unpaired_penalty.get_str(10) << " ≈ " << params.unpaired_penalty.get_d() << std::endl
+           << "Branch penalty: " << params.branch_penalty.get_str(10) << " ≈ " << params.branch_penalty.get_d() << std::endl
+           << "Dummy scaling: " << params.dummy_scaling.get_str(10) << " ≈ " << params.dummy_scaling.get_d() << std::endl;
         return os;
     };
 
@@ -140,11 +140,11 @@ namespace pmfe {
     };
 
     std::ostream& operator<<(std::ostream& os, const ScoreVector& score) {
-        os << "Multiloops: " << score.multiloops.get_str(10) << std::endl
-           << "Unpaired bases: " << score.unpaired.get_str(10) << std::endl
-           << "Branches: " << score.branches.get_str(10) << std::endl
-           << "w: " << score.w.get_str(10) << std::endl
-           << "Parametrized energy: " << score.energy.get_str(10) << std::endl;
+        os << "Multiloops: " << score.multiloops.get_str(10) << " ≈ " << score.multiloops.get_d() << std::endl
+           << "Unpaired bases: " << score.unpaired.get_str(10) << " ≈ " << score.unpaired.get_d()<< std::endl
+           << "Branches: " << score.branches.get_str(10) << " ≈ " << score.branches.get_d() << std::endl
+           << "w: " << score.w.get_str(10) << " ≈ " << score.w.get_d() << std::endl
+           << "Parametrized energy: " << score.energy.get_str(10) << " ≈ " << score.energy.get_d() << std::endl;
         return os;
     };
 
