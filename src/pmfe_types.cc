@@ -232,8 +232,13 @@ namespace pmfe {
     };
 
     RNASequence::RNASequence(const fs::path& filename) {
-        // TODO: Add checks to make sure we got a good file
-        std::string tempseq = ""; // TODO: Figure out indexing here so things don't melt
+        if (not fs::is_regular_file(filename)) {
+            std::stringstream error_message;
+            error_message << "Path " << filename << " does not point to a valid file." ;
+            throw std::invalid_argument(error_message.str());
+        }
+
+        std::string tempseq = "";
         fs::ifstream filestream (filename);
 
         std::string line;
@@ -341,6 +346,10 @@ namespace pmfe {
 
     const char& RNAStructure::operator[](const int index) const {
         return seq[index];
+    }
+
+    const std::string& RNAStructure::string() const {
+        return structure_as_chars;
     }
 
     RNASequenceWithTables::RNASequenceWithTables(const RNASequence& seq, mpq_class infinity_value):

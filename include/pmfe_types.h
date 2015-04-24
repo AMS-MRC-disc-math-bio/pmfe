@@ -136,6 +136,8 @@ namespace pmfe {
 
         const std::deque< std::pair<int, int> > pairs() const; // Return a deque of the pairs in the structure
 
+        const std::string& string() const; // Return the structure as a string
+
         const char& operator[](const int index) const; // Retrieve a single base using index notation
         friend std::ostream& operator<<(std::ostream& out, const RNAStructure& structure); // Output this structure as an ostream
 

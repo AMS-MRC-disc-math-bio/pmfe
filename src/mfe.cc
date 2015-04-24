@@ -36,8 +36,6 @@
 #include "nntm.h"
 #include "pmfe_types.h"
 
-//#include "RNAScoring.h"
-
 namespace pmfe {
     namespace fs = boost::filesystem;
 

@@ -1,18 +1,23 @@
 #CXX = clang++
 
 # source files
-SRC = $(wildcard src/*.cc)
-OBJ = $(SRC:.cc=.o)
+SRC := $(wildcard src/*.cc)
+OBJ := $(SRC:.cc=.o)
 
-BINSRC = $(wildcard src/bin-*.cc)
-BINOBJ = $(BINSRC:.cc=.o)
+BINSRC := $(wildcard src/bin-*.cc)
+BINOBJ := $(BINSRC:.cc=.o)
 
-LIBOBJ = $(filter-out $(BINOBJ),$(OBJ))
+TESTSRC := $(wildcard src/test-*.cc)
+TESTOBJ := $(TESTSRC:.cc=.o)
 
-DEP = $(SRC:.cc=.P)
-HDR = $(wildcard src/*.h)
+LIBOBJ := $(OBJ)
+LIBOBJ := $(filter-out $(BINOBJ),$(LIBOBJ))
+LIBOBJ := $(filter-out $(TESTOBJ),$(LIBOBJ))
 
-BIN = pmfe-findmfe pmfe-parametrizer
+DEP := $(SRC:.cc=.P)
+HDR := $(wildcard src/*.h)
+
+BIN = pmfe-findmfe pmfe-parametrizer pmfe-tests
 
 # include directories
 INCLUDES += -Iinclude
@@ -52,6 +57,9 @@ pmfe-findmfe: $(LIBOBJ) src/bin-findmfe.o
 	$(CXX) $(LDFLAGS) $(CXXFLAGS) $^ -o $@ $(LIBS)
 
 pmfe-parametrizer: $(LIBOBJ) src/bin-parametrizer.o
+	$(CXX) $(LDFLAGS) $(CXXFLAGS) $^ -o $@ $(LIBS)
+
+pmfe-tests: $(LIBOBJ) $(TESTOBJ) src/bin-tests.o
 	$(CXX) $(LDFLAGS) $(CXXFLAGS) $^ -o $@ $(LIBS)
 
 %.o: %.cc
