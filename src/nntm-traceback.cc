@@ -1,3 +1,5 @@
+// Copyright (c) 2015 Andrew Gainer-Dewar.
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
