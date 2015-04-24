@@ -42,9 +42,7 @@ namespace pmfe {
             flag = 1;
 
             if (dangles == BOTH_DANGLE) {
-                mpq_class e_dangles = 0;
-                if (i>0) e_dangles +=  Ed3(j, i, i-1, seq);
-                if (j<seq.len()-1) e_dangles += Ed5(j, i, j+1, seq);
+                mpq_class e_dangles = Ed5(i, j, seq) + Ed3(i, j, seq);
                 if (seq.W[j] == seq.V[i][j] + auPenalty(i, j, seq) + e_dangles + wim1) {
                     done = 1;
                     score.energy += (auPenalty(i, j, seq) + e_dangles);
@@ -67,23 +65,23 @@ namespace pmfe {
                     traceV(i, j, seq, structure, score);
                     if (flag ) traceW(i-1, seq, structure, score);
                     break;
-                } else if (seq.W[j] ==  seq.V[i][j-1] + auPenalty(i, j-1, seq) + Ed5(j-1, i, j, seq) + wim1) {
+                } else if (seq.W[j] ==  seq.V[i][j-1] + auPenalty(i, j-1, seq) + Ed3(i, j-1, seq) + wim1) {
                     done = 1;
-                    score.energy += (auPenalty(i, j-1, seq) + Ed5(j-1, i, j, seq));
+                    score.energy += (auPenalty(i, j-1, seq) + Ed3(i, j-1, seq));
                     structure.mark_d3(j);
                     traceV(i, j-1, seq, structure, score);
                     if (flag ) traceW(i-1, seq, structure, score);
                     break;
-                } else if (seq.W[j] == seq.V[i+1][j] + auPenalty(i+1, j, seq) + Ed3(j, i+1, i, seq) + wim1){
+                } else if (seq.W[j] == seq.V[i+1][j] + auPenalty(i+1, j, seq) + Ed5(i+1, j, seq) + wim1){
                     done = 1;
-                    score.energy += (auPenalty(i+1, j, seq) + Ed3(j, i+1, i, seq));
+                    score.energy += (auPenalty(i+1, j, seq) + Ed5(i+1, j, seq));
                     structure.mark_d5(i);
                     traceV(i + 1, j, seq, structure, score);
                     if (flag ) traceW(i-1, seq, structure, score);
                     break;
-                } else if (seq.W[j] == seq.V[i+1][j-1] + auPenalty(i+1, j-1, seq) + Ed3(j-1, i+1, i, seq) + Ed5(j-1, i+1, j, seq) + wim1) {
+                } else if (seq.W[j] == seq.V[i+1][j-1] + auPenalty(i+1, j-1, seq) + Ed5(i+1, j-1, seq) + Ed3(i+1, j-1, seq) + wim1) {
                     done = 1;
-                    score.energy += (auPenalty(i+1, j-1, seq) + Ed3(j-1, i+1, i, seq) + Ed5(j-1, i+1, j, seq));
+                    score.energy += (auPenalty(i+1, j-1, seq) + Ed5(i+1, j-1, seq) + Ed3(i+1, j-1, seq));
                     structure.mark_d3(j);
                     structure.mark_d5(i);
                     traceV(i+1, j-1, seq, structure, score);
@@ -160,7 +158,7 @@ namespace pmfe {
         mpq_class eVM = 0;
 
         if (dangles == BOTH_DANGLE) {
-            if (seq.V[i][j] ==  seq.WMPrime[i+1][j-1] + constants.multConst[0] + constants.multConst[2] + auPenalty(i, j, seq) + Ed5(i, j, i + 1, seq) + Ed3(i, j, j - 1, seq)) {
+            if (seq.V[i][j] ==  seq.WMPrime[i+1][j-1] + constants.multConst[0] + constants.multConst[2] + auPenalty(i, j, seq) + Ed5(i, j, seq, true) + Ed3(i, j, seq, true)) {
                 eVM += traceWMPrime(i+1, j-1, seq, structure, score);
                 score.multiloops++;
                 score.branches++;
@@ -176,20 +174,20 @@ namespace pmfe {
                 eVM += traceWMPrime(i+1, j-1, seq, structure, score);
                 score.multiloops++;
                 score.branches++;
-            } else if (seq.VM[i][j] == seq.WMPrime[i+2][j-1] + constants.multConst[0] + constants.multConst[2] + auPenalty(i, j, seq) + Ed5(i, j, i+1, seq) + constants.multConst[1]) {
+            } else if (seq.VM[i][j] == seq.WMPrime[i+2][j-1] + constants.multConst[0] + constants.multConst[2] + auPenalty(i, j, seq) + Ed5(i, j, seq, true) + constants.multConst[1]) {
                 eVM += traceWMPrime(i+2, j-1, seq, structure, score);
                 structure.mark_d3(i+1);
                 score.multiloops++;
                 score.branches++;
                 score.unpaired++;
             }
-            else if (seq.VM[i][j] == seq.WMPrime[i+1][j-2] + constants.multConst[0] + constants.multConst[2] + auPenalty(i, j, seq) + Ed3(i, j, j-1, seq) + constants.multConst[1]) {
+            else if (seq.VM[i][j] == seq.WMPrime[i+1][j-2] + constants.multConst[0] + constants.multConst[2] + auPenalty(i, j, seq) + Ed3(i, j, seq, true) + constants.multConst[1]) {
                 eVM += traceWMPrime(i+1, j-2, seq, structure, score);
                 structure.mark_d5(j-1);
                 score.multiloops++;
                 score.branches++;
                 score.unpaired++;
-            } else if (seq.V[i][j] ==  seq.WMPrime[i+2][j-2] + constants.multConst[0] + constants.multConst[2] + auPenalty(i, j, seq) + Ed5(i, j, i+1, seq) + Ed3(i, j, j-1, seq) + constants.multConst[1]*2) {
+            } else if (seq.V[i][j] ==  seq.WMPrime[i+2][j-2] + constants.multConst[0] + constants.multConst[2] + auPenalty(i, j, seq) + Ed5(i, j, seq, true) + Ed3(i, j, seq, true) + constants.multConst[1]*2) {
                 eVM += traceWMPrime(i+2, j-2, seq, structure, score);
                 structure.mark_d3(i+1);
                 structure.mark_d5(j-1);
@@ -229,14 +227,7 @@ namespace pmfe {
 
         if (!done){
             if (dangles == BOTH_DANGLE) {
-                mpq_class energy = seq.V[i][j] + auPenalty(i, j, seq) + constants.multConst[2];
-                if (i==0) {
-                    energy += Ed3(j, i, seq.len(), seq);
-                } else {
-                    energy += Ed3(j, i, i-1, seq);
-                }
-
-                energy += Ed5(j, i, j+1, seq);
+                mpq_class energy = seq.V[i][j] + auPenalty(i, j, seq) + constants.multConst[2] + Ed5(i, j, seq) + Ed3(i, j, seq);
 
                 if (seq.WM[i][j] ==  energy) {
                     eWM += traceV(i, j, seq, structure, score);
@@ -254,19 +245,19 @@ namespace pmfe {
                     eWM += traceV(i, j, seq, structure, score);
                     score.branches++;
                     done = 1;
-                } else if (seq.WM[i][j] == seq.V[i+1][j] + Ed3(j, i+1, i, seq) + auPenalty(i+1, j, seq) + constants.multConst[2] + constants.multConst[1]) {
+                } else if (seq.WM[i][j] == seq.V[i+1][j] + Ed5(i+1, j, seq) + auPenalty(i+1, j, seq) + constants.multConst[2] + constants.multConst[1]) {
                     eWM += traceV(i+1, j, seq, structure, score);
                     structure.mark_d5(i);
                     score.branches++;
                     score.unpaired++;
                     done = 1;
-                } else if (seq.WM[i][j] == seq.V[i][j-1] + Ed5(j-1, i, j, seq) + auPenalty(i, j-1, seq) + constants.multConst[2] + constants.multConst[1]) {
+                } else if (seq.WM[i][j] == seq.V[i][j-1] + Ed3(i, j-1, seq) + auPenalty(i, j-1, seq) + constants.multConst[2] + constants.multConst[1]) {
                     eWM += traceV(i, j-1, seq, structure, score);
                     structure.mark_d3(j);
                     score.branches++;
                     score.unpaired++;
                     done = 1;
-                } else if (seq.WM[i][j] == seq.V[i+1][j-1] + Ed3(j-1, i+1, i, seq) + Ed5(j-1, i+1, j, seq) + auPenalty(i+1, j-1, seq) + constants.multConst[2] + constants.multConst[1]*2) {
+                } else if (seq.WM[i][j] == seq.V[i+1][j-1] + Ed5(i+1, j-1, seq) + Ed3(i+1, j-1, seq) + auPenalty(i+1, j-1, seq) + constants.multConst[2] + constants.multConst[1]*2) {
                     eWM += traceV(i+1, j-1, seq, structure, score);
                     structure.mark_d5(i);
                     structure.mark_d3(j);

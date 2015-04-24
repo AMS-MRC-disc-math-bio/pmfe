@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
+#include <assert.h>
 
 #include "nntm.h"
 #include "nndb_constants.h"
@@ -42,8 +43,8 @@ namespace pmfe {
 
                     // Multi Loop BEGIN
                     mpq_class d3, d5;
-                    d3 = Ed3(i, j, j-1, seq);
-                    d5 = Ed5(i, j, i+1, seq);
+                    d3 = Ed3(i, j, seq, true);
+                    d5 = Ed5(i, j, seq, true);
 
                     if (dangles == BOTH_DANGLE) { // -d2
                         std::vector<mpq_class> vals;
@@ -98,15 +99,7 @@ namespace pmfe {
                 }
 
                 if (dangles == BOTH_DANGLE) {
-                    mpq_class energy = seq.V[i][j] + auPenalty(i, j, seq) + constants.multConst[2];
-                    if (i == 0) {
-                        energy += Ed3(j, i, seq.len(), seq);
-                    } else {
-                        energy += Ed3(j, i, i-1, seq);
-                    }
-
-                    if (j < seq.len() - 1)
-                        energy += Ed5(j, i, j+1, seq);
+                    mpq_class energy = seq.V[i][j] + auPenalty(i, j, seq) + constants.multConst[2] + Ed5(i, j, seq) + Ed3(i, j, seq);
 
                     std::vector<mpq_class> vals;
                     vals.push_back(energy);
@@ -122,11 +115,11 @@ namespace pmfe {
                     vals.push_back(newWM);
                     vals.push_back(seq.V[i][j] + auPenalty(i, j, seq) + constants.multConst[2]); // no dangle
 
-                    vals.push_back(seq.V[i+1][j] + Ed3(j, i+1, i, seq) + auPenalty(i+1, j, seq) + constants.multConst[2] + constants.multConst[1]); //i dangle
+                    vals.push_back(seq.V[i+1][j] + Ed5(i+1, j, seq) + auPenalty(i+1, j, seq) + constants.multConst[2] + constants.multConst[1]); //i dangle
 
-                    vals.push_back(seq.V[i][j-1] + Ed5(j-1, i, j, seq) + auPenalty(i, j-1, seq) + constants.multConst[2] + constants.multConst[1]);  //j dangle
+                    vals.push_back(seq.V[i][j-1] + Ed3(i, j-1, seq) + auPenalty(i, j-1, seq) + constants.multConst[2] + constants.multConst[1]);  //j dangle
 
-                    vals.push_back(seq.V[i+1][j-1] + Ed3(j-1, i+1, i, seq) + Ed5(j-1, i+1, j, seq) + auPenalty(i+1, j-1, seq) + constants.multConst[2] + 2*constants.multConst[1]); //i,j dangle
+                    vals.push_back(seq.V[i+1][j-1] + Ed5(i+1, j-1, seq) + Ed3(i+1, j-1, seq) + auPenalty(i+1, j-1, seq) + constants.multConst[2] + 2*constants.multConst[1]); //i,j dangle
 
                     newWM = *std::min_element(vals.begin(), vals.end());
                 }
@@ -159,9 +152,7 @@ namespace pmfe {
                 }
 
                 if (dangles == BOTH_DANGLE) { // -d2 option
-                    mpq_class energy = seq.V[i][j] + auPenalty(i, j, seq) + Wim1;
-                    if (i>0) energy +=  Ed3(j, i, i-1, seq);
-                    if (j<seq.len()-1) energy += Ed5(j, i, j+1, seq);
+                    mpq_class energy = seq.V[i][j] + auPenalty(i, j, seq) + Wim1 + Ed5(i, j, seq, true) + Ed3(i, j, seq, true);
                     Widjd = energy;
 
                     std::vector<mpq_class> vals;
@@ -173,11 +164,11 @@ namespace pmfe {
                     Wij = seq.V[i][j] + auPenalty(i, j, seq) + Wim1;
                 } else { // default
                     Wij = seq.V[i][j] + auPenalty(i, j, seq) + Wim1;
-                    Widj = seq.V[i+1][j] + auPenalty(i+1, j, seq) + Ed3(j, i + 1, i, seq) + Wim1;
+                    Widj = seq.V[i+1][j] + auPenalty(i+1, j, seq) + Ed5(i+1, j, seq) + Wim1;
 
-                    Wijd = seq.V[i][j-1] + auPenalty(i, j-1, seq) + Ed5(j-1, i, j, seq) + Wim1;
+                    Wijd = seq.V[i][j-1] + auPenalty(i, j-1, seq) + Ed3(i, j-1, seq) + Wim1;
 
-                    Widjd = seq.V[i+1][j-1] + auPenalty(i+1, j-1, seq) + Ed3(j-1, i+1, i, seq) + Ed5(j-1, i+1, j, seq) + Wim1;
+                    Widjd = seq.V[i+1][j-1] + auPenalty(i+1, j-1, seq) + Ed5(i+1, j-1, seq) + Ed3(i+1, j-1, seq) + Wim1;
 
                     std::vector<mpq_class> vals;
                     vals.push_back(Wij);
@@ -213,13 +204,52 @@ namespace pmfe {
     };
 
 
-    // TODO: Replace these with semantic Ed3 and Ed5
-    mpq_class NNTM::Ed3(int i, int j, int k, const RNASequence& seq) const {
-        return constants.dangle[seq.base(i)][seq.base(j)][seq.base(k)][1];
+    // dangle on the 5' end of (i, j)
+    // if inside==true, dangle i+1 instead of i-1
+    mpq_class NNTM::Ed5(int i, int j, const RNASequence& seq, bool inside) const {
+        // Input specification
+        assert (i >= 0 && i < seq.len());
+        assert (j >= 0 && j < seq.len());
+
+        mpq_class penalty = 0;
+
+        if (i > 0) {
+            if (inside)
+                penalty = constants.dangle[seq.base(i)][seq.base(j)][seq.base(i+1)][0];
+            else
+                penalty = constants.dangle[seq.base(j)][seq.base(i)][seq.base(i-1)][1];
+        } else {
+            if (inside)
+                penalty = constants.dangle[seq.base(i)][seq.base(j)][seq.base(i+1)][0];
+            else
+                penalty = constants.dangle[seq.base(j)][seq.base(i)][seq.base(seq.len())][1];
+        }
+
+        return penalty;
     }
 
-    mpq_class NNTM::Ed5(int i, int j, int k, const RNASequence& seq) const {
-        return constants.dangle[seq.base(i)][seq.base(j)][seq.base(k)][0];
+    // dangle on the 3' end of (i, j)
+    // if inside==true, dangle j-1 instead of j+1
+    mpq_class NNTM::Ed3(int i, int j, const RNASequence& seq, bool inside) const {
+        // Input specification
+        assert (i >= 0 && i < seq.len());
+        assert (j >= 0 && j < seq.len());
+
+        mpq_class penalty = 0;
+
+        if (j < seq.len()-1) {
+            if (inside)
+                penalty = constants.dangle[seq.base(i)][seq.base(j)][seq.base(j-1)][1];
+            else
+                penalty = constants.dangle[seq.base(j)][seq.base(i)][seq.base(j+1)][0];
+        } else {
+            if (inside)
+                penalty = constants.dangle[seq.base(i)][seq.base(j)][seq.base(j-1)][1];
+            else
+                penalty = constants.dangle[seq.base(j)][seq.base(i)][seq.base(0)][0];
+        }
+
+        return penalty;
     }
 
     mpq_class NNTM::auPenalty(int i, int j, const RNASequence& seq) const {

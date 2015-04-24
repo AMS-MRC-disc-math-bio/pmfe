@@ -95,22 +95,22 @@ namespace pmfe {
             // region is between i1 and i2
             start = i1;
             end = i2;
-            d5 = Ed5(i1, j1, i1+1, structure.seq); // Dangle at the 5' end of the region
-            d3 = Ed3(j2, i2, i2-1, structure.seq); // Dangle at the 3' end of the region
+            d5 = Ed3(i1, j1, structure.seq, true); // Dangle at the 5' end of the region
+            d3 = Ed5(i2, j2, structure.seq); // Dangle at the 3' end of the region
         } else if (i2 < i1 and i1 < j1 and j1 < j2) {
             // (i2, j2) is the initiating pair of the loop, so
             // region is between j1 and j2
             start = j1;
             end = j2;
-            d5 = Ed5(j1, i1, j1+1, structure.seq);
-            d3 = Ed3(i2, j2, j2-1, structure.seq);
+            d5 = Ed3(i1, j1, structure.seq);
+            d3 = Ed3(i2, j2, structure.seq, true);
         } else if (i1 < j1 and j1 < i2 and i2 < j2) {
             // neither (i1, j1) and (i2, j2) is the initiating pair, so
             // region is between j1 and i2
             start = j1;
             end = i2;
-            d5 = Ed5(j1, i1, j1+1, structure.seq); // Dangle at the 5' end of the region
-            d3 = Ed3(j2, i2, i2-1, structure.seq); // Dangle at the 3' end of the region
+            d5 = Ed3(i1, j1, structure.seq); // Dangle at the 5' end of the region
+            d3 = Ed5(i2, j2, structure.seq); // Dangle at the 3' end of the region
         } else {
             throw std::invalid_argument("Invalid multiloop nesting");
         }
@@ -203,7 +203,7 @@ namespace pmfe {
 
         if (firstbranch.start > 0) { // If there is a dangling 5' end
             has_5d = tree.does_d5(firstbranch.start - 1);
-            d5 = Ed3(firstbranch.end, firstbranch.start, firstbranch.start - 1, tree.seq);
+            d5 = Ed5(firstbranch.start, firstbranch.end, tree.seq);
         } else {
             has_5d = false;
             d5 = 0;
@@ -211,7 +211,7 @@ namespace pmfe {
 
         if (lastbranch.end < tree.len() - 1) { // If there is a dangling 3' end
             has_3d = tree.does_d3(lastbranch.end + 1);
-            d3 = Ed5(lastbranch.end, lastbranch.start, lastbranch.end + 1, tree.seq);
+            d3 = Ed3(lastbranch.start, lastbranch.end, tree.seq);
         } else {
             has_3d = false;
             d3 = 0;
