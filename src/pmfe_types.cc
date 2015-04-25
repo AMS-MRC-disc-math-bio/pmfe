@@ -353,16 +353,21 @@ namespace pmfe {
     }
 
     RNASequenceWithTables::RNASequenceWithTables(const RNASequence& seq, mpq_class infinity_value):
-        RNASequence(seq) {
-
-        W = std::vector<mpq_class>(len()+1, infinity_value);
-
-        V = std::vector< std::vector<mpq_class> >(len()+1, std::vector<mpq_class>(len()+1, infinity_value));
-        VBI = std::vector< std::vector<mpq_class> >(len()+1, std::vector<mpq_class>(len()+1, infinity_value));
-        VM = std::vector< std::vector<mpq_class> >(len()+1, std::vector<mpq_class>(len()+1, infinity_value));
-        WM = std::vector< std::vector<mpq_class> >(len()+1, std::vector<mpq_class>(len()+1, infinity_value));
-        WMPrime = std::vector< std::vector<mpq_class> >(len()+1, std::vector<mpq_class>(len()+1, infinity_value));
-        // PP replaced with computation: PP[i][j] = 1 if j > i+TURN
+        RNASequence(seq),
+        W(boost::extents[len()]),
+        V(boost::extents[len()][len()]),
+        VBI(boost::extents[len()][len()]),
+        VM(boost::extents[len()][len()]),
+        WM(boost::extents[len()][len()]),
+        WMPrime(boost::extents[len()][len()])
+    {
+        // All the arrays should be filled with infinity
+        std::fill(W.data(), W.data() + W.num_elements(), infinity_value);
+        std::fill(V.data(), V.data() + V.num_elements(), infinity_value);
+        std::fill(VBI.data(), VBI.data() + VBI.num_elements(), infinity_value);
+        std::fill(VM.data(), VM.data() + VM.num_elements(), infinity_value);
+        std::fill(WM.data(), WM.data() + WM.num_elements(), infinity_value);
+        std::fill(WMPrime.data(), WMPrime.data() + WMPrime.num_elements(), infinity_value);
     }
 
     void RNASequenceWithTables::print_debug(){

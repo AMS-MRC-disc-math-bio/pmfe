@@ -12,6 +12,7 @@
 
 #include <boost/python/tuple.hpp>
 #include <boost/filesystem.hpp>
+#include "boost/multi_array.hpp"
 
 #include "interval_tree.h"
 
@@ -105,12 +106,13 @@ namespace pmfe {
         RNASequenceWithTables() {}; // Default constructor for compiler
         RNASequenceWithTables(const RNASequence& seq, mpq_class infinity_value = mpq_class(9999999999999)); // TODO: This is a really gross way to handle this! Find a better one.
 
-        std::vector<mpq_class> W;
-        std::vector< std::vector<mpq_class> > V;
-        std::vector< std::vector<mpq_class> > VBI;
-        std::vector< std::vector<mpq_class> > VM;
-        std::vector< std::vector<mpq_class> > WM;
-        std::vector< std::vector<mpq_class> > WMPrime;
+        boost::multi_array<mpq_class, 1> W;
+        boost::multi_array<mpq_class, 2> V;
+        boost::multi_array<mpq_class, 2> VBI;
+        boost::multi_array<mpq_class, 2> VM;
+        boost::multi_array<mpq_class, 2> WM;
+        boost::multi_array<mpq_class, 2> WMPrime;
+
 
         void print_debug();
     };
