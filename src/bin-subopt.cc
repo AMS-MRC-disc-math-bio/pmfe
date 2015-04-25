@@ -3,6 +3,7 @@
 #include <iostream>
 
 #include "boost/filesystem.hpp"
+#include "boost/filesystem/fstream.hpp"
 #include "boost/program_options.hpp"
 
 #include "pmfe_types.h"
@@ -74,7 +75,21 @@ int main(int argc, char* argv[]) {
     // Get results
     std::vector<pmfe::RNAStructureWithScore> structures = suboptimal_structures(seq_file, params, dangles, delta, sorted);
 
-    for (int i = 0; i < structures.size(); ++i) {
-        std::cout << i << "\t" << structures[i] << std::endl;
+    // Write out suboptimal structures
+    fs::ofstream outfile(out_file);
+
+    if (!outfile.is_open()) {
+        std::stringstream error_message;
+        error_message << "Output file " << outfile << "is invalid.";
+        throw std::invalid_argument(error_message.str());
+    }
+
+    outfile << "# Suboptimal secondary structures within " << delta.get_d() << " of minimum energy" << std::endl;
+
+    pmfe::RNASequence seq(seq_file);
+    outfile << "#\t" << seq << std::endl << std::endl;
+
+    for (unsigned int i = 0; i < structures.size(); ++i) {
+        outfile << i << "\t" << structures[i] << std::endl;
     }
 }
