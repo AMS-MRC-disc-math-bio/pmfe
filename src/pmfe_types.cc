@@ -359,7 +359,9 @@ namespace pmfe {
         VBI(boost::extents[len()][len()]),
         VM(boost::extents[len()][len()]),
         WM(boost::extents[len()][len()]),
-        WMPrime(boost::extents[len()][len()])
+        WMPrime(boost::extents[len()][len()]),
+        FM(boost::extents[len()][len()]),
+        FM1(boost::extents[len()][len()])
     {
         // All the arrays should be filled with infinity
         std::fill(W.data(), W.data() + W.num_elements(), infinity_value);
@@ -368,6 +370,8 @@ namespace pmfe {
         std::fill(VM.data(), VM.data() + VM.num_elements(), infinity_value);
         std::fill(WM.data(), WM.data() + WM.num_elements(), infinity_value);
         std::fill(WMPrime.data(), WMPrime.data() + WMPrime.num_elements(), infinity_value);
+        std::fill(FM.data(), FM.data() + FM.num_elements(), infinity_value);
+        std::fill(FM1.data(), FM1.data() + FM1.num_elements(), infinity_value);
     }
 
     void RNASequenceWithTables::print_debug(){
@@ -471,7 +475,7 @@ namespace pmfe {
            << structure.score.multiloops << "\t"
            << structure.score.unpaired << "\t"
            << structure.score.branches << "\t"
-           << structure.score.w << "j\t"
+           << structure.score.w << "\t"
            << structure.score.energy;
         return os;
     }
@@ -484,6 +488,42 @@ namespace pmfe {
         for (std::deque< std::pair<int, int> >::const_iterator pair = pairs.begin(); pair != pairs.end(); ++pair) {
             root.insert(pair->first, pair->second);
         }
+    };
+
+    RNAPartialStructure::RNAPartialStructure():
+        RNAStructure(),
+        known_energy(0)
+    {};
+
+    RNAPartialStructure::RNAPartialStructure(const RNASequence& seq, mpq_class known_energy):
+        RNAStructure(seq),
+        known_energy(known_energy)
+    {};
+
+    void RNAPartialStructure::accumulate(mpq_class energy) {
+        known_energy += energy;
+    };
+
+    mpq_class RNAPartialStructure::total() const {
+        return known_energy;
+    };
+
+    void RNAPartialStructure::push(const Segment& seg) {
+        seg_stack.push(seg);
+        known_energy += seg.minimum_energy;
+    };
+
+    void RNAPartialStructure::pop() {
+        known_energy -= top().minimum_energy;
+        seg_stack.pop();
+    };
+
+    Segment RNAPartialStructure::top() const {
+        return seg_stack.top();
+    };
+
+    bool RNAPartialStructure::empty() const {
+        return seg_stack.empty();
     };
 
     dangle_mode convert_to_dangle_mode(int n) {

@@ -20,6 +20,8 @@ namespace pmfe{
 
         const mpq_class energy(const RNAStructure& structure) const;
 
+        std::vector<RNAStructureWithScore> suboptimal_structures(const RNASequenceWithTables& seq, mpq_class delta, bool sorted = false) const;
+
     protected:
         // MFE helpers
         mpq_class Ed3(int i, int j, const RNASequence& seq, bool inside = false) const;
@@ -45,6 +47,15 @@ namespace pmfe{
         const mpq_class eM(const RNAStructureTree& tree, const IntervalTreeNode& node) const; // Compute the energy associated to a multiloop node
         const mpq_class eE(const RNAStructureTree& tree) const; // Compute the energy associated to the external loop node
 
+        // Suboptimal structure helpers
+        bool subopt_process_top_structure(const RNASequenceWithTables& seq, RNAPartialStructure& ps, PartialStructureStack& pstack, mpq_class upper_bound) const;
+        bool subopt_traceV(int i, int j, const RNASequenceWithTables& seq, RNAPartialStructure& ps, PartialStructureStack& pstack, mpq_class upper_bound) const;
+        bool subopt_traceVBI(int i, int j, const RNASequenceWithTables& seq, RNAPartialStructure& ps, PartialStructureStack& pstack, mpq_class upper_bound) const;
+        bool subopt_traceW(int i, int j, const RNASequenceWithTables& seq, RNAPartialStructure& ps, PartialStructureStack& pstack, mpq_class upper_bound) const;
+        bool subopt_traceM1(int i, int j, const RNASequenceWithTables& seq, RNAPartialStructure& ps, PartialStructureStack& pstack, mpq_class upper_bound) const;
+        bool subopt_traceM(int i, int j, const RNASequenceWithTables& seq, RNAPartialStructure& ps, PartialStructureStack& pstack, mpq_class upper_bound) const;
+
+        // Configurable constants
         const static int MAXLOOP = 30; /* The maximum loop size. */
         const static int TURN = 3; /* Minimum size of a hairpin loop. */
     };

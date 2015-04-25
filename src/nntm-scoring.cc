@@ -198,6 +198,10 @@ namespace pmfe {
         bool has_5d, has_3d;
         mpq_class d3, d5;
 
+        if (tree.root.valency() == 0) {
+            return 0;
+        }
+
         const IntervalTreeNode& firstbranch = tree.root.children.front();
         const IntervalTreeNode& lastbranch = tree.root.children.back();
 

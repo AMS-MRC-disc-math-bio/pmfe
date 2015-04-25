@@ -26,6 +26,7 @@ namespace pmfe {
          */
         RNASequenceWithTables seq(inseq, constants.INFINITY_);
 
+        // Populate V, VM, VBI, WM, and WMPrime
         int b, i, j;
         for (b = TURN+1; b <= seq.len() - 1; ++b) {
 #ifdef _OPENMP
@@ -138,6 +139,7 @@ namespace pmfe {
             }
         }
 
+        // Populate W
         seq.W[0] = 0;
         for (j = TURN+1; j <= seq.len() - 1; j++) {
             int i;
@@ -191,6 +193,79 @@ namespace pmfe {
             vals.push_back(seq.W[j-1]);
 
             seq.W[j] = *std::min_element(vals.begin(), vals.end());
+        }
+
+        // Populate FM1
+        for (int i = 0; i < seq.len(); ++i) {
+            for (int j = i+1; j < seq.len(); ++j) {
+                mpq_class min = constants.INFINITY_;
+                int minl = i+TURN+1;
+                for (int l = minl; l <= j; ++l) {
+
+                    mpq_class fm1 = 0;
+                    switch (dangles) {
+                    case NO_DANGLE:
+                        {
+                            fm1 = seq.V[i][i] + auPenalty(i, l, seq) + constants.multConst[1]*(j-l) + constants.multConst[2];
+                            break;
+                        }
+
+                    case CHOOSE_DANGLE:
+                        {
+                            mpq_class d5 = Ed5(i+1, l, seq);
+                            mpq_class d3 = Ed3(i, l-1, seq);
+                            mpq_class d53 = Ed5(i+1, l-1, seq) + Ed3(i+1, l-1, seq);
+                            std::vector<mpq_class> vals;
+                            vals.push_back(seq.V[i][l] + auPenalty(i, l, seq) + constants.multConst[1] * (j-l) + constants.multConst[2]);
+
+                            if (l >= minl + 1)
+                                vals.push_back(seq.V[i+1][l] + auPenalty(i+1, l, seq) + d5 + constants.multConst[1] * (j-l+1) + constants.multConst[2]);
+
+                            if (l >= minl + 1)
+                                vals.push_back(seq.V[i][l-1] + auPenalty(i, l-1, seq) + d3 + constants.multConst[1] * (j-(l-1)) + constants.multConst[2]);
+
+                            if (l >= minl + 2)
+                                vals.push_back(seq.V[i+1][l-1] + auPenalty(i+1, l-1, seq) + d53 + constants.multConst[1]* (j-(l-1)+1) + constants.multConst[2]);
+
+                            fm1 = *std::min_element(vals.begin(), vals.end());
+                            break;
+                        }
+
+                    case BOTH_DANGLE:
+                        {
+                            mpq_class d5 = Ed5(i, l, seq);
+                            mpq_class d3 = Ed3(i, l, seq);
+                            fm1 = seq.V[i][l] + auPenalty(i, l, seq) + d5 + d3 + constants.multConst[1] * (j-l) + constants.multConst[2];
+                            break;
+                        }
+
+                    default:
+                        {
+                            exit(EXIT_FAILURE);
+                            break;
+                        }
+                    }
+                    min = std::min(min, fm1);
+                }
+                seq.FM1[i][j] = min;
+            }
+        }
+
+        // Populate FM
+        for (int i = 0; i < seq.len(); ++i) {
+            for (int j = i+1; j < seq.len();++j) {
+                mpq_class min1 = constants.INFINITY_;
+                for (int k = i+TURN+1; k <= j-TURN-1; ++k) {
+                    mpq_class x = seq.FM[i][k-1] + seq.FM1[k][j];
+                    min1 = std::min(min1, x);
+                }
+                mpq_class min2 = constants.INFINITY_;
+                for (int k = i; k <= j-TURN-1; ++k) {
+                    mpq_class x = seq.FM1[k][j] + constants.multConst[1]*(k-i);
+                    min2 = std::min(min2, x);
+                }
+                seq.FM[i][j] = std::min(min1, min2);
+            }
         }
 
         return seq;

@@ -9,6 +9,7 @@
 #include <iostream>
 
 #include <deque>
+#include <stack>
 
 #include <boost/python/tuple.hpp>
 #include <boost/filesystem.hpp>
@@ -24,6 +25,27 @@ namespace pmfe {
 
     namespace py = boost::python;
     namespace fs = boost::filesystem;
+
+    enum RNA_base {
+        BASE_A = 0,
+        BASE_C = 1,
+        BASE_G = 2,
+        BASE_U = 3,
+    };
+
+    enum subopt_label {
+        lW,
+        lV,
+        lVBI,
+        lM,
+        lM1,
+    };
+
+    enum dangle_mode {
+        NO_DANGLE = 0,
+        CHOOSE_DANGLE = 1,
+        BOTH_DANGLE = 2,
+    };
 
     class ParameterVector {
     public:
@@ -112,7 +134,8 @@ namespace pmfe {
         boost::multi_array<mpq_class, 2> VM;
         boost::multi_array<mpq_class, 2> WM;
         boost::multi_array<mpq_class, 2> WMPrime;
-
+        boost::multi_array<mpq_class, 2> FM;
+        boost::multi_array<mpq_class, 2> FM1;
 
         void print_debug();
     };
@@ -157,6 +180,10 @@ Representation of an RNA secondary structure that has been assigned a score
         RNAStructureWithScore() {}; // Default constructor for compiler
         RNAStructureWithScore(const RNAStructure& structure, const ScoreVector& score);
         friend std::ostream& operator<<(std::ostream& out, const RNAStructureWithScore& structure); // Output this structure and its scores as an ostream
+
+        friend bool operator<(const RNAStructureWithScore& lhs, const RNAStructureWithScore& rhs) {
+            return lhs.score.energy < rhs.score.energy;
+        }
     };
 
     class RNAStructureTree: public RNAStructure {
@@ -167,19 +194,45 @@ Representation of an RNA secondary structure that has been assigned a score
         RNAStructureTree(const RNAStructure& structure);
     };
 
-    enum dangle_mode {
-        NO_DANGLE = 0,
-        CHOOSE_DANGLE = 1,
-        BOTH_DANGLE = 2,
+    struct Segment {
+        /**
+           Representation of a segment in a suboptimal structure processing stack
+         **/
+        int i, j;
+        subopt_label label;
+        mpq_class minimum_energy;
+
+    Segment(int i, int j, subopt_label label, mpq_class minimum_energy):
+        i(i),
+            j(j),
+            label(label),
+            minimum_energy(minimum_energy)
+            {};
     };
+
+    class RNAPartialStructure: public RNAStructure {
+        /**
+           Representation of a partial RNA secondary structure
+        **/
+    public:
+        RNAPartialStructure(); // Default constructor for compiler
+        RNAPartialStructure(const RNASequence& seq, mpq_class known_energy = 0); // Construct a (blank) structure from a given sequence with specified energy
+
+        void accumulate(mpq_class energy); // Add to the known energy
+        mpq_class total() const; // Return the known energy
+        void push(const Segment& seg); // Push a segment onto the stack
+        void pop(); // Remove a segment from the stack
+        Segment top() const; // Retrieve the top segment of the stack
+        bool empty() const; // True if the stack is empty
+
+    protected:
+        std::stack<Segment> seg_stack;
+        mpq_class known_energy;
+
+    };
+
+    typedef std::stack<RNAPartialStructure> PartialStructureStack;
 
     dangle_mode convert_to_dangle_mode(int n);
-
-    enum RNA_base {
-        BASE_A = 0,
-        BASE_C = 1,
-        BASE_G = 2,
-        BASE_U = 3,
-    };
 }
 #endif

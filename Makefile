@@ -17,8 +17,6 @@ LIBOBJ := $(filter-out $(TESTOBJ),$(LIBOBJ))
 DEP := $(SRC:.cc=.P)
 HDR := $(wildcard src/*.h)
 
-BIN = pmfe-findmfe pmfe-parametrizer pmfe-tests
-
 # include directories
 INCLUDES += -Iinclude
 INCLUDES += -IiB4e
@@ -49,6 +47,7 @@ CXXFLAGS += -DHAVE_OPENMP
 LIBS += -lgomp
 endif
 
+BIN = pmfe-findmfe pmfe-parametrizer pmfe-subopt pmfe-tests
 all: $(OBJ) $(BIN)
 
 -include $(DEP)
@@ -57,6 +56,9 @@ pmfe-findmfe: $(LIBOBJ) src/bin-findmfe.o
 	$(CXX) $(LDFLAGS) $(CXXFLAGS) $^ -o $@ $(LIBS)
 
 pmfe-parametrizer: $(LIBOBJ) src/bin-parametrizer.o
+	$(CXX) $(LDFLAGS) $(CXXFLAGS) $^ -o $@ $(LIBS)
+
+pmfe-subopt: $(LIBOBJ) src/bin-subopt.o
 	$(CXX) $(LDFLAGS) $(CXXFLAGS) $^ -o $@ $(LIBS)
 
 pmfe-tests: $(LIBOBJ) $(TESTOBJ) src/bin-tests.o
