@@ -11,6 +11,11 @@
 
 #include <CGAL/Gmpq.h>
 
+#include "boost/filesystem.hpp"
+#include "boost/filesystem/fstream.hpp"
+
+namespace fs = boost::filesystem;
+
 namespace pmfe {
     ParameterVector fv_to_pv(BBP::FVector v) {
         ParameterVector pv (
