@@ -49,7 +49,12 @@ namespace pmfe {
 
     class ParameterVector {
     public:
-    ParameterVector(mpq_class multiloop_penalty = multiloop_default, mpq_class unpaired_penalty = unpaired_default, mpq_class branch_penalty = branch_default, mpq_class dummy_scaling = dummy_default) : multiloop_penalty(multiloop_penalty), unpaired_penalty(unpaired_penalty), branch_penalty(branch_penalty), dummy_scaling(dummy_scaling) {
+    ParameterVector(mpq_class multiloop_penalty = multiloop_default, mpq_class unpaired_penalty = unpaired_default, mpq_class branch_penalty = branch_default, mpq_class dummy_scaling = dummy_default) :
+        multiloop_penalty(multiloop_penalty),
+            unpaired_penalty(unpaired_penalty),
+            branch_penalty(branch_penalty),
+            dummy_scaling(dummy_scaling)
+            {
             this->canonicalize();
         };
         mpq_class multiloop_penalty, unpaired_penalty, branch_penalty, dummy_scaling;
@@ -74,7 +79,13 @@ namespace pmfe {
 
     class ScoreVector {
     public:
-    ScoreVector(mpz_class multiloops = 0, mpz_class unpaired = 0, mpz_class branches = 0, mpq_class w = mpq_class(0), mpq_class energy = mpq_class(0)) : multiloops(multiloops), branches(branches), unpaired(unpaired), w(w), energy(energy) {
+    ScoreVector(mpz_class multiloops = 0, mpz_class unpaired = 0, mpz_class branches = 0, mpq_class w = mpq_class(0), mpq_class energy = mpq_class(0)) :
+        multiloops(multiloops),
+            branches(branches),
+            unpaired(unpaired),
+            w(w),
+            energy(energy)
+            {
             this->canonicalize();
         };
         mpz_class multiloops, branches, unpaired;
