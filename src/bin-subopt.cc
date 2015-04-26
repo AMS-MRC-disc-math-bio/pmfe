@@ -87,7 +87,12 @@ int main(int argc, char* argv[]) {
         throw std::invalid_argument(error_message.str());
     }
 
-    outfile << "# Suboptimal secondary structures within " << delta.get_d() << " of minimum energy" << std::endl;
+    outfile << "#\tSuboptimal secondary structures within " << delta.get_d() << " of minimum energy." << std::endl;
+    outfile << "#\tCoefficients:\t" <<
+        "a = " << params.multiloop_penalty << " ≈ " << params.multiloop_penalty.get_d() << ",\t" <<
+        "b = " << params.unpaired_penalty << " ≈ " << params.multiloop_penalty.get_d() << ",\t" <<
+        "c = " << params.branch_penalty << " ≈ " << params.branch_penalty.get_d() << ",\t" <<
+        "d = " << params.dummy_scaling << " ≈ " << params.dummy_scaling.get_d() << "." << std::endl;
 
     pmfe::RNASequence seq(seq_file);
     outfile << "#\t" << seq << "\tM\tU\tB\tw\tEnergy" << std::endl << std::endl;
