@@ -75,6 +75,9 @@ int main(int argc, char* argv[]) {
     // Get results
     std::vector<pmfe::RNAStructureWithScore> structures = suboptimal_structures(seq_file, params, dangles, delta, sorted);
 
+    // Print some status information
+    std::cout << "Found " << structures.size() << " suboptimal structures." << std::endl;
+
     // Write out suboptimal structures
     fs::ofstream outfile(out_file);
 
@@ -87,9 +90,9 @@ int main(int argc, char* argv[]) {
     outfile << "# Suboptimal secondary structures within " << delta.get_d() << " of minimum energy" << std::endl;
 
     pmfe::RNASequence seq(seq_file);
-    outfile << "#\t" << seq << std::endl << std::endl;
+    outfile << "#\t" << seq << "\tM\tU\tB\tw\tEnergy" << std::endl << std::endl;
 
     for (unsigned int i = 0; i < structures.size(); ++i) {
-        outfile << i << "\t" << structures[i] << std::endl;
+        outfile << i << "\t" << structures[i] << "\t≅ " << structures[i].score.energy.get_d() << std::endl;
     }
 }
