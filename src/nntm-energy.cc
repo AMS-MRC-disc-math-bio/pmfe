@@ -297,7 +297,7 @@ namespace pmfe {
             if (inside)
                 penalty = constants.dangle[seq.base(i)][seq.base(j)][seq.base(i+1)][0];
             else
-                penalty = constants.dangle[seq.base(j)][seq.base(i)][seq.base(seq.len())][1];
+                penalty = constants.dangle[seq.base(j)][seq.base(i)][seq.base(seq.len()-1)][1];
         }
 
         return penalty;

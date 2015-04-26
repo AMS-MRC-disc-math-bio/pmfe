@@ -94,7 +94,7 @@ namespace pmfe {
             // region is between i1 and i2
             start = i1;
             end = i2;
-            d5 = Ed3(i1, j1, structure.seq, true); // Dangle at the 5' end of the region
+            d5 = Ed5(i1, j1, structure.seq, true); // Dangle at the 5' end of the region
             d3 = Ed5(i2, j2, structure.seq); // Dangle at the 3' end of the region
         } else if (i2 < i1 and i1 < j1 and j1 < j2) {
             // (i2, j2) is the initiating pair of the loop, so
@@ -117,7 +117,7 @@ namespace pmfe {
         ScoreVector score;
 
         if (not is_external) {
-            score.energy += (end - start - 1) * constants.multConst[2]; // Unpaired base penalty
+            score.energy += (end - start - 1) * constants.multConst[1]; // Unpaired base penalty
             score.unpaired += end - start - 1;
         }
 
