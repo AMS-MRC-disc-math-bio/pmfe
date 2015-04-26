@@ -199,8 +199,8 @@ namespace pmfe {
 
             case BOTH_DANGLE:
             {
-                mpq_class d5 = Ed5(i, j, seq);
-                mpq_class d3 = Ed3(i, j, seq);
+                mpq_class d5 = Ed5(i, j, seq, true);
+                mpq_class d3 = Ed3(i, j, seq, true);
                 mpq_class kenergy1 = seq.FM[i+1][k] + seq.FM1[k+1][j-1];
                 mpq_class kenergy2 = d5 + d3 + auPenalty(i, j, seq) + constants.multConst[0] + constants.multConst[2];
                 mpq_class kenergy_total = kenergy1 + kenergy2;
@@ -331,7 +331,16 @@ namespace pmfe {
 
             case BOTH_DANGLE:
             {
-                mpq_class bonus = auPenalty(l, j, seq) + Ed5(l, j, seq) + Ed3(l, j, seq);
+                mpq_class bonus = auPenalty(l, j, seq);
+
+                if (l > i) {
+                    bonus += Ed5(l, j, seq);
+                }
+
+                if (j < seq.len() - 1) {
+                    bonus += Ed3(l, j, seq);
+                }
+
                 if (seq.V[l][j] + wim1 + bonus + ps.total() <= upper_bound ) {
                     RNAPartialStructure new_ps(ps);
                     new_ps.push(Segment(l, j, lV, seq.V[l][j]));
@@ -431,7 +440,7 @@ namespace pmfe {
 
         case BOTH_DANGLE:
         {
-            mpq_class bonus = Ed5(i, j, seq) + Ed3(i, j, seq) + auPenalty(i, j, seq);
+            mpq_class bonus = Ed5(i, j, seq) + Ed3(i, j, seq) + auPenalty(i, j, seq) + constants.multConst[2];
             if (seq.V[i][j] + bonus + ps.total() <= upper_bound) {
                 RNAPartialStructure new_ps(ps);
                 new_ps.push(Segment(i, j, lV, seq.V[i][j]));
@@ -525,7 +534,7 @@ namespace pmfe {
 
         case BOTH_DANGLE:
         {
-            mpq_class bonus = Ed5(i, j, seq) + Ed3(i, j, seq) + auPenalty(i, j, seq);
+            mpq_class bonus = Ed5(i, j, seq) + Ed3(i, j, seq) + auPenalty(i, j, seq) + constants.multConst[2];
             if (seq.V[i][j] + bonus + ps.total() <= upper_bound) {
                 RNAPartialStructure new_ps(ps);
                 new_ps.push(Segment(i, j, lV, seq.V[i][j]));
