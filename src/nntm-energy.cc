@@ -100,10 +100,8 @@ namespace pmfe {
                 }
 
                 if (dangles == BOTH_DANGLE) {
-                    mpq_class energy = seq.V[i][j] + auPenalty(i, j, seq) + constants.multConst[2] + Ed5(i, j, seq) + Ed3(i, j, seq);
-
                     std::vector<mpq_class> vals;
-                    vals.push_back(energy);
+                    vals.push_back(seq.V[i][j] + auPenalty(i, j, seq) + constants.multConst[2] + Ed5(i, j, seq) + Ed3(i, j, seq));
                     vals.push_back(newWM);
                     newWM = *std::min_element(vals.begin(), vals.end());
                 } else if (dangles == NO_DANGLE) {
@@ -154,8 +152,7 @@ namespace pmfe {
                 }
 
                 if (dangles == BOTH_DANGLE) { // -d2 option
-                    mpq_class energy = seq.V[i][j] + auPenalty(i, j, seq) + Wim1 + Ed5(i, j, seq, true) + Ed3(i, j, seq, true);
-                    Widjd = energy;
+                    Widjd = seq.V[i][j] + auPenalty(i, j, seq) + Wim1 + Ed5(i, j, seq) + Ed3(i, j, seq);
 
                     std::vector<mpq_class> vals;
                     vals.push_back(Wij);
