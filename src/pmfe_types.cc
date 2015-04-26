@@ -6,6 +6,7 @@
 #include <cmath>
 #include <iostream>
 #include <stdexcept>
+#include <algorithm>
 
 #include <set>
 #include <deque>
@@ -160,6 +161,14 @@ namespace pmfe {
 
     bool operator!=(const ScoreVector& a, const ScoreVector& b) {
         return !(a == b);
+    }
+
+    bool operator<(const ScoreVector& a, const ScoreVector& b) {
+        // The most useful ordering on score vectors is lexicographic with energy first
+        std::vector<mpq_class> a_vect = {a.energy, a.multiloops, a.unpaired, a.branches, a.w};
+        std::vector<mpq_class> b_vect = {b.energy, b.multiloops, b.unpaired, b.branches, b.w};
+
+        return std::lexicographical_compare(a_vect.begin(), a_vect.end(), b_vect.begin(), b_vect.end());
     }
 
     ScoreVector& ScoreVector::operator+=(const ScoreVector& rhs) {
@@ -494,6 +503,10 @@ namespace pmfe {
            << structure.score.w << "\t"
            << structure.score.energy;
         return os;
+    }
+
+    bool operator<(const RNAStructureWithScore& lhs, const RNAStructureWithScore& rhs) {
+        return lhs.score < rhs.score;
     }
 
     RNAStructureTree::RNAStructureTree(const RNAStructure& structure):

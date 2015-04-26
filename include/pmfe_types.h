@@ -105,6 +105,7 @@ namespace pmfe {
         friend std::ostream& operator<<(std::ostream& os, const ScoreVector& score);
         friend bool operator==(const ScoreVector& a, const ScoreVector& b);
         friend bool operator!=(const ScoreVector& a, const ScoreVector& b);
+        friend bool operator<(const ScoreVector& a, const ScoreVector& b);
 
         ScoreVector& operator+=(const ScoreVector& rhs);
         friend ScoreVector operator+(const ScoreVector& lhs, const ScoreVector& rhs);
@@ -195,9 +196,7 @@ Representation of an RNA secondary structure that has been assigned a score
         RNAStructureWithScore(const RNAStructure& structure, const ScoreVector& score);
         friend std::ostream& operator<<(std::ostream& out, const RNAStructureWithScore& structure); // Output this structure and its scores as an ostream
 
-        friend bool operator<(const RNAStructureWithScore& lhs, const RNAStructureWithScore& rhs) {
-            return lhs.score.energy < rhs.score.energy;
-        }
+        friend bool operator<(const RNAStructureWithScore& lhs, const RNAStructureWithScore& rhs);
     };
 
     class RNAStructureTree: public RNAStructure {
