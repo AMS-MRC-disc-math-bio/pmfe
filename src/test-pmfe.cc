@@ -30,6 +30,12 @@ TEST_CASE("Combinatorial test sequence", "[mfe][combinatorial]") {
         pmfe::RNAStructureWithScore scored_structure = energy_model.mfe_structure(seq_annotated);
 
         REQUIRE(scored_structure.string() == "((((>..<((((....))))>..<((((....((((....))))....))))>..<))))");
+
+        mpq_class delta = 1;
+
+        std::vector<pmfe::RNAStructureWithScore> suboptimal_structures = energy_model.suboptimal_structures(seq_annotated, delta);
+
+        REQUIRE(suboptimal_structures.size() == 34);
     }
 
     SECTION("No multibranch penalties, positive d") {
@@ -44,6 +50,12 @@ TEST_CASE("Combinatorial test sequence", "[mfe][combinatorial]") {
         pmfe::RNAStructureWithScore scored_structure = energy_model.mfe_structure(seq_annotated);
 
         REQUIRE(scored_structure.string() == "((((>..<((((....))))>..<((((....((((....))))....))))>..<))))");
+
+        mpq_class delta = 1;
+
+        std::vector<pmfe::RNAStructureWithScore> suboptimal_structures = energy_model.suboptimal_structures(seq_annotated, delta);
+
+        REQUIRE(suboptimal_structures.size() == 39);
     }
 
     SECTION("No multibranch penalties, negative d") {
@@ -58,6 +70,12 @@ TEST_CASE("Combinatorial test sequence", "[mfe][combinatorial]") {
         pmfe::RNAStructureWithScore scored_structure = energy_model.mfe_structure(seq_annotated);
 
         REQUIRE(scored_structure.string() == "(..(....).)(....)(.(....)..)....(..(....).)(....)(.(....)..)");
+
+        mpq_class delta = 2;
+
+        std::vector<pmfe::RNAStructureWithScore> suboptimal_structures = energy_model.suboptimal_structures(seq_annotated, delta);
+
+        REQUIRE(suboptimal_structures.size() == 82);
     }
 
     SECTION("Artificial parameters") {
@@ -72,6 +90,12 @@ TEST_CASE("Combinatorial test sequence", "[mfe][combinatorial]") {
         pmfe::RNAStructureWithScore scored_structure = energy_model.mfe_structure(seq_annotated);
 
         REQUIRE(scored_structure.string() == "(..(....).)(....)(.(....)..)....(..(....).)(....)(.(....)..)");
+
+        mpq_class delta = 2;
+
+        std::vector<pmfe::RNAStructureWithScore> suboptimal_structures = energy_model.suboptimal_structures(seq_annotated, delta);
+
+        REQUIRE(suboptimal_structures.size() == 4);
     }
 }
 
@@ -94,6 +118,12 @@ TEST_CASE("Test tRNA sequence", "[mfe][test_tRNA]") {
         pmfe::RNAStructureWithScore scored_structure = energy_model.mfe_structure(seq_annotated);
 
         REQUIRE(scored_structure.string() == "(((((>....<((((((.((......)).))))))>.<((((..((((........))))..))))>)))))>...");
+
+        mpq_class delta = 1;
+
+        std::vector<pmfe::RNAStructureWithScore> suboptimal_structures = energy_model.suboptimal_structures(seq_annotated, delta);
+
+        REQUIRE(suboptimal_structures.size() == 55);
     }
 
     SECTION("No multibranch penalties, positive d") {
@@ -108,6 +138,12 @@ TEST_CASE("Test tRNA sequence", "[mfe][test_tRNA]") {
         pmfe::RNAStructureWithScore scored_structure = energy_model.mfe_structure(seq_annotated);
 
         REQUIRE(scored_structure.string() == "((((((<(>((((........))))>((((((....).)))))><)><(((((.......)))))>))))))>...");
+
+        mpq_class delta = 1;
+
+        std::vector<pmfe::RNAStructureWithScore> suboptimal_structures = energy_model.suboptimal_structures(seq_annotated, delta);
+
+        REQUIRE(suboptimal_structures.size() == 257);
     }
 
     SECTION("No multibranch penalties, negative d") {
@@ -122,6 +158,12 @@ TEST_CASE("Test tRNA sequence", "[mfe][test_tRNA]") {
         pmfe::RNAStructureWithScore scored_structure = energy_model.mfe_structure(seq_annotated);
 
         REQUIRE(scored_structure.string() == "(.(...)).((...)((...).)(...)(...)(..(.(.(...))))(...)(...)(....)(...))(...).");
+
+        mpq_class delta = 1;
+
+        std::vector<pmfe::RNAStructureWithScore> suboptimal_structures = energy_model.suboptimal_structures(seq_annotated, delta);
+
+        REQUIRE(suboptimal_structures.size() == 124);
     }
 
     SECTION("Artificial parameters") {
@@ -136,5 +178,11 @@ TEST_CASE("Test tRNA sequence", "[mfe][test_tRNA]") {
         pmfe::RNAStructureWithScore scored_structure = energy_model.mfe_structure(seq_annotated);
 
         REQUIRE(scored_structure.string() == "(.(...))..(...)((...).)(...)(...)(..(.(.(...))))(...)(...)(....)(...).(...).");
+
+        mpq_class delta = 2;
+
+        std::vector<pmfe::RNAStructureWithScore> suboptimal_structures = energy_model.suboptimal_structures(seq_annotated, delta);
+
+        REQUIRE(suboptimal_structures.size() == 53);
     }
 }
