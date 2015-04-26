@@ -81,7 +81,8 @@ namespace pmfe {
         std::cout << "Computing classical score...";
         Turner99 classical_constants;
         NNTM classical_model(classical_constants, dangles);
-        mpq_class classical_energy = classical_model.energy(scored_structure);
+        ScoreVector classical_score = classical_model.score(scored_structure);
+        mpq_class classical_energy = classical_score.energy;
         std::cout << "done. Score: " << classical_energy.get_str() << std::endl;
 
         ScoreVector result = scored_structure.score;

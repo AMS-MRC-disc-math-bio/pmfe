@@ -35,8 +35,7 @@ namespace pmfe {
             if (ps.empty() ) {
                 // In this case, this structure is fully evaluated
                 RNAStructure structure = ps;
-                ScoreVector score;
-                score.energy = energy(ps);
+                ScoreVector score = this->score(structure);
                 RNAStructureWithScore result(structure, score);
                 possible_structures.push_back(result);
             } else {

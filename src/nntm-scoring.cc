@@ -13,26 +13,26 @@
 #include <vector>
 
 namespace pmfe {
-    const mpq_class NNTM::energy(const RNAStructure& structure) const {
+    ScoreVector NNTM::score(const RNAStructure& structure) const {
         RNAStructureTree tree (structure);
         return scoreTree(tree);
     }
 
-    const mpq_class NNTM::scoreTree(const RNAStructureTree& tree) const {
+    ScoreVector NNTM::scoreTree(const RNAStructureTree& tree) const {
         // Score the external node
-        mpq_class energy = eE(tree);
+        ScoreVector score = scoreE(tree);
 
         // Recurse through the tree
         for (std::deque<IntervalTreeNode>::const_iterator child = tree.root.children.begin(); child != tree.root.children.end(); ++child) {
-            energy += scoreInternalNodeRecursively(tree, *child);
+            score += scoreInternalNodeRecursively(tree, *child);
         }
 
-        return energy;
+        return score;
     }
 
-    const mpq_class NNTM::scoreInternalNodeRecursively(const RNAStructureTree& tree, const IntervalTreeNode& node) const {
+    ScoreVector NNTM::scoreInternalNodeRecursively(const RNAStructureTree& tree, const IntervalTreeNode& node) const {
         // TODO: Confirm that node is in tree
-        mpq_class energy = 0;
+        ScoreVector score;
 
         int i = node.start;
         int j = node.end;
@@ -43,7 +43,7 @@ namespace pmfe {
         case 0:
         {
             // Hairpin loop
-            energy += eH(i, j, tree.seq);
+            score.energy += eH(i, j, tree.seq);
             break;
         }
 
@@ -54,10 +54,10 @@ namespace pmfe {
 
             if (child.start == i + 1 and child.end == j - 1) {
                 // Stack
-                energy += eS(i, j, tree.seq);
+                score.energy += eS(i, j, tree.seq);
             } else {
                 // Internal or bulge
-                energy += eL(i, j, child.start, child.end, tree.seq);
+                score.energy += eL(i, j, child.start, child.end, tree.seq);
             }
 
             break;
@@ -66,20 +66,19 @@ namespace pmfe {
         default:
         {
             // At least two children means this is a multiloop
-            mpq_class bonus = eM(tree, node);// + auPenalty(i, j, tree.seq);
-            energy += bonus;
+            score += scoreM(tree, node);// + auPenalty(i, j, tree.seq);
         }
         }
 
         // Recurse! Recurse!
         for (std::deque<IntervalTreeNode>::const_iterator child = node.children.begin(); child != node.children.end(); ++child) {
-            energy += scoreInternalNodeRecursively(tree, *child);
+            score += scoreInternalNodeRecursively(tree, *child);
         }
 
-        return energy;
+        return score;
     }
 
-    const mpq_class NNTM::eMUnpairedRegion(const RNAStructure& structure, int i1, int j1, int i2, int j2, bool is_external) const {
+    ScoreVector NNTM::scoreMUnpairedRegion(const RNAStructure& structure, int i1, int j1, int i2, int j2, bool is_external) const {
         /*
           Helper method to compute the energy of an unpaired region in a multiloop which lies between pairs (i1, j1) and (i2, j2)
           Note that this requires i1 < i2 < j2 < j1 if (i1, j1) initiates the loop,
@@ -115,10 +114,11 @@ namespace pmfe {
             throw std::invalid_argument("Invalid multiloop nesting");
         }
 
-        mpq_class energy = 0;
+        ScoreVector score;
 
         if (not is_external) {
-            (end - start - 1) * constants.multConst[2]; // Unpaired base penalty
+            score.energy += (end - start - 1) * constants.multConst[2]; // Unpaired base penalty
+            score.unpaired += end - start - 1;
         }
 
         // Determine dangling base contribution
@@ -127,7 +127,7 @@ namespace pmfe {
         {
             // In BOTH_DANGLE mode, we just compute the dangle energies and add them
             // without any logic to determine whether this is reasonable
-            energy += d5 + d3;
+            score.energy += d5 + d3;
             break;
         }
 
@@ -135,11 +135,11 @@ namespace pmfe {
         {
             // Apply dangling contributions as recorded in the structure
             if (structure.does_d5(end - 1)) {
-                energy += d3;
+                score.energy += d3;
             }
 
             if (structure.does_d3(start + 1)) {
-                energy += d5;
+                score.energy += d5;
             }
 
             break;
@@ -151,57 +151,66 @@ namespace pmfe {
             break;
         }
 
-        return energy;
+        return score;
     }
 
-    const mpq_class NNTM::eM(const RNAStructureTree& tree, const IntervalTreeNode& node) const {
+    ScoreVector NNTM::scoreM(const RNAStructureTree& tree, const IntervalTreeNode& node) const {
         /*
            Score a multiloop
         */
 
-        mpq_class energy = constants.multConst[0]; // Initiation penalty
-        energy += (node.valency() + 1) * constants.multConst[2]; // Branch penalty
+        ScoreVector score;
+        // Contribution from initializing the multiloop
+        score.energy += constants.multConst[0];
+        score.multiloops += 1;
+
+        // Contribution from branches
+        score.energy += (node.valency() + 1) * constants.multConst[2]; // Branch penalty
+        score.branches += (node.valency() + 1);
+
         // Unpaired bases are accounted in the eMUnpairedRegion helper method
 
-        // Add the energy contribution for each unpaired region
+        // Add the contribution for each unpaired region
         // First, consider the regions beginning or ending at the initiating pair
-        // TODO: Verify that there are children!
-        energy += eMUnpairedRegion(tree, node.start, node.end, node.children.front().start, node.children.front().end);
-        energy += eMUnpairedRegion(tree, node.children.back().start, node.children.back().end, node.start, node.end);
+        if (node.valency() > 0) {
+            score += scoreMUnpairedRegion(tree, node.start, node.end, node.children.front().start, node.children.front().end);
+            score += scoreMUnpairedRegion(tree, node.children.back().start, node.children.back().end, node.start, node.end);
 
-        // Then consider the regions between the children
-        for (std::deque<IntervalTreeNode>::const_iterator child = node.children.begin(); child != node.children.end() - 1; ++child) {
-            std::deque<IntervalTreeNode>::const_iterator neighbor = child +1;
-            energy += eMUnpairedRegion(tree, child->start, child->end, neighbor->start, neighbor->end);
+            // Then consider the regions between the children
+            for (std::deque<IntervalTreeNode>::const_iterator child = node.children.begin(); child != node.children.end() - 1; ++child) {
+                std::deque<IntervalTreeNode>::const_iterator neighbor = child +1;
+                score += scoreMUnpairedRegion(tree, child->start, child->end, neighbor->start, neighbor->end);
+            }
+
+            // We also need to account for any non-GC pairs at the branches
+            score.energy += auPenalty(node.start, node.end, tree.seq);
+
+            for (std::deque<IntervalTreeNode>::const_iterator child = node.children.begin(); child != node.children.end(); ++child) {
+                score.energy += auPenalty(child->start, child->end, tree.seq);
+            }
         }
 
-        // We also need to account for any non-GC pairs at the branches
-        energy += auPenalty(node.start, node.end, tree.seq);
-
-        for (std::deque<IntervalTreeNode>::const_iterator child = node.children.begin(); child != node.children.end(); ++child) {
-            energy += auPenalty(child->start, child->end, tree.seq);
-        }
-
-        return energy;
+        return score;
     }
 
 
-    const mpq_class NNTM::eE(const RNAStructureTree& tree) const {
+    ScoreVector NNTM::scoreE(const RNAStructureTree& tree) const {
         /*
           Score the external loop
         */
-        mpq_class energy = 0;
+        ScoreVector score;
 
-        // Add the energy contribution for each unpaired region
+        // Add the contribution for each unpaired region
         // First, consider the dangling regions at the ends of the sequence
-        // TODO: Verify that there are children!
         bool has_5d, has_3d;
         mpq_class d3, d5;
 
+        // If there are no children, stop immediately
         if (tree.root.valency() == 0) {
-            return 0;
+            return score;
         }
 
+        // Otherwise, we first process any dangling ends
         const IntervalTreeNode& firstbranch = tree.root.children.front();
         const IntervalTreeNode& lastbranch = tree.root.children.back();
 
@@ -224,18 +233,18 @@ namespace pmfe {
         switch (dangles) {
         case BOTH_DANGLE:
         {
-            energy += d3 + d5;
+            score.energy += d3 + d5;
             break;
         }
 
         case CHOOSE_DANGLE:
         {
             if (has_5d) {
-                energy += d5;
+                score.energy += d5;
             }
 
             if (has_3d) {
-                energy += d3;
+                score.energy += d3;
             }
 
             break;
@@ -251,14 +260,14 @@ namespace pmfe {
         // Then consider the regions between the children
         for (std::deque<IntervalTreeNode>::const_iterator child = tree.root.children.begin(); child != tree.root.children.end() - 1; ++child) {
             std::deque<IntervalTreeNode>::const_iterator neighbor = child + 1;
-            energy += eMUnpairedRegion(tree, child->start, child->end, neighbor->start, neighbor->end, true);
+            score += scoreMUnpairedRegion(tree, child->start, child->end, neighbor->start, neighbor->end, true);
         }
 
         // We also need to account for any non-GC pairs at the branches
         for (std::deque<IntervalTreeNode>::const_iterator child = tree.root.children.begin(); child != tree.root.children.end(); ++child) {
-            energy += auPenalty(child->start, child->end, tree.seq);
+            score.energy += auPenalty(child->start, child->end, tree.seq);
         }
 
-        return energy;
+        return score;
     }
 }

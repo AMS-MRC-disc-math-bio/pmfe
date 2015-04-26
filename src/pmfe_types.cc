@@ -162,6 +162,22 @@ namespace pmfe {
         return !(a == b);
     }
 
+    ScoreVector& ScoreVector::operator+=(const ScoreVector& rhs) {
+        this->multiloops += rhs.multiloops;
+        this->unpaired += rhs.unpaired;
+        this->branches += rhs.branches;
+        this->w += rhs.branches;
+        this->energy += rhs.energy;
+
+        return *this;
+    }
+
+    ScoreVector operator+(const ScoreVector& lhs, const ScoreVector& rhs) {
+        ScoreVector result = lhs;
+        result += rhs;
+        return result;
+    }
+
     py::tuple ScoreVector::as_pairs() {
         py::tuple pairs =
             py::make_tuple(

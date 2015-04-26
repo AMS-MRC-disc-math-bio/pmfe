@@ -18,7 +18,7 @@ namespace pmfe{
         mpq_class minimum_energy(const RNASequenceWithTables& seq) const;
         RNAStructureWithScore mfe_structure(const RNASequenceWithTables& seq) const;
 
-        const mpq_class energy(const RNAStructure& structure) const;
+        ScoreVector score(const RNAStructure& structure) const;
 
         std::vector<RNAStructureWithScore> suboptimal_structures(const RNASequenceWithTables& seq, mpq_class delta, bool sorted = false) const;
 
@@ -41,11 +41,11 @@ namespace pmfe{
         mpq_class traceWMPrime(int i, int j, const RNASequenceWithTables& seq, RNAStructure& structure, ScoreVector& score) const;
 
         // Scoring helpers
-        const mpq_class scoreTree(const RNAStructureTree& tree) const; // Score a whole structure tree
-        const mpq_class scoreInternalNodeRecursively(const RNAStructureTree& tree, const IntervalTreeNode& node) const; // Score a given internal node of a structure tree, descending to its children
-        const mpq_class eMUnpairedRegion(const RNAStructure& structure, int i1, int i2, int j1, int j2, bool is_external = false) const; // Compute the energy associated to an unpaired region in a multiloop or external loop
-        const mpq_class eM(const RNAStructureTree& tree, const IntervalTreeNode& node) const; // Compute the energy associated to a multiloop node
-        const mpq_class eE(const RNAStructureTree& tree) const; // Compute the energy associated to the external loop node
+        ScoreVector scoreTree(const RNAStructureTree& tree) const; // Score a whole structure tree
+        ScoreVector scoreInternalNodeRecursively(const RNAStructureTree& tree, const IntervalTreeNode& node) const; // Score a given internal node of a structure tree, descending to its children
+        ScoreVector scoreMUnpairedRegion(const RNAStructure& structure, int i1, int i2, int j1, int j2, bool is_external = false) const; // Compute the energy associated to an unpaired region in a multiloop or external loop
+        ScoreVector scoreM(const RNAStructureTree& tree, const IntervalTreeNode& node) const; // Compute the energy associated to a multiloop node
+        ScoreVector scoreE(const RNAStructureTree& tree) const; // Compute the energy associated to the external loop node
 
         // Suboptimal structure helpers
         bool subopt_process_top_structure(const RNASequenceWithTables& seq, RNAPartialStructure& ps, PartialStructureStack& pstack, mpq_class upper_bound) const;

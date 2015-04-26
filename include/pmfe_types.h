@@ -105,6 +105,9 @@ namespace pmfe {
         friend std::ostream& operator<<(std::ostream& os, const ScoreVector& score);
         friend bool operator==(const ScoreVector& a, const ScoreVector& b);
         friend bool operator!=(const ScoreVector& a, const ScoreVector& b);
+
+        ScoreVector& operator+=(const ScoreVector& rhs);
+        friend ScoreVector operator+(const ScoreVector& lhs, const ScoreVector& rhs);
     };
 
     mpq_class get_mpq_from_word(std::string word);
