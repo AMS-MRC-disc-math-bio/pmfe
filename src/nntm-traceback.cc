@@ -40,7 +40,15 @@ namespace pmfe {
             }
 
             if (dangles == BOTH_DANGLE) {
-                mpq_class e_dangles = Ed5(i, j, seq) + Ed3(i, j, seq);
+                mpq_class e_dangles = 0;
+                if (i > 0) {
+                    e_dangles += Ed5(i, j, seq);
+                }
+
+                if (j < seq.len() - 1) {
+                    e_dangles += Ed3(i, j, seq);
+                }
+
                 if (seq.W[j] == seq.V[i][j] + auPenalty(i, j, seq) + e_dangles + wim1) {
                     finished = true;
                     score.energy += (auPenalty(i, j, seq) + e_dangles);
