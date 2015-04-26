@@ -67,6 +67,7 @@ namespace pmfe {
         {
             // At least two children means this is a multiloop
             score += scoreM(tree, node);// + auPenalty(i, j, tree.seq);
+            break;
         }
         }
 
