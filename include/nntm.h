@@ -18,7 +18,7 @@ namespace pmfe{
         mpq_class minimum_energy(const RNASequenceWithTables& seq) const;
         RNAStructureWithScore mfe_structure(const RNASequenceWithTables& seq) const;
 
-        ScoreVector score(const RNAStructure& structure) const;
+        ScoreVector score(const RNAStructure& structure, bool compute_w = true) const;
 
         std::vector<RNAStructureWithScore> suboptimal_structures(const RNASequenceWithTables& seq, mpq_class delta, bool sorted = false) const;
 

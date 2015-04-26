@@ -13,9 +13,32 @@
 #include <vector>
 
 namespace pmfe {
-    ScoreVector NNTM::score(const RNAStructure& structure) const {
+    ScoreVector NNTM::score(const RNAStructure& structure, bool compute_w) const {
         RNAStructureTree tree (structure);
-        return scoreTree(tree);
+
+        // Score the structure using these parameters
+        ScoreVector result = scoreTree(tree);
+
+        // If requested, compute the w value by re-scoring the structure with the classical parameters
+        if (compute_w) {
+            Turner99 classical_constants;
+            NNTM classical_model(classical_constants, dangles);
+            ScoreVector classical_score = classical_model.score(structure, false);
+            mpq_class classical_energy = classical_score.energy;
+            result.w = classical_energy - (result.multiloops * classical_constants.multConst[0] + result.unpaired * classical_constants.multConst[1] + result.branches * classical_constants.multConst[2]);
+
+            // Check that the computed w is consistent
+            mpq_class formula_energy = result.multiloops * constants.params.multiloop_penalty + result.unpaired * constants.params.unpaired_penalty + result.branches * constants.params.branch_penalty + result.w * constants.params.dummy_scaling;
+            formula_energy.canonicalize();
+
+            if (result.energy != formula_energy) {
+                throw std::logic_error("w calculation was inconsistent!");
+            }
+        }
+
+        result.canonicalize();
+        return result;
+
     }
 
     ScoreVector NNTM::scoreTree(const RNAStructureTree& tree) const {

@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
+#include <stdexcept>
 
 #include "nntm.h"
 #include "nndb_constants.h"
@@ -19,7 +20,13 @@ namespace pmfe {
 
         traceW(seq.len()-1, seq, structure, score);
 
-        RNAStructureWithScore result (structure, score);
+        ScoreVector newscore = this->score(structure);
+
+        if (newscore.energy != score.energy) {
+            throw std::logic_error("Energy calculation was inconsistent!");
+        }
+
+        RNAStructureWithScore result (structure, newscore);
         return result;
     }
 

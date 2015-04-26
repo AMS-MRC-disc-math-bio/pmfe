@@ -77,31 +77,6 @@ namespace pmfe {
         RNAStructureWithScore scored_structure = energy_model.mfe_structure(seq_annotated);
         std::cout << "done. Structure: " << scored_structure << std::endl;
 
-        // Find the classical energy
-        std::cout << "Computing classical score...";
-        Turner99 classical_constants;
-        NNTM classical_model(classical_constants, dangles);
-        ScoreVector classical_score = classical_model.score(scored_structure);
-        mpq_class classical_energy = classical_score.energy;
-        std::cout << "done. Score: " << classical_energy.get_str() << std::endl;
-
-        ScoreVector result = scored_structure.score;
-        result.w = classical_energy - (result.multiloops * classical_constants.multConst[0] + result.unpaired * classical_constants.multConst[1] + result.branches * classical_constants.multConst[2]);
-        result.canonicalize();
-
-        // Check that the w calculation produced a consistent result
-        mpq_class formula_energy = result.multiloops * params.multiloop_penalty + result.unpaired * params.unpaired_penalty + result.branches * params.branch_penalty + result.w * params.dummy_scaling;
-        formula_energy.canonicalize();
-
-        // And alert the user if not
-        if (result.energy != formula_energy) {
-            std::cerr << "Energy calculation is inconsistent!" << std::endl;
-            std::cerr << params << std::endl;
-            std::cerr << scored_structure << std::endl;
-            std::cerr << "Formula energy: " << formula_energy.get_str(10) << std::endl;
-            std::cerr << "Score energy: " << scored_structure.score.energy.get_str(10) << std::endl;
-        };
-
-        return result;
+        return scored_structure.score;
     }
 }

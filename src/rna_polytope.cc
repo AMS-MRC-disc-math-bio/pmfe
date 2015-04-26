@@ -58,31 +58,8 @@ namespace pmfe {
 
         // Find the MFE structure
         RNAStructureWithScore scored_structure = energy_model.mfe_structure(seq_annotated);
-
-        // Compute the classical score of the structure
-        Turner99 classical_constants;
-        NNTM classical_model(classical_constants, dangles);
-        ScoreVector classical_score = classical_model.score(scored_structure);
-        mpq_class classical_energy = classical_score.energy;
-
-        // Build the score vector
-        scored_structure.score.w = classical_energy - (scored_structure.score.multiloops * classical_constants.multConst[0] + scored_structure.score.unpaired * classical_constants.multConst[1] + scored_structure.score.branches * classical_constants.multConst[2]);
-        scored_structure.score.canonicalize();
-
-        // Check that the w calculation produced a consistent result
-        mpq_class formula_energy = scored_structure.score.multiloops * params.multiloop_penalty + scored_structure.score.unpaired * params.unpaired_penalty + scored_structure.score.branches * params.branch_penalty + scored_structure.score.w * params.dummy_scaling;
-        formula_energy.canonicalize();
-
-        // And alert the user if not
-        if (scored_structure.score.energy != formula_energy) {
-            std::cerr << "Energy calculation is inconsistent!" << std::endl;
-            std::cerr << params << std::endl;
-            std::cerr << scored_structure << std::endl;
-            std::cerr << "Formula energy: " << formula_energy.get_str(10) << std::endl;
-            std::cerr << "Score energy: " << scored_structure.score.energy.get_str(10) << std::endl;
-        };
-
         BBP::FPoint result = scored_structure_to_fp(scored_structure);
+
         // TODO: Handle storing stuctures in class after conversion to dD_triangulation
         structures[result] = scored_structure;
         return result;
