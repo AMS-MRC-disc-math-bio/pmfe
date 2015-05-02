@@ -149,7 +149,6 @@ namespace pmfe {
         }
 
         // Populate W
-        seq.W[0] = 0;
         for (j = TURN+1; j <= seq.len() - 1; j++) {
             int i;
             mpq_class Wj, Widjd, Wijd, Widj, Wij, Wim1;
@@ -157,7 +156,7 @@ namespace pmfe {
             for (i = 0; i < j-TURN; i++) {
                 Wij = Widjd = Wijd = Widj = constants.INFINITY_;
                 if (i > 0) {
-                    Wim1 = std::min(mpq_class(0), seq.W[i-1]);
+                    Wim1 = seq.W[i-1];
                 } else {
                     Wim1 = 0;
                 }
@@ -268,7 +267,7 @@ namespace pmfe {
 
         // Populate FM
         for (int i = 0; i < seq.len(); ++i) {
-            for (int j = i+1; j < seq.len();++j) {
+            for (int j = i+1; j < seq.len(); ++j) {
                 mpq_class min1 = constants.INFINITY_;
                 for (int k = i+TURN+1; k <= j-TURN-1; ++k) {
                     mpq_class x = seq.FM[i][k-1] + seq.FM1[k][j];
@@ -362,6 +361,11 @@ namespace pmfe {
         /*
           Compute the energy of an internal loop between pairs (i, j) and (ip, jp)
         */
+        // Input specification
+        assert (i >= 0 && i < seq.len());
+        assert (j >= 0 && j < seq.len());
+        assert (i < ip && ip < jp && jp < j);
+
         mpq_class energy = constants.INFINITY_;
         mpq_class loginc = 0;
 
@@ -440,6 +444,11 @@ namespace pmfe {
           Compute the energy of a hairpin loop based at pair (i, j)
          */
 
+        // Input specification
+        assert (i >= 0 && i < seq.len());
+        assert (j >= 0 && j < seq.len());
+        assert (i < j);
+
         mpq_class energy = constants.INFINITY_;
 
         int size = j - i - 1; /*  size is the number of bases in the loop, when the closing pair is excluded */
@@ -513,6 +522,11 @@ namespace pmfe {
         /*
           Compute the energy of a stack of pairs (i, j) and (i+1, j-1)
         */
+        // Input specification
+        assert (i >= 0 && i < seq.len());
+        assert (j >= 0 && j < seq.len());
+        assert (i < j);
+
         return constants.stack[seq.base(i)][seq.base(j)][seq.base(i+1)][seq.base(j-1)] + constants.eparam[1];
     }
 
@@ -520,7 +534,14 @@ namespace pmfe {
         /*
           Helper method to populate the VBI array
          */
-        mpq_class VBIij = constants.INFINITY_;
+
+        // Input specification
+        assert (i >= 0 && i < seq.len());
+        assert (j >= 0 && j < seq.len());
+        assert (i < j);
+
+        std::vector<mpq_class> vals;
+        vals.push_back(constants.INFINITY_);
 
         for (int p = i+1; p <= std::min(j-2-TURN, i+MAXLOOP+1) ; ++p) {
             int minq = j-i+p-MAXLOOP-2;
@@ -536,14 +557,12 @@ namespace pmfe {
 
             for (int q = minq; q <= maxq; q++) {
                 if (q - p > TURN && seq.can_pair(p, q)) {
-                    std::vector<mpq_class> vals;
                     vals.push_back(eL(i, j, p, q, seq) + seq.V[p][q]);
-                    vals.push_back(VBIij);
-                    VBIij = *std::min_element(vals.begin(), vals.end());
                 }
             }
         }
 
+        mpq_class VBIij = *std::min_element(vals.begin(), vals.end());
         return VBIij;
     }
 };
