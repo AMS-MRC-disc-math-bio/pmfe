@@ -7,13 +7,12 @@
 #include "nndb_constants.h"
 
 #include <gmpxx.h>
-#include "boost/multi_array.hpp"
+#include <boost/multi_array.hpp>
+#include <boost/asio/io_service.hpp>
+#include <boost/bind.hpp>
+#include <boost/thread/thread.hpp>
 
 #include <vector>
-
-#ifdef _OPENMP
-#include "omp.h"
-#endif
 
 namespace pmfe {
     NNTM::NNTM(NNDBConstants constants, dangle_mode dangles):
@@ -27,95 +26,22 @@ namespace pmfe {
         RNASequenceWithTables seq(inseq, constants.INFINITY_);
 
         // Populate V, VM, VBI, WM, and WMPrime
+        boost::asio::io_service io_service;
+
+        boost::thread_group thread_pool;
+        size_t num_threads = boost::thread::hardware_concurrency();
+        for (size_t i = 0; i < num_threads; ++i) {
+            thread_pool.create_thread(boost::bind(&boost::asio::io_service::run, &io_service));
+        }
+
         for (int b = TURN+1; b <= seq.len() - 1; ++b) {
-            int i, j;
-#ifdef _OPENMP
-#pragma omp parallel for private (i,j) schedule(guided)
-#endif
-            for (i = 0; i <= seq.len() - 1 - b; ++i) {
-                j = i + b;
-
-                if (seq.can_pair(i, j)) {
-                    std::vector<mpq_class> vm_vals;
-                    vm_vals.push_back(constants.INFINITY_);
-
-                    mpq_class d3, d5;
-                    d3 = Ed3(i, j, seq, true);
-                    d5 = Ed5(i, j, seq, true);
-
-                    if (dangles == BOTH_DANGLE) { // -d2
-                        vm_vals.push_back(seq.WMPrime[i+1][j-1] + d3 + d5 + auPenalty(i, j, seq) + constants.multConst[0] + constants.multConst[2]);
-                    } else if (dangles == NO_DANGLE) { // -d0
-                        vm_vals.push_back(seq.WMPrime[i+1][j-1] + auPenalty(i, j, seq) + constants.multConst[0] + constants.multConst[2]);
-                    } else { // default
-                        vm_vals.push_back(seq.WMPrime[i+1][j-1] + auPenalty(i, j, seq) + constants.multConst[0] + constants.multConst[2]);
-                        vm_vals.push_back(seq.WMPrime[i+2][j-1] + d5 + auPenalty(i, j, seq) + constants.multConst[0] + constants.multConst[2] + constants.multConst[1]);
-                        vm_vals.push_back(seq.WMPrime[i+1][j-2] + d3 + auPenalty(i, j, seq) + constants.multConst[0] + constants.multConst[2] + constants.multConst[1]);
-                        vm_vals.push_back(seq.WMPrime[i+2][j-2] + d3 + d5 + auPenalty(i, j, seq) + constants.multConst[0] + constants.multConst[2] + 2*constants.multConst[1]);
-                    }
-
-                    seq.VM[i][j] = *std::min_element(vm_vals.begin(), vm_vals.end());
-
-                    std::vector<mpq_class> v_vals;
-                    v_vals.push_back(constants.INFINITY_);
-                    v_vals.push_back(seq.VM[i][j]);
-
-                    v_vals.push_back(eH(i, j, seq));
-                    v_vals.push_back(eS(i, j, seq) + seq.V[i+1][j-1]);
-
-                    seq.VBI[i][j] = calcVBI(i, j, seq);
-                    v_vals.push_back(seq.VBI[i][j]);
-
-                    seq.V[i][j] = *std::min_element(v_vals.begin(), v_vals.end());
-                } else {
-                    seq.V[i][j] = constants.INFINITY_;
-                }
-
-                std::vector<mpq_class> wmp_vals;
-                wmp_vals.push_back(constants.INFINITY_);
-
-                for (int h = i+TURN+1 ; h <= j-TURN-2; ++h) {
-                    wmp_vals.push_back(seq.WM[i][h] + seq.WM[h+1][j]);
-                }
-
-                seq.WMPrime[i][j] = *std::min_element(wmp_vals.begin(), wmp_vals.end());
-
-                // WM begin
-                std::vector<mpq_class> wm_vals;
-                wm_vals.push_back(constants.INFINITY_);
-                wm_vals.push_back(seq.WMPrime[i][j]);
-
-                if (dangles == BOTH_DANGLE) {
-                    mpq_class energy = seq.V[i][j] + auPenalty(i, j, seq) + constants.multConst[2];
-
-                    if (i > 0) {
-                        energy += Ed5(i, j, seq);
-                    }
-
-                    if (j < seq.len() - 1) {
-                        energy += Ed3(i, j, seq);
-                    }
-
-                    wm_vals.push_back(energy);
-                } else if (dangles == NO_DANGLE) {
-                    wm_vals.push_back(seq.V[i][j] + auPenalty(i, j, seq) + constants.multConst[2]);
-                } else { // default
-                    wm_vals.push_back(seq.V[i][j] + auPenalty(i, j, seq) + constants.multConst[2]); // no dangle
-
-                    wm_vals.push_back(seq.V[i+1][j] + Ed5(i+1, j, seq) + auPenalty(i+1, j, seq) + constants.multConst[2] + constants.multConst[1]); //i dangle
-
-                    wm_vals.push_back(seq.V[i][j-1] + Ed3(i, j-1, seq) + auPenalty(i, j-1, seq) + constants.multConst[2] + constants.multConst[1]);  //j dangle
-
-                    wm_vals.push_back(seq.V[i+1][j-1] + Ed5(i+1, j-1, seq) + Ed3(i+1, j-1, seq) + auPenalty(i+1, j-1, seq) + constants.multConst[2] + 2*constants.multConst[1]); //i,j dangle
-                }
-
-                wm_vals.push_back(seq.WM[i+1][j] + constants.multConst[1]); //i dangle
-
-                wm_vals.push_back(seq.WM[i][j-1] + constants.multConst[1]); //j dangle
-
-                seq.WM[i][j] = *std::min_element(wm_vals.begin(), wm_vals.end());
-                // WM end
+            io_service.reset();
+            for (int i = 0; i <= seq.len() - 1 - b; ++i) {
+                io_service.post(boost::bind(&NNTM::populate_internal_tables, this, i, i+b, std::ref(seq)));
             }
+
+            io_service.run();
+            thread_pool.join_all();
         }
 
         // Populate W
@@ -157,79 +83,158 @@ namespace pmfe {
             seq.W[j] = *std::min_element(w_vals.begin(), w_vals.end());
         }
 
-        // Populate FM1
-        for (int i = 0; i < seq.len(); ++i) {
-            for (int j = i+1; j < seq.len(); ++j) {
-                std::vector<mpq_class> fm1_vals;
-                fm1_vals.push_back(constants.INFINITY_);
-
-                int minl = i+TURN+1;
-                for (int l = minl; l <= j; ++l) {
-                    switch (dangles) {
-                    case NO_DANGLE:
-                        {
-                            fm1_vals.push_back(seq.V[i][i] + auPenalty(i, l, seq) + constants.multConst[1]*(j-l) + constants.multConst[2]);
-                            break;
-                        }
-
-                    case CHOOSE_DANGLE:
-                        {
-                            mpq_class d5 = Ed5(i+1, l, seq);
-                            mpq_class d3 = Ed3(i, l-1, seq);
-                            mpq_class d53 = Ed5(i+1, l-1, seq) + Ed3(i+1, l-1, seq);
-
-                            fm1_vals.push_back(seq.V[i][l] + auPenalty(i, l, seq) + constants.multConst[1] * (j-l) + constants.multConst[2]);
-
-                            if (l >= minl + 1)
-                                fm1_vals.push_back(seq.V[i+1][l] + auPenalty(i+1, l, seq) + d5 + constants.multConst[1] * (j-l+1) + constants.multConst[2]);
-
-                            if (l >= minl + 1)
-                                fm1_vals.push_back(seq.V[i][l-1] + auPenalty(i, l-1, seq) + d3 + constants.multConst[1] * (j-(l-1)) + constants.multConst[2]);
-
-                            if (l >= minl + 2)
-                                fm1_vals.push_back(seq.V[i+1][l-1] + auPenalty(i+1, l-1, seq) + d53 + constants.multConst[1]* (j-(l-1)+1) + constants.multConst[2]);
-
-                            break;
-                        }
-
-                    case BOTH_DANGLE:
-                        {
-                            mpq_class d5 = Ed5(i, l, seq);
-                            mpq_class d3 = Ed3(i, l, seq);
-                            fm1_vals.push_back(seq.V[i][l] + auPenalty(i, l, seq) + d5 + d3 + constants.multConst[1] * (j-l) + constants.multConst[2]);
-                            break;
-                        }
-
-                    default:
-                        {
-                            exit(EXIT_FAILURE);
-                            break;
-                        }
-                    }
-                }
-                seq.FM1[i][j] = *std::min_element(fm1_vals.begin(), fm1_vals.end());
-            }
-        }
-
-        // Populate FM
-        for (int i = 0; i < seq.len(); ++i) {
-            for (int j = i+1; j < seq.len(); ++j) {
-                std::vector<mpq_class> fm_vals;
-                fm_vals.push_back(constants.INFINITY_);
-
-                for (int k = i+TURN+1; k <= j-TURN-1; ++k) {
-                    fm_vals.push_back(seq.FM[i][k-1] + seq.FM1[k][j]);
-                }
-
-                for (int k = i; k <= j-TURN-1; ++k) {
-                    fm_vals.push_back(seq.FM1[k][j] + constants.multConst[1]*(k-i));
-                }
-                seq.FM[i][j] = *std::min_element(fm_vals.begin(), fm_vals.end());
-            }
-        }
-
         return seq;
     };
+
+    void NNTM::populate_internal_tables(int i, int j, RNASequenceWithTables& seq) const {
+        // Input specification
+        assert (0 <= i);
+        assert (j < seq.len());
+        assert (i < j);
+
+        if (seq.can_pair(i, j)) {
+            std::vector<mpq_class> vm_vals;
+            vm_vals.push_back(constants.INFINITY_);
+
+            mpq_class d3, d5;
+            d3 = Ed3(i, j, seq, true);
+            d5 = Ed5(i, j, seq, true);
+
+            if (dangles == BOTH_DANGLE) { // -d2
+                vm_vals.push_back(seq.WMPrime[i+1][j-1] + d3 + d5 + auPenalty(i, j, seq) + constants.multConst[0] + constants.multConst[2]);
+            } else if (dangles == NO_DANGLE) { // -d0
+                vm_vals.push_back(seq.WMPrime[i+1][j-1] + auPenalty(i, j, seq) + constants.multConst[0] + constants.multConst[2]);
+            } else { // default
+                vm_vals.push_back(seq.WMPrime[i+1][j-1] + auPenalty(i, j, seq) + constants.multConst[0] + constants.multConst[2]);
+                vm_vals.push_back(seq.WMPrime[i+2][j-1] + d5 + auPenalty(i, j, seq) + constants.multConst[0] + constants.multConst[2] + constants.multConst[1]);
+                vm_vals.push_back(seq.WMPrime[i+1][j-2] + d3 + auPenalty(i, j, seq) + constants.multConst[0] + constants.multConst[2] + constants.multConst[1]);
+                vm_vals.push_back(seq.WMPrime[i+2][j-2] + d3 + d5 + auPenalty(i, j, seq) + constants.multConst[0] + constants.multConst[2] + 2*constants.multConst[1]);
+            }
+
+            seq.VM[i][j] = *std::min_element(vm_vals.begin(), vm_vals.end());
+
+            std::vector<mpq_class> v_vals;
+            v_vals.push_back(constants.INFINITY_);
+            v_vals.push_back(seq.VM[i][j]);
+
+            v_vals.push_back(eH(i, j, seq));
+            v_vals.push_back(eS(i, j, seq) + seq.V[i+1][j-1]);
+
+            seq.VBI[i][j] = calcVBI(i, j, seq);
+            v_vals.push_back(seq.VBI[i][j]);
+
+            seq.V[i][j] = *std::min_element(v_vals.begin(), v_vals.end());
+        } else {
+            seq.V[i][j] = constants.INFINITY_;
+        }
+
+        std::vector<mpq_class> wmp_vals;
+        wmp_vals.push_back(constants.INFINITY_);
+
+        for (int h = i+TURN+1 ; h <= j-TURN-2; ++h) {
+            wmp_vals.push_back(seq.WM[i][h] + seq.WM[h+1][j]);
+        }
+
+        seq.WMPrime[i][j] = *std::min_element(wmp_vals.begin(), wmp_vals.end());
+
+        // WM begin
+        std::vector<mpq_class> wm_vals;
+        wm_vals.push_back(constants.INFINITY_);
+        wm_vals.push_back(seq.WMPrime[i][j]);
+
+        if (dangles == BOTH_DANGLE) {
+            mpq_class energy = seq.V[i][j] + auPenalty(i, j, seq) + constants.multConst[2];
+
+            if (i > 0) {
+                energy += Ed5(i, j, seq);
+            }
+
+            if (j < seq.len() - 1) {
+                energy += Ed3(i, j, seq);
+            }
+
+            wm_vals.push_back(energy);
+        } else if (dangles == NO_DANGLE) {
+            wm_vals.push_back(seq.V[i][j] + auPenalty(i, j, seq) + constants.multConst[2]);
+        } else { // default
+            wm_vals.push_back(seq.V[i][j] + auPenalty(i, j, seq) + constants.multConst[2]); // no dangle
+
+            wm_vals.push_back(seq.V[i+1][j] + Ed5(i+1, j, seq) + auPenalty(i+1, j, seq) + constants.multConst[2] + constants.multConst[1]); //i dangle
+
+            wm_vals.push_back(seq.V[i][j-1] + Ed3(i, j-1, seq) + auPenalty(i, j-1, seq) + constants.multConst[2] + constants.multConst[1]);  //j dangle
+
+            wm_vals.push_back(seq.V[i+1][j-1] + Ed5(i+1, j-1, seq) + Ed3(i+1, j-1, seq) + auPenalty(i+1, j-1, seq) + constants.multConst[2] + 2*constants.multConst[1]); //i,j dangle
+        }
+
+        wm_vals.push_back(seq.WM[i+1][j] + constants.multConst[1]); //i dangle
+
+        wm_vals.push_back(seq.WM[i][j-1] + constants.multConst[1]); //j dangle
+
+        seq.WM[i][j] = *std::min_element(wm_vals.begin(), wm_vals.end());
+        // WM end
+
+        // FM begin
+        std::vector<mpq_class> fm1_vals;
+        fm1_vals.push_back(constants.INFINITY_);
+
+        int minl = i+TURN+1;
+        for (int l = minl; l <= j; ++l) {
+            switch (dangles) {
+            case NO_DANGLE:
+            {
+                fm1_vals.push_back(seq.V[i][i] + auPenalty(i, l, seq) + constants.multConst[1]*(j-l) + constants.multConst[2]);
+                break;
+            }
+
+            case CHOOSE_DANGLE:
+            {
+                mpq_class d5 = Ed5(i+1, l, seq);
+                mpq_class d3 = Ed3(i, l-1, seq);
+                mpq_class d53 = Ed5(i+1, l-1, seq) + Ed3(i+1, l-1, seq);
+
+                fm1_vals.push_back(seq.V[i][l] + auPenalty(i, l, seq) + constants.multConst[1] * (j-l) + constants.multConst[2]);
+
+                if (l >= minl + 1)
+                    fm1_vals.push_back(seq.V[i+1][l] + auPenalty(i+1, l, seq) + d5 + constants.multConst[1] * (j-l+1) + constants.multConst[2]);
+
+                if (l >= minl + 1)
+                    fm1_vals.push_back(seq.V[i][l-1] + auPenalty(i, l-1, seq) + d3 + constants.multConst[1] * (j-(l-1)) + constants.multConst[2]);
+
+                if (l >= minl + 2)
+                    fm1_vals.push_back(seq.V[i+1][l-1] + auPenalty(i+1, l-1, seq) + d53 + constants.multConst[1]* (j-(l-1)+1) + constants.multConst[2]);
+
+                break;
+            }
+
+            case BOTH_DANGLE:
+            {
+                mpq_class d5 = Ed5(i, l, seq);
+                mpq_class d3 = Ed3(i, l, seq);
+                fm1_vals.push_back(seq.V[i][l] + auPenalty(i, l, seq) + d5 + d3 + constants.multConst[1] * (j-l) + constants.multConst[2]);
+                break;
+            }
+
+            default:
+            {
+                exit(EXIT_FAILURE);
+                break;
+            }
+            }
+        }
+        seq.FM1[i][j] = *std::min_element(fm1_vals.begin(), fm1_vals.end());
+
+        std::vector<mpq_class> fm_vals;
+        fm_vals.push_back(constants.INFINITY_);
+
+        for (int k = i+TURN+1; k <= j-TURN-1; ++k) {
+            fm_vals.push_back(seq.FM[i][k-1] + seq.FM1[k][j]);
+        }
+
+        for (int k = i; k <= j-TURN-1; ++k) {
+            fm_vals.push_back(seq.FM1[k][j] + constants.multConst[1]*(k-i));
+        }
+        seq.FM[i][j] = *std::min_element(fm_vals.begin(), fm_vals.end());
+    }
 
     mpq_class NNTM::minimum_energy(const RNASequenceWithTables& seq) const {
         /*

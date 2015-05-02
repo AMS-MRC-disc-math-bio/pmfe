@@ -38,14 +38,7 @@ LIBS += -lboost_python
 LIBS += -lboost_filesystem
 LIBS += -lboost_program_options
 LIBS += -lboost_system
-
-# Optional OpenMP-related flags
-HAS_OPENMP := $(shell $(CXX) -lgomp openmp-test.cc -o /dev/null 2>&1 > /dev/null ; echo $$?)
-ifeq ($(HAS_OPENMP), 0)
-CXXFLAGS += -fopenmp
-CXXFLAGS += -DHAVE_OPENMP
-LIBS += -lgomp
-endif
+LIBS += -lboost_thread
 
 BIN = pmfe-findmfe pmfe-parametrizer pmfe-subopt pmfe-tests
 all: $(OBJ) $(BIN)

@@ -24,6 +24,7 @@ namespace pmfe{
 
     protected:
         // MFE helpers
+        void populate_internal_tables(int i, int j, RNASequenceWithTables& seq) const;
         mpq_class Ed3(int i, int j, const RNASequence& seq, bool inside = false) const;
         mpq_class Ed5(int i, int j, const RNASequence& seq, bool inside = false) const;
         mpq_class auPenalty(int i, int j, const RNASequence& seq) const;
