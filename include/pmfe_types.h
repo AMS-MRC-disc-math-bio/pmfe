@@ -207,10 +207,11 @@ Representation of an RNA secondary structure that has been assigned a score
         RNAStructureTree(const RNAStructure& structure);
     };
 
-    struct Segment {
+    class Segment {
         /**
            Representation of a segment in a suboptimal structure processing stack
          **/
+    public:
         int i, j;
         subopt_label label;
         mpq_class minimum_energy;
@@ -221,6 +222,8 @@ Representation of an RNA secondary structure that has been assigned a score
             label(label),
             minimum_energy(minimum_energy)
             {};
+
+        friend std::ostream& operator<<(std::ostream& out, const Segment& seg); // Output this segment as an ostream
     };
 
     class RNAPartialStructure: public RNAStructure {
@@ -241,7 +244,6 @@ Representation of an RNA secondary structure that has been assigned a score
     protected:
         std::stack<Segment> seg_stack;
         mpq_class known_energy;
-
     };
 
     typedef std::stack<RNAPartialStructure> PartialStructureStack;

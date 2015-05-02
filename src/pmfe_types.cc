@@ -519,6 +519,11 @@ namespace pmfe {
         }
     };
 
+    std::ostream& operator<<(std::ostream& os, const Segment& seg) {
+        os << "(" << seg.i << ", " << seg.j << ")_" << seg.label;
+        return os;
+    }
+
     RNAPartialStructure::RNAPartialStructure():
         RNAStructure(),
         known_energy(0)
@@ -538,8 +543,8 @@ namespace pmfe {
     };
 
     void RNAPartialStructure::push(const Segment& seg) {
-        seg_stack.push(seg);
         known_energy += seg.minimum_energy;
+        seg_stack.push(seg);
     };
 
     void RNAPartialStructure::pop() {
