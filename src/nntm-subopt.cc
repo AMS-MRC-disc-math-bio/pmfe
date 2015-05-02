@@ -34,9 +34,19 @@ namespace pmfe {
 
             if (ps.empty() ) {
                 // In this case, this structure is fully evaluated
+                // Score the structure
                 RNAStructure structure = ps;
                 ScoreVector score = this->score(structure);
                 RNAStructureWithScore result(structure, score);
+
+                if (ps.total() != score.energy) {
+                    throw std::logic_error("Inconsistent energy in suboptimal structure calculation.");
+                }
+
+                if (ps.total() > upper_bound) {
+                    throw std::logic_error("Invalid energy in suboptimal structure calculation.");
+                }
+
                 possible_structures.push_back(result);
             } else {
                 // Otherwise, we need to process the structure
@@ -62,7 +72,7 @@ namespace pmfe {
         ps.pop();
 
         // If this segment is too short to contain a substructure, exit immediately
-        if (seg.j - seg.i < TURN) {
+        if (seg.j - seg.i <= TURN) {
             return false;
         }
 
@@ -105,11 +115,12 @@ namespace pmfe {
         bool pushed_something = false;
 
         // Hairpin Loop
-        if (eH(i, j, seq) + ps.total()  <= upper_bound) {
+        if (eH(i, j, seq) + ps.total() <= upper_bound) {
             RNAPartialStructure new_ps(ps);
             new_ps.accumulate(eH(i, j, seq));
             new_ps.mark_pair(i, j);
             pstack.push(new_ps);
+            mpq_class new_t = new_ps.total();
             pushed_something = true;
         }
 
@@ -125,7 +136,10 @@ namespace pmfe {
 
         // Internal Loop
         if (seq.VBI[i][j] + ps.total() <= upper_bound) {
-            pushed_something = subopt_traceVBI(i, j, seq, ps, pstack, upper_bound);
+            RNAPartialStructure new_ps(ps);
+            new_ps.push(Segment(i, j, lVBI, seq.VBI[i][j]));
+            pstack.push(new_ps);
+            pushed_something = true;
         }
 
         // Multiloop
@@ -234,11 +248,19 @@ namespace pmfe {
         assert (j < ps.len());
 
         bool pushed_something = false;
-        for (int p = i+1; p <= std::min(j-2-TURN,i+MAXLOOP+1) ; p++) {
+        for (int p = i+1; p <= std::min(j-2-TURN, i+MAXLOOP+1) ; ++p) {
             int minq = j-i+p-MAXLOOP-2;
-            if (minq < p+1+TURN) minq = p+1+TURN;
-            int maxq = (p==(i+1))?(j-2):(j-1);
-            for (int q = minq; q <= maxq; q++) {
+            if (minq < p+1+TURN)
+                minq = p+1+TURN;
+
+            int maxq;
+            if (p == i+1) {
+                maxq = j-2;
+            } else {
+                maxq = j-1;
+            }
+
+            for (int q = minq; q <= maxq; ++q) {
                 if (seq.V[p][q] + eL(i, j, p, q, seq) + ps.total() <= upper_bound) {
                     RNAPartialStructure new_ps(ps);
                     new_ps.push(Segment(p, q, lV, seq.V[p][q]));
@@ -412,7 +434,7 @@ namespace pmfe {
             }
             if (i+1 < j && seq.V[i+1][j] + auPenalty(i+1, j, seq) + constants.multConst[2] + constants.multConst[1] + d5 + ps.total() <= upper_bound) {
                 RNAPartialStructure new_ps(ps);
-                new_ps.push(Segment(i+1, j, lV, seq.V[i][j]));
+                new_ps.push(Segment(i+1, j, lV, seq.V[i+1][j]));
                 new_ps.accumulate(auPenalty(i+1, j, seq) + constants.multConst[2] + constants.multConst[1] + d5);
                 new_ps.mark_d5(i);
                 pstack.push(new_ps);
@@ -467,7 +489,7 @@ namespace pmfe {
         assert (i < j);
         assert (j < seq.len());
 
-        bool pushed_something;
+        bool pushed_something = false;
 
         if (seq.FM[i][j-1] + constants.multConst[1] + ps.total() <= upper_bound) {
             RNAPartialStructure new_ps(ps);
@@ -667,12 +689,12 @@ namespace pmfe {
                 if (k+2 <= j-TURN && seq.V[k+2][j] + constants.multConst[2] + constants.multConst[1]*(k+2 - i) + auPenalty(k+2, j, seq) + d5 + ps.total() <= upper_bound) {
                     RNAPartialStructure new_ps(ps);
                     new_ps.push(Segment(k+2, j, lV, seq.V[k+2][j]));
-                             new_ps.accumulate(constants.multConst[2] + constants.multConst[1]*(k+2 - i) + auPenalty(k+2, j, seq) + d5);
+                    new_ps.accumulate(constants.multConst[2] + constants.multConst[1]*(k+2 - i) + auPenalty(k+2, j, seq) + d5);
                     new_ps.mark_d5(k+1);
                     pstack.push(new_ps);
                     pushed_something = true;
                 }
-                        if (k+1 <= j-1-TURN && seq.V[k+1][j-1] + constants.multConst[2] + constants.multConst[1]*(k+1 - i + 1) + auPenalty(k+1, j-1, seq) + d3 + ps.total() <= upper_bound) {
+                if (k+1 <= j-1-TURN && seq.V[k+1][j-1] + constants.multConst[2] + constants.multConst[1]*(k+1 - i + 1) + auPenalty(k+1, j-1, seq) + d3 + ps.total() <= upper_bound) {
                     RNAPartialStructure new_ps(ps);
                     new_ps.push(Segment(k+1, j-1, lV, seq.V[k+1][j-1]));
                     new_ps.accumulate(constants.multConst[2] + constants.multConst[1]*(k+1 - i + 1) + auPenalty(k+1, j-1, seq) + d3);
@@ -680,7 +702,7 @@ namespace pmfe {
                     pstack.push(new_ps);
                     pushed_something = true;
                 }
-                    if (k+2 <= j-1-TURN && seq.V[k+2][j-1] + constants.multConst[2] + constants.multConst[1]*(k+2 - i + 1) + auPenalty(k+2, j-1, seq) + d53 + ps.total() <= upper_bound) {
+                if (k+2 <= j-1-TURN && seq.V[k+2][j-1] + constants.multConst[2] + constants.multConst[1]*(k+2 - i + 1) + auPenalty(k+2, j-1, seq) + d53 + ps.total() <= upper_bound) {
                     RNAPartialStructure new_ps(ps);
                     new_ps.push(Segment(k+2, j-1, lV, seq.V[k+2][j-1]));
                     new_ps.accumulate(constants.multConst[2] + constants.multConst[1]*(k+2 - i + 1) + auPenalty(k+2, j-1, seq) + d53);
