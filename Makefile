@@ -1,5 +1,3 @@
-#CXX = clang++
-
 # source files
 SRC := $(wildcard src/*.cc)
 OBJ := $(SRC:.cc=.o)
@@ -27,7 +25,7 @@ CXXFLAGS += --std=c++11
 CXXFLAGS += -fPIC
 CXXFLAGS += -Wall
 CXXFLAGS += -g
-CXXFLAGS += -O0
+CXXFLAGS += -O2
 
 # library paths
 LIBS += -lgmp -lgmpxx
