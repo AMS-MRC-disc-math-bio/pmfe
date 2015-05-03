@@ -70,7 +70,8 @@ namespace pmfe {
                 }
             }
 
-            w_vals.push_back(seq.W[j-1]);
+            w_vals.push_back(seq.W[j-1]); // Base j is free
+            w_vals.push_back(0); // All bases up to j are free
 
             seq.W[j] = *std::min_element(w_vals.begin(), w_vals.end());
         }
