@@ -7,16 +7,28 @@
 #include "nndb_constants.h"
 
 #include <gmpxx.h>
-#include <boost/multi_array.hpp>
-#include <boost/asio/io_service.hpp>
 #include <boost/bind.hpp>
+#include <boost/make_shared.hpp>
+#include <boost/asio/io_service.hpp>
 #include <boost/thread/thread.hpp>
 
 #include <vector>
 
 namespace pmfe {
-    NNTM::NNTM(NNDBConstants constants, dangle_mode dangles):
-        constants(constants), dangles(dangles) {
+    NNTM::NNTM(NNDBConstants constants, dangle_mode dangles, int num_threads):
+        constants(constants),
+        dangles(dangles)
+    {
+        io_service = boost::make_shared<boost::asio::io_service>();
+        thread_pool = boost::make_shared<boost::thread_group>();
+
+        if (num_threads <= 0) {
+            num_threads = boost::thread::hardware_concurrency();
+        }
+
+        for (int i = 0; i < num_threads; ++i) {
+            thread_pool->create_thread(boost::bind(&boost::asio::io_service::run, io_service));
+        }
     };
 
     RNASequenceWithTables NNTM::energy_tables(const RNASequence& inseq) const {
@@ -26,22 +38,14 @@ namespace pmfe {
         RNASequenceWithTables seq(inseq, constants.INFINITY_);
 
         // Populate V, VM, VBI, WM, and WMPrime
-        boost::asio::io_service io_service;
-
-        boost::thread_group thread_pool;
-        size_t num_threads = boost::thread::hardware_concurrency();
-        for (size_t i = 0; i < num_threads; ++i) {
-            thread_pool.create_thread(boost::bind(&boost::asio::io_service::run, &io_service));
-        }
-
         for (int b = TURN+1; b <= seq.len() - 1; ++b) {
-            io_service.reset();
+            io_service->reset();
             for (int i = 0; i <= seq.len() - 1 - b; ++i) {
-                io_service.post(boost::bind(&NNTM::populate_internal_tables, this, i, i+b, std::ref(seq)));
+                io_service->post(boost::bind(&NNTM::populate_internal_tables, this, i, i+b, std::ref(seq)));
             }
 
-            io_service.run();
-            thread_pool.join_all();
+            io_service->run();
+            thread_pool->join_all();
         }
 
         // Populate W
