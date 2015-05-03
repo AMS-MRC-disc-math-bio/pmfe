@@ -5,8 +5,7 @@
 #include "pmfe_types.h"
 #include <gmpxx.h>
 #include <vector>
-#include <boost/asio/io_service.hpp>
-#include <boost/thread/thread.hpp>
+#include "thread_pool.h"
 
 namespace pmfe{
     class NNTM {
@@ -14,7 +13,7 @@ namespace pmfe{
         const NNDBConstants constants;
         const dangle_mode dangles;
 
-        NNTM(NNDBConstants constants, dangle_mode dangles, int num_threads = -1);
+        NNTM(NNDBConstants constants, dangle_mode dangles, SimpleThreadPool& thread_pool);
 
         RNASequenceWithTables energy_tables(const RNASequence& seq) const;
         mpq_class minimum_energy(const RNASequenceWithTables& seq) const;
@@ -59,8 +58,7 @@ namespace pmfe{
         bool subopt_traceM(int i, int j, const RNASequenceWithTables& seq, RNAPartialStructure& ps, PartialStructureStack& pstack, mpq_class upper_bound) const;
 
         // Threading
-        boost::shared_ptr<boost::asio::io_service> io_service;
-        boost::shared_ptr<boost::thread_group> thread_pool;
+        SimpleThreadPool& thread_pool;
 
         // Configurable constants
         const static int MAXLOOP = 30; /* The maximum loop size. */

@@ -8,10 +8,14 @@
 #include "nndb_constants.h"
 #include "nntm.h"
 #include "pmfe_types.h"
+#include "thread_pool.h"
 
 namespace fs = boost::filesystem;
 
 TEST_CASE("Combinatorial test sequence MFE", "[mfe][combinatorial]") {
+    // Build the thread pool
+    pmfe::SimpleThreadPool thread_pool;
+
     // Load the sequence
     fs::path seqfile("test_data/combinatorial_seq.fasta");
     pmfe::RNASequence seq(seqfile);
@@ -21,7 +25,7 @@ TEST_CASE("Combinatorial test sequence MFE", "[mfe][combinatorial]") {
 
     SECTION("Turner99 published parameters, d1") {
         pmfe::Turner99 constants;
-        pmfe::NNTM energy_model(constants, pmfe::CHOOSE_DANGLE);
+        pmfe::NNTM energy_model(constants, pmfe::CHOOSE_DANGLE, thread_pool);
         pmfe::RNASequenceWithTables seq_annotated = energy_model.energy_tables(seq);
         mpq_class energy = energy_model.minimum_energy(seq_annotated);
 
@@ -42,7 +46,7 @@ TEST_CASE("Combinatorial test sequence MFE", "[mfe][combinatorial]") {
 
     SECTION("Turner99 published parameters, d2") {
         pmfe::Turner99 constants;
-        pmfe::NNTM energy_model(constants, pmfe::BOTH_DANGLE);
+        pmfe::NNTM energy_model(constants, pmfe::BOTH_DANGLE, thread_pool);
         pmfe::RNASequenceWithTables seq_annotated = energy_model.energy_tables(seq);
         mpq_class energy = energy_model.minimum_energy(seq_annotated);
 
@@ -64,7 +68,7 @@ TEST_CASE("Combinatorial test sequence MFE", "[mfe][combinatorial]") {
     SECTION("No multibranch penalties, positive d, d1") {
         pmfe::ParameterVector params(0, 0, 0, 1);
         pmfe::Turner99 constants(params);
-        pmfe::NNTM energy_model(constants, pmfe::CHOOSE_DANGLE);
+        pmfe::NNTM energy_model(constants, pmfe::CHOOSE_DANGLE, thread_pool);
         pmfe::RNASequenceWithTables seq_annotated = energy_model.energy_tables(seq);
         mpq_class energy = energy_model.minimum_energy(seq_annotated);
 
@@ -86,7 +90,7 @@ TEST_CASE("Combinatorial test sequence MFE", "[mfe][combinatorial]") {
     SECTION("No multibranch penalties, positive d, d2") {
         pmfe::ParameterVector params(0, 0, 0, 1);
         pmfe::Turner99 constants(params);
-        pmfe::NNTM energy_model(constants, pmfe::BOTH_DANGLE);
+        pmfe::NNTM energy_model(constants, pmfe::BOTH_DANGLE, thread_pool);
         pmfe::RNASequenceWithTables seq_annotated = energy_model.energy_tables(seq);
         mpq_class energy = energy_model.minimum_energy(seq_annotated);
 
@@ -108,7 +112,7 @@ TEST_CASE("Combinatorial test sequence MFE", "[mfe][combinatorial]") {
     SECTION("No multibranch penalties, negative d, d1") {
         pmfe::ParameterVector params(0, 0, 0, -1);
         pmfe::Turner99 constants(params);
-        pmfe::NNTM energy_model(constants, pmfe::CHOOSE_DANGLE);
+        pmfe::NNTM energy_model(constants, pmfe::CHOOSE_DANGLE, thread_pool);
         pmfe::RNASequenceWithTables seq_annotated = energy_model.energy_tables(seq);
         mpq_class energy = energy_model.minimum_energy(seq_annotated);
 
@@ -130,7 +134,7 @@ TEST_CASE("Combinatorial test sequence MFE", "[mfe][combinatorial]") {
     SECTION("No multibranch penalties, negative d, d2") {
         pmfe::ParameterVector params(0, 0, 0, -1);
         pmfe::Turner99 constants(params);
-        pmfe::NNTM energy_model(constants, pmfe::BOTH_DANGLE);
+        pmfe::NNTM energy_model(constants, pmfe::BOTH_DANGLE, thread_pool);
         pmfe::RNASequenceWithTables seq_annotated = energy_model.energy_tables(seq);
         mpq_class energy = energy_model.minimum_energy(seq_annotated);
 
@@ -152,7 +156,7 @@ TEST_CASE("Combinatorial test sequence MFE", "[mfe][combinatorial]") {
     SECTION("Artificial parameters, d1") {
         pmfe::ParameterVector params(1, -1, 2, -2);
         pmfe::Turner99 constants(params);
-        pmfe::NNTM energy_model(constants, pmfe::CHOOSE_DANGLE);
+        pmfe::NNTM energy_model(constants, pmfe::CHOOSE_DANGLE, thread_pool);
         pmfe::RNASequenceWithTables seq_annotated = energy_model.energy_tables(seq);
         mpq_class energy = energy_model.minimum_energy(seq_annotated);
 
@@ -174,7 +178,7 @@ TEST_CASE("Combinatorial test sequence MFE", "[mfe][combinatorial]") {
     SECTION("Artificial parameters, d2") {
         pmfe::ParameterVector params(1, -1, 2, -2);
         pmfe::Turner99 constants(params);
-        pmfe::NNTM energy_model(constants, pmfe::BOTH_DANGLE);
+        pmfe::NNTM energy_model(constants, pmfe::BOTH_DANGLE, thread_pool);
         pmfe::RNASequenceWithTables seq_annotated = energy_model.energy_tables(seq);
         mpq_class energy = energy_model.minimum_energy(seq_annotated);
 
@@ -195,6 +199,9 @@ TEST_CASE("Combinatorial test sequence MFE", "[mfe][combinatorial]") {
 }
 
 TEST_CASE("Test tRNA sequence MFE", "[mfe][test_tRNA]") {
+    // Build the thread pool
+    pmfe::SimpleThreadPool thread_pool;
+
     // Load the sequence
     fs::path seqfile("test_data/test_tRNA.fasta");
     pmfe::RNASequence seq(seqfile);
@@ -204,7 +211,7 @@ TEST_CASE("Test tRNA sequence MFE", "[mfe][test_tRNA]") {
 
     SECTION("Turner99 published parameters, d1") {
         pmfe::Turner99 constants;
-        pmfe::NNTM energy_model(constants, pmfe::CHOOSE_DANGLE);
+        pmfe::NNTM energy_model(constants, pmfe::CHOOSE_DANGLE, thread_pool);
         pmfe::RNASequenceWithTables seq_annotated = energy_model.energy_tables(seq);
         mpq_class energy = energy_model.minimum_energy(seq_annotated);
 
@@ -225,7 +232,7 @@ TEST_CASE("Test tRNA sequence MFE", "[mfe][test_tRNA]") {
 
     SECTION("Turner99 published parameters, d2") {
         pmfe::Turner99 constants;
-        pmfe::NNTM energy_model(constants, pmfe::BOTH_DANGLE);
+        pmfe::NNTM energy_model(constants, pmfe::BOTH_DANGLE, thread_pool);
         pmfe::RNASequenceWithTables seq_annotated = energy_model.energy_tables(seq);
         mpq_class energy = energy_model.minimum_energy(seq_annotated);
 
@@ -247,7 +254,7 @@ TEST_CASE("Test tRNA sequence MFE", "[mfe][test_tRNA]") {
     SECTION("No multibranch penalties, positive d, d1") {
         pmfe::ParameterVector params(0, 0, 0, 1);
         pmfe::Turner99 constants(params);
-        pmfe::NNTM energy_model(constants, pmfe::CHOOSE_DANGLE);
+        pmfe::NNTM energy_model(constants, pmfe::CHOOSE_DANGLE, thread_pool);
         pmfe::RNASequenceWithTables seq_annotated = energy_model.energy_tables(seq);
         mpq_class energy = energy_model.minimum_energy(seq_annotated);
 
@@ -269,7 +276,7 @@ TEST_CASE("Test tRNA sequence MFE", "[mfe][test_tRNA]") {
     SECTION("No multibranch penalties, positive d, d2") {
         pmfe::ParameterVector params(0, 0, 0, 1);
         pmfe::Turner99 constants(params);
-        pmfe::NNTM energy_model(constants, pmfe::BOTH_DANGLE);
+        pmfe::NNTM energy_model(constants, pmfe::BOTH_DANGLE, thread_pool);
         pmfe::RNASequenceWithTables seq_annotated = energy_model.energy_tables(seq);
         mpq_class energy = energy_model.minimum_energy(seq_annotated);
 
@@ -292,7 +299,7 @@ TEST_CASE("Test tRNA sequence MFE", "[mfe][test_tRNA]") {
     SECTION("No multibranch penalties, negative d, d1") {
         pmfe::ParameterVector params(0, 0, 0, -1);
         pmfe::Turner99 constants(params);
-        pmfe::NNTM energy_model(constants, pmfe::CHOOSE_DANGLE);
+        pmfe::NNTM energy_model(constants, pmfe::CHOOSE_DANGLE, thread_pool);
         pmfe::RNASequenceWithTables seq_annotated = energy_model.energy_tables(seq);
         mpq_class energy = energy_model.minimum_energy(seq_annotated);
 
@@ -306,7 +313,7 @@ TEST_CASE("Test tRNA sequence MFE", "[mfe][test_tRNA]") {
 
         std::vector<pmfe::RNAStructureWithScore> suboptimal_structures = energy_model.suboptimal_structures(seq_annotated, delta, true);
 
-        REQUIRE(suboptimal_structures.size() == 124);
+        REQUIRE(suboptimal_structures.size() == 114);
         REQUIRE(suboptimal_structures.front().score.energy == energy);
         REQUIRE(suboptimal_structures.back().score.energy <= energy + delta);
     }
@@ -314,7 +321,7 @@ TEST_CASE("Test tRNA sequence MFE", "[mfe][test_tRNA]") {
     SECTION("No multibranch penalties, negative d, d2") {
         pmfe::ParameterVector params(0, 0, 0, -1);
         pmfe::Turner99 constants(params);
-        pmfe::NNTM energy_model(constants, pmfe::BOTH_DANGLE);
+        pmfe::NNTM energy_model(constants, pmfe::BOTH_DANGLE, thread_pool);
         pmfe::RNASequenceWithTables seq_annotated = energy_model.energy_tables(seq);
         mpq_class energy = energy_model.minimum_energy(seq_annotated);
 
@@ -328,7 +335,7 @@ TEST_CASE("Test tRNA sequence MFE", "[mfe][test_tRNA]") {
 
         std::vector<pmfe::RNAStructureWithScore> suboptimal_structures = energy_model.suboptimal_structures(seq_annotated, delta, true);
 
-        REQUIRE(suboptimal_structures.size() == 92);
+        REQUIRE(suboptimal_structures.size() == 91);
         REQUIRE(suboptimal_structures.front().score.energy == energy);
         REQUIRE(suboptimal_structures.back().score.energy <= energy + delta);
     }
@@ -336,7 +343,7 @@ TEST_CASE("Test tRNA sequence MFE", "[mfe][test_tRNA]") {
     SECTION("Artificial parameters, d1") {
         pmfe::ParameterVector params(1, -1, 2, -2);
         pmfe::Turner99 constants(params);
-        pmfe::NNTM energy_model(constants, pmfe::CHOOSE_DANGLE);
+        pmfe::NNTM energy_model(constants, pmfe::CHOOSE_DANGLE, thread_pool);
         pmfe::RNASequenceWithTables seq_annotated = energy_model.energy_tables(seq);
         mpq_class energy = energy_model.minimum_energy(seq_annotated);
 
@@ -350,7 +357,7 @@ TEST_CASE("Test tRNA sequence MFE", "[mfe][test_tRNA]") {
 
         std::vector<pmfe::RNAStructureWithScore> suboptimal_structures = energy_model.suboptimal_structures(seq_annotated, delta, true);
 
-        REQUIRE(suboptimal_structures.size() == 53);
+        REQUIRE(suboptimal_structures.size() == 45);
         REQUIRE(suboptimal_structures.front().score.energy == energy);
         REQUIRE(suboptimal_structures.back().score.energy <= energy + delta);
     }
@@ -358,7 +365,7 @@ TEST_CASE("Test tRNA sequence MFE", "[mfe][test_tRNA]") {
     SECTION("Artificial parameters, d2") {
         pmfe::ParameterVector params(1, -1, 2, -2);
         pmfe::Turner99 constants(params);
-        pmfe::NNTM energy_model(constants, pmfe::BOTH_DANGLE);
+        pmfe::NNTM energy_model(constants, pmfe::BOTH_DANGLE, thread_pool);
         pmfe::RNASequenceWithTables seq_annotated = energy_model.energy_tables(seq);
         mpq_class energy = energy_model.minimum_energy(seq_annotated);
 
@@ -372,7 +379,7 @@ TEST_CASE("Test tRNA sequence MFE", "[mfe][test_tRNA]") {
 
         std::vector<pmfe::RNAStructureWithScore> suboptimal_structures = energy_model.suboptimal_structures(seq_annotated, delta, true);
 
-        REQUIRE(suboptimal_structures.size() == 82);
+        REQUIRE(suboptimal_structures.size() == 81);
         REQUIRE(suboptimal_structures.front().score.energy == energy);
         REQUIRE(suboptimal_structures.back().score.energy <= energy + delta);
     }

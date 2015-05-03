@@ -35,6 +35,7 @@
 #include "nndb_constants.h"
 #include "nntm.h"
 #include "pmfe_types.h"
+#include "thread_pool.h"
 
 namespace pmfe {
     namespace fs = boost::filesystem;
@@ -49,6 +50,9 @@ namespace pmfe {
     }
 
     ScoreVector mfe(fs::path seq_file, ParameterVector params, dangle_mode dangles) {
+        // Construct a thread pool
+        SimpleThreadPool thread_pool;
+
         std::cout << "Reading constants...";
         // Read in thermodynamic parameters.
         Turner99 constants(params);
@@ -61,7 +65,7 @@ namespace pmfe {
 
         // Compute the minimum free energy
         std::cout << "Setting up energy model...";
-        NNTM energy_model(constants, dangles);
+        NNTM energy_model(constants, dangles, thread_pool);
         std::cout << "done." << std::endl;
 
         std::cout << "Computing energy tables...";

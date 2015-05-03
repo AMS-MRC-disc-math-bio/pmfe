@@ -6,6 +6,7 @@
 #include "nndb_constants.h"
 #include "BBPolytope.h"
 #include "mfe.h"
+#include "thread_pool.h"
 
 #include <map>
 
@@ -41,17 +42,18 @@ namespace pmfe {
         return result;
     };
 
-    RNAPolytope::RNAPolytope(RNASequence sequence, pmfe::dangle_mode dangles):
+    RNAPolytope::RNAPolytope(RNASequence sequence, pmfe::dangle_mode dangles, SimpleThreadPool& thread_pool):
         BBPolytope(4),
         sequence(sequence),
-        dangles(dangles)
+        dangles(dangles),
+        thread_pool(thread_pool)
         {};
 
     BBP::FPoint RNAPolytope::vertex_oracle(FVector objective) {
         // Set up the computational environment
         ParameterVector params = fv_to_pv(objective);
         Turner99 constants(params);
-        NNTM energy_model(constants, dangles);
+        NNTM energy_model(constants, dangles, thread_pool);
 
         // Compute the energy tables
         RNASequenceWithTables seq_annotated = energy_model.energy_tables(sequence);

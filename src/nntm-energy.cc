@@ -1,3 +1,5 @@
+// Copyright (c) 2015 Andrew Gainer-Dewar
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
@@ -5,31 +7,19 @@
 
 #include "nntm.h"
 #include "nndb_constants.h"
+#include "thread_pool.h"
 
 #include <gmpxx.h>
 #include <boost/bind.hpp>
-#include <boost/make_shared.hpp>
-#include <boost/asio/io_service.hpp>
-#include <boost/thread/thread.hpp>
 
 #include <vector>
 
 namespace pmfe {
-    NNTM::NNTM(NNDBConstants constants, dangle_mode dangles, int num_threads):
+    NNTM::NNTM(NNDBConstants constants, dangle_mode dangles, SimpleThreadPool& thread_pool):
         constants(constants),
-        dangles(dangles)
-    {
-        io_service = boost::make_shared<boost::asio::io_service>();
-        thread_pool = boost::make_shared<boost::thread_group>();
-
-        if (num_threads <= 0) {
-            num_threads = boost::thread::hardware_concurrency();
-        }
-
-        for (int i = 0; i < num_threads; ++i) {
-            thread_pool->create_thread(boost::bind(&boost::asio::io_service::run, io_service));
-        }
-    };
+        dangles(dangles),
+        thread_pool(thread_pool)
+    {};
 
     RNASequenceWithTables NNTM::energy_tables(const RNASequence& inseq) const {
         /*
@@ -39,13 +29,11 @@ namespace pmfe {
 
         // Populate V, VM, VBI, WM, and WMPrime
         for (int b = TURN+1; b <= seq.len() - 1; ++b) {
-            io_service->reset();
             for (int i = 0; i <= seq.len() - 1 - b; ++i) {
-                io_service->post(boost::bind(&NNTM::populate_internal_tables, this, i, i+b, std::ref(seq)));
+                thread_pool.post(boost::bind(&NNTM::populate_internal_tables, this, i, i+b, std::ref(seq)));
             }
 
-            io_service->run();
-            thread_pool->join_all();
+            thread_pool.wait_for_all_jobs();
         }
 
         // Populate W

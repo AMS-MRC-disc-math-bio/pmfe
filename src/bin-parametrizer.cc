@@ -5,6 +5,7 @@
 #include "nntm.h"
 #include "pmfe_types.h"
 #include "rna_polytope.h"
+#include "thread_pool.h"
 
 #include <string>
 
@@ -36,6 +37,9 @@ int main(int argc, char * argv[]) {
 
     po::notify(vm);
 
+    // Set up thread pool
+    pmfe::SimpleThreadPool thread_pool;
+
     // Set up dangle model
     pmfe::dangle_mode dangles = pmfe::convert_to_dangle_mode(vm["dangle-model"].as<int>());
 
@@ -43,7 +47,7 @@ int main(int argc, char * argv[]) {
     fs::path seq_file (vm["sequence"].as<std::string>());
     pmfe::RNASequence sequence(seq_file);
 
-    pmfe::RNAPolytope poly(sequence, dangles);
+    pmfe::RNAPolytope poly(sequence, dangles, thread_pool);
     poly.build();
 
     poly.print_statistics();
