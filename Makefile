@@ -62,6 +62,9 @@ pmfe-tests: $(LIBOBJ) $(TESTOBJ) src/bin-tests.o
             -e '/^$$/ d' -e 's/$$/ :/' < $*.d >> $*.P; \
         rm -f $*.d
 
+# The nndb_constants code is too big for compiler optimizations, so we suppress it
+src/nndb_constants.o: CXXFLAGS += -O0
+
 clean:
 	-rm -vf $(EXEC) $(OBJ) $(DEP) $(BIN)
 
