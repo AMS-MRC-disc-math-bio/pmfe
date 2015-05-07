@@ -42,7 +42,13 @@ int main(int argc, char* argv[]) {
 
     // Process file-related options
     fs::path seq_file(vm["sequence"].as<std::string>());
-    fs::path out_file(vm["outfile"].as<std::string>());
+    fs::path out_file;
+    if (vm.count("outfile")) {
+        out_file = fs::path(vm["outfile"].as<std::string>());
+    } else {
+        out_file = seq_file;
+        out_file.replace_extension(".rnasubopt");
+    }
 
     // Set up the parameters
     mpq_class delta = pmfe::get_mpq_from_word(vm["delta"].as<std::string>());
