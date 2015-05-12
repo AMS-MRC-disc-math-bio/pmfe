@@ -2,7 +2,7 @@ from sage.all import *
 from sage.geometry.polyhedron.parent import Polyhedra
 from sage.geometry.polyhedron.backend_ppl import Polyhedron_QQ_ppl
 from sage.rings.rational_field import QQ
-from sage.geometry.fan import NormalFan
+from sage.geometry.fan import Fan, Cone_of_fan
 from collections import namedtuple
 from pickle import UnpicklingError
 import os.path
@@ -16,6 +16,7 @@ class RNAPolytope(Polyhedron_QQ_ppl):
         points -- An Iterable of points, each of which has (at least) members `structure` (holding arbitrary data about the point) and `vector` (giving the coordinates of the point in a format which can be handled by `Polytope`)
         """
         self._normal_fan = None
+        self._vertex_from_cone = None
 
         parent = Polyhedra(QQ, len(points[0].vector))
 
@@ -27,11 +28,26 @@ class RNAPolytope(Polyhedron_QQ_ppl):
 
     def _build_normal_fan(self):
         if self._normal_fan is None:
-            self._normal_fan = NormalFan(self)
+            cones = [[ieq.index() for ieq in vertex.incident()] for vertex in self.vertices()]
+            rays = [ ieq.A() for ieq in self.inequalities() ]
+
+            fan = Fan(cones, rays, check=False, is_complete = True)
+            self._normal_fan = fan
+
+        if self._vertex_from_cone is None:
+            conedict = {}
+            for vertex in self.vertices():
+                cone = self.normal_fan().cone_containing([ieq.A() for ieq in vertex.incident()])
+                conedict[cone] = vertex
+            self._vertex_from_cone = conedict
 
     def normal_fan(self):
         """Return the normal fan of `self`."""
         return self._normal_fan
+
+    def vertex_from_cone(self, cone):
+        assert cone in self.normal_fan().cones(self.dim())
+        return self._vertex_from_cone[cone]
 
     def __getitem__(self, key):
         try:
