@@ -23,6 +23,7 @@
 #define _NNDB_CONSTANTS_H
 
 #include "pmfe_types.h"
+#include "thread_pool.h"
 
 #include <gmpxx.h>
 #include <boost/filesystem.hpp>
@@ -36,7 +37,6 @@ namespace pmfe {
     //TODO: Provide Turner99 instance
     class NNDBConstants {
     public:
-        int numoftloops;
         mpq_class maxpen;
         mpq_class auend;
         mpq_class gubonus;
@@ -91,18 +91,21 @@ namespace pmfe {
 
     class Turner99: public NNDBConstants {
     public:
-        Turner99(const ParameterVector params = ParameterVector());
+        Turner99(SimpleThreadPool& thread_pool, const ParameterVector& params = ParameterVector(), const fs::path& param_dir = "Turner99");
 
     protected:
-        void initMiscValues();
-        void initLoopValues();
-        void initTstkValues();
-        void initStackValues();
-        void initDangleValues();
-        void initTloopValues();
-        void initIloop11Values();
-        void initIloop21Values();
-        void initIloop22Values();
+        SimpleThreadPool& thread_pool;
+
+        void initMiscValues(const fs::path& param_dir);
+        void initLoopValues(const fs::path& param_dir);
+        void initTstkhValues(const fs::path& param_dir);
+        void initTstkiValues(const fs::path& param_dir);
+        void initStackValues(const fs::path& param_dir);
+        void initDangleValues(const fs::path& param_dir);
+        void initTloopValues(const fs::path& param_dir);
+        void initIloop11Values(const fs::path& param_dir);
+        void initIloop21Values(const fs::path& param_dir);
+        void initIloop22Values(const fs::path& param_dir);
     };
 }
 
