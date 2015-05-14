@@ -52,7 +52,7 @@ namespace pmfe {
     BBP::FPoint RNAPolytope::vertex_oracle(FVector objective) {
         // Set up the computational environment
         ParameterVector params = fv_to_pv(objective);
-        Turner99 constants(params);
+        Turner99 constants(thread_pool, params);
         NNTM energy_model(constants, dangles, thread_pool);
 
         // Compute the energy tables

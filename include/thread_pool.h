@@ -16,8 +16,6 @@ namespace pmfe {
 
         void post(boost::function<void()> job);
 
-        void wait_for_all_jobs();
-
     protected:
         size_t num_threads;
 
@@ -27,10 +25,6 @@ namespace pmfe {
         boost::asio::io_service io_service;
         boost::asio::io_service::work work;
         boost::thread_group thread_group;
-
-        boost::atomic<unsigned int> incomplete_threads;
-        boost::condition_variable cv;
-        boost::mutex mutex;
     };
 
     template<typename T>
@@ -93,6 +87,19 @@ namespace pmfe {
     private:
         std::deque<T> m_deque;
         mutable boost::mutex m_mutex;
+    };
+
+    class SimpleJobGroup {
+    public:
+        SimpleJobGroup(SimpleThreadPool& thread_pool);
+
+        void post(boost::function<void()> job);
+
+        void wait_for_all_jobs();
+
+    protected:
+        SimpleThreadPool& thread_pool;
+        std::vector< boost::unique_future<void> > pending_jobs;
     };
 }
 

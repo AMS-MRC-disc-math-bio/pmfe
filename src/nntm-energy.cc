@@ -29,11 +29,12 @@ namespace pmfe {
 
         // Populate V, VM, VBI, WM, and WMPrime
         for (int b = TURN+1; b <= seq.len() - 1; ++b) {
+            SimpleJobGroup job_group(thread_pool);
             for (int i = 0; i <= seq.len() - 1 - b; ++i) {
-                thread_pool.post(boost::bind(&NNTM::populate_internal_tables, this, i, i+b, std::ref(seq)));
+                job_group.post(boost::bind(&NNTM::populate_internal_tables, this, i, i+b, std::ref(seq)));
             }
 
-            thread_pool.wait_for_all_jobs();
+            job_group.wait_for_all_jobs();
         }
 
         // Populate W
@@ -87,6 +88,7 @@ namespace pmfe {
 
         if (seq.can_pair(i, j)) {
             std::vector<mpq_class> vm_vals;
+            vm_vals.reserve(5);
             vm_vals.push_back(constants.INFINITY_);
 
             mpq_class d3, d5;
@@ -107,6 +109,7 @@ namespace pmfe {
             seq.VM[i][j] = *std::min_element(vm_vals.begin(), vm_vals.end());
 
             std::vector<mpq_class> v_vals;
+            v_vals.reserve(5);
             v_vals.push_back(constants.INFINITY_);
             v_vals.push_back(seq.VM[i][j]);
 
@@ -122,6 +125,7 @@ namespace pmfe {
         }
 
         std::vector<mpq_class> wmp_vals;
+        wmp_vals.reserve(j-i-2*TURN);
         wmp_vals.push_back(constants.INFINITY_);
 
         for (int h = i+TURN+1 ; h <= j-TURN-2; ++h) {
@@ -132,6 +136,7 @@ namespace pmfe {
 
         // WM begin
         std::vector<mpq_class> wm_vals;
+        wm_vals.reserve(8);
         wm_vals.push_back(constants.INFINITY_);
         wm_vals.push_back(seq.WMPrime[i][j]);
 
@@ -168,6 +173,7 @@ namespace pmfe {
 
         // FM begin
         std::vector<mpq_class> fm1_vals;
+        fm1_vals.reserve(3*(j-i));
         fm1_vals.push_back(constants.INFINITY_);
 
         int minl = i+TURN+1;

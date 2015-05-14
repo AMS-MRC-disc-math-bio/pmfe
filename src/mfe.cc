@@ -55,7 +55,7 @@ namespace pmfe {
 
         std::cout << "Reading constants...";
         // Read in thermodynamic parameters.
-        Turner99 constants(params);
+        Turner99 constants(thread_pool, params);
         std::cout << "done." << std::endl;
 
         std::cout << "Reading sequence...";

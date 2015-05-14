@@ -9,7 +9,7 @@
 #include "nndb_constants.h"
 
 #include <gmpxx.h>
-#include "boost/multi_array.hpp"
+#include <boost/multi_array.hpp>
 
 #include <vector>
 
