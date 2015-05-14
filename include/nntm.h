@@ -10,10 +10,10 @@
 namespace pmfe{
     class NNTM {
     public:
-        const NNDBConstants constants;
+        const NNDBConstants& constants;
         const dangle_mode dangles;
 
-        NNTM(NNDBConstants constants, dangle_mode dangles, SimpleThreadPool& thread_pool);
+        NNTM(const NNDBConstants& constants, dangle_mode dangles, SimpleThreadPool& thread_pool);
 
         RNASequenceWithTables energy_tables(const RNASequence& seq) const;
         mpq_class minimum_energy(const RNASequenceWithTables& seq) const;

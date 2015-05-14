@@ -15,7 +15,7 @@
 #include <vector>
 
 namespace pmfe {
-    NNTM::NNTM(NNDBConstants constants, dangle_mode dangles, SimpleThreadPool& thread_pool):
+    NNTM::NNTM(const NNDBConstants& constants, dangle_mode dangles, SimpleThreadPool& thread_pool):
         constants(constants),
         dangles(dangles),
         thread_pool(thread_pool)
