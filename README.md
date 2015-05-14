@@ -24,8 +24,8 @@ To install the required dependencies on OSX using Homebrew, run
 
     brew install boost boost-python cgal gmp
 
-This project also depends on the [NLTemplate] string templating library.
-It has been included here under the terms of the MIT license.
+This project also depends on the [Catch][catch] unit testing library.
+It has been included here under the terms of the Boost Software License.
 
 
 ### Building the project code
@@ -36,39 +36,43 @@ If you have multiple cores or processors, you can build in parallel by running
     nice make -j
 
 instead.
-The resulting binaries can be found in the `bin/` subdirectory.
-
-### Installing
-You may elect to install the project code so that you can run it from any directory.
-To do so, simply run `sudo make install` from the `pmfe` directory.
-
-To undo this process, run `sudo make uninstall`.
+The resulting binaries can be found in the base directory with the `pmfe-` prefix.
 
 ## Updating
 
 If you used Git to download your copy of this software, you can update it easily.
 Just run `git pull` in a terminal from anywhere inside the repository to fetch the latest version.
-Afterwards, run `make clean` and then `make` to build the new version.
-Be sure to re-run `make install` if you want an installed copy!
+Afterwards, run `make` again to build the new version.
 
 ## Usage
+This project builds programs that perform a variety of tasks.
 
-Given a FASTA file representing an RNA sequence, the program will produce a Sage file containing the generated points and initializing the parameter polytope.
-
-To run the calculation on the sequence in `test_data/test_tRNA.fasta`, type
-
-    pmfe-parametrizer test_data/test_tRNA.fasta
-
-The result will be a file `test_data/test_tRNA.sage` containing the required Sage commands and a directory called `test_data/test_tRNA` containing structure files representing the MFE structures for each set of parameters.
-
-We also supply a program which can be used to find an MFE structure for a single set of parameters.
+### `pmfe-findmfe`
+Given a FASTA file representing an RNA sequence and (optionally) some modified values for the Turner99 multibranch loop parameters, the `pmfe-findmfe` program will generate a secondary structure which minimizes free energy.
 To use it on the sequence in `test_data/test_tRNA.fasta` with parameters `A`, `B`, `C`, and `D`, type
 
     pmfe-findmfe test_data/test_tRNA.fasta -a A -b B -c C -d D
 
 The result will be printed to your terminal.
 
-For more information about either program, run it with the `-h` option.
+### `pmfe-subopt`
+Given a FASTA file representing an RNA sequence, an energy gap δ, and (optionally) some modified values for the Turner99 multibranch loop parameters, the `pmfe-subopt` program will generate all secondary structures with energy within δ of the minimum.
+To use it on the sequence in `test_data/test_tRNA.fasta` with parameters `A`, `B`, `C`, and `D` and energy gap δ, type
+
+    pmfe-findmfe test_data/test_tRNA.fasta -a A -b B -c C -d D --delta δ
+
+The result will be saved in `test_data/test_tRNA.rnasubopt`.
+
+### `pmfe-parametrizer`
+Given a FASTA file representing an RNA sequence, the `pmfe-parametrizer` program will generate the polytope which is the convex hull of all secondary structures on that sequence in ℚ⁴.
+To use it on the sequence in `test_data/test_tRNA.fasta`, type
+
+    pmfe-parametrizer test_data/test_tRNA.fasta
+
+The result will be saved in `test_data/test_tRNA.rnapoly`, which can be read directly or used with `rna_poly.py` to produce a Sage polytope for further investigation.
+
+### `pmfe-tests`
+The `pmfe-tests` program runs a suite of unit tests.
 
 ## Python interface
 
@@ -85,6 +89,7 @@ See the files `pyparam/example.*.py` for examples of how to use these methods.
 This project includes "BBPolytope.h", a headers-only implementation of Huggins' `iB4e` algorithm.
 It can be found in the `iB4e` subdirectory.
 Note that it requires a replacement for one header file in the CGAL library; this is a small but necessary modification to support the algorithm.
+In the future, this will be updated to use the new Triangulations library in CGAL, and the modification will no longer be necessary.
 
 ## Docker container
 
@@ -107,6 +112,6 @@ The source for pmfe is released under the GNU General Public License as publishe
 [boost]: //www.boost.org
 [boost-getstarted]: //www.boost.org/doc/libs/1_57_0/more/getting_started/unix-variants.html
 [cmake]: //www.cmake.org/download/
-[NLTemplate]: //github.com/catnapgames/NLTemplate
 [gtfold]: //gtfold.sourceforge.net/
 [docker]: //docker.io/
+[catch]: //github.com/philsquared/Catch
