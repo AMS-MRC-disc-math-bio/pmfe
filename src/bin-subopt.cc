@@ -1,6 +1,7 @@
 // Copyright (c) 2015 Andrew Gainer-Dewar.
 
 #include <iostream>
+#include <stdexcept>
 
 #include "boost/filesystem.hpp"
 #include "boost/filesystem/fstream.hpp"
