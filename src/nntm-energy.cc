@@ -12,7 +12,7 @@
 #include <gmpxx.h>
 #include <boost/bind.hpp>
 
-#include <vector>
+#include <deque>
 
 namespace pmfe {
     NNTM::NNTM(const NNDBConstants& constants, dangle_mode dangles, SimpleThreadPool& thread_pool):
@@ -39,7 +39,7 @@ namespace pmfe {
 
         // Populate W
         for (int j = TURN+1; j <= seq.len() - 1; ++j) {
-            std::vector<mpq_class> w_vals;
+            std::deque<mpq_class> w_vals;
             w_vals.push_back(constants.INFINITY_);
 
             for (int i = 0; i < j-TURN; i++) {
@@ -87,8 +87,7 @@ namespace pmfe {
         assert (i < j);
 
         if (seq.can_pair(i, j)) {
-            std::vector<mpq_class> vm_vals;
-            vm_vals.reserve(5);
+            std::deque<mpq_class> vm_vals;
             vm_vals.push_back(constants.INFINITY_);
 
             mpq_class d3, d5;
@@ -108,8 +107,7 @@ namespace pmfe {
 
             seq.VM[i][j] = *std::min_element(vm_vals.begin(), vm_vals.end());
 
-            std::vector<mpq_class> v_vals;
-            v_vals.reserve(5);
+            std::deque<mpq_class> v_vals;
             v_vals.push_back(constants.INFINITY_);
             v_vals.push_back(seq.VM[i][j]);
 
@@ -124,8 +122,7 @@ namespace pmfe {
             seq.V[i][j] = constants.INFINITY_;
         }
 
-        std::vector<mpq_class> wmp_vals;
-        wmp_vals.reserve(j-i-2*TURN);
+        std::deque<mpq_class> wmp_vals;
         wmp_vals.push_back(constants.INFINITY_);
 
         for (int h = i+TURN+1 ; h <= j-TURN-2; ++h) {
@@ -135,8 +132,7 @@ namespace pmfe {
         seq.WMPrime[i][j] = *std::min_element(wmp_vals.begin(), wmp_vals.end());
 
         // WM begin
-        std::vector<mpq_class> wm_vals;
-        wm_vals.reserve(8);
+        std::deque<mpq_class> wm_vals;
         wm_vals.push_back(constants.INFINITY_);
         wm_vals.push_back(seq.WMPrime[i][j]);
 
@@ -172,8 +168,7 @@ namespace pmfe {
         // WM end
 
         // FM begin
-        std::vector<mpq_class> fm1_vals;
-        fm1_vals.reserve(3*(j-i));
+        std::deque<mpq_class> fm1_vals;
         fm1_vals.push_back(constants.INFINITY_);
 
         int minl = i+TURN+1;
@@ -222,7 +217,7 @@ namespace pmfe {
         }
         seq.FM1[i][j] = *std::min_element(fm1_vals.begin(), fm1_vals.end());
 
-        std::vector<mpq_class> fm_vals;
+        std::deque<mpq_class> fm_vals;
         fm_vals.push_back(constants.INFINITY_);
 
         for (int k = i+TURN+1; k <= j-TURN-1; ++k) {
@@ -490,7 +485,7 @@ namespace pmfe {
         assert (j >= 0 && j < seq.len());
         assert (i < j);
 
-        std::vector<mpq_class> vals;
+        std::deque<mpq_class> vals;
         vals.push_back(constants.INFINITY_);
 
         for (int p = i+1; p <= std::min(j-2-TURN, i+MAXLOOP+1) ; ++p) {
