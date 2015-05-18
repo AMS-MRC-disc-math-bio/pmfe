@@ -92,7 +92,7 @@ int main(int argc, char* argv[]) {
 
     if (!outfile.is_open()) {
         std::stringstream error_message;
-        error_message << "Output file " << outfile << "is invalid.";
+        error_message << "Output file " << out_file << "is invalid.";
         throw std::invalid_argument(error_message.str());
     }
 
