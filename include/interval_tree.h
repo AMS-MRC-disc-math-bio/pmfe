@@ -32,9 +32,9 @@ IntervalTreeNode(): start(0), end(0) {}; // Default constructor to appease the c
         }
 
         // Check whether [start, end] is a subinterval of any child and, if so, insert it there
-        for (std::deque<IntervalTreeNode>::iterator child = children.begin(); child != children.end(); ++child) {
-            if ((child->start < start) and (end < child->end)) {
-                child->insert(start, end);
+        for (auto& child: children) {
+            if ((child.start < start) and (end < child.end)) {
+                child.insert(start, end);
                 return;
             }
         }
@@ -61,8 +61,8 @@ IntervalTreeNode(): start(0), end(0) {}; // Default constructor to appease the c
         std::sort(children.begin(), children.end());
 
         // Recurse! Recurse!
-        for (std::deque<IntervalTreeNode>::iterator child = children.begin(); child != children.end(); ++child) {
-            child->sort();
+        for (auto& child: children) {
+            child.sort();
         }
     }
 
