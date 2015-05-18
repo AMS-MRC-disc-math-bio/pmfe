@@ -66,8 +66,7 @@ int main(int argc, char * argv[]) {
     // Setup dangle model
     pmfe::dangle_mode dangles = pmfe::convert_to_dangle_mode(vm["dangle-model"].as<int>());
 
-    std::cout << "Starting analysis run!" << std::endl;
-    pmfe::ScoreVector result = pmfe::mfe(seq_file, params, dangles, num_threads);
+    pmfe::RNAStructureWithScore result = pmfe::mfe(seq_file, params, dangles, num_threads);
     std::cout << result << std::endl;
     return(0);
 }

@@ -41,15 +41,15 @@ namespace pmfe {
     namespace fs = boost::filesystem;
 
     ScoreVector mfe_pywrap(std::string seq_file, ParameterVector params, int dangle_model, int num_threads) {
-        return mfe(seq_file, params, convert_to_dangle_mode(dangle_model), num_threads);
+        return mfe(seq_file, params, convert_to_dangle_mode(dangle_model), num_threads).score;
     }
 
-    ScoreVector mfe(fs::path seq_file, fs::path param_dir, dangle_mode dangles, size_t num_threads) {
+    RNAStructureWithScore mfe(fs::path seq_file, fs::path param_dir, dangle_mode dangles, size_t num_threads) {
         ParameterVector params = ParameterVector();
         return mfe(seq_file, params, dangles, num_threads);
     }
 
-    ScoreVector mfe(fs::path seq_file, ParameterVector params, dangle_mode dangles, size_t num_threads) {
+    RNAStructureWithScore mfe(fs::path seq_file, ParameterVector params, dangle_mode dangles, size_t num_threads) {
         // Construct a thread pool
         SimpleThreadPool thread_pool(num_threads);
 
@@ -68,7 +68,6 @@ namespace pmfe {
 
         // Find the associated structure
         RNAStructureWithScore scored_structure = energy_model.mfe_structure(seq_annotated);
-
-        return scored_structure.score;
+        return scored_structure;
     }
 }
