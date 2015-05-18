@@ -53,33 +53,21 @@ namespace pmfe {
         // Construct a thread pool
         SimpleThreadPool thread_pool(num_threads);
 
-        std::cout << "Reading constants...";
         // Read in thermodynamic parameters.
         Turner99 constants(thread_pool, params);
-        std::cout << "done." << std::endl;
 
-        std::cout << "Reading sequence...";
         // Read in the sequence
         RNASequence seq (seq_file);
-        std::cout << seq << " done." << std::endl;
 
         // Compute the minimum free energy
-        std::cout << "Setting up energy model...";
         NNTM energy_model(constants, dangles, thread_pool);
-        std::cout << "done." << std::endl;
 
-        std::cout << "Computing energy tables...";
         RNASequenceWithTables seq_annotated = energy_model.energy_tables(seq);
-        std::cout << "done." << std::endl;
 
-        std::cout << "Computing MFE...";
         mpq_class energy = energy_model.minimum_energy(seq_annotated);
-        std::cout << "done. Energy: " << energy.get_str() << std::endl;
 
         // Find the associated structure
-        std::cout << "Computing MFE structure...";
         RNAStructureWithScore scored_structure = energy_model.mfe_structure(seq_annotated);
-        std::cout << "done. Structure: " << scored_structure << std::endl;
 
         return scored_structure.score;
     }
