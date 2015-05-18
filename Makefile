@@ -25,7 +25,7 @@ CXXFLAGS += --std=c++11
 CXXFLAGS += -fPIC
 CXXFLAGS += -Wall
 CXXFLAGS += -g
-CXXFLAGS += -O2
+CXXFLAGS += -O3
 
 # library paths
 LIBS += -lgmp -lgmpxx
