@@ -9,12 +9,12 @@
 namespace pmfe{
     namespace fs = boost::filesystem;
 
-    ScoreVector mfe(fs::path seq_file, ParameterVector params, dangle_mode dangles = BOTH_DANGLE);
-    ScoreVector mfe(fs::path seq_file, dangle_mode dangles = BOTH_DANGLE);
+    ScoreVector mfe(fs::path seq_file, ParameterVector params, dangle_mode dangles = BOTH_DANGLE, size_t num_threads = 0);
+    ScoreVector mfe(fs::path seq_file, dangle_mode dangles = BOTH_DANGLE, size_t num_threads = 0);
 
-    ScoreVector mfe_pywrap(std::string seq_file, ParameterVector params, int dangle_model = 1);
+    ScoreVector mfe_pywrap(std::string seq_file, ParameterVector params, int dangle_model = 1, int num_threads = 0);
 
-    void init_fold(const char* seq, ParameterVector params, dangle_mode dangles);
+    void init_fold(const char* seq, ParameterVector params, dangle_mode dangles, size_t num_threads = 0);
     void free_fold(int len);
 }
 

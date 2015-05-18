@@ -26,6 +26,7 @@ int main(int argc, char* argv[]) {
         ("dummy-scaling,d", po::value<std::string>(), "Dummy scaling parameter")
         ("dangle-model,m", po::value<int>()->default_value(1), "Dangle model")
         ("sorted,s", po::bool_switch(), "Sort results in increasing energy order")
+        ("num-threads,t", po::value<int>()->default_value(0), "Number of threads")
         ("help,h", "Display this help message")
         ;
 
@@ -52,6 +53,7 @@ int main(int argc, char* argv[]) {
     }
 
     // Set up the parameters
+    size_t num_threads = (vm["num-threads"].as<int>());
     mpq_class delta = pmfe::get_mpq_from_word(vm["delta"].as<std::string>());
 
     pmfe::ParameterVector params = pmfe::ParameterVector();
@@ -80,7 +82,7 @@ int main(int argc, char* argv[]) {
     pmfe::dangle_mode dangles = pmfe::convert_to_dangle_mode(vm["dangle-model"].as<int>());
 
     // Get results
-    std::vector<pmfe::RNAStructureWithScore> structures = suboptimal_structures(seq_file, params, dangles, delta, sorted);
+    std::vector<pmfe::RNAStructureWithScore> structures = suboptimal_structures(seq_file, params, dangles, delta, sorted, num_threads);
 
     // Print some status information
     std::cout << "Found " << structures.size() << " suboptimal structures." << std::endl;

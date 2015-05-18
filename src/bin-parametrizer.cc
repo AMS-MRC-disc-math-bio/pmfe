@@ -22,6 +22,7 @@ int main(int argc, char * argv[]) {
         ("sequence", po::value<std::string>()->required(), "Sequence file")
         ("outfile,o", po::value<std::string>(), "Output file")
         ("dangle-model,m", po::value<int>()->default_value(1), "Dangle model")
+        ("num-threads,t", po::value<int>()->default_value(0), "Number of threads")
         ("help,h", "Display this help message")
         ;
 
@@ -38,7 +39,8 @@ int main(int argc, char * argv[]) {
     po::notify(vm);
 
     // Set up thread pool
-    pmfe::SimpleThreadPool thread_pool;
+    size_t num_threads = (vm["num-threads"].as<int>());
+    pmfe::SimpleThreadPool thread_pool(num_threads);
 
     // Set up dangle model
     pmfe::dangle_mode dangles = pmfe::convert_to_dangle_mode(vm["dangle-model"].as<int>());

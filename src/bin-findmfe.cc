@@ -20,6 +20,7 @@ int main(int argc, char * argv[]) {
         ("branch-penalty,c", po::value<std::string>(), "Branching helix penalty parameter")
         ("dummy-scaling,d", po::value<std::string>(), "Dummy scaling parameter")
         ("dangle-model,m", po::value<int>()->default_value(1), "Dangle model")
+        ("num-threads,t", po::value<int>()->default_value(0), "Number of threads")
         ("help,h", "Display this help message")
         ;
 
@@ -34,6 +35,9 @@ int main(int argc, char * argv[]) {
     };
 
     po::notify(vm);
+
+    // Process thread-related options
+    size_t num_threads = (vm["num-threads"].as<int>());
 
     // Process file-related options
     fs::path seq_file(vm["sequence"].as<std::string>());
@@ -63,7 +67,7 @@ int main(int argc, char * argv[]) {
     pmfe::dangle_mode dangles = pmfe::convert_to_dangle_mode(vm["dangle-model"].as<int>());
 
     std::cout << "Starting analysis run!" << std::endl;
-    pmfe::ScoreVector result = pmfe::mfe(seq_file, params, dangles);
+    pmfe::ScoreVector result = pmfe::mfe(seq_file, params, dangles, num_threads);
     std::cout << result << std::endl;
     return(0);
 }
