@@ -46,8 +46,8 @@ namespace pmfe {
         ScoreVector score = scoreE(tree);
 
         // Recurse through the tree
-        for (std::deque<IntervalTreeNode>::const_iterator child = tree.root.children.begin(); child != tree.root.children.end(); ++child) {
-            score += scoreInternalNodeRecursively(tree, *child);
+        for (auto& child: tree.root.children) {
+            score += scoreInternalNodeRecursively(tree, child);
         }
 
         return score;
@@ -95,8 +95,8 @@ namespace pmfe {
         }
 
         // Recurse! Recurse!
-        for (std::deque<IntervalTreeNode>::const_iterator child = node.children.begin(); child != node.children.end(); ++child) {
-            score += scoreInternalNodeRecursively(tree, *child);
+        for (auto& child: node.children) {
+            score += scoreInternalNodeRecursively(tree, child);
         }
 
         return score;
@@ -201,16 +201,17 @@ namespace pmfe {
             score += scoreMUnpairedRegion(tree, node.children.back().start, node.children.back().end, node.start, node.end);
 
             // Then consider the regions between the children
-            for (std::deque<IntervalTreeNode>::const_iterator child = node.children.begin(); child != node.children.end() - 1; ++child) {
-                std::deque<IntervalTreeNode>::const_iterator neighbor = child +1;
-                score += scoreMUnpairedRegion(tree, child->start, child->end, neighbor->start, neighbor->end);
+            for (auto childit = node.children.begin(); childit != node.children.end() - 1; ++childit) {
+                auto& child = *childit;
+                auto& neighbor = *(childit + 1);
+                score += scoreMUnpairedRegion(tree, child.start, child.end, neighbor.start, neighbor.end);
             }
 
             // We also need to account for any non-GC pairs at the branches
             score.energy += auPenalty(node.start, node.end, tree.seq);
 
-            for (std::deque<IntervalTreeNode>::const_iterator child = node.children.begin(); child != node.children.end(); ++child) {
-                score.energy += auPenalty(child->start, child->end, tree.seq);
+            for (auto& child: node.children) {
+                score.energy += auPenalty(child.start, child.end, tree.seq);
             }
         }
 
@@ -282,14 +283,15 @@ namespace pmfe {
         }
 
         // Then consider the regions between the children
-        for (std::deque<IntervalTreeNode>::const_iterator child = tree.root.children.begin(); child != tree.root.children.end() - 1; ++child) {
-            std::deque<IntervalTreeNode>::const_iterator neighbor = child + 1;
-            score += scoreMUnpairedRegion(tree, child->start, child->end, neighbor->start, neighbor->end, true);
+        for (auto childit = tree.root.children.begin(); childit != tree.root.children.end() - 1; ++childit) {
+            auto& child = *childit;
+            auto& neighbor = *(childit + 1);
+            score += scoreMUnpairedRegion(tree, child.start, child.end, neighbor.start, neighbor.end, true);
         }
 
         // We also need to account for any non-GC pairs at the branches
-        for (std::deque<IntervalTreeNode>::const_iterator child = tree.root.children.begin(); child != tree.root.children.end(); ++child) {
-            score.energy += auPenalty(child->start, child->end, tree.seq);
+        for (auto& child: tree.root.children) {
+            score.energy += auPenalty(child.start, child.end, tree.seq);
         }
 
         return score;

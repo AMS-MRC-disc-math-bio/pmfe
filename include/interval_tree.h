@@ -1,7 +1,7 @@
 #ifndef _INTERVAL_TREE_H
 #define _INTERVAL_TREE_H
 
-#include <deque>
+#include <vector>
 #include <stdexcept>
 
 class IntervalTreeNode {
@@ -14,7 +14,7 @@ class IntervalTreeNode {
 public:
     int start;
     int end;
-    std::deque<IntervalTreeNode> children;
+    std::vector<IntervalTreeNode> children;
 
 IntervalTreeNode(int start, int end): start(start), end(end) {};
 IntervalTreeNode(): start(0), end(0) {}; // Default constructor to appease the compiler: will behave badly if used without reinitializing!
