@@ -3,6 +3,8 @@
 #ifndef PARAMETRIZER_TYPES_H
 #define PARAMETRIZER_TYPES_H
 
+#include <Python.h> // Fix for OSX
+
 #include <string>
 #include <utility>
 #include <gmpxx.h>

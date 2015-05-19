@@ -1,5 +1,7 @@
 // Copyright (c) 2014 Andrew Gainer-Dewar.
 
+#include <Python.h> // Fix for OSX
+
 #include <utility>
 #include <vector>
 #include <gmpxx.h>
