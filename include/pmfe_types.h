@@ -164,6 +164,7 @@ namespace pmfe {
 
         RNAStructure() {}; // Default constructor for compiler
         RNAStructure(const RNASequence& seq); // Construct a (blank) structure from a given sequence
+        RNAStructure(const RNASequence& seq, const std::string& structure); // Construct a structure from dots-and-braces notation
 
         const int len() const; // Return the length of the sequence
 

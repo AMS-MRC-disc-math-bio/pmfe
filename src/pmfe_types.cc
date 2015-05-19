@@ -369,6 +369,12 @@ namespace pmfe {
         structure_as_chars = std::string(len(), blanksymb);
     };
 
+    RNAStructure::RNAStructure(const RNASequence& seq, const std::string& structure):
+        // TODO: Sanity-check structure!
+        seq(seq),
+        structure_as_chars(structure)
+    {};
+
     const char& RNAStructure::operator[](const int index) const {
         return seq[index];
     }

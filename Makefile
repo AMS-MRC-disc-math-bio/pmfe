@@ -38,12 +38,15 @@ LIBS += -lboost_program_options
 LIBS += -lboost_system
 LIBS += -lboost_thread
 
-BIN = pmfe-findmfe pmfe-parametrizer pmfe-subopt pmfe-tests
+BIN = pmfe-findmfe pmfe-scorer pmfe-parametrizer pmfe-subopt pmfe-tests
 all: $(OBJ) $(BIN)
 
 -include $(DEP)
 
 pmfe-findmfe: $(LIBOBJ) src/bin-findmfe.o
+	$(CXX) $(LDFLAGS) $(CXXFLAGS) $^ -o $@ $(LIBS)
+
+pmfe-scorer: $(LIBOBJ) src/bin-scorer.o
 	$(CXX) $(LDFLAGS) $(CXXFLAGS) $^ -o $@ $(LIBS)
 
 pmfe-parametrizer: $(LIBOBJ) src/bin-parametrizer.o
