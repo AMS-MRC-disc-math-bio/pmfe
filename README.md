@@ -22,7 +22,7 @@ To install the required dependencies on a Debian system, run
 
 To install the required dependencies on OSX using Homebrew, run
 
-    brew install boost boost-python cgal gmp
+    sudo brew install boost boost-python cgal gmp
 
 This project also depends on the [Catch][catch] unit testing library.
 It has been included here under the terms of the Boost Software License.
