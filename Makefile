@@ -18,7 +18,8 @@ HDR := $(wildcard src/*.h)
 # include directories
 INCLUDES += -Iinclude
 INCLUDES += -IiB4e
-INCLUDES += -I/usr/include/python2.7
+INCLUDES += -I/usr/local/include
+INCLUDES += $(shell python-config --includes)
 
 # C++ compiler flags
 CXXFLAGS += --std=c++11
