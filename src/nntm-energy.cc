@@ -410,7 +410,7 @@ namespace pmfe {
         }
 
         else if (size == 4) {
-            std::string loopkey = seq.subsequence(i, i+6);
+            std::string loopkey = seq.subsequence(i, j);
             mpq_class tlink = 0; // Loop contribution is typically 0
             if (constants.tloop.count(loopkey) != 0) {
                 tlink = constants.tloop.find(loopkey)->second; // But some loops have special contributions, stored in this table
