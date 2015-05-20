@@ -66,6 +66,7 @@ namespace pmfe {
         case 0:
         {
             // Hairpin loop
+            std::cout << "Hairpin loop at (" << i << ", " << j << "), energy " << eH(i, j, tree.seq) << std::endl;
             score.energy += eH(i, j, tree.seq);
             break;
         }
@@ -77,9 +78,11 @@ namespace pmfe {
 
             if (child.start == i + 1 and child.end == j - 1) {
                 // Stack
+                std::cout << "Stack at (" << i << ", " << j << "), energy " << eS(i, j, tree.seq) << std::endl;
                 score.energy += eS(i, j, tree.seq);
             } else {
                 // Internal or bulge
+                std::cout << "Internal/bulge loop at (" << i << ", " << j << ") and (" << child.start << ", " << child.end << "), energy " << eL(i, j, child.start, child.end, tree.seq) << std::endl;
                 score.energy += eL(i, j, child.start, child.end, tree.seq);
             }
 
@@ -89,6 +92,7 @@ namespace pmfe {
         default:
         {
             // At least two children means this is a multiloop
+            std::cout << "Multiloop found at (" << node.start << ", " << node.end << "), recursing." << std::endl;
             score += scoreM(tree, node);// + auPenalty(i, j, tree.seq);
             break;
         }
@@ -175,6 +179,8 @@ namespace pmfe {
             break;
         }
 
+        std::cout << "Unpaired region between (" << i1 << ", " << j1 << ") and (" << i2 << ", " << j2 << "), scored: " << score << std::endl;
+
         return score;
     }
 
@@ -214,6 +220,8 @@ namespace pmfe {
                 score.energy += auPenalty(child.start, child.end, tree.seq);
             }
         }
+
+        std::cout << "Multiloop at (" << node.start << ", " << node.end << "), score " << score << std::endl;
 
         return score;
     }
@@ -293,6 +301,8 @@ namespace pmfe {
         for (auto& child: tree.root.children) {
             score.energy += auPenalty(child.start, child.end, tree.seq);
         }
+
+        std::cout << "External loop score " << score << std::endl;
 
         return score;
     }
