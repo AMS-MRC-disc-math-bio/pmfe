@@ -38,7 +38,7 @@ LIBS += -lboost_python
 LIBS += -lboost_filesystem
 LIBS += -lboost_program_options
 LIBS += -lboost_system
-LIBS += -lboost_thread
+LIBS += -lboost_thread-mt
 
 BIN = pmfe-findmfe pmfe-scorer pmfe-parametrizer pmfe-subopt pmfe-tests
 all: $(OBJ) $(BIN)
