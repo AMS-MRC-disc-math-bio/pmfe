@@ -342,7 +342,9 @@ namespace pmfe {
     }
 
     const std::string RNASequence::subsequence(int i, int j) const {
-        return seq_txt.substr(i, j);
+        // Return the subsequence starting at i and ending at j (inclusive)
+        assert(i <= j);
+        return seq_txt.substr(i, j-i+1);
     }
 
     // The C++98 specification makes assigning sets quite fiddly, so we use a Boost hack
