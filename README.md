@@ -59,7 +59,7 @@ The result will be printed to your terminal.
 Given a FASTA file representing an RNA sequence, an energy gap δ, and (optionally) some modified values for the Turner99 multibranch loop parameters, the `pmfe-subopt` program will generate all secondary structures with energy within δ of the minimum.
 To use it on the sequence in `test_data/test_tRNA.fasta` with parameters `A`, `B`, `C`, and `D` and energy gap δ, type
 
-    pmfe-findmfe test_data/test_tRNA.fasta -a A -b B -c C -d D --delta δ
+    pmfe-subopt test_data/test_tRNA.fasta -a A -b B -c C -d D --delta δ
 
 The result will be saved in `test_data/test_tRNA.rnasubopt`.
 
