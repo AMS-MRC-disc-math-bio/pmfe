@@ -38,7 +38,12 @@ namespace pmfe {
         }
 
         // Populate W
-        for (int j = TURN+1; j <= seq.len() - 1; ++j) {
+        for (int j = 0; j <= seq.len() - 1; ++j) {
+            if (j <= TURN) {
+                seq.W[j] = 0;
+                continue;
+            }
+
             std::deque<mpq_class> w_vals;
             w_vals.push_back(constants.INFINITY_);
 
