@@ -1,0 +1,41 @@
+>gi|42753|emb|X00414.1| Escherichia coli 5S rRNA sequence Accuracy: 0.26
+tgcctggcgg ccgtagcgcg gtggtcccac ctgaccccat gccgaactca gaagtgaaac gccgtagcgc cgatggtagt gtggggtctc cccatgcgag agtagggaac tgccaggcat
+
+>G. arboreum 5S hard Accuracy: 0.47
+GGGUGCGAUCAUACCAGCACUAAACCACCGGAUUCCAUCAGUGCUCCCCAGUUAAGCGUGCUUGGCCGAGAGUAGAACUAGGGUGGGUGACCUCCUGGGAAGUCCUCGUGUUGCACCCCU 
+
+>../seq/RNA/rna_files/5S norvegicus.2 Accuracy: 0.76
+GUCUACGGCCAUACCACCCUGAACGCGCCCGAUCUCGUCUGAUCUCGGAAGCUAAGCAGGGUCGGGCCUGGUUAGUACUUGGAUGGGAGACCGCCUGGGAAUACCGGGUGCUGUAGGCUUUat
+
+>../seq/RNA/rna_files/5S mobilis Accuracy: 0.88
+ACGGUGCCCGACCCGGCCAUAGUGGCCGGGCAACACCCGGUCUCGUUUCGAACCCGGAAGUUAAGCCGGCCACGUCAGAACGGCCGUGAGGUCCGAGAGGCCUCGCAGCCGUUCUGAGCUGGGAUCGGGCACC
+
+>ACg Homo Sapiens tRNA AC004932 Accuracy: 0.00
+GGGCGUAUAGCUCAGGGGUAGAGCAUUUGACUGCAGAUCAAGAGGUCCCCAGUUCAAAUCUGGGUGCCCCCU
+
+>tRNA_BXi.txt Corynebacterium diphtheriae  BX248359_i Accuracy: 0.28
+GGCCCUGUGGCGCAGUUGGUUAGCGCGCCGCCCUGUCACGGCGGAGGUCGCGGGUUCAAGUCCCGUCAGGGUCG
+
+>../seq/tRNA_CPo.txt Lactobacillus delbrueckii subsp. bulgaricus ATCC BAA-365 CP000412 Accuracy: 0.75
+CACCCGUUGGUCAAGUGGUUAAGACGCUACCCUCUCAAGGUGGAGUCAUGAGUUCAAUUCUCGUACGGGUGA
+
+>tRNA_BAb Sulfolobus tokodaii str. 7 BA000023_b Accuracy:0.45
+GGGCCCGUAGCUCAGCCAGGUAGAGCGGCGGGCUUUUAACCCGUAGGUCCCGGGUUCAAAUCCCGGCGGGCCCG
+
+>100000_APaf Oryza nivara tRNA AP006728_af Accuracy: 1.00
+GGGGAUAUAGCUCAGUUGGUAGAGCUCCGCUCUUGCAAGGCGGAUGUCAGCGGUUCGAGUCCGCUUAUCUCCA
+
+>Vc Qrr1 sequence
+ugacccgcaagggucaccuagccaacugacguuguuagugaauaaucaauguucacaaauaacagccaauagacucauucuauuggcuauuuuuuu 
+
+>Vc Qrr3
+ugacccuuaauuaagccgagggucaccuagccaacugacguuguuagugaaugaaauuguucacauuuguuuuaucagccaaucacccuuuugugauuggcuuuuuu
+
+>Vc Qrr4
+ugacccuucuaagccgagggucaccuagccaacugacguuguuagugaacaccauuguucacacuuauagacggccaaucacacuucuugugguuggccuuuuuuuu 
+
+>Vh Qrr1
+ggaccccucgggucaccuauccaacugacguuguuagugaacgacauguucacagaacgagccaauagauccgacugccuauuggcuucuuuuuu
+
+>Vh Qrr4
+agacccuuauuaagccgagggucaccuagccaacugacguuguuagugaauacacauuguucacaaguauauaccgccaaucaacuuuauugugauuggcguuuuuu

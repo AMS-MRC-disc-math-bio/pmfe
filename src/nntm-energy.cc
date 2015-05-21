@@ -38,7 +38,12 @@ namespace pmfe {
         }
 
         // Populate W
-        for (int j = TURN+1; j <= seq.len() - 1; ++j) {
+        for (int j = 0; j <= seq.len() - 1; ++j) {
+            if (j <= TURN) {
+                seq.W[j] = 0;
+                continue;
+            }
+
             std::deque<mpq_class> w_vals;
             w_vals.push_back(constants.INFINITY_);
 
@@ -360,7 +365,7 @@ namespace pmfe {
                 }
             }
             else if (size1 == 2 && size2 == 2) { /* 2x2 internal loop */
-                energy = constants.iloop22[seq.base(i)][seq.base(ip)][seq.base(j)][seq.base(jp)][seq.base(i+1)][seq.base(i+2)][seq.base(j-1)][seq.base(j-2)];
+                energy = constants.iloop22[seq.base(i)][seq.base(ip)][seq.base(j)][seq.base(jp)][seq.base(i+1)][seq.base(j-1)][seq.base(i+2)][seq.base(j-2)];
             } else if (size1 == 1 && size2 == 2) {
                 energy = constants.iloop21[seq.base(i)][seq.base(j)][seq.base(i + 1)][seq.base(j - 1)][seq.base(j - 2)][seq.base(ip)][seq.base(jp)];
             } else if (size1 == 2 && size2 == 1) { /* 1x2 internal loop */
