@@ -315,11 +315,11 @@ namespace pmfe {
         }
     }
 
-    const int RNASequence::len() const {
+    int RNASequence::len() const {
         return seq_txt.length();
     }
 
-    const int RNASequence::base(int i) const {
+    int RNASequence::base(int i) const {
         char base = seq_txt[i];
         switch(base) {
         case 'A':
@@ -341,7 +341,7 @@ namespace pmfe {
         }
     }
 
-    const std::string RNASequence::subsequence(int i, int j) const {
+    std::string RNASequence::subsequence(int i, int j) const {
         // Return the subsequence starting at i and ending at j (inclusive)
         assert(i <= j);
         return seq_txt.substr(i, j-i+1);
@@ -350,7 +350,7 @@ namespace pmfe {
     // The C++98 specification makes assigning sets quite fiddly, so we use a Boost hack
     std::set<std::string> valid_pairs = boost::assign::list_of("AU")("UA")("CG")("GC")("GU")("UG");
 
-    const bool RNASequence::can_pair(int i, int j) const {
+    bool RNASequence::can_pair(int i, int j) const {
         std::string thepair = seq_txt.substr(i, 1) + seq_txt.substr(j, 1);
         if (valid_pairs.count(thepair) == 0) {
             return false;
@@ -359,7 +359,7 @@ namespace pmfe {
         }
     }
 
-    const char& RNASequence::operator[](const int index) const {
+    char RNASequence::operator[](const int index) const {
         return seq_txt[index];
     }
 
@@ -379,12 +379,19 @@ namespace pmfe {
         structure_as_chars(structure)
     {};
 
-    const char& RNAStructure::operator[](const int index) const {
+    char RNAStructure::operator[](const int index) const {
         return seq[index];
     }
 
-    const std::string& RNAStructure::string() const {
+    std::string RNAStructure::string() const {
         return structure_as_chars;
+    }
+
+    std::string RNAStructure::old_string() const {
+        std::string result = structure_as_chars;
+        std::replace(result.begin(), result.end(), d3symb, blanksymb);
+        std::replace(result.begin(), result.end(), d5symb, blanksymb);
+        return result;
     }
 
     RNASequenceWithTables::RNASequenceWithTables(const RNASequence& seq, mpq_class infinity_value):
@@ -428,7 +435,7 @@ namespace pmfe {
         }
     }
 
-    const int RNAStructure::len() const {
+    int RNAStructure::len() const {
         return seq.len();
     }
 
@@ -450,15 +457,15 @@ namespace pmfe {
         structure_as_chars[i] = d3symb;
     }
 
-    const bool RNAStructure::does_d5(int i) const {
+    bool RNAStructure::does_d5(int i) const {
         return (structure_as_chars[i] == d5symb);
     }
 
-    const bool RNAStructure::does_d3(int i) const {
+    bool RNAStructure::does_d3(int i) const {
         return (structure_as_chars[i] == d3symb);
     }
 
-    const std::deque< std::pair<int, int> > RNAStructure::pairs() const {
+    std::deque< std::pair<int, int> > RNAStructure::pairs() const {
         /*
           Return the pairs in this structure, sorted in increasing order of first base
         */

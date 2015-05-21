@@ -124,12 +124,12 @@ namespace pmfe {
         RNASequence(const std::string& seq); // Construct from a string encoding the sequence
         RNASequence(const fs::path& filename); // Construct from a FASTA file
 
-        const int len() const; // Return the length of the sequence
-        const int base(int i) const; // Return the base at position i of the sequence
-        const std::string subsequence(int i, int j) const; // Return the subsequence starting at position i and ending at j
-        const bool can_pair(int i, int j) const; // Return true if the bases at i and j are a valid pair
+        int len() const; // Return the length of the sequence
+        int base(int i) const; // Return the base at position i of the sequence
+        std::string subsequence(int i, int j) const; // Return the subsequence starting at position i and ending at j
+        bool can_pair(int i, int j) const; // Return true if the bases at i and j are a valid pair
 
-        const char& operator[](const int index) const; // Retrieve a single base using index notation
+        char operator[](const int index) const; // Retrieve a single base using index notation
         friend std::ostream& operator<<(std::ostream& out, const RNASequence& sequence); // Output the sequence to an ostream
 
     protected:
@@ -168,20 +168,21 @@ namespace pmfe {
         RNAStructure(const RNASequence& seq); // Construct a (blank) structure from a given sequence
         RNAStructure(const RNASequence& seq, const std::string& structure); // Construct a structure from dots-and-braces notation
 
-        const int len() const; // Return the length of the sequence
+        int len() const; // Return the length of the sequence
 
         void mark_pair(int i, int j); // Record that (i, j) are paired
         void mark_d5(int i); // Record that i dangles from the 5' end of i+1
         void mark_d3(int i); // Record that i dangles from the 3' end of i-1
 
-        const bool does_d5(int i) const; // Return true if i dangles from the 5' end of i+1
-        const bool does_d3(int i) const; // Return true if i dangles from the 3' end of i-1
+        bool does_d5(int i) const; // Return true if i dangles from the 5' end of i+1
+        bool does_d3(int i) const; // Return true if i dangles from the 3' end of i-1
 
-        const std::deque< std::pair<int, int> > pairs() const; // Return a deque of the pairs in the structure
+        std::deque< std::pair<int, int> > pairs() const; // Return a deque of the pairs in the structure
 
-        const std::string& string() const; // Return the structure as a string
+        std::string string() const; // Return the structure as a new-style dots-and-braces string
+        std::string old_string() const; // Return the structure as an old-style dots-and-braces string
 
-        const char& operator[](const int index) const; // Retrieve a single base using index notation
+        char operator[](const int index) const; // Retrieve a single base using index notation
         friend std::ostream& operator<<(std::ostream& out, const RNAStructure& structure); // Output this structure as an ostream
 
     protected:
