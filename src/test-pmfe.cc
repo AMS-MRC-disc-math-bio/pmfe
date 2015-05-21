@@ -12,7 +12,7 @@
 
 namespace fs = boost::filesystem;
 
-TEST_CASE("A. tabira 5S MFE", "[mfe][atabira-5S]") {
+TEST_CASE("A. tabira 5S MFE", "[mfe][biological][atabira][5S]") {
     // Build the thread pool
     pmfe::SimpleThreadPool thread_pool;
 
@@ -40,7 +40,7 @@ TEST_CASE("A. tabira 5S MFE", "[mfe][atabira-5S]") {
     }
 }
 
-TEST_CASE("C. diphtheriae tRNA MFE", "[mfe][cdiphtheriae-tRNA]") {
+TEST_CASE("C. diphtheriae tRNA MFE", "[mfe][biological][cdiphtheriae][tRNA]") {
     // Build the thread pool
     pmfe::SimpleThreadPool thread_pool;
 
@@ -68,7 +68,7 @@ TEST_CASE("C. diphtheriae tRNA MFE", "[mfe][cdiphtheriae-tRNA]") {
     }
 }
 
-TEST_CASE("D. mobilis 5S MFE", "[mfe][dmobilis-5S]") {
+TEST_CASE("D. mobilis 5S MFE", "[mfe][biological][dmobilis][5S]") {
     // Build the thread pool
     pmfe::SimpleThreadPool thread_pool;
 
@@ -96,7 +96,7 @@ TEST_CASE("D. mobilis 5S MFE", "[mfe][dmobilis-5S]") {
     }
 }
 
-TEST_CASE("E. coli 5S MFE", "[mfe][ecoli-5S]") {
+TEST_CASE("E. coli 5S MFE", "[mfe][biological][ecoli][5S]") {
     // Build the thread pool
     pmfe::SimpleThreadPool thread_pool;
 
@@ -124,7 +124,231 @@ TEST_CASE("E. coli 5S MFE", "[mfe][ecoli-5S]") {
     }
 }
 
-TEST_CASE("O. nivara tRNA (old) MFE", "[mfe][onivara-trna]") {
+TEST_CASE("G. arboreum 5S MFE", "[mfe][biological][garboreum][5S]") {
+    // Build the thread pool
+    pmfe::SimpleThreadPool thread_pool;
+
+    // Load the sequence
+    fs::path seqfile("test_seq/g.arboreum_5S.fasta");
+    pmfe::RNASequence seq(seqfile);
+
+    // Some basic sanity checks
+    REQUIRE(seq.len() == 120);
+
+    SECTION("Turner99 published parameters") {
+        pmfe::Turner99 constants(thread_pool);
+        pmfe::NNTM energy_model(constants, pmfe::CHOOSE_DANGLE, thread_pool);
+
+        pmfe::RNASequenceWithTables seq_annotated = energy_model.energy_tables(seq);
+
+        mpq_class energy = energy_model.minimum_energy(seq_annotated);
+
+        REQUIRE(energy == mpq_class(-407, 10));
+
+        pmfe::RNAStructureWithScore scored_structure = energy_model.mfe_structure(seq_annotated);
+
+        REQUIRE(scored_structure.old_string() ==
+                "(((((((((...((.((.(((....................(((((..(.((((((....)))))).).)))))...((((((.((....))))))))..))).)).)))))))))))..");
+    }
+}
+
+TEST_CASE("H. sapiens tRNA MFE", "[mfe][biological][hsapiens][tRNA]") {
+    // Build the thread pool
+    pmfe::SimpleThreadPool thread_pool;
+
+    // Load the sequence
+    fs::path seqfile("test_seq/h.sapiens_tRNA.fasta");
+    pmfe::RNASequence seq(seqfile);
+
+    // Some basic sanity checks
+    REQUIRE(seq.len() == 72);
+
+    SECTION("Turner99 published parameters") {
+        pmfe::Turner99 constants(thread_pool);
+        pmfe::NNTM energy_model(constants, pmfe::CHOOSE_DANGLE, thread_pool);
+
+        pmfe::RNASequenceWithTables seq_annotated = energy_model.energy_tables(seq);
+
+        mpq_class energy = energy_model.minimum_energy(seq_annotated);
+
+        REQUIRE(energy == mpq_class(-263, 10));
+
+        pmfe::RNAStructureWithScore scored_structure = energy_model.mfe_structure(seq_annotated);
+
+        REQUIRE(scored_structure.old_string() ==
+                "((((.....)))).((((((.((.(((((((((..((((....))))..))).))))))))...))))))..");
+    }
+}
+
+TEST_CASE("L. delbrueckii tRNA MFE", "[mfe][biological][ldelbrueckii][tRNA]") {
+    // Build the thread pool
+    pmfe::SimpleThreadPool thread_pool;
+
+    // Load the sequence
+    fs::path seqfile("test_seq/l.delbrueckii_tRNA.fasta");
+    pmfe::RNASequence seq(seqfile);
+
+    // Some basic sanity checks
+    REQUIRE(seq.len() == 72);
+
+    SECTION("Turner99 published parameters") {
+        pmfe::Turner99 constants(thread_pool);
+        pmfe::NNTM energy_model(constants, pmfe::CHOOSE_DANGLE, thread_pool);
+
+        pmfe::RNASequenceWithTables seq_annotated = energy_model.energy_tables(seq);
+
+        mpq_class energy = energy_model.minimum_energy(seq_annotated);
+
+        REQUIRE(energy == mpq_class(-239, 10));
+
+        pmfe::RNAStructureWithScore scored_structure = energy_model.mfe_structure(seq_annotated);
+
+        REQUIRE(scored_structure.old_string() ==
+                "(((((((...............(((.(((((.......))))).)))..(((.......)))..))))))).");
+    }
+}
+
+TEST_CASE("O. nivara tRNA MFE", "[mfe][biological][onivara][tRNA]") {
+    // Build the thread pool
+    pmfe::SimpleThreadPool thread_pool;
+
+    // Load the sequence
+    fs::path seqfile("test_seq/o.nivara_tRNA.fasta");
+    pmfe::RNASequence seq(seqfile);
+
+    // Some basic sanity checks
+    REQUIRE(seq.len() == 73);
+
+    SECTION("Turner99 published parameters") {
+        pmfe::Turner99 constants(thread_pool);
+        pmfe::NNTM energy_model(constants, pmfe::CHOOSE_DANGLE, thread_pool);
+
+        pmfe::RNASequenceWithTables seq_annotated = energy_model.energy_tables(seq);
+
+        mpq_class energy = energy_model.minimum_energy(seq_annotated);
+
+        REQUIRE(energy == mpq_class(-271, 10));
+
+        pmfe::RNAStructureWithScore scored_structure = energy_model.mfe_structure(seq_annotated);
+
+        REQUIRE(scored_structure.old_string() ==
+                "(((((((..((((........))))((((((.......))))))....(((((.......)))))))))))).");
+    }
+}
+
+TEST_CASE("R. norvegicus 5S MFE", "[mfe][biological][rnorvegicus][5S]") {
+    // Build the thread pool
+    pmfe::SimpleThreadPool thread_pool;
+
+    // Load the sequence
+    fs::path seqfile("test_seq/r.norvegicus_5S.fasta");
+    pmfe::RNASequence seq(seqfile);
+
+    // Some basic sanity checks
+    REQUIRE(seq.len() == 123);
+
+    SECTION("Turner99 published parameters") {
+        pmfe::Turner99 constants(thread_pool);
+        pmfe::NNTM energy_model(constants, pmfe::CHOOSE_DANGLE, thread_pool);
+
+        pmfe::RNASequenceWithTables seq_annotated = energy_model.energy_tables(seq);
+
+        mpq_class energy = energy_model.minimum_energy(seq_annotated);
+
+        REQUIRE(energy == mpq_class(-539, 10));
+
+        pmfe::RNAStructureWithScore scored_structure = energy_model.mfe_structure(seq_annotated);
+
+        REQUIRE(scored_structure.old_string() ==
+                "(((((((((....((((((((...((..((((..((....))..))))..))....)))))).))(((((((...(.((..(.(((....))).)..)))..)))))))))))))))).....");
+    }
+}
+
+TEST_CASE("S. tokodaii tRNA MFE", "[mfe][biological][stokodaii][tRNA]") {
+    // Build the thread pool
+    pmfe::SimpleThreadPool thread_pool;
+
+    // Load the sequence
+    fs::path seqfile("test_seq/s.tokodaii_tRNA.fasta");
+    pmfe::RNASequence seq(seqfile);
+
+    // Some basic sanity checks
+    REQUIRE(seq.len() == 74);
+
+    SECTION("Turner99 published parameters") {
+        pmfe::Turner99 constants(thread_pool);
+        pmfe::NNTM energy_model(constants, pmfe::CHOOSE_DANGLE, thread_pool);
+
+        pmfe::RNASequenceWithTables seq_annotated = energy_model.energy_tables(seq);
+
+        mpq_class energy = energy_model.minimum_energy(seq_annotated);
+
+        REQUIRE(energy == mpq_class(-79, 2));
+
+        pmfe::RNAStructureWithScore scored_structure = energy_model.mfe_structure(seq_annotated);
+
+        REQUIRE(scored_structure.old_string() ==
+                "((((((((.((((.((...)).))))..((((.(((.((((((.......)))))).))).)))))))))))).");
+    }
+}
+
+TEST_CASE("Combinatorial sequence MFE", "[mfe][synthetic][combinatorial]") {
+    // Build the thread pool
+    pmfe::SimpleThreadPool thread_pool;
+
+    // Load the sequence
+    fs::path seqfile("test_seq/test_combinatorial.fasta");
+    pmfe::RNASequence seq(seqfile);
+
+    // Some basic sanity checks
+    REQUIRE(seq.len() == 60);
+
+    SECTION("Turner99 published parameters") {
+        pmfe::Turner99 constants(thread_pool);
+        pmfe::NNTM energy_model(constants, pmfe::CHOOSE_DANGLE, thread_pool);
+
+        pmfe::RNASequenceWithTables seq_annotated = energy_model.energy_tables(seq);
+
+        mpq_class energy = energy_model.minimum_energy(seq_annotated);
+
+        REQUIRE(energy == mpq_class(-149, 5));
+
+        pmfe::RNAStructureWithScore scored_structure = energy_model.mfe_structure(seq_annotated);
+
+        REQUIRE(scored_structure.old_string() ==
+                "((((....((((....))))....((((....((((....))))....))))....))))");
+    }
+}
+
+TEST_CASE("Randomly generated sequence MFE", "[mfe][synthetic][random]") {
+    // Build the thread pool
+    pmfe::SimpleThreadPool thread_pool;
+
+    // Load the sequence
+    fs::path seqfile("test_seq/test_random.fasta");
+    pmfe::RNASequence seq(seqfile);
+
+    // Some basic sanity checks
+    REQUIRE(seq.len() == 75);
+
+    SECTION("Turner99 published parameters") {
+        pmfe::Turner99 constants(thread_pool);
+        pmfe::NNTM energy_model(constants, pmfe::CHOOSE_DANGLE, thread_pool);
+
+        pmfe::RNASequenceWithTables seq_annotated = energy_model.energy_tables(seq);
+
+        mpq_class energy = energy_model.minimum_energy(seq_annotated);
+
+        REQUIRE(energy == mpq_class(-81, 5));
+
+        pmfe::RNAStructureWithScore scored_structure = energy_model.mfe_structure(seq_annotated);
+
+        REQUIRE(scored_structure.old_string() ==
+                ".(((.(((....(((....((.....))..))).....))))))................((......)).....");
+    }
+}
+
+TEST_CASE("O. nivara tRNA (old) MFE", "[mfe][biological][onivara-old][trna]") {
     // Build the thread pool
     pmfe::SimpleThreadPool thread_pool;
 
