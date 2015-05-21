@@ -267,7 +267,7 @@ TEST_CASE("O. nivara tRNA (old) MFE", "[mfe][onivara-trna]") {
         pmfe::RNAStructureWithScore scored_structure = energy_model.mfe_structure(seq_annotated);
 
         REQUIRE(scored_structure.old_string() ==
-                "((((((((.((((.((...)).))))..((((.(((.((((((.......)))))).))).)))))))))))).");
+                "..........(((.((....)))))(((((.......))))).((..(((((.......)))))..))....");
     }
 
     SECTION("onivara_old_8, d1") {
