@@ -23,5 +23,4 @@ RUN apt-get update && \
 RUN cd /root && \
     git clone https://github.com/AMS-MRC-disc-math-bio/pmfe && \
     cd pmfe && \
-    make -j && \
-    make install
+    make -j
