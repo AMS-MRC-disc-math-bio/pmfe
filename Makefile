@@ -19,7 +19,6 @@ HDR := $(wildcard src/*.h)
 INCLUDES += -Iinclude
 INCLUDES += -IiB4e
 INCLUDES += -I/usr/local/include # For Homebrew
-INCLUDES += $(shell python-config --includes) # For Homebrew
 
 # C++ compiler flags
 CXXFLAGS += --std=c++11
@@ -33,8 +32,6 @@ LIBS += -L/usr/local/lib # For Homebrew
 LIBS += -lgmp -lgmpxx
 LIBS += -lCGAL
 LIBS += -lm
-LIBS += -lpython2.7
-LIBS += -lboost_python
 LIBS += -lboost_filesystem
 LIBS += -lboost_program_options
 LIBS += -lboost_system
