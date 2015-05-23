@@ -17,7 +17,7 @@ TEST_CASE("A. tabira 5S MFE", "[mfe][biological][atabira][5S]") {
     pmfe::SimpleThreadPool thread_pool;
 
     // Load the sequence
-    fs::path seqfile("test_seq/a.tabira_5S.fasta");
+    fs::path seqfile("test_seq/5S/a.tabira_5S.fasta");
     pmfe::RNASequence seq(seqfile);
 
     // Some basic sanity checks
@@ -45,7 +45,7 @@ TEST_CASE("C. diphtheriae tRNA MFE", "[mfe][biological][cdiphtheriae][tRNA]") {
     pmfe::SimpleThreadPool thread_pool;
 
     // Load the sequence
-    fs::path seqfile("test_seq/c.diphtheriae_tRNA.fasta");
+    fs::path seqfile("test_seq/tRNA/c.diphtheriae_tRNA.fasta");
     pmfe::RNASequence seq(seqfile);
 
     // Some basic sanity checks
@@ -73,7 +73,7 @@ TEST_CASE("D. mobilis 5S MFE", "[mfe][biological][dmobilis][5S]") {
     pmfe::SimpleThreadPool thread_pool;
 
     // Load the sequence
-    fs::path seqfile("test_seq/d.mobilis_5S.fasta");
+    fs::path seqfile("test_seq/5S/d.mobilis_5S.fasta");
     pmfe::RNASequence seq(seqfile);
 
     // Some basic sanity checks
@@ -101,7 +101,7 @@ TEST_CASE("E. coli 5S MFE", "[mfe][biological][ecoli][5S]") {
     pmfe::SimpleThreadPool thread_pool;
 
     // Load the sequence
-    fs::path seqfile("test_seq/e.coli_5S.fasta");
+    fs::path seqfile("test_seq/5S/e.coli_5S.fasta");
     pmfe::RNASequence seq(seqfile);
 
     // Some basic sanity checks
@@ -129,7 +129,7 @@ TEST_CASE("G. arboreum 5S MFE", "[mfe][biological][garboreum][5S]") {
     pmfe::SimpleThreadPool thread_pool;
 
     // Load the sequence
-    fs::path seqfile("test_seq/g.arboreum_5S.fasta");
+    fs::path seqfile("test_seq/5S/g.arboreum_5S.fasta");
     pmfe::RNASequence seq(seqfile);
 
     // Some basic sanity checks
@@ -157,7 +157,7 @@ TEST_CASE("H. sapiens tRNA MFE", "[mfe][biological][hsapiens][tRNA]") {
     pmfe::SimpleThreadPool thread_pool;
 
     // Load the sequence
-    fs::path seqfile("test_seq/h.sapiens_tRNA.fasta");
+    fs::path seqfile("test_seq/tRNA/h.sapiens_tRNA.fasta");
     pmfe::RNASequence seq(seqfile);
 
     // Some basic sanity checks
@@ -185,7 +185,7 @@ TEST_CASE("L. delbrueckii tRNA MFE", "[mfe][biological][ldelbrueckii][tRNA]") {
     pmfe::SimpleThreadPool thread_pool;
 
     // Load the sequence
-    fs::path seqfile("test_seq/l.delbrueckii_tRNA.fasta");
+    fs::path seqfile("test_seq/tRNA/l.delbrueckii_tRNA.fasta");
     pmfe::RNASequence seq(seqfile);
 
     // Some basic sanity checks
@@ -213,7 +213,7 @@ TEST_CASE("O. nivara tRNA MFE", "[mfe][biological][onivara][tRNA]") {
     pmfe::SimpleThreadPool thread_pool;
 
     // Load the sequence
-    fs::path seqfile("test_seq/o.nivara_tRNA.fasta");
+    fs::path seqfile("test_seq/tRNA/o.nivara_tRNA.fasta");
     pmfe::RNASequence seq(seqfile);
 
     // Some basic sanity checks
@@ -241,7 +241,7 @@ TEST_CASE("R. norvegicus 5S MFE", "[mfe][biological][rnorvegicus][5S]") {
     pmfe::SimpleThreadPool thread_pool;
 
     // Load the sequence
-    fs::path seqfile("test_seq/r.norvegicus_5S.fasta");
+    fs::path seqfile("test_seq/5S/r.norvegicus_5S.fasta");
     pmfe::RNASequence seq(seqfile);
 
     // Some basic sanity checks
@@ -269,7 +269,7 @@ TEST_CASE("S. tokodaii tRNA MFE", "[mfe][biological][stokodaii][tRNA]") {
     pmfe::SimpleThreadPool thread_pool;
 
     // Load the sequence
-    fs::path seqfile("test_seq/s.tokodaii_tRNA.fasta");
+    fs::path seqfile("test_seq/tRNA/s.tokodaii_tRNA.fasta");
     pmfe::RNASequence seq(seqfile);
 
     // Some basic sanity checks
@@ -297,7 +297,7 @@ TEST_CASE("Combinatorial sequence MFE", "[mfe][synthetic][combinatorial]") {
     pmfe::SimpleThreadPool thread_pool;
 
     // Load the sequence
-    fs::path seqfile("test_seq/test_combinatorial.fasta");
+    fs::path seqfile("test_seq/synthetic/test_combinatorial.fasta");
     pmfe::RNASequence seq(seqfile);
 
     // Some basic sanity checks
@@ -325,7 +325,7 @@ TEST_CASE("Randomly generated sequence MFE", "[mfe][synthetic][random]") {
     pmfe::SimpleThreadPool thread_pool;
 
     // Load the sequence
-    fs::path seqfile("test_seq/test_random.fasta");
+    fs::path seqfile("test_seq/synthetic/test_random.fasta");
     pmfe::RNASequence seq(seqfile);
 
     // Some basic sanity checks
