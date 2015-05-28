@@ -29,6 +29,7 @@ namespace pmfe{
         mpq_class Ed3(int i, int j, const RNASequence& seq, bool inside = false) const;
         mpq_class Ed5(int i, int j, const RNASequence& seq, bool inside = false) const;
         mpq_class auPenalty(int i, int j, const RNASequence& seq) const;
+        mpq_class eLL(int size) const;
         mpq_class eL(int i, int j, int ip, int jp, const RNASequence& seq) const;
         mpq_class eH(int i, int j, const RNASequence& seq) const;
         mpq_class eS(int i, int j, const RNASequence& seq) const;

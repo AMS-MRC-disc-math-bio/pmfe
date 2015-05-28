@@ -307,6 +307,23 @@ namespace pmfe {
         }
     }
 
+    mpq_class NNTM::eLL(int size) const {
+        /*
+          Compute the energy correction for a long loop
+        */
+
+        // To match the GTMFE algorithm, we force this to have two decimal digits of precision
+        // TODO: Clean this up by interfacing with fancified NNDB
+        if (constants.params.dummy_scaling == 0) {
+            return 0;
+        } else {
+            mpq_class prelog = constants.prelog / constants.params.dummy_scaling;
+            mpq_class result = (mpz_class) (100 * prelog * log((double) size / 30.0));
+            result *= constants.params.dummy_scaling / 100;
+            return result;
+        }
+    }
+
     mpq_class NNTM::eL(int i, int j, int ip, int jp, const RNASequence& seq) const {
         /*
           Compute the energy of an internal loop between pairs (i, j) and (ip, jp)
@@ -339,7 +356,7 @@ namespace pmfe {
             if (size > 30) {
                 /* AM: Does not depend upon i and j and ip and jp - Stacking Energies */
                 energy = constants.bulge[30]
-                    + constants.prelog * log((double) size / 30.0)
+                    + eLL(size)
                     + auPenalty(i, j, seq)
                     + auPenalty(ip, jp, seq);
             } else if (size <= 30 && size != 1) {
@@ -355,18 +372,16 @@ namespace pmfe {
             /* Internal loop */
 
             if (size > 30) {
-                mpq_class loginc = constants.prelog * log((double) size / 30.0);
-
                 if (!((size1 == 1 || size2 == 1) && constants.gail)) { /* normal internal loop with size > 30*/
                     energy = constants.tstki[seq.base(i)][seq.base(j)][seq.base(i + 1)][seq.base(j - 1)]
                         + constants.tstki[seq.base(jp)][seq.base(ip)][seq.base(jp + 1)][seq.base(ip - 1)] + constants.inter[30]
-                        + loginc
+                        + eLL(size)
                         + penterm;
                 } else { /* if size is more than 30 and it is a grossely asymmetric internal loop and gail is not 0*/
                     energy = constants.tstki[seq.base(i)][seq.base(j)][BASE_A][BASE_A]
                         + constants.tstki[seq.base(jp)][seq.base(ip)][BASE_A][BASE_A]
                         + constants.inter[30]
-                        + loginc
+                        + eLL(size)
                         + penterm;
                 }
             } else if (size1 == 2 and size2 == 2) { /* 2x2 internal loop */
@@ -380,13 +395,11 @@ namespace pmfe {
             } else if ((size1 == 1 or size2 == 1) && constants.gail) { /* gail = (Grossly Asymmetric Interior Loop Rule) (on/off <-> 1/0)  */
                 energy = constants.tstki[seq.base(i)][seq.base(j)][BASE_A][BASE_A] + constants.tstki[seq.base(jp)][seq.base(ip)][BASE_A][BASE_A]
                     + constants.inter[size]
-                    + constants.prelog * log((double) size / 30.0)
                     + penterm;
             } else { /* General Internal loops */
                 energy = constants.tstki[seq.base(i)][seq.base(j)][seq.base(i + 1)][seq.base(j - 1)]
                     + constants.tstki[seq.base(jp)][seq.base(ip)][seq.base(jp + 1)][seq.base(ip - 1)]
                     + constants.inter[size]
-                    + constants.prelog * log((double) size / 30.0)
                     + penterm;
             }
         }
@@ -411,8 +424,7 @@ namespace pmfe {
         /*  look in hairpin, and be careful that there is only 30 values */
 
         if (size > 30) {
-            mpq_class loginc = constants.prelog * log(((double) size) / 30.0);
-            energy = constants.hairpin[30] + loginc + constants.tstkh[seq.base(i)][seq.base(j)][seq.base(i + 1)][seq.base(j - 1)]; /* size penalty + terminal mismatch stacking energy*/
+            energy = constants.hairpin[30] + eLL(size) + constants.tstkh[seq.base(i)][seq.base(j)][seq.base(i + 1)][seq.base(j - 1)]; /* size penalty + terminal mismatch stacking energy*/
         }
 
         else if (size <= 30 && size > 4) {
