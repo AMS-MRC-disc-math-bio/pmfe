@@ -39,7 +39,7 @@ namespace pmfe{
         mpq_class calcVBI(int i, int j, const RNASequenceWithTables& seq) const;
 
         // Traceback helpers
-        void traceW(int i, const RNASequenceWithTables& seq, RNAStructure& structure, ScoreVector& score) const;
+        bool traceW(int i, const RNASequenceWithTables& seq, RNAStructure& structure, ScoreVector& score) const;
         mpq_class traceV(int i, int j, const RNASequenceWithTables& seq, RNAStructure& structure, ScoreVector& score) const;
         mpq_class traceVM(int i, int j, const RNASequenceWithTables& seq, RNAStructure& structure, ScoreVector& score) const;
         mpq_class traceVBI(int i, int j, const RNASequenceWithTables& seq, RNAStructure& structure, ScoreVector& score) const;

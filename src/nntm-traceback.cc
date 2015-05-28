@@ -23,6 +23,7 @@ namespace pmfe {
         ScoreVector newscore = this->score(structure);
 
         if (newscore.energy != score.energy) {
+            std::cout << newscore.energy.get_d() << " ≅ " << score.energy.get_d() << std::endl;
             throw std::logic_error("Energy calculation was inconsistent!");
         }
 
@@ -30,14 +31,16 @@ namespace pmfe {
         return result;
     }
 
-    void NNTM::traceW(int j, const RNASequenceWithTables& seq, RNAStructure& structure, ScoreVector& score) const {
-        bool finished = false;
+    bool NNTM::traceW(int j, const RNASequenceWithTables& seq, RNAStructure& structure, ScoreVector& score) const {
+        bool found_something = false;
         mpq_class wim1;
 
         if (j <= 0)
-            return;
+        {
+            return score.energy == 0;
+        }
 
-        for (int i = 0; i < j && !finished; i++) {
+        for (int i = 0; i < j && !found_something; i++) {
             if (j-i < TURN) continue;
 
             if (i > 0) {
@@ -59,7 +62,7 @@ namespace pmfe {
                 }
 
                 if (seq.W[j] == seq.V[i][j] + auPenalty(i, j, seq) + e_dangles + wim1) {
-                    finished = true;
+                    found_something = true;
                     score.energy += (auPenalty(i, j, seq) + e_dangles);
                     traceV(i, j, seq, structure, score);
                     traceW(i-1, seq, structure, score);
@@ -71,7 +74,7 @@ namespace pmfe {
             case NO_DANGLE:
             {
                 if (seq.W[j] == seq.V[i][j] + auPenalty(i, j, seq) + wim1) {
-                    finished = true;
+                    found_something = true;
                     score.energy += auPenalty(i, j, seq);
                     traceV(i, j, seq, structure, score);
                     traceW(i-1, seq, structure, score);
@@ -83,27 +86,27 @@ namespace pmfe {
             case CHOOSE_DANGLE:
             {
                 if (seq.W[j] == seq.V[i][j] + auPenalty(i, j, seq) + wim1) {
-                    finished = true;
+                    found_something = true;
                     score.energy += auPenalty(i, j, seq);
                     traceV(i, j, seq, structure, score);
                     traceW(i-1, seq, structure, score);
                     break;
                 } else if (seq.W[j] ==  seq.V[i][j-1] + auPenalty(i, j-1, seq) + Ed3(i, j-1, seq) + wim1) {
-                    finished = true;
+                    found_something = true;
                     score.energy += (auPenalty(i, j-1, seq) + Ed3(i, j-1, seq));
                     structure.mark_d3(j);
                     traceV(i, j-1, seq, structure, score);
                     traceW(i-1, seq, structure, score);
                     break;
                 } else if (seq.W[j] == seq.V[i+1][j] + auPenalty(i+1, j, seq) + Ed5(i+1, j, seq) + wim1){
-                    finished = true;
+                    found_something = true;
                     score.energy += (auPenalty(i+1, j, seq) + Ed5(i+1, j, seq));
                     structure.mark_d5(i);
                     traceV(i + 1, j, seq, structure, score);
                     traceW(i-1, seq, structure, score);
                     break;
                 } else if (seq.W[j] == seq.V[i+1][j-1] + auPenalty(i+1, j-1, seq) + Ed5(i+1, j-1, seq) + Ed3(i+1, j-1, seq) + wim1) {
-                    finished = true;
+                    found_something = true;
                     score.energy += (auPenalty(i+1, j-1, seq) + Ed5(i+1, j-1, seq) + Ed3(i+1, j-1, seq));
                     structure.mark_d3(j);
                     structure.mark_d5(i);
@@ -121,8 +124,15 @@ namespace pmfe {
             }
         }
 
-        if (seq.W[j] == seq.W[j-1] && !finished) traceW(j-1, seq, structure, score);
-        return;
+        if (seq.W[j] == seq.W[j-1] && !found_something) {
+            found_something = traceW(j-1, seq, structure, score);
+        }
+
+        if (!found_something) {
+            throw std::logic_error("W traceback did not finish!");
+        }
+
+        return found_something;
     }
 
     mpq_class NNTM::traceV(int i, int j, const RNASequenceWithTables& seq, RNAStructure& structure, ScoreVector& score) const {
