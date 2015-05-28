@@ -35,9 +35,8 @@ namespace pmfe {
         bool found_something = false;
         mpq_class wim1;
 
-        if (j <= 0)
-        {
-            return score.energy == 0;
+        if (j <= 0) {
+            return score.energy == seq.W[seq.len() - 1];
         }
 
         for (int i = 0; i < j && !found_something; i++) {
@@ -66,7 +65,6 @@ namespace pmfe {
                     score.energy += (auPenalty(i, j, seq) + e_dangles);
                     traceV(i, j, seq, structure, score);
                     traceW(i-1, seq, structure, score);
-                    break;
                 };
                 break;
             }
@@ -78,7 +76,6 @@ namespace pmfe {
                     score.energy += auPenalty(i, j, seq);
                     traceV(i, j, seq, structure, score);
                     traceW(i-1, seq, structure, score);
-                    break;
                 };
                 break;
             }
@@ -90,21 +87,18 @@ namespace pmfe {
                     score.energy += auPenalty(i, j, seq);
                     traceV(i, j, seq, structure, score);
                     traceW(i-1, seq, structure, score);
-                    break;
                 } else if (seq.W[j] ==  seq.V[i][j-1] + auPenalty(i, j-1, seq) + Ed3(i, j-1, seq) + wim1) {
                     found_something = true;
                     score.energy += (auPenalty(i, j-1, seq) + Ed3(i, j-1, seq));
                     structure.mark_d3(j);
                     traceV(i, j-1, seq, structure, score);
                     traceW(i-1, seq, structure, score);
-                    break;
                 } else if (seq.W[j] == seq.V[i+1][j] + auPenalty(i+1, j, seq) + Ed5(i+1, j, seq) + wim1){
                     found_something = true;
                     score.energy += (auPenalty(i+1, j, seq) + Ed5(i+1, j, seq));
                     structure.mark_d5(i);
                     traceV(i + 1, j, seq, structure, score);
                     traceW(i-1, seq, structure, score);
-                    break;
                 } else if (seq.W[j] == seq.V[i+1][j-1] + auPenalty(i+1, j-1, seq) + Ed5(i+1, j-1, seq) + Ed3(i+1, j-1, seq) + wim1) {
                     found_something = true;
                     score.energy += (auPenalty(i+1, j-1, seq) + Ed5(i+1, j-1, seq) + Ed3(i+1, j-1, seq));
@@ -112,7 +106,6 @@ namespace pmfe {
                     structure.mark_d5(i);
                     traceV(i+1, j-1, seq, structure, score);
                     traceW(i-1, seq, structure, score);
-                    break;
                 }
 
                 break;
