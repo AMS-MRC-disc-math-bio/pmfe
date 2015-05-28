@@ -356,7 +356,7 @@ namespace pmfe {
                     + eLL(size)
                     + auPenalty(i, j, seq)
                     + auPenalty(ip, jp, seq);
-            } else if (size <= 30 && size != 1) {
+            } else if (size <= 30 && size > 1) {
                 /* Does not depend upon i and j and ip and jp - Stacking Energies  */
                 energy = constants.bulge[size]
                     + auPenalty(i, j, seq)
@@ -364,6 +364,9 @@ namespace pmfe {
             } else if (size == 1) {
                 energy = constants.stack[seq.base(i)][seq.base(j)][seq.base(ip)][seq.base(jp)]
                     + constants.bulge[size];
+            } else if (size == 0) {
+                // Degenerate case that this is actually a stack, included for ease of coding elsewhere
+                energy = constants.stack[seq.base(i)][seq.base(j)][seq.base(ip)][seq.base(jp)];
             }
         } else {
             /* Internal loop */
