@@ -143,6 +143,9 @@ namespace pmfe {
         boost::multi_array<mpq_class, 2> FM;
         boost::multi_array<mpq_class, 2> FM1;
 
+        bool energy_tables_populated = false;
+        bool subopt_tables_populated = false;
+
         void print_debug();
     };
 

@@ -22,16 +22,23 @@ namespace pmfe {
     {};
 
     RNASequenceWithTables NNTM::energy_tables(const RNASequence& inseq) const {
+        RNASequenceWithTables seq(inseq, constants.INFINITY_);
+        populate_energy_tables(seq);
+        return seq;
+    };
+
+    void NNTM::populate_energy_tables(RNASequenceWithTables& seq) const {
         /*
           Construct the energy tables for the DP algorithm
          */
-        RNASequenceWithTables seq(inseq, constants.INFINITY_);
+        // Input specification
+        assert(not seq.energy_tables_populated);
 
         // Populate V, VM, VBI, WM, and WMPrime
         for (int b = TURN+1; b <= seq.len() - 1; ++b) {
             SimpleJobGroup job_group(thread_pool);
             for (int i = 0; i <= seq.len() - 1 - b; ++i) {
-                job_group.post(boost::bind(&NNTM::populate_internal_tables, this, i, i+b, std::ref(seq)));
+                job_group.post(boost::bind(&NNTM::populate_energy_tables, this, i, i+b, std::ref(seq)));
             }
 
             job_group.wait_for_all_jobs();
@@ -82,10 +89,10 @@ namespace pmfe {
             seq.W[j] = *std::min_element(w_vals.begin(), w_vals.end());
         }
 
-        return seq;
-    };
+        seq.energy_tables_populated = true;
+    }
 
-    void NNTM::populate_internal_tables(int i, int j, RNASequenceWithTables& seq) const {
+    void NNTM::populate_energy_tables(int i, int j, RNASequenceWithTables& seq) const {
         // Input specification
         assert (0 <= i);
         assert (j < seq.len());
@@ -171,74 +178,16 @@ namespace pmfe {
 
         seq.WM[i][j] = *std::min_element(wm_vals.begin(), wm_vals.end());
         // WM end
-
-        // FM begin
-        std::deque<mpq_class> fm1_vals;
-        fm1_vals.push_back(constants.INFINITY_);
-
-        int minl = i+TURN+1;
-        for (int l = minl; l <= j; ++l) {
-            switch (dangles) {
-            case NO_DANGLE:
-            {
-                fm1_vals.push_back(seq.V[i][i] + auPenalty(i, l, seq) + constants.multConst[1]*(j-l) + constants.multConst[2]);
-                break;
-            }
-
-            case CHOOSE_DANGLE:
-            {
-                mpq_class d5 = Ed5(i+1, l, seq);
-                mpq_class d3 = Ed3(i, l-1, seq);
-                mpq_class d53 = Ed5(i+1, l-1, seq) + Ed3(i+1, l-1, seq);
-
-                fm1_vals.push_back(seq.V[i][l] + auPenalty(i, l, seq) + constants.multConst[1] * (j-l) + constants.multConst[2]);
-
-                if (l >= minl + 1)
-                    fm1_vals.push_back(seq.V[i+1][l] + auPenalty(i+1, l, seq) + d5 + constants.multConst[1] * (j-l+1) + constants.multConst[2]);
-
-                if (l >= minl + 1)
-                    fm1_vals.push_back(seq.V[i][l-1] + auPenalty(i, l-1, seq) + d3 + constants.multConst[1] * (j-(l-1)) + constants.multConst[2]);
-
-                if (l >= minl + 2)
-                    fm1_vals.push_back(seq.V[i+1][l-1] + auPenalty(i+1, l-1, seq) + d53 + constants.multConst[1]* (j-(l-1)+1) + constants.multConst[2]);
-
-                break;
-            }
-
-            case BOTH_DANGLE:
-            {
-                mpq_class d5 = Ed5(i, l, seq);
-                mpq_class d3 = Ed3(i, l, seq);
-                fm1_vals.push_back(seq.V[i][l] + auPenalty(i, l, seq) + d5 + d3 + constants.multConst[1] * (j-l) + constants.multConst[2]);
-                break;
-            }
-
-            default:
-            {
-                exit(EXIT_FAILURE);
-                break;
-            }
-            }
-        }
-        seq.FM1[i][j] = *std::min_element(fm1_vals.begin(), fm1_vals.end());
-
-        std::deque<mpq_class> fm_vals;
-        fm_vals.push_back(constants.INFINITY_);
-
-        for (int k = i+TURN+1; k <= j-TURN-1; ++k) {
-            fm_vals.push_back(seq.FM[i][k-1] + seq.FM1[k][j]);
-        }
-
-        for (int k = i; k <= j-TURN-1; ++k) {
-            fm_vals.push_back(seq.FM1[k][j] + constants.multConst[1]*(k-i));
-        }
-        seq.FM[i][j] = *std::min_element(fm_vals.begin(), fm_vals.end());
     }
 
-    mpq_class NNTM::minimum_energy(const RNASequenceWithTables& seq) const {
+    mpq_class NNTM::minimum_energy(RNASequenceWithTables& seq) const {
         /*
           Return the minimum energy of a structure on this sequence
          */
+        if (not seq.energy_tables_populated) {
+            populate_energy_tables(seq);
+        }
+
         return seq.W[seq.len()-1];
     };
 

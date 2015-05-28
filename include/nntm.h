@@ -16,16 +16,19 @@ namespace pmfe{
         NNTM(const NNDBConstants& constants, dangle_mode dangles, SimpleThreadPool& thread_pool);
 
         RNASequenceWithTables energy_tables(const RNASequence& seq) const;
-        mpq_class minimum_energy(const RNASequenceWithTables& seq) const;
+        mpq_class minimum_energy(RNASequenceWithTables& seq) const;
         RNAStructureWithScore mfe_structure(const RNASequenceWithTables& seq) const;
 
         ScoreVector score(const RNAStructure& structure, bool compute_w = true) const;
 
-        std::vector<RNAStructureWithScore> suboptimal_structures(const RNASequenceWithTables& seq, mpq_class delta, bool sorted = false) const;
+        std::vector<RNAStructureWithScore> suboptimal_structures(RNASequenceWithTables& seq, mpq_class delta, bool sorted = false) const;
 
     protected:
         // MFE helpers
-        void populate_internal_tables(int i, int j, RNASequenceWithTables& seq) const;
+        void populate_energy_tables(RNASequenceWithTables& seq) const;
+        void populate_energy_tables(int i, int j, RNASequenceWithTables& seq) const;
+        void populate_subopt_tables(RNASequenceWithTables& seq) const;
+        void populate_subopt_tables(int i, int j, RNASequenceWithTables& seq) const;
         mpq_class Ed3(int i, int j, const RNASequence& seq, bool inside = false) const;
         mpq_class Ed5(int i, int j, const RNASequence& seq, bool inside = false) const;
         mpq_class auPenalty(int i, int j, const RNASequence& seq) const;
