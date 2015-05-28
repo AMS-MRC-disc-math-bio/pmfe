@@ -339,20 +339,17 @@ namespace pmfe {
             if (size > 30) {
                 /* AM: Does not depend upon i and j and ip and jp - Stacking Energies */
                 energy = constants.bulge[30]
-                    + constants.eparam[2]
                     + constants.prelog * log((double) size / 30.0)
                     + auPenalty(i, j, seq)
                     + auPenalty(ip, jp, seq);
             } else if (size <= 30 && size != 1) {
                 /* Does not depend upon i and j and ip and jp - Stacking Energies  */
                 energy = constants.bulge[size]
-                    + constants.eparam[2]
                     + auPenalty(i, j, seq)
                     + auPenalty(ip, jp, seq);
             } else if (size == 1) {
                 energy = constants.stack[seq.base(i)][seq.base(j)][seq.base(ip)][seq.base(jp)]
-                    + constants.bulge[size]
-                    + constants.eparam[2];
+                    + constants.bulge[size];
             }
         } else {
             /* Internal loop */
@@ -364,14 +361,12 @@ namespace pmfe {
                     energy = constants.tstki[seq.base(i)][seq.base(j)][seq.base(i + 1)][seq.base(j - 1)]
                         + constants.tstki[seq.base(jp)][seq.base(ip)][seq.base(jp + 1)][seq.base(ip - 1)] + constants.inter[30]
                         + loginc
-                        + constants.eparam[3]
                         + penterm;
                 } else { /* if size is more than 30 and it is a grossely asymmetric internal loop and gail is not 0*/
                     energy = constants.tstki[seq.base(i)][seq.base(j)][BASE_A][BASE_A]
                         + constants.tstki[seq.base(jp)][seq.base(ip)][BASE_A][BASE_A]
                         + constants.inter[30]
                         + loginc
-                        + constants.eparam[3]
                         + penterm;
                 }
             } else if (size1 == 2 and size2 == 2) { /* 2x2 internal loop */
@@ -386,14 +381,12 @@ namespace pmfe {
                 energy = constants.tstki[seq.base(i)][seq.base(j)][BASE_A][BASE_A] + constants.tstki[seq.base(jp)][seq.base(ip)][BASE_A][BASE_A]
                     + constants.inter[size]
                     + constants.prelog * log((double) size / 30.0)
-                    + constants.eparam[3]
                     + penterm;
             } else { /* General Internal loops */
                 energy = constants.tstki[seq.base(i)][seq.base(j)][seq.base(i + 1)][seq.base(j - 1)]
                     + constants.tstki[seq.base(jp)][seq.base(ip)][seq.base(jp + 1)][seq.base(ip - 1)]
                     + constants.inter[size]
                     + constants.prelog * log((double) size / 30.0)
-                    + constants.eparam[3]
                     + penterm;
             }
         }
@@ -419,11 +412,11 @@ namespace pmfe {
 
         if (size > 30) {
             mpq_class loginc = constants.prelog * log(((double) size) / 30.0);
-            energy = constants.hairpin[30] + loginc + constants.tstkh[seq.base(i)][seq.base(j)][seq.base(i + 1)][seq.base(j - 1)] + constants.eparam[4]; /* size penalty + terminal mismatch stacking energy*/
+            energy = constants.hairpin[30] + loginc + constants.tstkh[seq.base(i)][seq.base(j)][seq.base(i + 1)][seq.base(j - 1)]; /* size penalty + terminal mismatch stacking energy*/
         }
 
         else if (size <= 30 && size > 4) {
-            energy = constants.hairpin[size] + constants.tstkh[seq.base(i)][seq.base(j)][seq.base(i + 1)][seq.base(j - 1)] + constants.eparam[4]; /* size penalty + terminal mismatch stacking energy*/
+            energy = constants.hairpin[size] + constants.tstkh[seq.base(i)][seq.base(j)][seq.base(i + 1)][seq.base(j - 1)]; /* size penalty + terminal mismatch stacking energy*/
         }
 
         else if (size == 4) {
@@ -432,7 +425,7 @@ namespace pmfe {
             if (constants.tloop.count(loopkey) != 0) {
                 tlink = constants.tloop.find(loopkey)->second; // But some loops have special contributions, stored in this table
             }
-            energy = tlink + constants.hairpin[size] + constants.tstkh[seq.base(i)][seq.base(j)][seq.base(i + 1)][seq.base(j - 1)] + constants.eparam[4];
+            energy = tlink + constants.hairpin[size] + constants.tstkh[seq.base(i)][seq.base(j)][seq.base(i + 1)][seq.base(j - 1)];
         }
 
         else if (size == 3) {
@@ -448,7 +441,7 @@ namespace pmfe {
 
         else if (size < 3 && size != 0) {
             /*  no terminal mismatch */
-            energy = constants.hairpin[size] + constants.eparam[4];
+            energy = constants.hairpin[size];
         } else if (size == 0)
             energy = constants.INFINITY_;
 
@@ -489,7 +482,7 @@ namespace pmfe {
         assert (j >= 0 && j < seq.len());
         assert (i < j);
 
-        return constants.stack[seq.base(i)][seq.base(j)][seq.base(i+1)][seq.base(j-1)] + constants.eparam[1];
+        return constants.stack[seq.base(i)][seq.base(j)][seq.base(i+1)][seq.base(j-1)];
     }
 
     mpq_class NNTM::calcVBI(int i, int j, const RNASequenceWithTables& seq) const {

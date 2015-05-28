@@ -145,15 +145,6 @@ namespace pmfe
         // GAIL rule (Grossly Asymmetric Interior Loop)
         fileStream >> currentWord;
         gail = (currentWord != "0");
-
-        // Nobody seems to know quite what these are, but we'd better set them anyway
-        eparam[1] = 0;
-        eparam[2] = 0;
-        eparam[3] = 0;
-        eparam[4] = 0;
-        eparam[7] = params.dummy_scaling * mpq_class(3, 10);
-        eparam[8] = params.dummy_scaling * mpq_class(3, 10);
-        eparam[9] = params.dummy_scaling * mpq_class(-5);
     }
 
     void Turner99::initLoopValues(const fs::path& paramDir) {
