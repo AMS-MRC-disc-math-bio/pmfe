@@ -46,7 +46,9 @@ namespace pmfe {
                 wim1 = 0;
             }
 
-            if (dangles == BOTH_DANGLE) {
+            switch (dangles) {
+            case BOTH_DANGLE:
+            {
                 mpq_class e_dangles = 0;
                 if (i > 0) {
                     e_dangles += Ed5(i, j, seq);
@@ -63,7 +65,11 @@ namespace pmfe {
                     traceW(i-1, seq, structure, score);
                     break;
                 };
-            } else if (dangles == NO_DANGLE) {
+                break;
+            }
+
+            case NO_DANGLE:
+            {
                 if (seq.W[j] == seq.V[i][j] + auPenalty(i, j, seq) + wim1) {
                     finished = true;
                     score.energy += auPenalty(i, j, seq);
@@ -71,7 +77,11 @@ namespace pmfe {
                     traceW(i-1, seq, structure, score);
                     break;
                 };
-            } else { // default
+                break;
+            }
+
+            case CHOOSE_DANGLE:
+            {
                 if (seq.W[j] == seq.V[i][j] + auPenalty(i, j, seq) + wim1) {
                     finished = true;
                     score.energy += auPenalty(i, j, seq);
@@ -101,6 +111,13 @@ namespace pmfe {
                     traceW(i-1, seq, structure, score);
                     break;
                 }
+
+                break;
+            }
+
+            default:
+                throw std::logic_error("Invalid dangle mode.");
+                break;
             }
         }
 
@@ -170,19 +187,28 @@ namespace pmfe {
     mpq_class NNTM::traceVM(int i, int j, const RNASequenceWithTables& seq, RNAStructure& structure, ScoreVector& score) const {
         mpq_class eVM = 0;
 
-        if (dangles == BOTH_DANGLE) {
+        switch (dangles) {
+        case BOTH_DANGLE:
+        {
             if (seq.VM[i][j] == seq.WMPrime[i+1][j-1] + constants.multConst[0] + constants.multConst[2] + auPenalty(i, j, seq) + Ed5(i, j, seq, true) + Ed3(i, j, seq, true)) {
                 eVM += traceWMPrime(i+1, j-1, seq, structure, score);
                 score.multiloops++;
                 score.branches++;
             }
-        } else if (dangles == NO_DANGLE) {
+            break;
+        }
+
+        case NO_DANGLE:
+        {
             if (seq.VM[i][j] == seq.WMPrime[i+1][j-1] + constants.multConst[0] + constants.multConst[2] + auPenalty(i, j, seq) ) {
                 eVM += traceWMPrime(i+1, j-1, seq, structure, score);
                 score.multiloops++;
                 score.branches++;
             }
-        } else {
+            break;
+        }
+
+        case CHOOSE_DANGLE: {
             if (seq.VM[i][j] == seq.WMPrime[i+1][j-1] + constants.multConst[0] + constants.multConst[2] + auPenalty(i, j, seq) ) {
                 eVM += traceWMPrime(i+1, j-1, seq, structure, score);
                 score.multiloops++;
@@ -193,8 +219,7 @@ namespace pmfe {
                 score.multiloops++;
                 score.branches++;
                 score.unpaired++;
-            }
-            else if (seq.VM[i][j] == seq.WMPrime[i+1][j-2] + constants.multConst[0] + constants.multConst[2] + auPenalty(i, j, seq) + Ed3(i, j, seq, true) + constants.multConst[1]) {
+            } else if (seq.VM[i][j] == seq.WMPrime[i+1][j-2] + constants.multConst[0] + constants.multConst[2] + auPenalty(i, j, seq) + Ed3(i, j, seq, true) + constants.multConst[1]) {
                 eVM += traceWMPrime(i+1, j-2, seq, structure, score);
                 structure.mark_d5(j-1);
                 score.multiloops++;
@@ -208,6 +233,13 @@ namespace pmfe {
                 score.branches++;
                 score.unpaired += 2;
             }
+
+            break;
+        }
+
+        default:
+            throw std::logic_error("Invalid dangle mode.");
+            break;
         }
 
         return eVM;
@@ -239,19 +271,29 @@ namespace pmfe {
         }
 
         if (!done){
-            if (dangles == BOTH_DANGLE) {
+            switch (dangles) {
+            case BOTH_DANGLE:
+            {
                 if (seq.WM[i][j] == seq.V[i][j] + auPenalty(i, j, seq) + constants.multConst[2] + Ed5(i, j, seq) + Ed3(i, j, seq)) {
                     eWM += traceV(i, j, seq, structure, score);
                     score.branches++;
                     done = 1;
                 }
-            } else if (dangles == NO_DANGLE) {
+                break;
+            }
+
+            case NO_DANGLE:
+            {
                 if (seq.WM[i][j] == seq.V[i][j] + auPenalty(i, j, seq) + constants.multConst[2]) {
                     eWM += traceV(i, j, seq, structure, score);
                     score.branches++;
                     done = 1;
                 }
-            } else  {
+                break;
+            }
+
+            case CHOOSE_DANGLE:
+            {
                 if (seq.WM[i][j] == seq.V[i][j] + auPenalty(i, j, seq) + constants.multConst[2]) {
                     eWM += traceV(i, j, seq, structure, score);
                     score.branches++;
@@ -276,18 +318,24 @@ namespace pmfe {
                     score.unpaired += 2;
                     done = 1;
                 }
+                break;
             }
-        }
 
-        if (!done){
-            if (seq.WM[i][j] == seq.WM[i+1][j] + constants.multConst[1]) {
-                done = 1;
-                eWM += traceWM(i+1, j, seq, structure, score);
-                score.unpaired++;
-            } else if (seq.WM[i][j] == seq.WM[i][j-1] + constants.multConst[1]) {
-                done = 1;
-                eWM += traceWM(i, j-1, seq, structure, score);
-                score.unpaired++;
+            default:
+                throw std::logic_error("Invalid dangle mode.");
+                break;
+            }
+
+            if (!done){
+                if (seq.WM[i][j] == seq.WM[i+1][j] + constants.multConst[1]) {
+                    done = 1;
+                    eWM += traceWM(i+1, j, seq, structure, score);
+                    score.unpaired++;
+                } else if (seq.WM[i][j] == seq.WM[i][j-1] + constants.multConst[1]) {
+                    done = 1;
+                    eWM += traceWM(i, j-1, seq, structure, score);
+                    score.unpaired++;
+                }
             }
         }
 
