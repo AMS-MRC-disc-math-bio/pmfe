@@ -317,7 +317,6 @@ namespace pmfe {
         assert (i < ip && ip < jp && jp < j);
 
         mpq_class energy = constants.INFINITY_;
-        mpq_class loginc = 0;
 
         /*SH: These calculations used to incorrectly be within the bulge loop code, moved out here. */
         int size1 = ip - i - 1;
@@ -329,60 +328,73 @@ namespace pmfe {
         int pindex = std::min(2, std::min(size1, size2));
         mpq_class lvalue = lopsided * constants.poppen[pindex];
         mpq_class penterm;
+
         if (constants.params.dummy_scaling >= 0) {
             penterm = std::min(constants.maxpen, lvalue);
         } else {
             penterm = std::max(constants.maxpen, lvalue);
         }
 
-        if (size1 == 0 || size2 == 0) {
+        if (size1 == 0 or size2 == 0) {
             if (size > 30) {
                 /* AM: Does not depend upon i and j and ip and jp - Stacking Energies */
-                loginc = constants.prelog * log((double) size / 30.0); // Taking a log and then casting to rational--gross! But we gots ta do what we gots ta do
-                energy = constants.bulge[30] + constants.eparam[2] + loginc + auPenalty(i, j, seq)
+                energy = constants.bulge[30]
+                    + constants.eparam[2]
+                    + constants.prelog * log((double) size / 30.0)
+                    + auPenalty(i, j, seq)
                     + auPenalty(ip, jp, seq);
             } else if (size <= 30 && size != 1) {
                 /* Does not depend upon i and j and ip and jp - Stacking Energies  */
-                energy = constants.bulge[size] + constants.eparam[2];
-                energy += auPenalty(i, j, seq) + auPenalty(ip, jp, seq);
+                energy = constants.bulge[size]
+                    + constants.eparam[2]
+                    + auPenalty(i, j, seq)
+                    + auPenalty(ip, jp, seq);
             } else if (size == 1) {
                 energy = constants.stack[seq.base(i)][seq.base(j)][seq.base(ip)][seq.base(jp)]
-                    + constants.bulge[size] + constants.eparam[2];
+                    + constants.bulge[size]
+                    + constants.eparam[2];
             }
         } else {
             /* Internal loop */
 
             if (size > 30) {
-                loginc = constants.prelog * log((double) size / 30.0);
+                mpq_class loginc = constants.prelog * log((double) size / 30.0);
 
                 if (!((size1 == 1 || size2 == 1) && constants.gail)) { /* normal internal loop with size > 30*/
-                    energy = constants.tstki[seq.base(i)][seq.base(j)][seq.base(i + 1)][seq.base(j - 1)] +
-                        constants.tstki[seq.base(jp)][seq.base(ip)][seq.base(jp + 1)][seq.base(ip - 1)] + constants.inter[30] + loginc +
-                        constants.eparam[3] + penterm;
+                    energy = constants.tstki[seq.base(i)][seq.base(j)][seq.base(i + 1)][seq.base(j - 1)]
+                        + constants.tstki[seq.base(jp)][seq.base(ip)][seq.base(jp + 1)][seq.base(ip - 1)] + constants.inter[30]
+                        + loginc
+                        + constants.eparam[3]
+                        + penterm;
                 } else { /* if size is more than 30 and it is a grossely asymmetric internal loop and gail is not 0*/
-                    energy = constants.tstki[seq.base(i)][seq.base(j)][BASE_A][BASE_A] + constants.tstki[seq.base(jp)][seq.base(ip)][BASE_A][BASE_A]
-                        + constants.inter[30] + loginc + constants.eparam[3] + penterm;
+                    energy = constants.tstki[seq.base(i)][seq.base(j)][BASE_A][BASE_A]
+                        + constants.tstki[seq.base(jp)][seq.base(ip)][BASE_A][BASE_A]
+                        + constants.inter[30]
+                        + loginc
+                        + constants.eparam[3]
+                        + penterm;
                 }
-            }
-            else if (size1 == 2 && size2 == 2) { /* 2x2 internal loop */
+            } else if (size1 == 2 and size2 == 2) { /* 2x2 internal loop */
                 energy = constants.iloop22[seq.base(i)][seq.base(ip)][seq.base(j)][seq.base(jp)][seq.base(i+1)][seq.base(j-1)][seq.base(i+2)][seq.base(j-2)];
-            } else if (size1 == 1 && size2 == 2) {
+            } else if (size1 == 1 and size2 == 2) {
                 energy = constants.iloop21[seq.base(i)][seq.base(j)][seq.base(i + 1)][seq.base(j - 1)][seq.base(j - 2)][seq.base(ip)][seq.base(jp)];
-            } else if (size1 == 2 && size2 == 1) { /* 1x2 internal loop */
+            } else if (size1 == 2 and size2 == 1) { /* 1x2 internal loop */
                 energy = constants.iloop21[seq.base(jp)][seq.base(ip)][seq.base(j - 1)][seq.base(i + 2)][seq.base(i + 1)][seq.base(j)][seq.base(i)];
             } else if (size == 2) { /* 1*1 internal loops */
                 energy = constants.iloop11[seq.base(i)][seq.base(i + 1)][seq.base(ip)][seq.base(j)][seq.base(j - 1)][seq.base(jp)];
-            }
-            //else if ((size1 == 2 && size2 == 3) || (size1 == 3 && size2 == 2)) {
-            //	return constants.tstacki23[seq.base(i)][seq.base(j)][seq.base(i + 1)][seq.base(j - 1)] +
-            //		constants.tstacki23[seq.base(jp)][seq.base(ip)][seq.base(jp + 1)][seq.base(ip - 1)];
-            //}
-            else if ((size1 == 1 || size2 == 1) && constants.gail) { /* gail = (Grossly Asymmetric Interior Loop Rule) (on/off <-> 1/0)  */
+            } else if ((size1 == 1 or size2 == 1) && constants.gail) { /* gail = (Grossly Asymmetric Interior Loop Rule) (on/off <-> 1/0)  */
                 energy = constants.tstki[seq.base(i)][seq.base(j)][BASE_A][BASE_A] + constants.tstki[seq.base(jp)][seq.base(ip)][BASE_A][BASE_A]
-                    + constants.inter[size] + loginc + constants.eparam[3] + penterm;
+                    + constants.inter[size]
+                    + constants.prelog * log((double) size / 30.0)
+                    + constants.eparam[3]
+                    + penterm;
             } else { /* General Internal loops */
-                energy = constants.tstki[seq.base(i)][seq.base(j)][seq.base(i + 1)][seq.base(j - 1)] + constants.tstki[seq.base(jp)][seq.base(ip)][seq.base(jp + 1)][seq.base(ip - 1)] + constants.inter[size]
-                    + loginc + constants.eparam[3] + penterm;
+                energy = constants.tstki[seq.base(i)][seq.base(j)][seq.base(i + 1)][seq.base(j - 1)]
+                    + constants.tstki[seq.base(jp)][seq.base(ip)][seq.base(jp + 1)][seq.base(ip - 1)]
+                    + constants.inter[size]
+                    + constants.prelog * log((double) size / 30.0)
+                    + constants.eparam[3]
+                    + penterm;
             }
         }
 
