@@ -13,6 +13,7 @@ RUN apt-get update && \
             libgmp-dev \
             libboost-filesystem-dev \
             libboost-program-options-dev \
+            libboost-log-dev \
             libcgal-dev \
             ca-certificates && \
     apt-get clean && \
