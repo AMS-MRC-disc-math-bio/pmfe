@@ -13,6 +13,11 @@
 #include <gmpxx.h>
 #include "boost/multi_array.hpp"
 
+#define BOOST_LOG_DYN_LINK 1 // Fix an issue with dynamic library loading
+#include <boost/log/core.hpp>
+#include <boost/log/trivial.hpp>
+#include <boost/log/expressions.hpp>
+
 namespace pmfe {
     void NNTM::populate_subopt_tables(RNASequenceWithTables& seq) const {
         /*
@@ -129,10 +134,16 @@ namespace pmfe {
                 RNAStructureWithScore result(structure, score);
 
                 if (ps.total() != score.energy) {
+                    BOOST_LOG_TRIVIAL(error) << "Inconsistent subopt energy: " << ps.total().get_d() << " ≅ " << score.energy.get_d();
+                    BOOST_LOG_TRIVIAL(error) << ps;
+                    BOOST_LOG_TRIVIAL(error) << constants.params;
                     throw std::logic_error("Inconsistent energy in suboptimal structure calculation.");
                 }
 
                 if (ps.total() > upper_bound) {
+                    BOOST_LOG_TRIVIAL(error) << "Invalid subopt energy: " << ps.total().get_d() << " > " << upper_bound.get_d() << " (upper bound)";
+                    BOOST_LOG_TRIVIAL(error) << ps;
+                    BOOST_LOG_TRIVIAL(error) << constants.params;
                     throw std::logic_error("Invalid energy in suboptimal structure calculation.");
                 }
 

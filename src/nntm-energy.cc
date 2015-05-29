@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <math.h>
 #include <assert.h>
+#include <deque>
 
 #include "nntm.h"
 #include "nndb_constants.h"
@@ -12,7 +13,10 @@
 #include <gmpxx.h>
 #include <boost/bind.hpp>
 
-#include <deque>
+#define BOOST_LOG_DYN_LINK 1 // Fix an issue with dynamic library loading
+#include <boost/log/core.hpp>
+#include <boost/log/trivial.hpp>
+#include <boost/log/expressions.hpp>
 
 namespace pmfe {
     NNTM::NNTM(const NNDBConstants& constants, dangle_mode dangles, SimpleThreadPool& thread_pool):

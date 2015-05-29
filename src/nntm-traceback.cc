@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <math.h>
 #include <stdexcept>
+#include <vector>
 
 #include "nntm.h"
 #include "nndb_constants.h"
@@ -12,9 +13,10 @@
 #include <boost/multi_array.hpp>
 
 #define BOOST_LOG_DYN_LINK 1 // Fix an issue with dynamic library loading
+#include <boost/log/core.hpp>
 #include <boost/log/trivial.hpp>
+#include <boost/log/expressions.hpp>
 
-#include <vector>
 
 namespace pmfe {
     RNAStructureWithScore NNTM::mfe_structure(const RNASequenceWithTables& seq) const {
@@ -27,7 +29,8 @@ namespace pmfe {
         ScoreVector newscore = this->score(structure);
 
         if (newscore.energy != score.energy) {
-            std::cout << newscore.energy.get_d() << " ≅ " << score.energy.get_d() << std::endl;
+            BOOST_LOG_TRIVIAL(error) << "Inconsistent energy: " << score.energy.get_d() << " ≅ " << newscore.energy.get_d();
+            BOOST_LOG_TRIVIAL(error) << constants.params;
             throw std::logic_error("Energy calculation was inconsistent!");
         }
 
@@ -138,6 +141,8 @@ namespace pmfe {
         }
 
         if (!found_something) {
+            BOOST_LOG_TRIVIAL(error) << "W traceback did not finish for j = " << j;
+            BOOST_LOG_TRIVIAL(error) << constants.params;
             throw std::logic_error("W traceback did not finish!");
         }
 

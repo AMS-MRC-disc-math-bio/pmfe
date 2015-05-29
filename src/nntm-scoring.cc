@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <math.h>
 #include <stdexcept>
+#include <vector>
 
 #include "nntm.h"
 #include "nndb_constants.h"
@@ -11,9 +12,9 @@
 #include "boost/multi_array.hpp"
 
 #define BOOST_LOG_DYN_LINK 1 // Fix an issue with dynamic library loading
+#include <boost/log/core.hpp>
 #include <boost/log/trivial.hpp>
-
-#include <vector>
+#include <boost/log/expressions.hpp>
 
 namespace pmfe {
     ScoreVector NNTM::score(const RNAStructure& structure, bool compute_w) const {
@@ -35,6 +36,9 @@ namespace pmfe {
             formula_energy.canonicalize();
 
             if (result.energy != formula_energy) {
+                BOOST_LOG_TRIVIAL(error) << "Inconsistent w: " << result.energy.get_d() << " ≅ " << formula_energy.get_d();
+                BOOST_LOG_TRIVIAL(error) << constants.params;
+
                 throw std::logic_error("w calculation was inconsistent!");
             }
         }
