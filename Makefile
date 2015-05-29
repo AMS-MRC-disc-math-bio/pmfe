@@ -36,6 +36,8 @@ LIBS += -lboost_filesystem
 LIBS += -lboost_program_options
 LIBS += -lboost_system
 LIBS += -lboost_thread
+LIBS += -lpthread
+LIBS += -lboost_log
 
 BIN = pmfe-findmfe pmfe-scorer pmfe-parametrizer pmfe-subopt pmfe-tests
 all: $(OBJ) $(BIN)

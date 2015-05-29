@@ -18,7 +18,7 @@ This will download the code and extract it into a directory called `iB4e-GTfold-
 This project depends on the [CGAL][cgal] computational geometry library, several libraries from the [Boost][boost] project, and the [GMP][gmp] arbitrary-precision arithmetic library.
 To install the required dependencies on a Debian system, run
 
-    sudo apt-get install libgmp-dev libboost-filesystem-dev libboost-program-options-dev libcgal-dev
+    sudo apt-get install libgmp-dev libboost-filesystem-dev libboost-program-options-dev libboost-log-dev libcgal-dev
 
 To install the required dependencies on OSX using Homebrew, run
 

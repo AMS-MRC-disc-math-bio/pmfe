@@ -11,6 +11,9 @@
 #include <gmpxx.h>
 #include <boost/multi_array.hpp>
 
+#define BOOST_LOG_DYN_LINK 1 // Fix an issue with dynamic library loading
+#include <boost/log/trivial.hpp>
+
 #include <vector>
 
 namespace pmfe {
@@ -18,6 +21,7 @@ namespace pmfe {
         RNAStructure structure(seq);
         ScoreVector score;
 
+        BOOST_LOG_TRIVIAL(debug) << "Starting structure traceback.";
         traceW(seq.len()-1, seq, structure, score);
 
         ScoreVector newscore = this->score(structure);
@@ -62,7 +66,9 @@ namespace pmfe {
 
                 if (seq.W[j] == seq.V[i][j] + auPenalty(i, j, seq) + e_dangles + wim1) {
                     found_something = true;
-                    score.energy += (auPenalty(i, j, seq) + e_dangles);
+                    mpq_class loop = auPenalty(i, j, seq) + e_dangles;
+                    score.energy += loop;
+                    BOOST_LOG_TRIVIAL(debug) << "ExtLoop (" << i << ", " << j << ") with energy " << loop.get_d();
                     traceV(i, j, seq, structure, score);
                     traceW(i-1, seq, structure, score);
                 };
@@ -73,7 +79,9 @@ namespace pmfe {
             {
                 if (seq.W[j] == seq.V[i][j] + auPenalty(i, j, seq) + wim1) {
                     found_something = true;
-                    score.energy += auPenalty(i, j, seq);
+                    mpq_class loop = auPenalty(i, j, seq);
+                    score.energy += loop;
+                    BOOST_LOG_TRIVIAL(debug) << "ExtLoop (" << i << ", " << j << ") with energy " << loop.get_d();
                     traceV(i, j, seq, structure, score);
                     traceW(i-1, seq, structure, score);
                 };
@@ -84,24 +92,32 @@ namespace pmfe {
             {
                 if (seq.W[j] == seq.V[i][j] + auPenalty(i, j, seq) + wim1) {
                     found_something = true;
-                    score.energy += auPenalty(i, j, seq);
+                    mpq_class loop = auPenalty(i, j, seq);
+                    score.energy += loop;
+                    BOOST_LOG_TRIVIAL(debug) << "ExtLoop (" << i << ", " << j << ") with energy " << loop.get_d();
                     traceV(i, j, seq, structure, score);
                     traceW(i-1, seq, structure, score);
                 } else if (seq.W[j] ==  seq.V[i][j-1] + auPenalty(i, j-1, seq) + Ed3(i, j-1, seq) + wim1) {
                     found_something = true;
-                    score.energy += (auPenalty(i, j-1, seq) + Ed3(i, j-1, seq));
+                    mpq_class loop = auPenalty(i, j-1, seq) + Ed3(i, j-1, seq);
+                    score.energy += loop;
+                    BOOST_LOG_TRIVIAL(debug) << "ExtLoop (" << i << ", " << j << ") with energy " << loop.get_d();
                     structure.mark_d3(j);
                     traceV(i, j-1, seq, structure, score);
                     traceW(i-1, seq, structure, score);
                 } else if (seq.W[j] == seq.V[i+1][j] + auPenalty(i+1, j, seq) + Ed5(i+1, j, seq) + wim1){
                     found_something = true;
-                    score.energy += (auPenalty(i+1, j, seq) + Ed5(i+1, j, seq));
+                    mpq_class loop = auPenalty(i+1, j, seq) + Ed5(i+1, j, seq);
+                    score.energy += loop;
+                    BOOST_LOG_TRIVIAL(debug) << "ExtLoop (" << i << ", " << j << ") with energy " << loop.get_d();
                     structure.mark_d5(i);
                     traceV(i + 1, j, seq, structure, score);
                     traceW(i-1, seq, structure, score);
                 } else if (seq.W[j] == seq.V[i+1][j-1] + auPenalty(i+1, j-1, seq) + Ed5(i+1, j-1, seq) + Ed3(i+1, j-1, seq) + wim1) {
                     found_something = true;
-                    score.energy += (auPenalty(i+1, j-1, seq) + Ed5(i+1, j-1, seq) + Ed3(i+1, j-1, seq));
+                    mpq_class loop = auPenalty(i+1, j-1, seq) + Ed5(i+1, j-1, seq) + Ed3(i+1, j-1, seq);
+                    score.energy += loop;
+                    BOOST_LOG_TRIVIAL(debug) << "ExtLoop (" << i << ", " << j << ") with energy " << loop.get_d();
                     structure.mark_d3(j);
                     structure.mark_d5(i);
                     traceV(i+1, j-1, seq, structure, score);
@@ -144,18 +160,23 @@ namespace pmfe {
         structure.mark_pair(i, j);
 
         if (Vij == a ) {
-            score.energy += eH(i, j, seq);
+            mpq_class loop = eH(i, j, seq);
+            score.energy += loop;
+            BOOST_LOG_TRIVIAL(debug) << "Hairpin (" << i << ", " << j << ") with energy " << loop.get_d();
             return Vij;
         } else if (Vij == b) {
-            score.energy += eS(i, j, seq);
+            mpq_class loop = eS(i, j, seq);
+            score.energy += loop;
+            BOOST_LOG_TRIVIAL(debug) << "Stack (" << i << ", " << j << ") with energy " << loop.get_d();
             traceV(i+1, j-1, seq, structure, score);
             return Vij;
         } else if (Vij == c) {
             traceVBI(i, j, seq, structure, score);
             return Vij;
         } else if (Vij == d) {
-            mpq_class eVM = traceVM(i, j, seq, structure, score);
-            score.energy += (Vij-eVM);
+            mpq_class loop = Vij - traceVM(i, j, seq, structure, score);
+            score.energy += loop;
+            BOOST_LOG_TRIVIAL(debug) << "Multiloop (" << i << ", " << j << ") with energy " << loop.get_d();
             return Vij;
         }
 
@@ -182,7 +203,10 @@ namespace pmfe {
             if (jp != j) break;
         }
 
-        score.energy += eL(i, j, ifinal, jfinal, seq);
+        mpq_class loop = eL(i, j, ifinal, jfinal, seq);
+        score.energy += loop;
+
+        BOOST_LOG_TRIVIAL(debug) << "IntLoop (" << i << ", " << j << ") with energy " << loop.get_d();
 
         return traceV(ifinal, jfinal, seq, structure, score);
     }

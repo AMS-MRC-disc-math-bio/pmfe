@@ -12,6 +12,11 @@
 #include "boost/filesystem.hpp"
 #include "boost/program_options.hpp"
 
+#define BOOST_LOG_DYN_LINK 1 // Fix an issue with dynamic library loading
+#include <boost/log/core.hpp>
+#include <boost/log/trivial.hpp>
+#include <boost/log/expressions.hpp>
+
 namespace po = boost::program_options;
 namespace fs = boost::filesystem;
 
@@ -20,6 +25,7 @@ int main(int argc, char * argv[]) {
     po::options_description desc("Options");
     desc.add_options()
         ("sequence", po::value<std::string>()->required(), "Sequence file")
+        ("verbose,v", po::bool_switch()->default_value(false), "Write verbose debugging output")
         ("outfile,o", po::value<std::string>(), "Output file")
         ("dangle-model,m", po::value<int>()->default_value(1), "Dangle model")
         ("num-threads,t", po::value<int>()->default_value(0), "Number of threads")
@@ -41,6 +47,16 @@ int main(int argc, char * argv[]) {
     // Set up thread pool
     size_t num_threads = (vm["num-threads"].as<int>());
     pmfe::SimpleThreadPool thread_pool(num_threads);
+
+        // Process logging-related options
+    bool verbose = vm["verbose"].as<bool>();
+    if (verbose) {
+        boost::log::core::get()->set_filter(
+            boost::log::trivial::severity >= boost::log::trivial::debug);
+    } else {
+        boost::log::core::get()->set_filter
+            (boost::log::trivial::severity >= boost::log::trivial::warning);
+    }
 
     // Set up dangle model
     pmfe::dangle_mode dangles = pmfe::convert_to_dangle_mode(vm["dangle-model"].as<int>());

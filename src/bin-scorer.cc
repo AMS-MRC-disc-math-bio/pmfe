@@ -11,6 +11,11 @@
 #include "boost/filesystem.hpp"
 #include "boost/program_options.hpp"
 
+#define BOOST_LOG_DYN_LINK 1 // Fix an issue with dynamic library loading
+#include <boost/log/core.hpp>
+#include <boost/log/trivial.hpp>
+#include <boost/log/expressions.hpp>
+
 namespace po = boost::program_options;
 namespace fs = boost::filesystem;
 
@@ -20,6 +25,7 @@ int main(int argc, char * argv[]) {
     desc.add_options()
         ("sequence", po::value<std::string>()->required(), "Sequence file")
         ("structure", po::value<std::string>()->required(), "Secondary structure in dots-and-braces notation")
+        ("verbose,v", po::bool_switch()->default_value(false), "Write verbose debugging output")
         ("multiloop-penalty,a", po::value<std::string>(), "Multiloop penalty parameter")
         ("unpaired-penalty,b", po::value<std::string>(), "Unpaired base penalty parameter")
         ("branch-penalty,c", po::value<std::string>(), "Branching helix penalty parameter")
@@ -45,6 +51,16 @@ int main(int argc, char * argv[]) {
 
     // Process thread-related options
     size_t num_threads = (vm["num-threads"].as<int>());
+
+    // Process logging-related options
+    bool verbose = vm["verbose"].as<bool>();
+    if (verbose) {
+        boost::log::core::get()->set_filter(
+            boost::log::trivial::severity >= boost::log::trivial::debug);
+    } else {
+        boost::log::core::get()->set_filter
+            (boost::log::trivial::severity >= boost::log::trivial::warning);
+    }
 
     // Process structure-related options
     fs::path seq_file(vm["sequence"].as<std::string>());

@@ -10,6 +10,11 @@
 #include "pmfe_types.h"
 #include "subopt.h"
 
+#define BOOST_LOG_DYN_LINK 1 // Fix an issue with dynamic library loading
+#include <boost/log/core.hpp>
+#include <boost/log/trivial.hpp>
+#include <boost/log/expressions.hpp>
+
 namespace fs = boost::filesystem;
 namespace po = boost::program_options;
 
@@ -18,6 +23,7 @@ int main(int argc, char* argv[]) {
     po::options_description desc("Options");
     desc.add_options()
         ("sequence", po::value<std::string>()->required(), "Sequence file")
+        ("verbose,v", po::bool_switch()->default_value(false), "Write verbose debugging output")
         ("outfile,o", po::value<std::string>(), "Output file")
         ("delta", po::value<std::string>()->default_value("0"), "Energy delta value")
         ("multiloop-penalty,a", po::value<std::string>(), "Multiloop penalty parameter")
@@ -42,6 +48,19 @@ int main(int argc, char* argv[]) {
 
     po::notify(vm);
 
+    // Process thread-related options
+    size_t num_threads = (vm["num-threads"].as<int>());
+
+    // Process logging-related options
+    bool verbose = vm["verbose"].as<bool>();
+    if (verbose) {
+        boost::log::core::get()->set_filter(
+            boost::log::trivial::severity >= boost::log::trivial::debug);
+    } else {
+        boost::log::core::get()->set_filter
+            (boost::log::trivial::severity >= boost::log::trivial::warning);
+    }
+
     // Process file-related options
     fs::path seq_file(vm["sequence"].as<std::string>());
     fs::path out_file;
@@ -53,7 +72,6 @@ int main(int argc, char* argv[]) {
     }
 
     // Set up the parameters
-    size_t num_threads = (vm["num-threads"].as<int>());
     mpq_class delta = pmfe::get_mpq_from_word(vm["delta"].as<std::string>());
 
     pmfe::ParameterVector params = pmfe::ParameterVector();
