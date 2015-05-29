@@ -18,11 +18,11 @@ This will download the code and extract it into a directory called `iB4e-GTfold-
 This project depends on the [CGAL][cgal] computational geometry library, several libraries from the [Boost][boost] project, and the [GMP][gmp] arbitrary-precision arithmetic library.
 To install the required dependencies on a Debian system, run
 
-    sudo apt-get install libgmp-dev libboost-filesystem-dev libboost-program-options-dev libboost-python-dev libcgal-dev
+    sudo apt-get install libgmp-dev libboost-filesystem-dev libboost-program-options-dev libboost-log-dev libcgal-dev
 
 To install the required dependencies on OSX using Homebrew, run
 
-    sudo brew install boost boost-python cgal gmp
+    sudo brew install boost cgal gmp
 
 This project also depends on the [Catch][catch] unit testing library.
 It has been included here under the terms of the Boost Software License.
@@ -73,16 +73,6 @@ The result will be saved in `test_data/test_tRNA.rnapoly`, which can be read dir
 
 ### `pmfe-tests`
 The `pmfe-tests` program runs a suite of unit tests.
-
-## Python interface
-
-The project also includes a Python testing interface called `pyparam`.
-To use it, just run the following from your favorite Python shell or Sage:
-
-    import pyparam
-
-You can now construct `pyparam.ParameterVector` and `pyparam.ScoreVector` objects (representing folding parameters and structure scores respectively), as well as call the `pyparam.get_mfe_score()` method to run `pmfe` (our modified `gtmfe`) on a sequence of your choice.
-See the files `pyparam/example.*.py` for examples of how to use these methods.
 
 ## iB4e
 

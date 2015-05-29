@@ -17,7 +17,7 @@ TEST_CASE("A. tabira 5S MFE", "[mfe][biological][atabira][5S]") {
     pmfe::SimpleThreadPool thread_pool;
 
     // Load the sequence
-    fs::path seqfile("test_seq/a.tabira_5S.fasta");
+    fs::path seqfile("test_seq/5S/a.tabira_5S.fasta");
     pmfe::RNASequence seq(seqfile);
 
     // Some basic sanity checks
@@ -45,7 +45,7 @@ TEST_CASE("C. diphtheriae tRNA MFE", "[mfe][biological][cdiphtheriae][tRNA]") {
     pmfe::SimpleThreadPool thread_pool;
 
     // Load the sequence
-    fs::path seqfile("test_seq/c.diphtheriae_tRNA.fasta");
+    fs::path seqfile("test_seq/tRNA/c.diphtheriae_tRNA.fasta");
     pmfe::RNASequence seq(seqfile);
 
     // Some basic sanity checks
@@ -73,7 +73,7 @@ TEST_CASE("D. mobilis 5S MFE", "[mfe][biological][dmobilis][5S]") {
     pmfe::SimpleThreadPool thread_pool;
 
     // Load the sequence
-    fs::path seqfile("test_seq/d.mobilis_5S.fasta");
+    fs::path seqfile("test_seq/5S/d.mobilis_5S.fasta");
     pmfe::RNASequence seq(seqfile);
 
     // Some basic sanity checks
@@ -101,7 +101,7 @@ TEST_CASE("E. coli 5S MFE", "[mfe][biological][ecoli][5S]") {
     pmfe::SimpleThreadPool thread_pool;
 
     // Load the sequence
-    fs::path seqfile("test_seq/e.coli_5S.fasta");
+    fs::path seqfile("test_seq/5S/e.coli_5S.fasta");
     pmfe::RNASequence seq(seqfile);
 
     // Some basic sanity checks
@@ -129,7 +129,7 @@ TEST_CASE("G. arboreum 5S MFE", "[mfe][biological][garboreum][5S]") {
     pmfe::SimpleThreadPool thread_pool;
 
     // Load the sequence
-    fs::path seqfile("test_seq/g.arboreum_5S.fasta");
+    fs::path seqfile("test_seq/5S/g.arboreum_5S.fasta");
     pmfe::RNASequence seq(seqfile);
 
     // Some basic sanity checks
@@ -157,7 +157,7 @@ TEST_CASE("H. sapiens tRNA MFE", "[mfe][biological][hsapiens][tRNA]") {
     pmfe::SimpleThreadPool thread_pool;
 
     // Load the sequence
-    fs::path seqfile("test_seq/h.sapiens_tRNA.fasta");
+    fs::path seqfile("test_seq/tRNA/h.sapiens_tRNA.fasta");
     pmfe::RNASequence seq(seqfile);
 
     // Some basic sanity checks
@@ -185,7 +185,7 @@ TEST_CASE("L. delbrueckii tRNA MFE", "[mfe][biological][ldelbrueckii][tRNA]") {
     pmfe::SimpleThreadPool thread_pool;
 
     // Load the sequence
-    fs::path seqfile("test_seq/l.delbrueckii_tRNA.fasta");
+    fs::path seqfile("test_seq/tRNA/l.delbrueckii_tRNA.fasta");
     pmfe::RNASequence seq(seqfile);
 
     // Some basic sanity checks
@@ -213,7 +213,7 @@ TEST_CASE("O. nivara tRNA MFE", "[mfe][biological][onivara][tRNA]") {
     pmfe::SimpleThreadPool thread_pool;
 
     // Load the sequence
-    fs::path seqfile("test_seq/o.nivara_tRNA.fasta");
+    fs::path seqfile("test_seq/tRNA/o.nivara_tRNA.fasta");
     pmfe::RNASequence seq(seqfile);
 
     // Some basic sanity checks
@@ -241,7 +241,7 @@ TEST_CASE("R. norvegicus 5S MFE", "[mfe][biological][rnorvegicus][5S]") {
     pmfe::SimpleThreadPool thread_pool;
 
     // Load the sequence
-    fs::path seqfile("test_seq/r.norvegicus_5S.fasta");
+    fs::path seqfile("test_seq/5S/r.norvegicus_5S.fasta");
     pmfe::RNASequence seq(seqfile);
 
     // Some basic sanity checks
@@ -269,7 +269,7 @@ TEST_CASE("S. tokodaii tRNA MFE", "[mfe][biological][stokodaii][tRNA]") {
     pmfe::SimpleThreadPool thread_pool;
 
     // Load the sequence
-    fs::path seqfile("test_seq/s.tokodaii_tRNA.fasta");
+    fs::path seqfile("test_seq/tRNA/s.tokodaii_tRNA.fasta");
     pmfe::RNASequence seq(seqfile);
 
     // Some basic sanity checks
@@ -292,12 +292,320 @@ TEST_CASE("S. tokodaii tRNA MFE", "[mfe][biological][stokodaii][tRNA]") {
     }
 }
 
+TEST_CASE("A. suum 16S MFE", "[mfe][biological][asuum][16S]") {
+    // Build the thread pool
+    pmfe::SimpleThreadPool thread_pool;
+
+    // Load the sequence
+    fs::path seqfile("test_seq/16S/a.suum_16S.fasta");
+    pmfe::RNASequence seq(seqfile);
+
+    // Some basic sanity checks
+    REQUIRE(seq.len() == 701);
+
+    SECTION("Turner99 published parameters") {
+        pmfe::Turner99 constants(thread_pool);
+        pmfe::NNTM energy_model(constants, pmfe::CHOOSE_DANGLE, thread_pool);
+
+        pmfe::RNASequenceWithTables seq_annotated = energy_model.energy_tables(seq);
+
+        mpq_class energy = energy_model.minimum_energy(seq_annotated);
+
+        REQUIRE(energy == mpq_class(-149));
+
+        pmfe::RNAStructureWithScore scored_structure = energy_model.mfe_structure(seq_annotated);
+
+        REQUIRE(scored_structure.old_string() ==
+                "..((((.....))))...(((((((((((..............((((((..((.....))..))))))))))))))))).........((.(((((((....((((((..(((((..(((((.((((((((((((((......(((((.((((.((((......)))).)))).)))))(((..(((((..((((((...((.((((((....((((((((..(((((.........)))))..))))))))....)))))).)).......((((((........))))))..)))))).)))))..))).))))))))))).))).)))))..))))).....((((.((((((((((...(((..(((((..(((.((...((((....))))...))..(((((((.(((.((.((.((((....(((((((((.....((.(((..((((.((......)).))))..))).)))))))))))..)))).)))).)))))))))).....)))..))))......((((.((((.((.(((((((((....))))))).....)).)).)))).))))...................)..)))...))))))))))((..........))......)))).))))))....))))))).))..(.((((((((((....)))))))))).).....");
+    }
+}
+
+TEST_CASE("B. bigemina 16S MFE", "[mfe][biological][bbigemina][16S]") {
+    // Build the thread pool
+    pmfe::SimpleThreadPool thread_pool;
+
+    // Load the sequence
+    fs::path seqfile("test_seq/16S/b.bigemina_16S.fasta");
+    pmfe::RNASequence seq(seqfile);
+
+    // Some basic sanity checks
+    REQUIRE(seq.len() == 1701);
+
+    SECTION("Turner99 published parameters") {
+        pmfe::Turner99 constants(thread_pool);
+        pmfe::NNTM energy_model(constants, pmfe::CHOOSE_DANGLE, thread_pool);
+
+        pmfe::RNASequenceWithTables seq_annotated = energy_model.energy_tables(seq);
+
+        mpq_class energy = energy_model.minimum_energy(seq_annotated);
+
+        REQUIRE(energy == mpq_class(-573));
+
+        pmfe::RNAStructureWithScore scored_structure = energy_model.mfe_structure(seq_annotated);
+
+        REQUIRE(scored_structure.old_string() ==
+                "(((......((((..(((((((((((((((.((.(((((.((.((((.....)))).)).))))).....((.((((((......(((((((((..((((((..(((..(((((((((..((((((.(((((......))))).))).))).....))))))).(((((((((......((..(((....)))..))..)))))))))................((((((((.(((.....))).))))))))..))..)))..)))))).)))))).))).....))))))))....)).))))))).(((((((((.(((((((((.....(((((((........((((..((((((((((........)))).)).).)))..))))(((.((.(((((....((((((...(((((...))))).))))))...................((((((..(((((.(((((((.((..((((((.(.....).))))))..)).))))))).))))))))))).))))).)).)))....))))))).(((.....))).........))))))))).(((......((((.(((........((((..(((......(((.......)))......))).))))........))).)))).......(((((((.(((((((....))).))))))))))).)))..((((((((((((((((((....))))))))))))).)))))..))))))))).((((((((..(((((......(((((((((.((((((.(((.((((......)))).)))..)))))).)))))....(((....)))..)))).....)))))..))))))))..(((....)))..)))))))).(((..((((((..(((((((.((((..(((..((((.....((((.((..(((((((..(((.......))).)))))))..))....((....))..))))....)))).))).)))).))))).))...))))))......(((((((..(.((((((((.((..(((((.....))))).)).((((((((.........((....))......(((((..((...))..)))))..))))))))..)))))))))..)))))))(((((((((((((.(((.((..((((((((..(.((.....((((.(((.....((....))))).))))....)))..))))))))..))..((((((..(((((((.(((..(((((.....((((..(((.....)))..))))..((((((((((...(((....)))..)).))))))))...)))))..))).((((((((....((((....)))).((.((..((...(((....)))..))..)).)).)))))))).(((((...(((((((.......)))))))....))))))))))))..........(((((((((.....)))))))))....))))))..)))...))))).))))))))....(((((.((....(((((((..(((..((....(...((..(((....((((....))))....)))..))...)....))..)))..)))))))...)).)))))..)))......))))(((((((((....)))))))))...)))...");
+    }
+}
+
+TEST_CASE("C. elegans 16S MFE", "[mfe][biological][celegans][16S]") {
+    // Build the thread pool
+    pmfe::SimpleThreadPool thread_pool;
+
+    // Load the sequence
+    fs::path seqfile("test_seq/16S/c.elegans_16S.fasta");
+    pmfe::RNASequence seq(seqfile);
+
+    // Some basic sanity checks
+    REQUIRE(seq.len() == 697);
+
+    SECTION("Turner99 published parameters") {
+        pmfe::Turner99 constants(thread_pool);
+        pmfe::NNTM energy_model(constants, pmfe::CHOOSE_DANGLE, thread_pool);
+
+        pmfe::RNASequenceWithTables seq_annotated = energy_model.energy_tables(seq);
+
+        mpq_class energy = energy_model.minimum_energy(seq_annotated);
+
+        REQUIRE(energy == mpq_class(-285, 2));
+
+        pmfe::RNAStructureWithScore scored_structure = energy_model.mfe_structure(seq_annotated);
+
+        REQUIRE(scored_structure.old_string() ==
+                "...((((..(.....)..)))).......(((((.((((((.((((((..........)))))))))))))))))..........(((((....(((..(((.(((((((....((((....(((..(((((((((..(((((.(((..((..((....))..))..((((((.(((.((((((((((((((((((..........((((((((..........))))))))...))))))..)))))))))..))).))).))))))...))).)))))....))))...)))))..)))....)))).(((......(((((((....(((..((....))..)))...(((((.((.(((((..(((((..(((.((...((((....)))).......(((((.((...(((.((.(((((...((((((((((...(((((((((.........))))))))).....)))))))))).))))).)))))...)).)))))..)))))..)))..........(((((((.(((((((...(((((....)))))....(((((.....)))))..))))))).)))))))..))..))))).)).)))))..)))))))....)))...)))))))...)))..)))..))))).....(.((((((((((....)))))))))).)....");
+    }
+}
+
+TEST_CASE("E. cuniculu 16S MFE", "[mfe][biological][ecuniculi][16S]") {
+    // Build the thread pool
+    pmfe::SimpleThreadPool thread_pool;
+
+    // Load the sequence
+    fs::path seqfile("test_seq/16S/e.cuniculi_16S.fasta");
+    pmfe::RNASequence seq(seqfile);
+
+    // Some basic sanity checks
+    REQUIRE(seq.len() == 1295);
+
+    SECTION("Turner99 published parameters") {
+        pmfe::Turner99 constants(thread_pool);
+        pmfe::NNTM energy_model(constants, pmfe::CHOOSE_DANGLE, thread_pool);
+
+        pmfe::RNASequenceWithTables seq_annotated = energy_model.energy_tables(seq);
+
+        mpq_class energy = energy_model.minimum_energy(seq_annotated);
+
+        REQUIRE(energy == mpq_class(-487));
+
+        pmfe::RNAStructureWithScore scored_structure = energy_model.mfe_structure(seq_annotated);
+
+        REQUIRE(scored_structure.old_string() ==
+                "........(((((((((.(((.((...(((.((((((((((((((((.....(((((((.((((((..(..((((....((((((((.((((((....)))..))).)))))))).....((.((.((.((((((....)))))).)).)).))..))))..))))))).)))))))..(((((..((..((.((...((((((((.......))))))))...)).))..)).)))))........))))))))))))))))((.((((((...(((((.(((((((((((.(.(..((.(((.(((((..((((((((..(((....))))))).........))))..))))).)))..(..((((((.((((((...(((((..(((((..(..(.(((.((((.((((.(((((((...........)))).))).)))).))))))).)..)..))))).)))))...)))).)).))))))..)............))..).).)))))))))))..(((((((.((((((((.((((((((.(((...((.(.(....).).))..(((....((((.((.((.((.(((((((((..(((..((((((.(((((((.(((.(......))))...((.((...(((((....)))))...))))...))))))).)).))))......)))...(((((((.((.....)).)))))))......((((...((((((...(((((..((((((..((((....))))...))).......)))..))))).....((((.....)))).(((((((((((.......((((.(.(((((((.....((.((((((.((((((((...((((.((((.(((..(....(((((.(((...))).)))))......)..))).)))).)))).((((((.....(....)...))))))........)))))))).))))))..)).(((..((........))..)))....))))))).).))))..)))))))))))))))))...))))..))))))))).)))))).))))..((((((.(....).))))))....))).....))).......(((((((.....)))))))......)))))))))))))))))))))))...)))))..(((((.(..((((((.(.((((..(((((....)))))..)))).).))))))..).)))))..........)).)))).))..)))....)).))))))))))))...");
+    }
+}
+
+TEST_CASE("E. hexamita 16S MFE", "[mfe][biological][ehexamita][16S]") {
+    // Build the thread pool
+    pmfe::SimpleThreadPool thread_pool;
+
+    // Load the sequence
+    fs::path seqfile("test_seq/16S/e.hexamita_16S.fasta");
+    pmfe::RNASequence seq(seqfile);
+
+    // Some basic sanity checks
+    REQUIRE(seq.len() == 1550);
+
+    SECTION("Turner99 published parameters") {
+        pmfe::Turner99 constants(thread_pool);
+        pmfe::NNTM energy_model(constants, pmfe::CHOOSE_DANGLE, thread_pool);
+
+        pmfe::RNASequenceWithTables seq_annotated = energy_model.energy_tables(seq);
+
+        mpq_class energy = energy_model.minimum_energy(seq_annotated);
+
+        REQUIRE(energy == mpq_class(-2824, 5));
+
+        pmfe::RNAStructureWithScore scored_structure = energy_model.mfe_structure(seq_annotated);
+
+        REQUIRE(scored_structure.old_string() ==
+                "...(((((.......)))))...(((..(((((((((........((((.((((((((..((((.((((..(((....)))..(((((((((((..((((...((....))))))..)))).......))))))).)))).))))(((((((((.((.....((((((......))).(((((((...((((((...(((((.(.....(((.(((.(((.(((.....(((((((((((...((((.(((((((.((....(((((((((.....(((((((....(((((..(((...((..((((((.(((......))).....((((((.((.....))))))))))))))..))..(((.((.(((((.(..((((((...(((((....))))).))))))..)............((((((....)))))).....(((..((((((.(......)))))))...(((.....)))....)))...))))).)).))))))..))))).......))))))))))))))))..)).))).))))..)))))))).)))...(((((((((((((..((((((((.....)))))))).(((((...((....))((((.......))))....)))))...(((((((((....))))))))).((.......((((((((...((((((.((.(((((((((...................))))))))).))........((....)).))))))..))))))))..(((((((((((((....((((((((..(((((............)))))..))))))))......(((((((.....(((.(((((((....))))))).)))...((....)).((((((((((.(..((.((.........)).))..)))))))))))..)))))))......((((.((((.....)))).))))...))))...))))).))))............)).(.((((((((.((((.((.((((((((((....(((....((((((.((((((.((((..(((((.((.((.....))..)).))))).)))).)))))).))))))..)))..((.((((((((((((((.....)))))...(((((((.....))))).))....)))))).))).)).)))))))..))))).)))))).)))))).)..((((...((((.((((((((..((((.((..(((.(((....)))..)))....))))))....)))))))).)))).((((.......(((...(((((((....)))))))..)))....)))).)))).....)))))))))))))..))))...))).))).))))))).))))))))))))))))))....))).....)).)))))))))..............)))))))).((..((((.(...(((((.....))).))..).)))).)).......))))((((((((....))))))))..)))).))))))))");
+    }
+}
+
+TEST_CASE("G. ardaea 16S MFE", "[mfe][biological][gardaea][16S]") {
+    // Build the thread pool
+    pmfe::SimpleThreadPool thread_pool;
+
+    // Load the sequence
+    fs::path seqfile("test_seq/16S/g.ardaea_16S.fasta");
+    pmfe::RNASequence seq(seqfile);
+
+    // Some basic sanity checks
+    REQUIRE(seq.len() == 1435);
+
+    SECTION("Turner99 published parameters") {
+        pmfe::Turner99 constants(thread_pool);
+        pmfe::NNTM energy_model(constants, pmfe::CHOOSE_DANGLE, thread_pool);
+
+        pmfe::RNASequenceWithTables seq_annotated = energy_model.energy_tables(seq);
+
+        mpq_class energy = energy_model.minimum_energy(seq_annotated);
+
+        REQUIRE(energy == mpq_class(-7619, 10));
+
+        pmfe::RNAStructureWithScore scored_structure = energy_model.mfe_structure(seq_annotated);
+
+        REQUIRE(scored_structure.old_string() ==
+                "..(((..(.((.((((((.((((((..((..((((((..(....)..(((.(((.(((....)))))).)))...))))))..))..........((..((.(.(((.(((.(((((((..(((..(((((((..((((((....))))))....(((..((((....)))).((.(.((.((((.((((((((........((((.((((..(((((((((.....(((.((((((((.......)))))))))))......((.(((((..(((((....((((((((((((..(((((((........)))))))...)))......((..(((((.......))))))).(((((.(((((.....((.((.(((...((((((((...))))))))..))).))))...))))).)))))))))))))).....)))))..))))))).))))))).))..))))..))))..)))))))))))).)).).)).))).....)))))))))).))))))).))).))).).))..))..))))))..)))))).)))..)))..(((.((.((((.(((.(.(..(((.((((((((((..((((((((...(((((((((.................))))....)))))(((((.((((((((((..(((((..((((((((..(((.(((((..((((((((..(.((((((.((..(.((((((((....((((.(((....(((((((.((((((.(((((.((((..(((..((....))...)))..).))).))))).)))))).((((.(((((....)))))..))))...)))))))(((((((.(((((..(((((.....)))))(((((....(((((((..((((..(.(((....)))...)..))))..)))..)))).)))))))))).)))))))...))).))))))))))))))).))).))).).((.((((((....)))(((.((......))))).))).))....))))))))...((((....))))..)))).).)))..))))))))...(((((.(.......).)))))...))))))))))).)))).))))).)).))))))(((.(((((((...(((.((((.(((((....))))).))).).)))....)))))))))).(((((.(((((((..((....))))))))).)))))..(((((....(((((((((.....)))))))))))))).)))))))))))))...).).)))))))...(((((.((..(..(((((((.(((..(((.(((...((.....))...))).)))..))).)))))))..).)).)))))..)).)))...(((((((((((((....))))))))))....)))..");
+    }
+}
+
+TEST_CASE("G. intestinalis 16S MFE", "[mfe][biological][gintestinalis][16S]") {
+    // Build the thread pool
+    pmfe::SimpleThreadPool thread_pool;
+
+    // Load the sequence
+    fs::path seqfile("test_seq/16S/g.intestinalis_16S.fasta");
+    pmfe::RNASequence seq(seqfile);
+
+    // Some basic sanity checks
+    REQUIRE(seq.len() == 1452);
+
+    SECTION("Turner99 published parameters") {
+        pmfe::Turner99 constants(thread_pool);
+        pmfe::NNTM energy_model(constants, pmfe::CHOOSE_DANGLE, thread_pool);
+
+        pmfe::RNASequenceWithTables seq_annotated = energy_model.energy_tables(seq);
+
+        mpq_class energy = energy_model.minimum_energy(seq_annotated);
+
+        REQUIRE(energy == mpq_class(-8027, 10));
+
+        pmfe::RNAStructureWithScore scored_structure = energy_model.mfe_structure(seq_annotated);
+
+        REQUIRE(scored_structure.old_string() ==
+                ".....((..(((((.(((...((((.(..(((((((((..(.((.((((......((((((((...((((..(((((((.(((((((((...((.(((((.......))))).)).))))..)))))....))))).))..))))((((((.....)).))))..)))))))).(((..(((((.((.(((.(((((.(((.(((((.(((((..((((((((((.....((....))....(((((((((((((..(((((....((((((.(..((((....))))..(((((((..(((((((........)))))))...)))..((.((((....((((((((.(((((((..(((((...))))).(((..((.(((....(((....))).((.((((.....)))))).)))))..)))..))))))).))).)))))..((((..(((......(((((((((.((((((....)))))))))).)))))......)))..)))).......))))))....(....).))))..).)))))).)))))...((.(((((.(((((....))))).)))))))))))))))))))).)))))).))))..)))))((((((((((....((((((((((..((((.....(..(((((((....((.((.((((((..((((....))))......((((..((.....))..))))..)))))).))))....)).)))))..)..))))...))))))))))....))))))).)))...))))).)))..))))).)))..))))))).((....))))).)))).))..)..)))))))))..).).)))..))).....((((..(((...((((((((((((....((((....((((.....))))..)))).......(((((..(((....))).((((.(((((((.((.......((((((..((((((((((((.(.(((((((((.((((((((..((.....)))))).))))..))))))))).).)))))))....)))))....)))))).(((((((((((((((((.(((((....)))))...(((((((((........(.((((((.((.((((....(((...)))....((((((((...(((((...)))))..)))))))).)))).)))))))).))))))))))..((.((..((((((..((....))))))))..)).))..)))))))).)))))))))..)).))))))))))).)))))...)))))))............))))).(((((.((..(..(((((((.(((..((((((((......))..))).)))..))).)))))))..).)).)))))..)))....))))....((((((((....)))))))).)))))))..");
+    }
+}
+
+TEST_CASE("G. muris 16S MFE", "[mfe][biological][gmuris][16S]") {
+    // Build the thread pool
+    pmfe::SimpleThreadPool thread_pool;
+
+    // Load the sequence
+    fs::path seqfile("test_seq/16S/g.muris_16S.fasta");
+    pmfe::RNASequence seq(seqfile);
+
+    // Some basic sanity checks
+    REQUIRE(seq.len() == 1432);
+
+    SECTION("Turner99 published parameters") {
+        pmfe::Turner99 constants(thread_pool);
+        pmfe::NNTM energy_model(constants, pmfe::CHOOSE_DANGLE, thread_pool);
+
+        pmfe::RNASequenceWithTables seq_annotated = energy_model.energy_tables(seq);
+
+        mpq_class energy = energy_model.minimum_energy(seq_annotated);
+
+        REQUIRE(energy == mpq_class(-582));
+
+        pmfe::RNAStructureWithScore scored_structure = energy_model.mfe_structure(seq_annotated);
+
+        REQUIRE(scored_structure.old_string() ==
+                "(((((((....((((((..(((((((..((((((((..((......(((((((...((....))..)).....)))))....((((((.(((....)))))))))...)).)))))...))).....((....((((((....))))))))......)))))))....)))))).......((((((......)))..))))))))))....(((((((((((((((..((.(((((.......))))).)).))).))))))))..))))(((((...((((((((((.....(((((((........)))))))...((((((...((((.(((((.((....(((((..((((......))))..)))))...)).....((((.(((..((......((((((.........))))))..))..))).))))...))))).))))......((((((......((((((((((.((((....)))))))))).))))....(((((....(((...(((((..(((((((.....(((((((.....(((((.((((((((((....((((((((.((..(((........)))..(((((((((.....(((((.(((...................))).))))).((((((...(..((..((.((..((....((((..........(((((...(((((.(.((((..((((((.((..(.((((((((.......((((.....(((((((.((.((((.((((((.((((.....))))...((....))......))).))).)))).))..((((.(((((....)))))..))))...)))))))..((..((((.......(.(((.(((((.............))))).))))....))))..))..))))...(((((((.....(((.((((.....)))).)))...)))))))..))))))))))).))).)))...)))).)))))).....(((((((((..........))))).)))).....)))))))))..((.(((((.....))))).))..))..)))).))..)..)))))).)))))))))..)).)))))))).....)))))).))))((((((.(((...(.(((((((((....))))))))).).)))..))))))..(((.((((.((((.((((((...(((..(....)..)))...)))))).(((((((((.....)))))))))...)))))))).)))...........)))))...)))))))..((.(..((...))..)))..)))))))...)))))...)))....))))).))))))...))))))....)))...)))).)))....((((((((((....)))))))))))))))....");
+    }
+}
+
+TEST_CASE("H. volcanii 16S MFE", "[mfe][biological][hvolcanii][16S]") {
+    // Build the thread pool
+    pmfe::SimpleThreadPool thread_pool;
+
+    // Load the sequence
+    fs::path seqfile("test_seq/16S/h.volcanii_16S.fasta");
+    pmfe::RNASequence seq(seqfile);
+
+    // Some basic sanity checks
+    REQUIRE(seq.len() == 1474);
+
+    SECTION("Turner99 published parameters") {
+        pmfe::Turner99 constants(thread_pool);
+        pmfe::NNTM energy_model(constants, pmfe::CHOOSE_DANGLE, thread_pool);
+
+        pmfe::RNASequenceWithTables seq_annotated = energy_model.energy_tables(seq);
+
+        mpq_class energy = energy_model.minimum_energy(seq_annotated);
+
+        REQUIRE(energy == mpq_class(-687));
+
+        pmfe::RNAStructureWithScore scored_structure = energy_model.mfe_structure(seq_annotated);
+
+        REQUIRE(scored_structure.old_string() ==
+                ".....(((.(((((.......((((((..((.(((((((((......(((.((((..((((((((((....)))))).))))....(((.......((..((((......(((((((.((((..((.((((((....)))))).))...))))....(((((((..((......)).))))))).....(((....))))))))))...))))..))(((((((((((..((((((((.......)))))))))))..)))))))).((((((((....)))...)))))))).((((((((......)))))))).((((....))))..)))))))......((((.....(((((....)))))..)))))))))))))..((((((((.....)))))))).(((((((((((.....)))))))))))...((((((.......((((((...((((...))))..)))))))))))).))..))))))...........((((....(((((.(.((((((((((..(((((((((((...((((((((.....))))))))..))))))))..))).))))))...((((((.....((((((((((.((((((((((.(((......)))....)))))))))).))).......((....)).)))))))....))).)))..)))).).)))))..((((((((.((....((((.........))))..))))))))))....((((((((((((.((((..((((((((.....))))))))..))))...((....))....)))))))..(((...((((.(((((....)))))..))))..)))....((((((((((((....(((((.((....)).))))).....((((....(((((.((.(((..(((((((...((((((((.((..(((.(((((...))))).))).)).))))))))...((.((((..((((((((((..((((((.((....)).(.((((......))))).))))))..(.((((..(((((((((((((((..((((....))))))).)))).))))))))..((.(((((.....))))).))......))))).))))).)))))...))))))....))))))).......(((((((((.(((((((((.....(((((((..((((....))))..)).)))))......))))))))).((((((..(((((((........))))))).....))))))...)))))..))))........))))).))))).....)))).)))))))........))))).....((((.(((..(((((((((((((..(((((((....)))))))..)))))))))))))..))).))))..)))))....)))).((((((((....)))))))).)))))))).....");
+    }
+}
+
+TEST_CASE("V. necatrix 16S MFE", "[mfe][biological][vnecatrix][16S]") {
+    // Build the thread pool
+    pmfe::SimpleThreadPool thread_pool;
+
+    // Load the sequence
+    fs::path seqfile("test_seq/16S/v.necatrix_16S.fasta");
+    pmfe::RNASequence seq(seqfile);
+
+    // Some basic sanity checks
+    REQUIRE(seq.len() == 1244);
+
+    SECTION("Turner99 published parameters") {
+        pmfe::Turner99 constants(thread_pool);
+        pmfe::NNTM energy_model(constants, pmfe::CHOOSE_DANGLE, thread_pool);
+
+        pmfe::RNASequenceWithTables seq_annotated = energy_model.energy_tables(seq);
+
+        mpq_class energy = energy_model.minimum_energy(seq_annotated);
+
+        REQUIRE(energy == mpq_class(-1628, 5));
+
+        pmfe::RNAStructureWithScore scored_structure = energy_model.mfe_structure(seq_annotated);
+
+        REQUIRE(scored_structure.old_string() ==
+                "........((((((((((((((((...((((....(((.........(((.(((((((((((.((((((......(((((((((((.((((.((((((.(((((....)))))..(((((.((((((....(((....(((....(((((((..((...((((.(((..((((((..((((((((.......)))))))))))..)))..)))...(((((((((((.((....(((......)))((((.(((.....(((.((.(((.(((..((((.......))))..)))))).)))))......))).)))).....)).)))))))))))........))))....))...)))))))..)))....))).(..((((.......))))..)...)))))).))))).......)))))).))))....))))).))))))......)))))).......(((((((((..((((.((((((((.((.((((..((.....................))..)))).)).......(((....)))))))))))))))...))))))))))))))))))..))))))))))))...))).)))).......((...((((((((((((.(((((...(((((.(((((...)))))..((((((((((...........(((((....)))))...(((((((..((((....))))................(((((.......((....)).((((...(((((((((((..((.((....((..(((....(((((.((((((((((..(((.(.....)..)))..)))))).)))).)))))....)))......(((((((.((((..............((((((......)))))).((((((.((..((.((.((.....)).)).))..)).))))))......)))))))))))..))....)).))..)))))))))))......(((((..........((((((((..(.......)..)).))))))....((((..(((..(((.....(((((((((.....)))))))))....))))))..)))).)))))....))))))))))))))))....(((((((((((((..((.((((....)))).))..))))))))))))).)))))))))).)))))..)))))))))))))))))...))...)))))))))...");
+    }
+}
+
+TEST_CASE("Z. mays 16S MFE", "[mfe][biological][zmays][16S]") {
+    // Build the thread pool
+    pmfe::SimpleThreadPool thread_pool;
+
+    // Load the sequence
+    fs::path seqfile("test_seq/16S/z.mays_16S.fasta");
+    pmfe::RNASequence seq(seqfile);
+
+    // Some basic sanity checks
+    REQUIRE(seq.len() == 1962);
+
+    SECTION("Turner99 published parameters") {
+        pmfe::Turner99 constants(thread_pool);
+        pmfe::NNTM energy_model(constants, pmfe::CHOOSE_DANGLE, thread_pool);
+
+        pmfe::RNASequenceWithTables seq_annotated = energy_model.energy_tables(seq);
+
+        mpq_class energy = energy_model.minimum_energy(seq_annotated);
+
+        REQUIRE(energy == mpq_class(-7419, 10));
+
+        pmfe::RNAStructureWithScore scored_structure = energy_model.mfe_structure(seq_annotated);
+
+        REQUIRE(scored_structure.old_string() ==
+                "....((((((((.......)))))))).((((((((.((.....))....(((..(((((.(((..(((((((((((((.(((((....((((.......(((((..(((...((((((.(((((((....))))))).).)))))..............((((((((((((((((...((((.((((((...((((.((((((..(.(.(((((..(.((((((..((....))..((((((((((..((((.(((((.((((.....((((.((((...))))..)))).(((((((((..((((((((.......)))))))))))..))))))..))))..)))))..))))..((((((......)).)))).....)))))))))))))))).)..)).))).).).......((((...(((((....))))).))))((....((((....))))......))..))))))))))...(((..(((.((((((.(............).)))))).)))..)))..))))))..))))..)))))).(((.(((...((((.(.((((...((((((((.......((.(((((..(((.(((......(((((((.((.((((.((((....((((((.....))))))..)))).))))..)).)))))))...))).(((...(((((((((..((((((((.((.(((.....))).)).))..)))))).....))....((....)).)))))))..))))))....))))).)).(((....))).))))))))..((((.........))))...)))).).)))).......(((((((.(((((((((((((.((.((...)))).)))))))))))))...((....))....))))))).)))))).((((.(((((....)))))..)))).........))))))))))......)))...))))).(((((((...........))).))))...)))).))))))))))).....)))))))....(((((.....)))))......(((...((((((((((((((....(((.(((.(((((.((((((....)))....((......))....))).(((((((....)))))))...)))))))).....(((((((.(((((...((..((((..(((.((((((..(((((.(.........))))))..)))))).)))..))))..)).....))))).)).))))).)))....)))))))....)))))))...)))))).)))))...........((((((((((((((((..(((((........(((((((.((((((((.(((((((((..((((.(...((((...))))....((((((.(((.....))).))....(((((((...(((((.((((((..(((..(((((....((((..(((..(((((...............(((.(((((.((((((..((((.((.((((((...)))))).))...(((.((((........)))).)))..))))..)))).)))).))).))).((((.....)))).........)).)))..)))......((((((..((((((((..((.....))..))))))))...))))))..((((((.(((((...(((......)))...(((((((.........)))))))...))))).))))))....))))..))))).))))))))))))))..)))))))))))).))))....)))))..))))..))))).)))))).)))))))))((((((..((((((......))))))..)))))).......))).)))))))))..))))))).)).)))..(((..((((((((((....))))))))))..)))..)))...");
+    }
+}
+
 TEST_CASE("Combinatorial sequence MFE", "[mfe][synthetic][combinatorial]") {
     // Build the thread pool
     pmfe::SimpleThreadPool thread_pool;
 
     // Load the sequence
-    fs::path seqfile("test_seq/test_combinatorial.fasta");
+    fs::path seqfile("test_seq/synthetic/test_combinatorial.fasta");
     pmfe::RNASequence seq(seqfile);
 
     // Some basic sanity checks
@@ -325,7 +633,7 @@ TEST_CASE("Randomly generated sequence MFE", "[mfe][synthetic][random]") {
     pmfe::SimpleThreadPool thread_pool;
 
     // Load the sequence
-    fs::path seqfile("test_seq/test_random.fasta");
+    fs::path seqfile("test_seq/synthetic/test_random.fasta");
     pmfe::RNASequence seq(seqfile);
 
     // Some basic sanity checks

@@ -3,8 +3,6 @@
 #ifndef PARAMETRIZER_TYPES_H
 #define PARAMETRIZER_TYPES_H
 
-#include <Python.h> // Fix for OSX
-
 #include <string>
 #include <utility>
 #include <gmpxx.h>
@@ -13,7 +11,6 @@
 #include <deque>
 #include <stack>
 
-#include <boost/python/tuple.hpp>
 #include <boost/filesystem.hpp>
 #include "boost/multi_array.hpp"
 
@@ -25,7 +22,6 @@ namespace pmfe {
     extern const mpq_class branch_default;
     extern const mpq_class dummy_default;
 
-    namespace py = boost::python;
     namespace fs = boost::filesystem;
 
     enum RNA_base {
@@ -61,7 +57,6 @@ namespace pmfe {
         };
         mpq_class multiloop_penalty, unpaired_penalty, branch_penalty, dummy_scaling;
 
-        ParameterVector(py::tuple p_multiloop_penalty, py::tuple p_unpaired_penalty, py::tuple p_branch_penalty, py::tuple p_dummy_scaling);
 
         void canonicalize() {
             multiloop_penalty.canonicalize();
@@ -69,8 +64,6 @@ namespace pmfe {
             branch_penalty.canonicalize();
             dummy_scaling.canonicalize();
         }
-
-        boost::python::tuple as_pairs();
 
         std::string print_as_list();
 
@@ -92,10 +85,6 @@ namespace pmfe {
         };
         mpz_class multiloops, branches, unpaired;
         mpq_class w, energy;
-
-        ScoreVector(py::tuple p_multiloops, py::tuple p_unpaired, py::tuple p_branches, py::tuple p_w, py::tuple p_energy);
-
-        boost::python::tuple as_pairs();
 
         std::string print_as_list();
 
@@ -153,6 +142,9 @@ namespace pmfe {
         boost::multi_array<mpq_class, 2> WMPrime;
         boost::multi_array<mpq_class, 2> FM;
         boost::multi_array<mpq_class, 2> FM1;
+
+        bool energy_tables_populated = false;
+        bool subopt_tables_populated = false;
 
         void print_debug();
     };

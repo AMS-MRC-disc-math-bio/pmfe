@@ -13,8 +13,102 @@
 #include <gmpxx.h>
 #include "boost/multi_array.hpp"
 
+#define BOOST_LOG_DYN_LINK 1 // Fix an issue with dynamic library loading
+#include <boost/log/core.hpp>
+#include <boost/log/trivial.hpp>
+#include <boost/log/expressions.hpp>
+
 namespace pmfe {
-    std::vector<RNAStructureWithScore> NNTM::suboptimal_structures(const RNASequenceWithTables& seq, mpq_class delta, bool sorted) const {
+    void NNTM::populate_subopt_tables(RNASequenceWithTables& seq) const {
+        /*
+          Construct the helper tables for the subopt traceback algorithm
+        */
+        // Input specification
+        assert(not seq.subopt_tables_populated);
+
+        // Populate FM1 and FM
+        for (int b = TURN+1; b <= seq.len() - 1; ++b) {
+            SimpleJobGroup job_group(thread_pool);
+            for (int i = 0; i <= seq.len() - 1 - b; ++i) {
+                job_group.post(boost::bind(&NNTM::populate_subopt_tables, this, i, i+b, std::ref(seq)));
+            }
+
+            job_group.wait_for_all_jobs();
+        }
+        seq.subopt_tables_populated = true;
+    }
+
+    void NNTM::populate_subopt_tables(int i, int j, RNASequenceWithTables& seq) const {
+        // FM begin
+        std::deque<mpq_class> fm1_vals;
+        fm1_vals.push_back(constants.INFINITY_);
+
+        int minl = i+TURN+1;
+        for (int l = minl; l <= j; ++l) {
+            switch (dangles) {
+
+            case NO_DANGLE:
+            {
+                fm1_vals.push_back(seq.V[i][i] + auPenalty(i, l, seq) + constants.multConst[1]*(j-l) + constants.multConst[2]);
+                break;
+            }
+
+            case CHOOSE_DANGLE:
+            {
+                mpq_class d5 = Ed5(i+1, l, seq);
+                mpq_class d3 = Ed3(i, l-1, seq);
+                mpq_class d53 = Ed5(i+1, l-1, seq) + Ed3(i+1, l-1, seq);
+
+                fm1_vals.push_back(seq.V[i][l] + auPenalty(i, l, seq) + constants.multConst[1] * (j-l) + constants.multConst[2]);
+
+                if (l >= minl + 1)
+                    fm1_vals.push_back(seq.V[i+1][l] + auPenalty(i+1, l, seq) + d5 + constants.multConst[1] * (j-l+1) + constants.multConst[2]);
+
+                if (l >= minl + 1)
+                    fm1_vals.push_back(seq.V[i][l-1] + auPenalty(i, l-1, seq) + d3 + constants.multConst[1] * (j-(l-1)) + constants.multConst[2]);
+
+                if (l >= minl + 2)
+                    fm1_vals.push_back(seq.V[i+1][l-1] + auPenalty(i+1, l-1, seq) + d53 + constants.multConst[1]* (j-(l-1)+1) + constants.multConst[2]);
+
+                break;
+            }
+
+            case BOTH_DANGLE:
+            {
+                mpq_class d5 = Ed5(i, l, seq);
+                mpq_class d3 = Ed3(i, l, seq);
+                fm1_vals.push_back(seq.V[i][l] + auPenalty(i, l, seq) + d5 + d3 + constants.multConst[1] * (j-l) + constants.multConst[2]);
+                break;
+            }
+
+            default:
+            {
+                exit(EXIT_FAILURE);
+                break;
+            }
+            }
+        }
+        seq.FM1[i][j] = *std::min_element(fm1_vals.begin(), fm1_vals.end());
+
+        std::deque<mpq_class> fm_vals;
+        fm_vals.push_back(constants.INFINITY_);
+
+        for (int k = i+TURN+1; k <= j-TURN-1; ++k) {
+            fm_vals.push_back(seq.FM[i][k-1] + seq.FM1[k][j]);
+        }
+
+        for (int k = i; k <= j-TURN-1; ++k) {
+            fm_vals.push_back(seq.FM1[k][j] + constants.multConst[1]*(k-i));
+        }
+        seq.FM[i][j] = *std::min_element(fm_vals.begin(), fm_vals.end());
+    }
+
+    std::vector<RNAStructureWithScore> NNTM::suboptimal_structures(RNASequenceWithTables& seq, mpq_class delta, bool sorted) const {
+        // Ensure tables are available
+        if (not seq.subopt_tables_populated) {
+            populate_subopt_tables(seq);
+        }
+
         // Set up variables
         mpq_class mfe = minimum_energy(seq);
         mpq_class upper_bound = mfe + delta;
@@ -40,10 +134,16 @@ namespace pmfe {
                 RNAStructureWithScore result(structure, score);
 
                 if (ps.total() != score.energy) {
+                    BOOST_LOG_TRIVIAL(error) << "Inconsistent subopt energy: " << ps.total().get_d() << " ≅ " << score.energy.get_d();
+                    BOOST_LOG_TRIVIAL(error) << ps;
+                    BOOST_LOG_TRIVIAL(error) << constants.params;
                     throw std::logic_error("Inconsistent energy in suboptimal structure calculation.");
                 }
 
                 if (ps.total() > upper_bound) {
+                    BOOST_LOG_TRIVIAL(error) << "Invalid subopt energy: " << ps.total().get_d() << " > " << upper_bound.get_d() << " (upper bound)";
+                    BOOST_LOG_TRIVIAL(error) << ps;
+                    BOOST_LOG_TRIVIAL(error) << constants.params;
                     throw std::logic_error("Invalid energy in suboptimal structure calculation.");
                 }
 

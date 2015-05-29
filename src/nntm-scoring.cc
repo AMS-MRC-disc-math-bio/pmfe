@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <math.h>
 #include <stdexcept>
+#include <vector>
 
 #include "nntm.h"
 #include "nndb_constants.h"
@@ -10,7 +11,10 @@
 #include <gmpxx.h>
 #include "boost/multi_array.hpp"
 
-#include <vector>
+#define BOOST_LOG_DYN_LINK 1 // Fix an issue with dynamic library loading
+#include <boost/log/core.hpp>
+#include <boost/log/trivial.hpp>
+#include <boost/log/expressions.hpp>
 
 namespace pmfe {
     ScoreVector NNTM::score(const RNAStructure& structure, bool compute_w) const {
@@ -32,6 +36,9 @@ namespace pmfe {
             formula_energy.canonicalize();
 
             if (result.energy != formula_energy) {
+                BOOST_LOG_TRIVIAL(error) << "Inconsistent w: " << result.energy.get_d() << " ≅ " << formula_energy.get_d();
+                BOOST_LOG_TRIVIAL(error) << constants.params;
+
                 throw std::logic_error("w calculation was inconsistent!");
             }
         }
@@ -42,6 +49,7 @@ namespace pmfe {
     }
 
     ScoreVector NNTM::scoreTree(const RNAStructureTree& tree) const {
+        BOOST_LOG_TRIVIAL(debug) << "Starting structure scoring.";
         // Score the external node
         ScoreVector score = scoreE(tree);
 
@@ -66,7 +74,9 @@ namespace pmfe {
         case 0:
         {
             // Hairpin loop
-            score.energy += eH(i, j, tree.seq);
+            mpq_class loop = eH(i, j, tree.seq);
+            score.energy += loop;
+            BOOST_LOG_TRIVIAL(debug) << "Hairpin (" << i << ", " << j << ") with energy " << loop.get_d();
             break;
         }
 
@@ -77,10 +87,14 @@ namespace pmfe {
 
             if (child.start == i + 1 and child.end == j - 1) {
                 // Stack
-                score.energy += eS(i, j, tree.seq);
+                mpq_class loop = eS(i, j, tree.seq);
+                score.energy += loop;
+                BOOST_LOG_TRIVIAL(debug) << "Stack (" << i << ", " << j << ") with energy " << loop.get_d();
             } else {
                 // Internal or bulge
-                score.energy += eL(i, j, child.start, child.end, tree.seq);
+                mpq_class loop = eL(i, j, child.start, child.end, tree.seq);
+                score.energy += loop;
+                BOOST_LOG_TRIVIAL(debug) << "IntLoop (" << i << ", " << j << ") to (" << child.start << ", " << child.end << ") with energy " << loop.get_d();
             }
 
             break;
@@ -89,7 +103,9 @@ namespace pmfe {
         default:
         {
             // At least two children means this is a multiloop
-            score += scoreM(tree, node);// + auPenalty(i, j, tree.seq);
+            ScoreVector loop = scoreM(tree, node);// + auPenalty(i, j, tree.seq);
+            score += loop;
+            BOOST_LOG_TRIVIAL(debug) << "Multiloop (" << i << ", " << j << ") with energy " << loop.energy.get_d();
             break;
         }
         }
@@ -294,6 +310,7 @@ namespace pmfe {
             score.energy += auPenalty(child.start, child.end, tree.seq);
         }
 
+        BOOST_LOG_TRIVIAL(debug) << "External loop energy " << score.energy.get_d();
         return score;
     }
 }

@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <math.h>
 #include <stdexcept>
+#include <vector>
 
 #include "nntm.h"
 #include "nndb_constants.h"
@@ -11,18 +12,25 @@
 #include <gmpxx.h>
 #include <boost/multi_array.hpp>
 
-#include <vector>
+#define BOOST_LOG_DYN_LINK 1 // Fix an issue with dynamic library loading
+#include <boost/log/core.hpp>
+#include <boost/log/trivial.hpp>
+#include <boost/log/expressions.hpp>
+
 
 namespace pmfe {
     RNAStructureWithScore NNTM::mfe_structure(const RNASequenceWithTables& seq) const {
         RNAStructure structure(seq);
         ScoreVector score;
 
+        BOOST_LOG_TRIVIAL(debug) << "Starting structure traceback.";
         traceW(seq.len()-1, seq, structure, score);
 
         ScoreVector newscore = this->score(structure);
 
         if (newscore.energy != score.energy) {
+            BOOST_LOG_TRIVIAL(error) << "Inconsistent energy: " << score.energy.get_d() << " ≅ " << newscore.energy.get_d();
+            BOOST_LOG_TRIVIAL(error) << constants.params;
             throw std::logic_error("Energy calculation was inconsistent!");
         }
 
@@ -30,14 +38,15 @@ namespace pmfe {
         return result;
     }
 
-    void NNTM::traceW(int j, const RNASequenceWithTables& seq, RNAStructure& structure, ScoreVector& score) const {
-        bool finished = false;
+    bool NNTM::traceW(int j, const RNASequenceWithTables& seq, RNAStructure& structure, ScoreVector& score) const {
+        bool found_something = false;
         mpq_class wim1;
 
-        if (j <= 0)
-            return;
+        if (j <= 0) {
+            return score.energy == seq.W[seq.len() - 1];
+        }
 
-        for (int i = 0; i < j && !finished; i++) {
+        for (int i = 0; i < j && !found_something; i++) {
             if (j-i < TURN) continue;
 
             if (i > 0) {
@@ -46,7 +55,9 @@ namespace pmfe {
                 wim1 = 0;
             }
 
-            if (dangles == BOTH_DANGLE) {
+            switch (dangles) {
+            case BOTH_DANGLE:
+            {
                 mpq_class e_dangles = 0;
                 if (i > 0) {
                     e_dangles += Ed5(i, j, seq);
@@ -57,55 +68,85 @@ namespace pmfe {
                 }
 
                 if (seq.W[j] == seq.V[i][j] + auPenalty(i, j, seq) + e_dangles + wim1) {
-                    finished = true;
-                    score.energy += (auPenalty(i, j, seq) + e_dangles);
+                    found_something = true;
+                    mpq_class loop = auPenalty(i, j, seq) + e_dangles;
+                    score.energy += loop;
+                    BOOST_LOG_TRIVIAL(debug) << "ExtLoop (" << i << ", " << j << ") with energy " << loop.get_d();
                     traceV(i, j, seq, structure, score);
                     traceW(i-1, seq, structure, score);
-                    break;
                 };
-            } else if (dangles == NO_DANGLE) {
+                break;
+            }
+
+            case NO_DANGLE:
+            {
                 if (seq.W[j] == seq.V[i][j] + auPenalty(i, j, seq) + wim1) {
-                    finished = true;
-                    score.energy += auPenalty(i, j, seq);
+                    found_something = true;
+                    mpq_class loop = auPenalty(i, j, seq);
+                    score.energy += loop;
+                    BOOST_LOG_TRIVIAL(debug) << "ExtLoop (" << i << ", " << j << ") with energy " << loop.get_d();
                     traceV(i, j, seq, structure, score);
                     traceW(i-1, seq, structure, score);
-                    break;
                 };
-            } else { // default
+                break;
+            }
+
+            case CHOOSE_DANGLE:
+            {
                 if (seq.W[j] == seq.V[i][j] + auPenalty(i, j, seq) + wim1) {
-                    finished = true;
-                    score.energy += auPenalty(i, j, seq);
+                    found_something = true;
+                    mpq_class loop = auPenalty(i, j, seq);
+                    score.energy += loop;
+                    BOOST_LOG_TRIVIAL(debug) << "ExtLoop (" << i << ", " << j << ") with energy " << loop.get_d();
                     traceV(i, j, seq, structure, score);
                     traceW(i-1, seq, structure, score);
-                    break;
                 } else if (seq.W[j] ==  seq.V[i][j-1] + auPenalty(i, j-1, seq) + Ed3(i, j-1, seq) + wim1) {
-                    finished = true;
-                    score.energy += (auPenalty(i, j-1, seq) + Ed3(i, j-1, seq));
+                    found_something = true;
+                    mpq_class loop = auPenalty(i, j-1, seq) + Ed3(i, j-1, seq);
+                    score.energy += loop;
+                    BOOST_LOG_TRIVIAL(debug) << "ExtLoop (" << i << ", " << j << ") with energy " << loop.get_d();
                     structure.mark_d3(j);
                     traceV(i, j-1, seq, structure, score);
                     traceW(i-1, seq, structure, score);
-                    break;
                 } else if (seq.W[j] == seq.V[i+1][j] + auPenalty(i+1, j, seq) + Ed5(i+1, j, seq) + wim1){
-                    finished = true;
-                    score.energy += (auPenalty(i+1, j, seq) + Ed5(i+1, j, seq));
+                    found_something = true;
+                    mpq_class loop = auPenalty(i+1, j, seq) + Ed5(i+1, j, seq);
+                    score.energy += loop;
+                    BOOST_LOG_TRIVIAL(debug) << "ExtLoop (" << i << ", " << j << ") with energy " << loop.get_d();
                     structure.mark_d5(i);
                     traceV(i + 1, j, seq, structure, score);
                     traceW(i-1, seq, structure, score);
-                    break;
                 } else if (seq.W[j] == seq.V[i+1][j-1] + auPenalty(i+1, j-1, seq) + Ed5(i+1, j-1, seq) + Ed3(i+1, j-1, seq) + wim1) {
-                    finished = true;
-                    score.energy += (auPenalty(i+1, j-1, seq) + Ed5(i+1, j-1, seq) + Ed3(i+1, j-1, seq));
+                    found_something = true;
+                    mpq_class loop = auPenalty(i+1, j-1, seq) + Ed5(i+1, j-1, seq) + Ed3(i+1, j-1, seq);
+                    score.energy += loop;
+                    BOOST_LOG_TRIVIAL(debug) << "ExtLoop (" << i << ", " << j << ") with energy " << loop.get_d();
                     structure.mark_d3(j);
                     structure.mark_d5(i);
                     traceV(i+1, j-1, seq, structure, score);
                     traceW(i-1, seq, structure, score);
-                    break;
                 }
+
+                break;
+            }
+
+            default:
+                throw std::logic_error("Invalid dangle mode.");
+                break;
             }
         }
 
-        if (seq.W[j] == seq.W[j-1] && !finished) traceW(j-1, seq, structure, score);
-        return;
+        if (seq.W[j] == seq.W[j-1] && !found_something) {
+            found_something = traceW(j-1, seq, structure, score);
+        }
+
+        if (!found_something) {
+            BOOST_LOG_TRIVIAL(error) << "W traceback did not finish for j = " << j;
+            BOOST_LOG_TRIVIAL(error) << constants.params;
+            throw std::logic_error("W traceback did not finish!");
+        }
+
+        return found_something;
     }
 
     mpq_class NNTM::traceV(int i, int j, const RNASequenceWithTables& seq, RNAStructure& structure, ScoreVector& score) const {
@@ -124,18 +165,23 @@ namespace pmfe {
         structure.mark_pair(i, j);
 
         if (Vij == a ) {
-            score.energy += eH(i, j, seq);
+            mpq_class loop = eH(i, j, seq);
+            score.energy += loop;
+            BOOST_LOG_TRIVIAL(debug) << "Hairpin (" << i << ", " << j << ") with energy " << loop.get_d();
             return Vij;
         } else if (Vij == b) {
-            score.energy += eS(i, j, seq);
+            mpq_class loop = eS(i, j, seq);
+            score.energy += loop;
+            BOOST_LOG_TRIVIAL(debug) << "Stack (" << i << ", " << j << ") with energy " << loop.get_d();
             traceV(i+1, j-1, seq, structure, score);
             return Vij;
         } else if (Vij == c) {
             traceVBI(i, j, seq, structure, score);
             return Vij;
         } else if (Vij == d) {
-            mpq_class eVM = traceVM(i, j, seq, structure, score);
-            score.energy += (Vij-eVM);
+            mpq_class loop = Vij - traceVM(i, j, seq, structure, score);
+            score.energy += loop;
+            BOOST_LOG_TRIVIAL(debug) << "Multiloop (" << i << ", " << j << ") with energy " << loop.get_d();
             return Vij;
         }
 
@@ -162,7 +208,10 @@ namespace pmfe {
             if (jp != j) break;
         }
 
-        score.energy += eL(i, j, ifinal, jfinal, seq);
+        mpq_class loop = eL(i, j, ifinal, jfinal, seq);
+        score.energy += loop;
+
+        BOOST_LOG_TRIVIAL(debug) << "IntLoop (" << i << ", " << j << ") with energy " << loop.get_d();
 
         return traceV(ifinal, jfinal, seq, structure, score);
     }
@@ -170,19 +219,28 @@ namespace pmfe {
     mpq_class NNTM::traceVM(int i, int j, const RNASequenceWithTables& seq, RNAStructure& structure, ScoreVector& score) const {
         mpq_class eVM = 0;
 
-        if (dangles == BOTH_DANGLE) {
+        switch (dangles) {
+        case BOTH_DANGLE:
+        {
             if (seq.VM[i][j] == seq.WMPrime[i+1][j-1] + constants.multConst[0] + constants.multConst[2] + auPenalty(i, j, seq) + Ed5(i, j, seq, true) + Ed3(i, j, seq, true)) {
                 eVM += traceWMPrime(i+1, j-1, seq, structure, score);
                 score.multiloops++;
                 score.branches++;
             }
-        } else if (dangles == NO_DANGLE) {
+            break;
+        }
+
+        case NO_DANGLE:
+        {
             if (seq.VM[i][j] == seq.WMPrime[i+1][j-1] + constants.multConst[0] + constants.multConst[2] + auPenalty(i, j, seq) ) {
                 eVM += traceWMPrime(i+1, j-1, seq, structure, score);
                 score.multiloops++;
                 score.branches++;
             }
-        } else {
+            break;
+        }
+
+        case CHOOSE_DANGLE: {
             if (seq.VM[i][j] == seq.WMPrime[i+1][j-1] + constants.multConst[0] + constants.multConst[2] + auPenalty(i, j, seq) ) {
                 eVM += traceWMPrime(i+1, j-1, seq, structure, score);
                 score.multiloops++;
@@ -193,8 +251,7 @@ namespace pmfe {
                 score.multiloops++;
                 score.branches++;
                 score.unpaired++;
-            }
-            else if (seq.VM[i][j] == seq.WMPrime[i+1][j-2] + constants.multConst[0] + constants.multConst[2] + auPenalty(i, j, seq) + Ed3(i, j, seq, true) + constants.multConst[1]) {
+            } else if (seq.VM[i][j] == seq.WMPrime[i+1][j-2] + constants.multConst[0] + constants.multConst[2] + auPenalty(i, j, seq) + Ed3(i, j, seq, true) + constants.multConst[1]) {
                 eVM += traceWMPrime(i+1, j-2, seq, structure, score);
                 structure.mark_d5(j-1);
                 score.multiloops++;
@@ -208,6 +265,13 @@ namespace pmfe {
                 score.branches++;
                 score.unpaired += 2;
             }
+
+            break;
+        }
+
+        default:
+            throw std::logic_error("Invalid dangle mode.");
+            break;
         }
 
         return eVM;
@@ -239,19 +303,29 @@ namespace pmfe {
         }
 
         if (!done){
-            if (dangles == BOTH_DANGLE) {
+            switch (dangles) {
+            case BOTH_DANGLE:
+            {
                 if (seq.WM[i][j] == seq.V[i][j] + auPenalty(i, j, seq) + constants.multConst[2] + Ed5(i, j, seq) + Ed3(i, j, seq)) {
                     eWM += traceV(i, j, seq, structure, score);
                     score.branches++;
                     done = 1;
                 }
-            } else if (dangles == NO_DANGLE) {
+                break;
+            }
+
+            case NO_DANGLE:
+            {
                 if (seq.WM[i][j] == seq.V[i][j] + auPenalty(i, j, seq) + constants.multConst[2]) {
                     eWM += traceV(i, j, seq, structure, score);
                     score.branches++;
                     done = 1;
                 }
-            } else  {
+                break;
+            }
+
+            case CHOOSE_DANGLE:
+            {
                 if (seq.WM[i][j] == seq.V[i][j] + auPenalty(i, j, seq) + constants.multConst[2]) {
                     eWM += traceV(i, j, seq, structure, score);
                     score.branches++;
@@ -276,18 +350,24 @@ namespace pmfe {
                     score.unpaired += 2;
                     done = 1;
                 }
+                break;
             }
-        }
 
-        if (!done){
-            if (seq.WM[i][j] == seq.WM[i+1][j] + constants.multConst[1]) {
-                done = 1;
-                eWM += traceWM(i+1, j, seq, structure, score);
-                score.unpaired++;
-            } else if (seq.WM[i][j] == seq.WM[i][j-1] + constants.multConst[1]) {
-                done = 1;
-                eWM += traceWM(i, j-1, seq, structure, score);
-                score.unpaired++;
+            default:
+                throw std::logic_error("Invalid dangle mode.");
+                break;
+            }
+
+            if (!done){
+                if (seq.WM[i][j] == seq.WM[i+1][j] + constants.multConst[1]) {
+                    done = 1;
+                    eWM += traceWM(i+1, j, seq, structure, score);
+                    score.unpaired++;
+                } else if (seq.WM[i][j] == seq.WM[i][j-1] + constants.multConst[1]) {
+                    done = 1;
+                    eWM += traceWM(i, j-1, seq, structure, score);
+                    score.unpaired++;
+                }
             }
         }
 

@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <math.h>
 #include <assert.h>
+#include <deque>
 
 #include "nntm.h"
 #include "nndb_constants.h"
@@ -12,7 +13,10 @@
 #include <gmpxx.h>
 #include <boost/bind.hpp>
 
-#include <deque>
+#define BOOST_LOG_DYN_LINK 1 // Fix an issue with dynamic library loading
+#include <boost/log/core.hpp>
+#include <boost/log/trivial.hpp>
+#include <boost/log/expressions.hpp>
 
 namespace pmfe {
     NNTM::NNTM(const NNDBConstants& constants, dangle_mode dangles, SimpleThreadPool& thread_pool):
@@ -22,16 +26,23 @@ namespace pmfe {
     {};
 
     RNASequenceWithTables NNTM::energy_tables(const RNASequence& inseq) const {
+        RNASequenceWithTables seq(inseq, constants.INFINITY_);
+        populate_energy_tables(seq);
+        return seq;
+    };
+
+    void NNTM::populate_energy_tables(RNASequenceWithTables& seq) const {
         /*
           Construct the energy tables for the DP algorithm
-         */
-        RNASequenceWithTables seq(inseq, constants.INFINITY_);
+        */
+        // Input specification
+        assert(not seq.energy_tables_populated);
 
         // Populate V, VM, VBI, WM, and WMPrime
         for (int b = TURN+1; b <= seq.len() - 1; ++b) {
             SimpleJobGroup job_group(thread_pool);
             for (int i = 0; i <= seq.len() - 1 - b; ++i) {
-                job_group.post(boost::bind(&NNTM::populate_internal_tables, this, i, i+b, std::ref(seq)));
+                job_group.post(boost::bind(&NNTM::populate_energy_tables, this, i, i+b, std::ref(seq)));
             }
 
             job_group.wait_for_all_jobs();
@@ -55,24 +66,40 @@ namespace pmfe {
                     Wim1 = 0;
                 }
 
-                if (dangles == BOTH_DANGLE) { // -d2 option
-                    mpq_class Widjd = seq.V[i][j] + auPenalty(i, j, seq) + Wim1;
-                    if (i > 0) {
-                        Widjd += Ed5(i, j, seq);
+                switch (dangles) {
+                case BOTH_DANGLE:
+                    {
+                        mpq_class Widjd = seq.V[i][j] + auPenalty(i, j, seq) + Wim1;
+                        if (i > 0) {
+                            Widjd += Ed5(i, j, seq);
+                        }
+
+                        if (j < seq.len() - 1) {
+                            Widjd += Ed3(i, j, seq);
+                        }
+
+                        w_vals.push_back(Widjd);
+                        break;
                     }
 
-                    if (j < seq.len() - 1) {
-                        Widjd += Ed3(i, j, seq);
+                case NO_DANGLE:
+                    {
+                        w_vals.push_back(seq.V[i][j] + auPenalty(i, j, seq) + Wim1);
+                        break;
                     }
 
-                    w_vals.push_back(Widjd);
-                } else if (dangles == NO_DANGLE) { // -d0 option
-                    w_vals.push_back(seq.V[i][j] + auPenalty(i, j, seq) + Wim1);
-                } else { // default
-                    w_vals.push_back(seq.V[i][j] + auPenalty(i, j, seq) + Wim1);
-                    w_vals.push_back(seq.V[i+1][j] + auPenalty(i+1, j, seq) + Ed5(i+1, j, seq) + Wim1);
-                    w_vals.push_back(seq.V[i][j-1] + auPenalty(i, j-1, seq) + Ed3(i, j-1, seq) + Wim1);
-                    w_vals.push_back(seq.V[i+1][j-1] + auPenalty(i+1, j-1, seq) + Ed5(i+1, j-1, seq) + Ed3(i+1, j-1, seq) + Wim1);
+                case CHOOSE_DANGLE:
+                    {
+                        w_vals.push_back(seq.V[i][j] + auPenalty(i, j, seq) + Wim1);
+                        w_vals.push_back(seq.V[i+1][j] + auPenalty(i+1, j, seq) + Ed5(i+1, j, seq) + Wim1);
+                        w_vals.push_back(seq.V[i][j-1] + auPenalty(i, j-1, seq) + Ed3(i, j-1, seq) + Wim1);
+                        w_vals.push_back(seq.V[i+1][j-1] + auPenalty(i+1, j-1, seq) + Ed5(i+1, j-1, seq) + Ed3(i+1, j-1, seq) + Wim1);
+                        break;
+                    }
+
+                default:
+                    throw std::logic_error("Invalid dangle mode.");
+                    break;
                 }
             }
 
@@ -82,10 +109,10 @@ namespace pmfe {
             seq.W[j] = *std::min_element(w_vals.begin(), w_vals.end());
         }
 
-        return seq;
-    };
+        seq.energy_tables_populated = true;
+    }
 
-    void NNTM::populate_internal_tables(int i, int j, RNASequenceWithTables& seq) const {
+    void NNTM::populate_energy_tables(int i, int j, RNASequenceWithTables& seq) const {
         // Input specification
         assert (0 <= i);
         assert (j < seq.len());
@@ -99,15 +126,31 @@ namespace pmfe {
             d3 = Ed3(i, j, seq, true);
             d5 = Ed5(i, j, seq, true);
 
-            if (dangles == BOTH_DANGLE) { // -d2
-                vm_vals.push_back(seq.WMPrime[i+1][j-1] + d3 + d5 + auPenalty(i, j, seq) + constants.multConst[0] + constants.multConst[2]);
-            } else if (dangles == NO_DANGLE) { // -d0
-                vm_vals.push_back(seq.WMPrime[i+1][j-1] + auPenalty(i, j, seq) + constants.multConst[0] + constants.multConst[2]);
-            } else { // default
-                vm_vals.push_back(seq.WMPrime[i+1][j-1] + auPenalty(i, j, seq) + constants.multConst[0] + constants.multConst[2]);
-                vm_vals.push_back(seq.WMPrime[i+2][j-1] + d5 + auPenalty(i, j, seq) + constants.multConst[0] + constants.multConst[2] + constants.multConst[1]);
-                vm_vals.push_back(seq.WMPrime[i+1][j-2] + d3 + auPenalty(i, j, seq) + constants.multConst[0] + constants.multConst[2] + constants.multConst[1]);
-                vm_vals.push_back(seq.WMPrime[i+2][j-2] + d3 + d5 + auPenalty(i, j, seq) + constants.multConst[0] + constants.multConst[2] + 2*constants.multConst[1]);
+            switch (dangles) {
+            case BOTH_DANGLE:
+                {
+                    vm_vals.push_back(seq.WMPrime[i+1][j-1] + d3 + d5 + auPenalty(i, j, seq) + constants.multConst[0] + constants.multConst[2]);
+                    break;
+                }
+
+            case NO_DANGLE:
+                {
+                    vm_vals.push_back(seq.WMPrime[i+1][j-1] + auPenalty(i, j, seq) + constants.multConst[0] + constants.multConst[2]);
+                    break;
+                }
+
+            case CHOOSE_DANGLE:
+                {
+                    vm_vals.push_back(seq.WMPrime[i+1][j-1] + auPenalty(i, j, seq) + constants.multConst[0] + constants.multConst[2]);
+                    vm_vals.push_back(seq.WMPrime[i+2][j-1] + d5 + auPenalty(i, j, seq) + constants.multConst[0] + constants.multConst[2] + constants.multConst[1]);
+                    vm_vals.push_back(seq.WMPrime[i+1][j-2] + d3 + auPenalty(i, j, seq) + constants.multConst[0] + constants.multConst[2] + constants.multConst[1]);
+                    vm_vals.push_back(seq.WMPrime[i+2][j-2] + d3 + d5 + auPenalty(i, j, seq) + constants.multConst[0] + constants.multConst[2] + 2*constants.multConst[1]);
+                    break;
+                }
+
+            default:
+                throw std::logic_error("Invalid dangle mode.");
+                break;
             }
 
             seq.VM[i][j] = *std::min_element(vm_vals.begin(), vm_vals.end());
@@ -141,28 +184,44 @@ namespace pmfe {
         wm_vals.push_back(constants.INFINITY_);
         wm_vals.push_back(seq.WMPrime[i][j]);
 
-        if (dangles == BOTH_DANGLE) {
-            mpq_class energy = seq.V[i][j] + auPenalty(i, j, seq) + constants.multConst[2];
+        switch (dangles) {
+        case BOTH_DANGLE:
+            {
+                mpq_class energy = seq.V[i][j] + auPenalty(i, j, seq) + constants.multConst[2];
 
-            if (i > 0) {
-                energy += Ed5(i, j, seq);
+                if (i > 0) {
+                    energy += Ed5(i, j, seq);
+                }
+
+                if (j < seq.len() - 1) {
+                    energy += Ed3(i, j, seq);
+                }
+
+                wm_vals.push_back(energy);
+                break;
             }
 
-            if (j < seq.len() - 1) {
-                energy += Ed3(i, j, seq);
-            }
-
-            wm_vals.push_back(energy);
-        } else if (dangles == NO_DANGLE) {
+        case NO_DANGLE: {
             wm_vals.push_back(seq.V[i][j] + auPenalty(i, j, seq) + constants.multConst[2]);
-        } else { // default
-            wm_vals.push_back(seq.V[i][j] + auPenalty(i, j, seq) + constants.multConst[2]); // no dangle
+            break;
+        }
 
-            wm_vals.push_back(seq.V[i+1][j] + Ed5(i+1, j, seq) + auPenalty(i+1, j, seq) + constants.multConst[2] + constants.multConst[1]); //i dangle
+        case CHOOSE_DANGLE:
+            {
+                wm_vals.push_back(seq.V[i][j] + auPenalty(i, j, seq) + constants.multConst[2]); // no dangle
 
-            wm_vals.push_back(seq.V[i][j-1] + Ed3(i, j-1, seq) + auPenalty(i, j-1, seq) + constants.multConst[2] + constants.multConst[1]);  //j dangle
+                wm_vals.push_back(seq.V[i+1][j] + Ed5(i+1, j, seq) + auPenalty(i+1, j, seq) + constants.multConst[2] + constants.multConst[1]); //i dangle
 
-            wm_vals.push_back(seq.V[i+1][j-1] + Ed5(i+1, j-1, seq) + Ed3(i+1, j-1, seq) + auPenalty(i+1, j-1, seq) + constants.multConst[2] + 2*constants.multConst[1]); //i,j dangle
+                wm_vals.push_back(seq.V[i][j-1] + Ed3(i, j-1, seq) + auPenalty(i, j-1, seq) + constants.multConst[2] + constants.multConst[1]);  //j dangle
+
+                wm_vals.push_back(seq.V[i+1][j-1] + Ed5(i+1, j-1, seq) + Ed3(i+1, j-1, seq) + auPenalty(i+1, j-1, seq) + constants.multConst[2] + 2*constants.multConst[1]); //i,j dangle
+
+                break;
+            }
+
+        default:
+            throw std::logic_error("Invalid dangle mode.");
+            break;
         }
 
         wm_vals.push_back(seq.WM[i+1][j] + constants.multConst[1]); //i dangle
@@ -171,74 +230,16 @@ namespace pmfe {
 
         seq.WM[i][j] = *std::min_element(wm_vals.begin(), wm_vals.end());
         // WM end
-
-        // FM begin
-        std::deque<mpq_class> fm1_vals;
-        fm1_vals.push_back(constants.INFINITY_);
-
-        int minl = i+TURN+1;
-        for (int l = minl; l <= j; ++l) {
-            switch (dangles) {
-            case NO_DANGLE:
-            {
-                fm1_vals.push_back(seq.V[i][i] + auPenalty(i, l, seq) + constants.multConst[1]*(j-l) + constants.multConst[2]);
-                break;
-            }
-
-            case CHOOSE_DANGLE:
-            {
-                mpq_class d5 = Ed5(i+1, l, seq);
-                mpq_class d3 = Ed3(i, l-1, seq);
-                mpq_class d53 = Ed5(i+1, l-1, seq) + Ed3(i+1, l-1, seq);
-
-                fm1_vals.push_back(seq.V[i][l] + auPenalty(i, l, seq) + constants.multConst[1] * (j-l) + constants.multConst[2]);
-
-                if (l >= minl + 1)
-                    fm1_vals.push_back(seq.V[i+1][l] + auPenalty(i+1, l, seq) + d5 + constants.multConst[1] * (j-l+1) + constants.multConst[2]);
-
-                if (l >= minl + 1)
-                    fm1_vals.push_back(seq.V[i][l-1] + auPenalty(i, l-1, seq) + d3 + constants.multConst[1] * (j-(l-1)) + constants.multConst[2]);
-
-                if (l >= minl + 2)
-                    fm1_vals.push_back(seq.V[i+1][l-1] + auPenalty(i+1, l-1, seq) + d53 + constants.multConst[1]* (j-(l-1)+1) + constants.multConst[2]);
-
-                break;
-            }
-
-            case BOTH_DANGLE:
-            {
-                mpq_class d5 = Ed5(i, l, seq);
-                mpq_class d3 = Ed3(i, l, seq);
-                fm1_vals.push_back(seq.V[i][l] + auPenalty(i, l, seq) + d5 + d3 + constants.multConst[1] * (j-l) + constants.multConst[2]);
-                break;
-            }
-
-            default:
-            {
-                exit(EXIT_FAILURE);
-                break;
-            }
-            }
-        }
-        seq.FM1[i][j] = *std::min_element(fm1_vals.begin(), fm1_vals.end());
-
-        std::deque<mpq_class> fm_vals;
-        fm_vals.push_back(constants.INFINITY_);
-
-        for (int k = i+TURN+1; k <= j-TURN-1; ++k) {
-            fm_vals.push_back(seq.FM[i][k-1] + seq.FM1[k][j]);
-        }
-
-        for (int k = i; k <= j-TURN-1; ++k) {
-            fm_vals.push_back(seq.FM1[k][j] + constants.multConst[1]*(k-i));
-        }
-        seq.FM[i][j] = *std::min_element(fm_vals.begin(), fm_vals.end());
     }
 
-    mpq_class NNTM::minimum_energy(const RNASequenceWithTables& seq) const {
+    mpq_class NNTM::minimum_energy(RNASequenceWithTables& seq) const {
         /*
           Return the minimum energy of a structure on this sequence
-         */
+        */
+        if (not seq.energy_tables_populated) {
+            populate_energy_tables(seq);
+        }
+
         return seq.W[seq.len()-1];
     };
 
@@ -294,7 +295,7 @@ namespace pmfe {
     mpq_class NNTM::auPenalty(int i, int j, const RNASequence& seq) const {
         /*
           Return the pairing penalty for (i, j); this is nonzero unless it is a GC pair
-         */
+        */
         int base_i = seq.base(i);
         int base_j = seq.base(j);
         if (
@@ -304,6 +305,23 @@ namespace pmfe {
             return constants.auend;
         } else {
             return 0;
+        }
+    }
+
+    mpq_class NNTM::eLL(int size) const {
+        /*
+          Compute the energy correction for a long loop
+        */
+
+        // To match the GTMFE algorithm, we force this to have two decimal digits of precision
+        // TODO: Clean this up by interfacing with fancified NNDB
+        if (constants.params.dummy_scaling == 0) {
+            return 0;
+        } else {
+            mpq_class prelog = constants.prelog / constants.params.dummy_scaling;
+            mpq_class result = (mpz_class) (100 * prelog * log((double) size / 30.0));
+            result *= constants.params.dummy_scaling / 100;
+            return result;
         }
     }
 
@@ -317,7 +335,6 @@ namespace pmfe {
         assert (i < ip && ip < jp && jp < j);
 
         mpq_class energy = constants.INFINITY_;
-        mpq_class loginc = 0;
 
         /*SH: These calculations used to incorrectly be within the bulge loop code, moved out here. */
         int size1 = ip - i - 1;
@@ -329,60 +346,65 @@ namespace pmfe {
         int pindex = std::min(2, std::min(size1, size2));
         mpq_class lvalue = lopsided * constants.poppen[pindex];
         mpq_class penterm;
+
         if (constants.params.dummy_scaling >= 0) {
             penterm = std::min(constants.maxpen, lvalue);
         } else {
             penterm = std::max(constants.maxpen, lvalue);
         }
 
-        if (size1 == 0 || size2 == 0) {
+        if (size1 == 0 or size2 == 0) {
             if (size > 30) {
                 /* AM: Does not depend upon i and j and ip and jp - Stacking Energies */
-                loginc = constants.prelog * log((double) size / 30.0); // Taking a log and then casting to rational--gross! But we gots ta do what we gots ta do
-                energy = constants.bulge[30] + constants.eparam[2] + loginc + auPenalty(i, j, seq)
+                energy = constants.bulge[30]
+                    + eLL(size)
+                    + auPenalty(i, j, seq)
                     + auPenalty(ip, jp, seq);
-            } else if (size <= 30 && size != 1) {
+            } else if (size <= 30 && size > 1) {
                 /* Does not depend upon i and j and ip and jp - Stacking Energies  */
-                energy = constants.bulge[size] + constants.eparam[2];
-                energy += auPenalty(i, j, seq) + auPenalty(ip, jp, seq);
+                energy = constants.bulge[size]
+                    + auPenalty(i, j, seq)
+                    + auPenalty(ip, jp, seq);
             } else if (size == 1) {
                 energy = constants.stack[seq.base(i)][seq.base(j)][seq.base(ip)][seq.base(jp)]
-                    + constants.bulge[size] + constants.eparam[2];
+                    + constants.bulge[size];
+            } else if (size == 0) {
+                // Degenerate case that this is actually a stack, included for ease of coding elsewhere
+                energy = constants.stack[seq.base(i)][seq.base(j)][seq.base(ip)][seq.base(jp)];
             }
         } else {
             /* Internal loop */
 
             if (size > 30) {
-                loginc = constants.prelog * log((double) size / 30.0);
-
                 if (!((size1 == 1 || size2 == 1) && constants.gail)) { /* normal internal loop with size > 30*/
-                    energy = constants.tstki[seq.base(i)][seq.base(j)][seq.base(i + 1)][seq.base(j - 1)] +
-                        constants.tstki[seq.base(jp)][seq.base(ip)][seq.base(jp + 1)][seq.base(ip - 1)] + constants.inter[30] + loginc +
-                        constants.eparam[3] + penterm;
+                    energy = constants.tstki[seq.base(i)][seq.base(j)][seq.base(i + 1)][seq.base(j - 1)]
+                        + constants.tstki[seq.base(jp)][seq.base(ip)][seq.base(jp + 1)][seq.base(ip - 1)] + constants.inter[30]
+                        + eLL(size)
+                        + penterm;
                 } else { /* if size is more than 30 and it is a grossely asymmetric internal loop and gail is not 0*/
-                    energy = constants.tstki[seq.base(i)][seq.base(j)][BASE_A][BASE_A] + constants.tstki[seq.base(jp)][seq.base(ip)][BASE_A][BASE_A]
-                        + constants.inter[30] + loginc + constants.eparam[3] + penterm;
+                    energy = constants.tstki[seq.base(i)][seq.base(j)][BASE_A][BASE_A]
+                        + constants.tstki[seq.base(jp)][seq.base(ip)][BASE_A][BASE_A]
+                        + constants.inter[30]
+                        + eLL(size)
+                        + penterm;
                 }
-            }
-            else if (size1 == 2 && size2 == 2) { /* 2x2 internal loop */
+            } else if (size1 == 2 and size2 == 2) { /* 2x2 internal loop */
                 energy = constants.iloop22[seq.base(i)][seq.base(ip)][seq.base(j)][seq.base(jp)][seq.base(i+1)][seq.base(j-1)][seq.base(i+2)][seq.base(j-2)];
-            } else if (size1 == 1 && size2 == 2) {
+            } else if (size1 == 1 and size2 == 2) {
                 energy = constants.iloop21[seq.base(i)][seq.base(j)][seq.base(i + 1)][seq.base(j - 1)][seq.base(j - 2)][seq.base(ip)][seq.base(jp)];
-            } else if (size1 == 2 && size2 == 1) { /* 1x2 internal loop */
+            } else if (size1 == 2 and size2 == 1) { /* 1x2 internal loop */
                 energy = constants.iloop21[seq.base(jp)][seq.base(ip)][seq.base(j - 1)][seq.base(i + 2)][seq.base(i + 1)][seq.base(j)][seq.base(i)];
             } else if (size == 2) { /* 1*1 internal loops */
                 energy = constants.iloop11[seq.base(i)][seq.base(i + 1)][seq.base(ip)][seq.base(j)][seq.base(j - 1)][seq.base(jp)];
-            }
-            //else if ((size1 == 2 && size2 == 3) || (size1 == 3 && size2 == 2)) {
-            //	return constants.tstacki23[seq.base(i)][seq.base(j)][seq.base(i + 1)][seq.base(j - 1)] +
-            //		constants.tstacki23[seq.base(jp)][seq.base(ip)][seq.base(jp + 1)][seq.base(ip - 1)];
-            //}
-            else if ((size1 == 1 || size2 == 1) && constants.gail) { /* gail = (Grossly Asymmetric Interior Loop Rule) (on/off <-> 1/0)  */
+            } else if ((size1 == 1 or size2 == 1) && constants.gail) { /* gail = (Grossly Asymmetric Interior Loop Rule) (on/off <-> 1/0)  */
                 energy = constants.tstki[seq.base(i)][seq.base(j)][BASE_A][BASE_A] + constants.tstki[seq.base(jp)][seq.base(ip)][BASE_A][BASE_A]
-                    + constants.inter[size] + loginc + constants.eparam[3] + penterm;
+                    + constants.inter[size]
+                    + penterm;
             } else { /* General Internal loops */
-                energy = constants.tstki[seq.base(i)][seq.base(j)][seq.base(i + 1)][seq.base(j - 1)] + constants.tstki[seq.base(jp)][seq.base(ip)][seq.base(jp + 1)][seq.base(ip - 1)] + constants.inter[size]
-                    + loginc + constants.eparam[3] + penterm;
+                energy = constants.tstki[seq.base(i)][seq.base(j)][seq.base(i + 1)][seq.base(j - 1)]
+                    + constants.tstki[seq.base(jp)][seq.base(ip)][seq.base(jp + 1)][seq.base(ip - 1)]
+                    + constants.inter[size]
+                    + penterm;
             }
         }
 
@@ -392,7 +414,7 @@ namespace pmfe {
     mpq_class NNTM::eH(int i, int j, const RNASequence& seq) const {
         /*
           Compute the energy of a hairpin loop based at pair (i, j)
-         */
+        */
 
         // Input specification
         assert (i >= 0 && i < seq.len());
@@ -406,12 +428,11 @@ namespace pmfe {
         /*  look in hairpin, and be careful that there is only 30 values */
 
         if (size > 30) {
-            mpq_class loginc = constants.prelog * log(((double) size) / 30.0);
-            energy = constants.hairpin[30] + loginc + constants.tstkh[seq.base(i)][seq.base(j)][seq.base(i + 1)][seq.base(j - 1)] + constants.eparam[4]; /* size penalty + terminal mismatch stacking energy*/
+            energy = constants.hairpin[30] + eLL(size) + constants.tstkh[seq.base(i)][seq.base(j)][seq.base(i + 1)][seq.base(j - 1)]; /* size penalty + terminal mismatch stacking energy*/
         }
 
         else if (size <= 30 && size > 4) {
-            energy = constants.hairpin[size] + constants.tstkh[seq.base(i)][seq.base(j)][seq.base(i + 1)][seq.base(j - 1)] + constants.eparam[4]; /* size penalty + terminal mismatch stacking energy*/
+            energy = constants.hairpin[size] + constants.tstkh[seq.base(i)][seq.base(j)][seq.base(i + 1)][seq.base(j - 1)]; /* size penalty + terminal mismatch stacking energy*/
         }
 
         else if (size == 4) {
@@ -420,7 +441,7 @@ namespace pmfe {
             if (constants.tloop.count(loopkey) != 0) {
                 tlink = constants.tloop.find(loopkey)->second; // But some loops have special contributions, stored in this table
             }
-            energy = tlink + constants.hairpin[size] + constants.tstkh[seq.base(i)][seq.base(j)][seq.base(i + 1)][seq.base(j - 1)] + constants.eparam[4];
+            energy = tlink + constants.hairpin[size] + constants.tstkh[seq.base(i)][seq.base(j)][seq.base(i + 1)][seq.base(j - 1)];
         }
 
         else if (size == 3) {
@@ -436,7 +457,7 @@ namespace pmfe {
 
         else if (size < 3 && size != 0) {
             /*  no terminal mismatch */
-            energy = constants.hairpin[size] + constants.eparam[4];
+            energy = constants.hairpin[size];
         } else if (size == 0)
             energy = constants.INFINITY_;
 
@@ -477,13 +498,13 @@ namespace pmfe {
         assert (j >= 0 && j < seq.len());
         assert (i < j);
 
-        return constants.stack[seq.base(i)][seq.base(j)][seq.base(i+1)][seq.base(j-1)] + constants.eparam[1];
+        return constants.stack[seq.base(i)][seq.base(j)][seq.base(i+1)][seq.base(j-1)];
     }
 
     mpq_class NNTM::calcVBI(int i, int j, const RNASequenceWithTables& seq) const {
         /*
           Helper method to populate the VBI array
-         */
+        */
 
         // Input specification
         assert (i >= 0 && i < seq.len());

@@ -16,26 +16,30 @@ namespace pmfe{
         NNTM(const NNDBConstants& constants, dangle_mode dangles, SimpleThreadPool& thread_pool);
 
         RNASequenceWithTables energy_tables(const RNASequence& seq) const;
-        mpq_class minimum_energy(const RNASequenceWithTables& seq) const;
+        mpq_class minimum_energy(RNASequenceWithTables& seq) const;
         RNAStructureWithScore mfe_structure(const RNASequenceWithTables& seq) const;
 
         ScoreVector score(const RNAStructure& structure, bool compute_w = true) const;
 
-        std::vector<RNAStructureWithScore> suboptimal_structures(const RNASequenceWithTables& seq, mpq_class delta, bool sorted = false) const;
+        std::vector<RNAStructureWithScore> suboptimal_structures(RNASequenceWithTables& seq, mpq_class delta, bool sorted = false) const;
 
     protected:
         // MFE helpers
-        void populate_internal_tables(int i, int j, RNASequenceWithTables& seq) const;
+        void populate_energy_tables(RNASequenceWithTables& seq) const;
+        void populate_energy_tables(int i, int j, RNASequenceWithTables& seq) const;
+        void populate_subopt_tables(RNASequenceWithTables& seq) const;
+        void populate_subopt_tables(int i, int j, RNASequenceWithTables& seq) const;
         mpq_class Ed3(int i, int j, const RNASequence& seq, bool inside = false) const;
         mpq_class Ed5(int i, int j, const RNASequence& seq, bool inside = false) const;
         mpq_class auPenalty(int i, int j, const RNASequence& seq) const;
+        mpq_class eLL(int size) const;
         mpq_class eL(int i, int j, int ip, int jp, const RNASequence& seq) const;
         mpq_class eH(int i, int j, const RNASequence& seq) const;
         mpq_class eS(int i, int j, const RNASequence& seq) const;
         mpq_class calcVBI(int i, int j, const RNASequenceWithTables& seq) const;
 
         // Traceback helpers
-        void traceW(int i, const RNASequenceWithTables& seq, RNAStructure& structure, ScoreVector& score) const;
+        bool traceW(int i, const RNASequenceWithTables& seq, RNAStructure& structure, ScoreVector& score) const;
         mpq_class traceV(int i, int j, const RNASequenceWithTables& seq, RNAStructure& structure, ScoreVector& score) const;
         mpq_class traceVM(int i, int j, const RNASequenceWithTables& seq, RNAStructure& structure, ScoreVector& score) const;
         mpq_class traceVBI(int i, int j, const RNASequenceWithTables& seq, RNAStructure& structure, ScoreVector& score) const;

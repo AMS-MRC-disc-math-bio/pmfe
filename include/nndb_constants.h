@@ -49,7 +49,6 @@ namespace pmfe {
         ParameterVector params;
 
         std::vector<mpq_class> poppen;
-        std::vector<mpq_class> eparam;
         std::vector<mpq_class> multConst; /* for multiloop penalties. */
         std::vector<mpq_class> inter; /* Contains size penalty for internal loops */
         std::vector<mpq_class> bulge; /* Contain the size penalty for bulges */
@@ -69,7 +68,6 @@ namespace pmfe {
     NNDBConstants(const ParameterVector params = ParameterVector()):
         params(params),
             poppen(5),
-            eparam(11),
             multConst(3),
             inter(31),
             bulge(31),
