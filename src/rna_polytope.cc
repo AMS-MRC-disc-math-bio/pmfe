@@ -78,7 +78,7 @@ namespace pmfe {
         outfile << "# Points: " << number_of_vertices() << std::endl;
         outfile << "# Facets: " << number_of_simplices() << std::endl << std::endl;
 
-        outfile << "#\t" << sequence << "m\tu\th\tw\te" << std::endl;
+        outfile << "#\t" << sequence << "\tm\tu\th\tw\te" << std::endl;
 
         // Initializing variables outside the loop is bad manners, but
         // we need it in order to have both indices
