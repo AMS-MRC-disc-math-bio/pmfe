@@ -12,7 +12,7 @@ To do this, run the following in your terminal:
 git clone https://github.com/AMS-MRC-disc-math-bio/pmfe.git
 ```
 
-This will download the code and extract it into a directory called `iB4e-GTfold-parameterizer`.
+This will download the code and extract it into a directory called `pmfe`.
 
 ### Dependencies
 This project depends on the [CGAL][cgal] computational geometry library, several libraries from the [Boost][boost] project, and the [GMP][gmp] arbitrary-precision arithmetic library.
