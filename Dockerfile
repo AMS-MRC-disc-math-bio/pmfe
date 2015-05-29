@@ -1,4 +1,4 @@
-# Build on a Debian "wheezy" foundation
+# Build on a Debian "jessie"/8.0 foundation
 FROM debian:jessie
 
 MAINTAINER Andrew Gainer-Dewar <andrew.gainer.dewar@gmail.com>
