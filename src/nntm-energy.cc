@@ -4,12 +4,12 @@
 #include <stdio.h>
 #include <math.h>
 #include <assert.h>
-#include <deque>
 
 #include "nntm.h"
 #include "nndb_constants.h"
 #include "thread_pool.h"
 #include "rational.h"
+#include "minbox.h"
 
 #include <boost/bind.hpp>
 
@@ -55,8 +55,8 @@ namespace pmfe {
                 continue;
             }
 
-            std::deque<Rational> w_vals;
-            w_vals.push_back(Rational::infinity());
+            MinBox<Rational> w_vals;
+            w_vals.insert(Rational::infinity());
 
             for (int i = 0; i < j-TURN; i++) {
                 Rational Wim1;
@@ -78,22 +78,22 @@ namespace pmfe {
                             Widjd += Ed3(i, j, seq);
                         }
 
-                        w_vals.push_back(Widjd);
+                        w_vals.insert(Widjd);
                         break;
                     }
 
                 case NO_DANGLE:
                     {
-                        w_vals.push_back(seq.V[i][j] + auPenalty(i, j, seq) + Wim1);
+                        w_vals.insert(seq.V[i][j] + auPenalty(i, j, seq) + Wim1);
                         break;
                     }
 
                 case CHOOSE_DANGLE:
                     {
-                        w_vals.push_back(seq.V[i][j] + auPenalty(i, j, seq) + Wim1);
-                        w_vals.push_back(seq.V[i+1][j] + auPenalty(i+1, j, seq) + Ed5(i+1, j, seq) + Wim1);
-                        w_vals.push_back(seq.V[i][j-1] + auPenalty(i, j-1, seq) + Ed3(i, j-1, seq) + Wim1);
-                        w_vals.push_back(seq.V[i+1][j-1] + auPenalty(i+1, j-1, seq) + Ed5(i+1, j-1, seq) + Ed3(i+1, j-1, seq) + Wim1);
+                        w_vals.insert(seq.V[i][j] + auPenalty(i, j, seq) + Wim1);
+                        w_vals.insert(seq.V[i+1][j] + auPenalty(i+1, j, seq) + Ed5(i+1, j, seq) + Wim1);
+                        w_vals.insert(seq.V[i][j-1] + auPenalty(i, j-1, seq) + Ed3(i, j-1, seq) + Wim1);
+                        w_vals.insert(seq.V[i+1][j-1] + auPenalty(i+1, j-1, seq) + Ed5(i+1, j-1, seq) + Ed3(i+1, j-1, seq) + Wim1);
                         break;
                     }
 
@@ -103,10 +103,10 @@ namespace pmfe {
                 }
             }
 
-            w_vals.push_back(seq.W[j-1]); // Base j is free
-            w_vals.push_back(0); // All bases up to j are free
+            w_vals.insert(seq.W[j-1]); // Base j is free
+            w_vals.insert(0); // All bases up to j are free
 
-            seq.W[j] = *std::min_element(w_vals.begin(), w_vals.end());
+            seq.W[j] = w_vals.minimum();
         }
 
         seq.energy_tables_populated = true;
@@ -119,8 +119,8 @@ namespace pmfe {
         assert (i < j);
 
         if (seq.can_pair(i, j)) {
-            std::deque<Rational> vm_vals;
-            vm_vals.push_back(Rational::infinity());
+            MinBox<Rational> vm_vals;
+            vm_vals.insert(Rational::infinity());
 
             Rational d3, d5;
             d3 = Ed3(i, j, seq, true);
@@ -129,22 +129,22 @@ namespace pmfe {
             switch (dangles) {
             case BOTH_DANGLE:
                 {
-                    vm_vals.push_back(seq.WMPrime[i+1][j-1] + d3 + d5 + auPenalty(i, j, seq) + constants.multConst[0] + constants.multConst[2]);
+                    vm_vals.insert(seq.WMPrime[i+1][j-1] + d3 + d5 + auPenalty(i, j, seq) + constants.multConst[0] + constants.multConst[2]);
                     break;
                 }
 
             case NO_DANGLE:
                 {
-                    vm_vals.push_back(seq.WMPrime[i+1][j-1] + auPenalty(i, j, seq) + constants.multConst[0] + constants.multConst[2]);
+                    vm_vals.insert(seq.WMPrime[i+1][j-1] + auPenalty(i, j, seq) + constants.multConst[0] + constants.multConst[2]);
                     break;
                 }
 
             case CHOOSE_DANGLE:
                 {
-                    vm_vals.push_back(seq.WMPrime[i+1][j-1] + auPenalty(i, j, seq) + constants.multConst[0] + constants.multConst[2]);
-                    vm_vals.push_back(seq.WMPrime[i+2][j-1] + d5 + auPenalty(i, j, seq) + constants.multConst[0] + constants.multConst[2] + constants.multConst[1]);
-                    vm_vals.push_back(seq.WMPrime[i+1][j-2] + d3 + auPenalty(i, j, seq) + constants.multConst[0] + constants.multConst[2] + constants.multConst[1]);
-                    vm_vals.push_back(seq.WMPrime[i+2][j-2] + d3 + d5 + auPenalty(i, j, seq) + constants.multConst[0] + constants.multConst[2] + 2*constants.multConst[1]);
+                    vm_vals.insert(seq.WMPrime[i+1][j-1] + auPenalty(i, j, seq) + constants.multConst[0] + constants.multConst[2]);
+                    vm_vals.insert(seq.WMPrime[i+2][j-1] + d5 + auPenalty(i, j, seq) + constants.multConst[0] + constants.multConst[2] + constants.multConst[1]);
+                    vm_vals.insert(seq.WMPrime[i+1][j-2] + d3 + auPenalty(i, j, seq) + constants.multConst[0] + constants.multConst[2] + constants.multConst[1]);
+                    vm_vals.insert(seq.WMPrime[i+2][j-2] + d3 + d5 + auPenalty(i, j, seq) + constants.multConst[0] + constants.multConst[2] + 2*constants.multConst[1]);
                     break;
                 }
 
@@ -153,36 +153,36 @@ namespace pmfe {
                 break;
             }
 
-            seq.VM[i][j] = *std::min_element(vm_vals.begin(), vm_vals.end());
+            seq.VM[i][j] = vm_vals.minimum();
 
-            std::deque<Rational> v_vals;
-            v_vals.push_back(Rational::infinity());
-            v_vals.push_back(seq.VM[i][j]);
+            MinBox<Rational> v_vals;
+            v_vals.insert(Rational::infinity());
+            v_vals.insert(seq.VM[i][j]);
 
-            v_vals.push_back(eH(i, j, seq));
-            v_vals.push_back(eS(i, j, seq) + seq.V[i+1][j-1]);
+            v_vals.insert(eH(i, j, seq));
+            v_vals.insert(eS(i, j, seq) + seq.V[i+1][j-1]);
 
             seq.VBI[i][j] = calcVBI(i, j, seq);
-            v_vals.push_back(seq.VBI[i][j]);
+            v_vals.insert(seq.VBI[i][j]);
 
-            seq.V[i][j] = *std::min_element(v_vals.begin(), v_vals.end());
+            seq.V[i][j] = v_vals.minimum();
         } else {
             seq.V[i][j] = Rational::infinity();
         }
 
-        std::deque<Rational> wmp_vals;
-        wmp_vals.push_back(Rational::infinity());
+        MinBox<Rational> wmp_vals;
+        wmp_vals.insert(Rational::infinity());
 
         for (int h = i+TURN+1 ; h <= j-TURN-2; ++h) {
-            wmp_vals.push_back(seq.WM[i][h] + seq.WM[h+1][j]);
+            wmp_vals.insert(seq.WM[i][h] + seq.WM[h+1][j]);
         }
 
-        seq.WMPrime[i][j] = *std::min_element(wmp_vals.begin(), wmp_vals.end());
+        seq.WMPrime[i][j] = wmp_vals.minimum();
 
         // WM begin
-        std::deque<Rational> wm_vals;
-        wm_vals.push_back(Rational::infinity());
-        wm_vals.push_back(seq.WMPrime[i][j]);
+        MinBox<Rational> wm_vals;
+        wm_vals.insert(Rational::infinity());
+        wm_vals.insert(seq.WMPrime[i][j]);
 
         switch (dangles) {
         case BOTH_DANGLE:
@@ -197,24 +197,24 @@ namespace pmfe {
                     energy += Ed3(i, j, seq);
                 }
 
-                wm_vals.push_back(energy);
+                wm_vals.insert(energy);
                 break;
             }
 
         case NO_DANGLE: {
-            wm_vals.push_back(seq.V[i][j] + auPenalty(i, j, seq) + constants.multConst[2]);
+            wm_vals.insert(seq.V[i][j] + auPenalty(i, j, seq) + constants.multConst[2]);
             break;
         }
 
         case CHOOSE_DANGLE:
             {
-                wm_vals.push_back(seq.V[i][j] + auPenalty(i, j, seq) + constants.multConst[2]); // no dangle
+                wm_vals.insert(seq.V[i][j] + auPenalty(i, j, seq) + constants.multConst[2]); // no dangle
 
-                wm_vals.push_back(seq.V[i+1][j] + Ed5(i+1, j, seq) + auPenalty(i+1, j, seq) + constants.multConst[2] + constants.multConst[1]); //i dangle
+                wm_vals.insert(seq.V[i+1][j] + Ed5(i+1, j, seq) + auPenalty(i+1, j, seq) + constants.multConst[2] + constants.multConst[1]); //i dangle
 
-                wm_vals.push_back(seq.V[i][j-1] + Ed3(i, j-1, seq) + auPenalty(i, j-1, seq) + constants.multConst[2] + constants.multConst[1]);  //j dangle
+                wm_vals.insert(seq.V[i][j-1] + Ed3(i, j-1, seq) + auPenalty(i, j-1, seq) + constants.multConst[2] + constants.multConst[1]);  //j dangle
 
-                wm_vals.push_back(seq.V[i+1][j-1] + Ed5(i+1, j-1, seq) + Ed3(i+1, j-1, seq) + auPenalty(i+1, j-1, seq) + constants.multConst[2] + 2*constants.multConst[1]); //i,j dangle
+                wm_vals.insert(seq.V[i+1][j-1] + Ed5(i+1, j-1, seq) + Ed3(i+1, j-1, seq) + auPenalty(i+1, j-1, seq) + constants.multConst[2] + 2*constants.multConst[1]); //i,j dangle
 
                 break;
             }
@@ -224,11 +224,11 @@ namespace pmfe {
             break;
         }
 
-        wm_vals.push_back(seq.WM[i+1][j] + constants.multConst[1]); //i dangle
+        wm_vals.insert(seq.WM[i+1][j] + constants.multConst[1]); //i dangle
 
-        wm_vals.push_back(seq.WM[i][j-1] + constants.multConst[1]); //j dangle
+        wm_vals.insert(seq.WM[i][j-1] + constants.multConst[1]); //j dangle
 
-        seq.WM[i][j] = *std::min_element(wm_vals.begin(), wm_vals.end());
+        seq.WM[i][j] = wm_vals.minimum();
         // WM end
     }
 
@@ -511,8 +511,8 @@ namespace pmfe {
         assert (j >= 0 && j < seq.len());
         assert (i < j);
 
-        std::deque<Rational> vals;
-        vals.push_back(Rational::infinity());
+        MinBox<Rational> vals;
+        vals.insert(Rational::infinity());
 
         for (int p = i+1; p <= std::min(j-2-TURN, i+MAXLOOP+1) ; ++p) {
             int minq = j-i+p-MAXLOOP-2;
@@ -528,12 +528,12 @@ namespace pmfe {
 
             for (int q = minq; q <= maxq; q++) {
                 if (q - p > TURN && seq.can_pair(p, q)) {
-                    vals.push_back(eL(i, j, p, q, seq) + seq.V[p][q]);
+                    vals.insert(eL(i, j, p, q, seq) + seq.V[p][q]);
                 }
             }
         }
 
-        Rational VBIij = *std::min_element(vals.begin(), vals.end());
+        Rational VBIij = vals.minimum();
         return VBIij;
     }
 };
