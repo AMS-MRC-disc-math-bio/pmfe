@@ -2,7 +2,6 @@
 #define _MFE_MAIN_H_
 
 #include "pmfe_types.h"
-#include <gmpxx.h>
 
 #include <boost/filesystem.hpp>
 

@@ -12,7 +12,7 @@
 namespace fs = boost::filesystem;
 
 namespace pmfe {
-    std::vector<RNAStructureWithScore> suboptimal_structures(const fs::path seq_file, const ParameterVector& params, const dangle_mode& dangles, const mpq_class& delta, bool sorted, size_t num_threads) {
+    std::vector<RNAStructureWithScore> suboptimal_structures(const fs::path seq_file, const ParameterVector& params, const dangle_mode& dangles, const Rational& delta, bool sorted, size_t num_threads) {
         SimpleThreadPool thread_pool(num_threads);
 
         Turner99 constants(thread_pool, params);

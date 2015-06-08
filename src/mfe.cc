@@ -28,7 +28,6 @@
 #include <cassert>
 #include <iostream>
 
-#include <gmpxx.h>
 #include <boost/filesystem.hpp>
 
 #include "mfe.h"
@@ -36,6 +35,7 @@
 #include "nntm.h"
 #include "pmfe_types.h"
 #include "thread_pool.h"
+#include "rational.h"
 
 namespace pmfe {
     namespace fs = boost::filesystem;
@@ -64,7 +64,7 @@ namespace pmfe {
 
         RNASequenceWithTables seq_annotated = energy_model.energy_tables(seq);
 
-        mpq_class energy = energy_model.minimum_energy(seq_annotated);
+        Rational energy = energy_model.minimum_energy(seq_annotated);
 
         // Find the associated structure
         RNAStructureWithScore scored_structure = energy_model.mfe_structure(seq_annotated);

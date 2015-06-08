@@ -2,7 +2,6 @@
 
 #include <utility>
 #include <vector>
-#include <gmpxx.h>
 #include <cmath>
 #include <iostream>
 #include <stdexcept>
@@ -14,6 +13,7 @@
 #include <assert.h>
 
 #include "pmfe_types.h"
+#include "rational.h"
 
 #include <boost/filesystem.hpp>
 #include <boost/filesystem/fstream.hpp>
@@ -24,10 +24,10 @@
 namespace pmfe {
     namespace fs = boost::filesystem;
 
-    const mpq_class multiloop_default = mpq_class(17, 5);
-    const mpq_class unpaired_default = mpq_class(0);
-    const mpq_class branch_default = mpq_class(2, 5);
-    const mpq_class dummy_default = mpq_class(1);
+    const Rational multiloop_default = Rational(17, 5);
+    const Rational unpaired_default = Rational(0);
+    const Rational branch_default = Rational(2, 5);
+    const Rational dummy_default = Rational(1);
 
     const char d3symb = '>';
     const char d5symb = '<';
@@ -95,8 +95,8 @@ namespace pmfe {
 
     bool operator<(const ScoreVector& a, const ScoreVector& b) {
         // The most useful ordering on score vectors is lexicographic with energy first
-        std::vector<mpq_class> a_vect = {a.energy, a.multiloops, a.unpaired, a.branches, a.w};
-        std::vector<mpq_class> b_vect = {b.energy, b.multiloops, b.unpaired, b.branches, b.w};
+        std::vector<Rational> a_vect = {a.energy, a.multiloops, a.unpaired, a.branches, a.w};
+        std::vector<Rational> b_vect = {b.energy, b.multiloops, b.unpaired, b.branches, b.w};
 
         return std::lexicographical_compare(a_vect.begin(), a_vect.end(), b_vect.begin(), b_vect.end());
     }
@@ -131,8 +131,8 @@ namespace pmfe {
         return res.str();
     };
 
-    mpq_class get_mpq_from_word(std::string word) {
-        mpq_class result;
+    Rational get_rational_from_word(std::string word) {
+        Rational result;
         std::size_t decimalpoint = word.find('.');
         bool negative = (word.find('-') != std::string::npos);
         if (decimalpoint != std::string::npos) {
@@ -140,19 +140,19 @@ namespace pmfe {
             std::string fracpart = word.substr(decimalpoint+1);
 
             if (intpart == "") intpart = "0";
-            mpz_class theint (intpart, 10);
+            Integer theint (intpart, 10);
             theint = abs(theint);
 
             // Carve out the fractional part. Surprisingly fiddly!
             int fracdenom = pow(10, fracpart.length());
-            mpz_class fracval (fracpart, 10);
-            mpq_class thefrac (fracval, fracdenom);
+            Integer fracval (fracpart, 10);
+            Rational thefrac (fracval, fracdenom);
             thefrac.canonicalize();
 
             result = theint + thefrac;
             if (negative) result *= -1;
         } else {
-            mpq_class thevalue (word);
+            Rational thevalue (word);
             result = thevalue;
         }
         result.canonicalize();
@@ -300,7 +300,7 @@ namespace pmfe {
         return result;
     }
 
-    RNASequenceWithTables::RNASequenceWithTables(const RNASequence& seq, mpq_class infinity_value):
+    RNASequenceWithTables::RNASequenceWithTables(const RNASequence& seq):
         RNASequence(seq),
         W(boost::extents[len()]),
         V(boost::extents[len()][len()]),
@@ -312,14 +312,14 @@ namespace pmfe {
         FM1(boost::extents[len()][len()])
     {
         // All the arrays should be filled with infinity
-        std::fill(W.data(), W.data() + W.num_elements(), infinity_value);
-        std::fill(V.data(), V.data() + V.num_elements(), infinity_value);
-        std::fill(VBI.data(), VBI.data() + VBI.num_elements(), infinity_value);
-        std::fill(VM.data(), VM.data() + VM.num_elements(), infinity_value);
-        std::fill(WM.data(), WM.data() + WM.num_elements(), infinity_value);
-        std::fill(WMPrime.data(), WMPrime.data() + WMPrime.num_elements(), infinity_value);
-        std::fill(FM.data(), FM.data() + FM.num_elements(), infinity_value);
-        std::fill(FM1.data(), FM1.data() + FM1.num_elements(), infinity_value);
+        std::fill(W.data(), W.data() + W.num_elements(), Rational::infinity());
+        std::fill(V.data(), V.data() + V.num_elements(), Rational::infinity());
+        std::fill(VBI.data(), VBI.data() + VBI.num_elements(), Rational::infinity());
+        std::fill(VM.data(), VM.data() + VM.num_elements(), Rational::infinity());
+        std::fill(WM.data(), WM.data() + WM.num_elements(), Rational::infinity());
+        std::fill(WMPrime.data(), WMPrime.data() + WMPrime.num_elements(), Rational::infinity());
+        std::fill(FM.data(), FM.data() + FM.num_elements(), Rational::infinity());
+        std::fill(FM1.data(), FM1.data() + FM1.num_elements(), Rational::infinity());
     }
 
     void RNASequenceWithTables::print_debug(){
@@ -452,16 +452,16 @@ namespace pmfe {
         known_energy(0)
     {};
 
-    RNAPartialStructure::RNAPartialStructure(const RNASequence& seq, mpq_class known_energy):
+    RNAPartialStructure::RNAPartialStructure(const RNASequence& seq, Rational known_energy):
         RNAStructure(seq),
         known_energy(known_energy)
     {};
 
-    void RNAPartialStructure::accumulate(mpq_class energy) {
+    void RNAPartialStructure::accumulate(Rational energy) {
         known_energy += energy;
     };
 
-    mpq_class RNAPartialStructure::total() const {
+    Rational RNAPartialStructure::total() const {
         return known_energy;
     };
 

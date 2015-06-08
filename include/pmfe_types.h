@@ -5,7 +5,6 @@
 
 #include <string>
 #include <utility>
-#include <gmpxx.h>
 #include <iostream>
 
 #include <deque>
@@ -15,12 +14,13 @@
 #include "boost/multi_array.hpp"
 
 #include "interval_tree.h"
+#include "rational.h"
 
 namespace pmfe {
-    extern const mpq_class multiloop_default;
-    extern const mpq_class unpaired_default;
-    extern const mpq_class branch_default;
-    extern const mpq_class dummy_default;
+    extern const Rational multiloop_default;
+    extern const Rational unpaired_default;
+    extern const Rational branch_default;
+    extern const Rational dummy_default;
 
     namespace fs = boost::filesystem;
 
@@ -47,7 +47,7 @@ namespace pmfe {
 
     class ParameterVector {
     public:
-    ParameterVector(mpq_class multiloop_penalty = multiloop_default, mpq_class unpaired_penalty = unpaired_default, mpq_class branch_penalty = branch_default, mpq_class dummy_scaling = dummy_default) :
+    ParameterVector(Rational multiloop_penalty = multiloop_default, Rational unpaired_penalty = unpaired_default, Rational branch_penalty = branch_default, Rational dummy_scaling = dummy_default) :
         multiloop_penalty(multiloop_penalty),
             unpaired_penalty(unpaired_penalty),
             branch_penalty(branch_penalty),
@@ -55,7 +55,7 @@ namespace pmfe {
             {
             this->canonicalize();
         };
-        mpq_class multiloop_penalty, unpaired_penalty, branch_penalty, dummy_scaling;
+        Rational multiloop_penalty, unpaired_penalty, branch_penalty, dummy_scaling;
 
 
         void canonicalize() {
@@ -74,7 +74,7 @@ namespace pmfe {
 
     class ScoreVector {
     public:
-    ScoreVector(mpz_class multiloops = 0, mpz_class unpaired = 0, mpz_class branches = 0, mpq_class w = mpq_class(0), mpq_class energy = mpq_class(0)) :
+    ScoreVector(Integer multiloops = 0, Integer unpaired = 0, Integer branches = 0, Rational w = Rational(0), Rational energy = Rational(0)) :
         multiloops(multiloops),
             branches(branches),
             unpaired(unpaired),
@@ -83,8 +83,8 @@ namespace pmfe {
             {
             this->canonicalize();
         };
-        mpz_class multiloops, branches, unpaired;
-        mpq_class w, energy;
+        Integer multiloops, branches, unpaired;
+        Rational w, energy;
 
         std::string print_as_list();
 
@@ -102,7 +102,7 @@ namespace pmfe {
         friend ScoreVector operator+(const ScoreVector& lhs, const ScoreVector& rhs);
     };
 
-    mpq_class get_mpq_from_word(std::string word);
+    Rational get_rational_from_word(std::string word);
 
     class RNASequence {
         /**
@@ -132,16 +132,16 @@ namespace pmfe {
         **/
     public:
         RNASequenceWithTables() {}; // Default constructor for compiler
-        RNASequenceWithTables(const RNASequence& seq, mpq_class infinity_value = mpq_class(9999999999999)); // TODO: This is a really gross way to handle this! Find a better one.
+        RNASequenceWithTables(const RNASequence& seq);
 
-        boost::multi_array<mpq_class, 1> W;
-        boost::multi_array<mpq_class, 2> V;
-        boost::multi_array<mpq_class, 2> VBI;
-        boost::multi_array<mpq_class, 2> VM;
-        boost::multi_array<mpq_class, 2> WM;
-        boost::multi_array<mpq_class, 2> WMPrime;
-        boost::multi_array<mpq_class, 2> FM;
-        boost::multi_array<mpq_class, 2> FM1;
+        boost::multi_array<Rational, 1> W;
+        boost::multi_array<Rational, 2> V;
+        boost::multi_array<Rational, 2> VBI;
+        boost::multi_array<Rational, 2> VM;
+        boost::multi_array<Rational, 2> WM;
+        boost::multi_array<Rational, 2> WMPrime;
+        boost::multi_array<Rational, 2> FM;
+        boost::multi_array<Rational, 2> FM1;
 
         bool energy_tables_populated = false;
         bool subopt_tables_populated = false;
@@ -210,9 +210,9 @@ Representation of an RNA secondary structure that has been assigned a score
     public:
         int i, j;
         subopt_label label;
-        mpq_class minimum_energy;
+        Rational minimum_energy;
 
-    Segment(int i, int j, subopt_label label, mpq_class minimum_energy):
+    Segment(int i, int j, subopt_label label, Rational minimum_energy):
         i(i),
             j(j),
             label(label),
@@ -228,10 +228,10 @@ Representation of an RNA secondary structure that has been assigned a score
         **/
     public:
         RNAPartialStructure(); // Default constructor for compiler
-        RNAPartialStructure(const RNASequence& seq, mpq_class known_energy = 0); // Construct a (blank) structure from a given sequence with specified energy
+        RNAPartialStructure(const RNASequence& seq, Rational known_energy = 0); // Construct a (blank) structure from a given sequence with specified energy
 
-        void accumulate(mpq_class energy); // Add to the known energy
-        mpq_class total() const; // Return the known energy
+        void accumulate(Rational energy); // Add to the known energy
+        Rational total() const; // Return the known energy
         void push(const Segment& seg); // Push a segment onto the stack
         void pop(); // Remove a segment from the stack
         Segment top() const; // Retrieve the top segment of the stack
@@ -239,7 +239,7 @@ Representation of an RNA secondary structure that has been assigned a score
 
     protected:
         std::stack<Segment> seg_stack;
-        mpq_class known_energy;
+        Rational known_energy;
     };
 
     typedef std::stack<RNAPartialStructure> PartialStructureStack;

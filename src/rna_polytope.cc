@@ -29,16 +29,8 @@ namespace pmfe {
     };
 
     BBP::FPoint scored_structure_to_fp(RNAStructureWithScore structure) {
-        mpq_t values [4];
-        mpq_inits(values[0], values[1], values[2], values[3], NULL);
-
-        mpq_set_z(values[0], structure.score.multiloops.get_mpz_t());
-        mpq_set_z(values[1], structure.score.unpaired.get_mpz_t());
-        mpq_set_z(values[2], structure.score.branches.get_mpz_t());
-        mpq_set(values[3], structure.score.w.get_mpq_t());
-
-        BBP::FPoint result(4, values, values+4);
-        mpq_clears(values[0], values[1], values[2], values[3], NULL);
+        std::vector<Rational> values = {structure.score.multiloops, structure.score.unpaired, structure.score.branches, structure.score.w};
+        BBP::FPoint result(4, values.begin(), values.end());
         return result;
     };
 

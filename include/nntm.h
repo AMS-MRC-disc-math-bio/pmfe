@@ -3,9 +3,11 @@
 
 #include "nndb_constants.h"
 #include "pmfe_types.h"
-#include <gmpxx.h>
-#include <vector>
+#include "rational.h"
 #include "thread_pool.h"
+
+#include <vector>
+
 
 namespace pmfe{
     class NNTM {
@@ -16,12 +18,12 @@ namespace pmfe{
         NNTM(const NNDBConstants& constants, dangle_mode dangles, SimpleThreadPool& thread_pool);
 
         RNASequenceWithTables energy_tables(const RNASequence& seq) const;
-        mpq_class minimum_energy(RNASequenceWithTables& seq) const;
+        Rational minimum_energy(RNASequenceWithTables& seq) const;
         RNAStructureWithScore mfe_structure(const RNASequenceWithTables& seq) const;
 
         ScoreVector score(const RNAStructure& structure, bool compute_w = true) const;
 
-        std::vector<RNAStructureWithScore> suboptimal_structures(RNASequenceWithTables& seq, mpq_class delta, bool sorted = false) const;
+        std::vector<RNAStructureWithScore> suboptimal_structures(RNASequenceWithTables& seq, Rational delta, bool sorted = false) const;
 
     protected:
         // MFE helpers
@@ -29,22 +31,22 @@ namespace pmfe{
         void populate_energy_tables(int i, int j, RNASequenceWithTables& seq) const;
         void populate_subopt_tables(RNASequenceWithTables& seq) const;
         void populate_subopt_tables(int i, int j, RNASequenceWithTables& seq) const;
-        mpq_class Ed3(int i, int j, const RNASequence& seq, bool inside = false) const;
-        mpq_class Ed5(int i, int j, const RNASequence& seq, bool inside = false) const;
-        mpq_class auPenalty(int i, int j, const RNASequence& seq) const;
-        mpq_class eLL(int size) const;
-        mpq_class eL(int i, int j, int ip, int jp, const RNASequence& seq) const;
-        mpq_class eH(int i, int j, const RNASequence& seq) const;
-        mpq_class eS(int i, int j, const RNASequence& seq) const;
-        mpq_class calcVBI(int i, int j, const RNASequenceWithTables& seq) const;
+        Rational Ed3(int i, int j, const RNASequence& seq, bool inside = false) const;
+        Rational Ed5(int i, int j, const RNASequence& seq, bool inside = false) const;
+        Rational auPenalty(int i, int j, const RNASequence& seq) const;
+        Rational eLL(int size) const;
+        Rational eL(int i, int j, int ip, int jp, const RNASequence& seq) const;
+        Rational eH(int i, int j, const RNASequence& seq) const;
+        Rational eS(int i, int j, const RNASequence& seq) const;
+        Rational calcVBI(int i, int j, const RNASequenceWithTables& seq) const;
 
         // Traceback helpers
         bool traceW(int i, const RNASequenceWithTables& seq, RNAStructure& structure, ScoreVector& score) const;
-        mpq_class traceV(int i, int j, const RNASequenceWithTables& seq, RNAStructure& structure, ScoreVector& score) const;
-        mpq_class traceVM(int i, int j, const RNASequenceWithTables& seq, RNAStructure& structure, ScoreVector& score) const;
-        mpq_class traceVBI(int i, int j, const RNASequenceWithTables& seq, RNAStructure& structure, ScoreVector& score) const;
-        mpq_class traceWM(int i, int j, const RNASequenceWithTables& seq, RNAStructure& structure, ScoreVector& score) const;
-        mpq_class traceWMPrime(int i, int j, const RNASequenceWithTables& seq, RNAStructure& structure, ScoreVector& score) const;
+        Rational traceV(int i, int j, const RNASequenceWithTables& seq, RNAStructure& structure, ScoreVector& score) const;
+        Rational traceVM(int i, int j, const RNASequenceWithTables& seq, RNAStructure& structure, ScoreVector& score) const;
+        Rational traceVBI(int i, int j, const RNASequenceWithTables& seq, RNAStructure& structure, ScoreVector& score) const;
+        Rational traceWM(int i, int j, const RNASequenceWithTables& seq, RNAStructure& structure, ScoreVector& score) const;
+        Rational traceWMPrime(int i, int j, const RNASequenceWithTables& seq, RNAStructure& structure, ScoreVector& score) const;
 
         // Scoring helpers
         ScoreVector scoreTree(const RNAStructureTree& tree) const; // Score a whole structure tree
@@ -54,12 +56,12 @@ namespace pmfe{
         ScoreVector scoreE(const RNAStructureTree& tree) const; // Compute the energy associated to the external loop node
 
         // Suboptimal structure helpers
-        bool subopt_process_top_structure(const RNASequenceWithTables& seq, RNAPartialStructure& ps, PartialStructureStack& pstack, mpq_class upper_bound) const;
-        bool subopt_traceV(int i, int j, const RNASequenceWithTables& seq, RNAPartialStructure& ps, PartialStructureStack& pstack, mpq_class upper_bound) const;
-        bool subopt_traceVBI(int i, int j, const RNASequenceWithTables& seq, RNAPartialStructure& ps, PartialStructureStack& pstack, mpq_class upper_bound) const;
-        bool subopt_traceW(int i, int j, const RNASequenceWithTables& seq, RNAPartialStructure& ps, PartialStructureStack& pstack, mpq_class upper_bound) const;
-        bool subopt_traceM1(int i, int j, const RNASequenceWithTables& seq, RNAPartialStructure& ps, PartialStructureStack& pstack, mpq_class upper_bound) const;
-        bool subopt_traceM(int i, int j, const RNASequenceWithTables& seq, RNAPartialStructure& ps, PartialStructureStack& pstack, mpq_class upper_bound) const;
+        bool subopt_process_top_structure(const RNASequenceWithTables& seq, RNAPartialStructure& ps, PartialStructureStack& pstack, Rational upper_bound) const;
+        bool subopt_traceV(int i, int j, const RNASequenceWithTables& seq, RNAPartialStructure& ps, PartialStructureStack& pstack, Rational upper_bound) const;
+        bool subopt_traceVBI(int i, int j, const RNASequenceWithTables& seq, RNAPartialStructure& ps, PartialStructureStack& pstack, Rational upper_bound) const;
+        bool subopt_traceW(int i, int j, const RNASequenceWithTables& seq, RNAPartialStructure& ps, PartialStructureStack& pstack, Rational upper_bound) const;
+        bool subopt_traceM1(int i, int j, const RNASequenceWithTables& seq, RNAPartialStructure& ps, PartialStructureStack& pstack, Rational upper_bound) const;
+        bool subopt_traceM(int i, int j, const RNASequenceWithTables& seq, RNAPartialStructure& ps, PartialStructureStack& pstack, Rational upper_bound) const;
 
         // Threading
         SimpleThreadPool& thread_pool;
