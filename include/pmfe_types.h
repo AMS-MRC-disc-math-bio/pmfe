@@ -123,7 +123,8 @@ namespace pmfe {
 
     protected:
         std::string seq_txt;
-        void sanitize_string();
+        boost::multi_array<bool, 2> valid_pairs;
+        void preprocess();
     };
 
     class RNASequenceWithTables: public RNASequence {

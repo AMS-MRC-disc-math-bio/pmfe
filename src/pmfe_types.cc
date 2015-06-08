@@ -160,8 +160,10 @@ namespace pmfe {
     };
 
     RNASequence::RNASequence(const std::string& seq):
-        seq_txt(seq) {
-        sanitize_string();
+        seq_txt(seq)
+    {
+        valid_pairs.resize(boost::extents[len()][len()]);
+        preprocess();
     };
 
     RNASequence::RNASequence(const fs::path& filename) {
@@ -188,10 +190,12 @@ namespace pmfe {
         }
 
         seq_txt = tempseq;
-        sanitize_string();
+
+        valid_pairs.resize(boost::extents[len()][len()]);
+        preprocess();
     }
 
-    void RNASequence::sanitize_string() {
+    void RNASequence::preprocess() {
         // Apply some processing to each character of the seq_txt string
         for (int i = 0; i < len(); ++i) {
             // Capitalize if the base is valid, throw an exception if not
@@ -217,6 +221,20 @@ namespace pmfe {
                 error_message << "At position " << i << ", found " << seq_txt[i] << ", which is an invalid RNA base.";
                 throw std::invalid_argument(error_message.str());
                 break;
+            }
+        }
+
+        // Populate valid_pairs
+        std::set<std::string> RNAPairs = {"AU", "UA", "CG", "GC", "GU", "UG"};
+
+        for (int i = 0; i < len(); ++i) {
+            for (int j = 0; j < i; ++j) {
+                std::string thepair = seq_txt.substr(i, 1) + seq_txt.substr(j, 1);
+                if (RNAPairs.count(thepair) == 0) {
+                    valid_pairs[i][j] = valid_pairs[j][i] = false;
+                } else {
+                    valid_pairs[i][j] = valid_pairs[j][i] = true;
+                }
             }
         }
     }
@@ -253,16 +271,8 @@ namespace pmfe {
         return seq_txt.substr(i, j-i+1);
     }
 
-    // The C++98 specification makes assigning sets quite fiddly, so we use a Boost hack
-    std::set<std::string> valid_pairs = boost::assign::list_of("AU")("UA")("CG")("GC")("GU")("UG");
-
     bool RNASequence::can_pair(int i, int j) const {
-        std::string thepair = seq_txt.substr(i, 1) + seq_txt.substr(j, 1);
-        if (valid_pairs.count(thepair) == 0) {
-            return false;
-        } else {
-            return true;
-        }
+        return valid_pairs[i][j];
     }
 
     char RNASequence::operator[](const int index) const {
