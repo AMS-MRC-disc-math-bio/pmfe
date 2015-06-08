@@ -162,7 +162,6 @@ namespace pmfe {
     RNASequence::RNASequence(const std::string& seq):
         seq_txt(seq)
     {
-        valid_pairs.resize(boost::extents[len()][len()]);
         preprocess();
     };
 
@@ -191,7 +190,6 @@ namespace pmfe {
 
         seq_txt = tempseq;
 
-        valid_pairs.resize(boost::extents[len()][len()]);
         preprocess();
     }
 
@@ -225,10 +223,12 @@ namespace pmfe {
         }
 
         // Populate valid_pairs
+        valid_pairs.resize(boost::extents[len()][len()]);
+
         std::set<std::string> RNAPairs = {"AU", "UA", "CG", "GC", "GU", "UG"};
 
         for (int i = 0; i < len(); ++i) {
-            for (int j = 0; j < i; ++j) {
+            for (int j = i + 1; j < len(); ++j) {
                 std::string thepair = seq_txt.substr(i, 1) + seq_txt.substr(j, 1);
                 if (RNAPairs.count(thepair) == 0) {
                     valid_pairs[i][j] = valid_pairs[j][i] = false;
