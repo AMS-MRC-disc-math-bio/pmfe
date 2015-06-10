@@ -47,6 +47,15 @@ namespace iB4e
         typedef typename LinearAlgebra::Vector LVector;
         typedef typename ConvexHull::Facet_iterator Facet_iterator;
         typedef typename FVector::Base_vector Base_vector;
+
+
+        // May be implemented by derived classes
+        virtual void hook_preinit() {};
+        virtual void hook_postinit() {};
+        virtual void hook_perloop(size_t confirmed) {};
+        virtual void hook_unconfirmed(Facet_iterator facet) {};
+        virtual void hook_confirmed(Facet_iterator facet) {};
+        virtual void hook_postloop() {};
     };
 
     template <typename F>
@@ -69,6 +78,8 @@ namespace iB4e
         // TODO: Why is this trying certain vectors many times?
 
         // Huggins' initialization loop
+        hook_preinit();
+
         while (this->current_dimension() < dim) {
             LMatrix A;
             // Construct some helper objects
@@ -125,10 +136,14 @@ namespace iB4e
         assert(this->is_valid());
         assert(this->current_dimension() == dim);
 
+        hook_postinit();
+
         // MAIN LOOP
         bool all_confirmed_so_far = false;
         int confirmed = 0;
         while (!all_confirmed_so_far) {
+            hook_perloop(confirmed);
+
             all_confirmed_so_far = true;
 
             // Attempt to confirm every facet
@@ -140,11 +155,13 @@ namespace iB4e
 
                     switch (hp.oriented_side(result)) {
                     case CGAL::ON_POSITIVE_SIDE:
+                        hook_unconfirmed(f);
                         this->insert(result); // If so, add the new point and break the inner loop
                         all_confirmed_so_far = false;
                         break;
 
                     case CGAL::ON_ORIENTED_BOUNDARY:
+                        hook_confirmed(f);
                         f->confirm(); // Otherwise, mark the facet as confirmed and continue
                         confirmed++;
                         break;
@@ -164,6 +181,8 @@ namespace iB4e
                 }
             }
         }
+
+        hook_postloop();
         // END LOGIC
     };
 }

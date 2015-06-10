@@ -15,6 +15,11 @@
 #include "boost/filesystem.hpp"
 #include "boost/filesystem/fstream.hpp"
 
+#define BOOST_LOG_DYN_LINK 1 // Fix an issue with dynamic library loading
+#include <boost/log/core.hpp>
+#include <boost/log/trivial.hpp>
+#include <boost/log/expressions.hpp>
+
 namespace fs = boost::filesystem;
 
 namespace pmfe {
@@ -55,7 +60,7 @@ namespace pmfe {
         BBP::FPoint result = scored_structure_to_fp(scored_structure);
 
         // TODO: Handle storing stuctures in class after conversion to dD_triangulation
-        structures[result] = scored_structure;
+        structures.insert(std::make_pair(result, scored_structure));
         return result;
     };
 
@@ -79,5 +84,21 @@ namespace pmfe {
         for (i = 1, v = hull_vertices_begin(); v != hull_vertices_end(); ++i, ++v) {
             outfile << i << "\t" << structures.at(associated_point(v)) << std::endl;
         }
+    };
+
+    void RNAPolytope::hook_preinit() {
+        BOOST_LOG_TRIVIAL(info) << "Initializing polytope.";
+    };
+
+    void RNAPolytope::hook_postinit() {
+        BOOST_LOG_TRIVIAL(info) << "Initialization complete. Beginning loop.";
+    };
+
+    void RNAPolytope::hook_perloop(size_t confirmed) {
+        BOOST_LOG_TRIVIAL(info) << confirmed << " / " << number_of_simplices() << " known facets confirmed.";
+    };
+
+    void RNAPolytope::hook_postloop() {
+        BOOST_LOG_TRIVIAL(info) << "Polytope complete.";
     };
 };
