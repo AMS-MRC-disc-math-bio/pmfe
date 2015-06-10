@@ -95,7 +95,7 @@ namespace pmfe {
     };
 
     void RNAPolytope::hook_perloop(size_t confirmed) {
-        BOOST_LOG_TRIVIAL(info) << confirmed << " / " << number_of_simplices() << " known facets confirmed.";
+        BOOST_LOG_TRIVIAL(info) << "Facets (confirmed / known): " << confirmed << " / " << number_of_simplices() << ".";
     };
 
     void RNAPolytope::hook_postloop() {
