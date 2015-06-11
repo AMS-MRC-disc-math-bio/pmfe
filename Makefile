@@ -1,3 +1,5 @@
+CXX = mpic++
+
 # source files
 SRC := $(wildcard src/*.cc)
 OBJ := $(SRC:.cc=.o)
@@ -17,7 +19,6 @@ HDR := $(wildcard src/*.h)
 
 # include directories
 INCLUDES += -Iinclude
-INCLUDES += -IiB4e
 INCLUDES += -I/usr/local/include # For Homebrew
 
 # C++ compiler flags
@@ -38,8 +39,10 @@ LIBS += -lboost_system
 LIBS += -lboost_thread
 LIBS += -lpthread
 LIBS += -lboost_log
+LIBS += -lboost_mpi
+LIBS += -lboost_serialization
 
-BIN = pmfe-findmfe pmfe-scorer pmfe-parametrizer pmfe-subopt pmfe-tests
+BIN = pmfe-parametrizer
 all: $(OBJ) $(BIN)
 
 -include $(DEP)
@@ -47,19 +50,7 @@ all: $(OBJ) $(BIN)
 debug: CXXFLAGS += -O0
 debug: all
 
-pmfe-findmfe: $(LIBOBJ) src/bin-findmfe.o
-	$(CXX) $(LDFLAGS) $(CXXFLAGS) $^ -o $@ $(LIBS)
-
-pmfe-scorer: $(LIBOBJ) src/bin-scorer.o
-	$(CXX) $(LDFLAGS) $(CXXFLAGS) $^ -o $@ $(LIBS)
-
 pmfe-parametrizer: $(LIBOBJ) src/bin-parametrizer.o
-	$(CXX) $(LDFLAGS) $(CXXFLAGS) $^ -o $@ $(LIBS)
-
-pmfe-subopt: $(LIBOBJ) src/bin-subopt.o
-	$(CXX) $(LDFLAGS) $(CXXFLAGS) $^ -o $@ $(LIBS)
-
-pmfe-tests: $(LIBOBJ) $(TESTOBJ) src/bin-tests.o
 	$(CXX) $(LDFLAGS) $(CXXFLAGS) $^ -o $@ $(LIBS)
 
 %.o: %.cc

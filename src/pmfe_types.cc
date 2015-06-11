@@ -284,6 +284,10 @@ namespace pmfe {
         return os;
     }
 
+    std::string RNASequence::string() const {
+        return seq_txt;
+    }
+
     RNAStructure::RNAStructure(const RNASequence& seq):
         seq(seq) {
         structure_as_chars = std::string(len(), blanksymb);

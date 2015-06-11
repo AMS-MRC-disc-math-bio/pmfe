@@ -121,6 +121,8 @@ namespace pmfe {
         char operator[](const int index) const; // Retrieve a single base using index notation
         friend std::ostream& operator<<(std::ostream& out, const RNASequence& sequence); // Output the sequence to an ostream
 
+        std::string string() const; // Return the sequence as a (processed) string
+
     protected:
         std::string seq_txt;
         boost::multi_array<bool, 2> valid_pairs;
