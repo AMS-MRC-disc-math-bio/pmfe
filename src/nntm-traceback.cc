@@ -46,7 +46,7 @@ namespace pmfe {
             return score.energy == seq.W[seq.len() - 1];
         }
 
-        for (int i = 0; i < j && !found_something; i++) {
+        for (int i = 0; i < j and not found_something; i++) {
             if (j-i < TURN) continue;
 
             if (i > 0) {
@@ -136,11 +136,11 @@ namespace pmfe {
             }
         }
 
-        if (seq.W[j] == seq.W[j-1] && !found_something) {
+        if (seq.W[j] == seq.W[j-1] and not found_something) {
             found_something = traceW(j-1, seq, structure, score);
         }
 
-        if (!found_something) {
+        if (not found_something) {
             BOOST_LOG_TRIVIAL(error) << "W traceback did not finish for j = " << j;
             BOOST_LOG_TRIVIAL(error) << constants.params;
             throw std::logic_error("W traceback did not finish!");
@@ -281,7 +281,7 @@ namespace pmfe {
         int done=0, h;
         Rational energy = 0;
 
-        for (h = i; h < j && !done; h++) {
+        for (h = i; h < j and not done; h++) {
             if (seq.WM[i][h] + seq.WM[h+1][j] == seq.WMPrime[i][j]) {
                 energy += traceWM(i, h, seq, structure, score);
                 energy += traceWM(h+1, j, seq, structure, score);
@@ -297,12 +297,12 @@ namespace pmfe {
         int done = 0;
         Rational eWM = 0;
 
-        if (!done && seq.WM[i][j] == seq.WMPrime[i][j]) {
+        if (not done and seq.WM[i][j] == seq.WMPrime[i][j]) {
             eWM += traceWMPrime(i, j, seq, structure, score);
             done = 1;
         }
 
-        if (!done){
+        if (not done){
             switch (dangles) {
             case BOTH_DANGLE:
             {
@@ -358,7 +358,7 @@ namespace pmfe {
                 break;
             }
 
-            if (!done){
+            if (not done){
                 if (seq.WM[i][j] == seq.WM[i+1][j] + constants.multConst[1]) {
                     done = 1;
                     eWM += traceWM(i+1, j, seq, structure, score);

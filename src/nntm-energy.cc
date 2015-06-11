@@ -248,8 +248,8 @@ namespace pmfe {
     // if inside==true, dangle i+1 instead of i-1
     Rational NNTM::Ed5(int i, int j, const RNASequence& seq, bool inside) const {
         // Input specification
-        assert (i >= 0 && i < seq.len());
-        assert (j >= 0 && j < seq.len());
+        assert (i >= 0 and i < seq.len());
+        assert (j >= 0 and j < seq.len());
 
         Rational penalty = 0;
 
@@ -272,8 +272,8 @@ namespace pmfe {
     // if inside==true, dangle j-1 instead of j+1
     Rational NNTM::Ed3(int i, int j, const RNASequence& seq, bool inside) const {
         // Input specification
-        assert (i >= 0 && i < seq.len());
-        assert (j >= 0 && j < seq.len());
+        assert (i >= 0 and i < seq.len());
+        assert (j >= 0 and j < seq.len());
 
         Rational penalty = 0;
 
@@ -330,9 +330,9 @@ namespace pmfe {
           Compute the energy of an internal loop between pairs (i, j) and (ip, jp)
         */
         // Input specification
-        assert (i >= 0 && i < seq.len());
-        assert (j >= 0 && j < seq.len());
-        assert (i < ip && ip < jp && jp < j);
+        assert (i >= 0 and i < seq.len());
+        assert (j >= 0 and j < seq.len());
+        assert (i < ip and ip < jp and jp < j);
 
         Rational energy = Rational::infinity();
 
@@ -360,7 +360,7 @@ namespace pmfe {
                     + eLL(size)
                     + auPenalty(i, j, seq)
                     + auPenalty(ip, jp, seq);
-            } else if (size <= 30 && size > 1) {
+            } else if (size <= 30 and size > 1) {
                 /* Does not depend upon i and j and ip and jp - Stacking Energies  */
                 energy = constants.bulge[size]
                     + auPenalty(i, j, seq)
@@ -376,7 +376,7 @@ namespace pmfe {
             /* Internal loop */
 
             if (size > 30) {
-                if (!((size1 == 1 || size2 == 1) && constants.gail)) { /* normal internal loop with size > 30*/
+                if (not ((size1 == 1 or size2 == 1) and constants.gail)) { /* normal internal loop with size > 30*/
                     energy = constants.tstki[seq.base(i)][seq.base(j)][seq.base(i + 1)][seq.base(j - 1)]
                         + constants.tstki[seq.base(jp)][seq.base(ip)][seq.base(jp + 1)][seq.base(ip - 1)] + constants.inter[30]
                         + eLL(size)
@@ -396,7 +396,7 @@ namespace pmfe {
                 energy = constants.iloop21[seq.base(jp)][seq.base(ip)][seq.base(j - 1)][seq.base(i + 2)][seq.base(i + 1)][seq.base(j)][seq.base(i)];
             } else if (size == 2) { /* 1*1 internal loops */
                 energy = constants.iloop11[seq.base(i)][seq.base(i + 1)][seq.base(ip)][seq.base(j)][seq.base(j - 1)][seq.base(jp)];
-            } else if ((size1 == 1 or size2 == 1) && constants.gail) { /* gail = (Grossly Asymmetric Interior Loop Rule) (on/off <-> 1/0)  */
+            } else if ((size1 == 1 or size2 == 1) and constants.gail) { /* gail = (Grossly Asymmetric Interior Loop Rule) (on/off <-> 1/0)  */
                 energy = constants.tstki[seq.base(i)][seq.base(j)][BASE_A][BASE_A] + constants.tstki[seq.base(jp)][seq.base(ip)][BASE_A][BASE_A]
                     + constants.inter[size]
                     + penterm;
@@ -417,8 +417,8 @@ namespace pmfe {
         */
 
         // Input specification
-        assert (i >= 0 && i < seq.len());
-        assert (j >= 0 && j < seq.len());
+        assert (i >= 0 and i < seq.len());
+        assert (j >= 0 and j < seq.len());
         assert (i < j);
 
         Rational energy = Rational::infinity();
@@ -431,7 +431,7 @@ namespace pmfe {
             energy = constants.hairpin[30] + eLL(size) + constants.tstkh[seq.base(i)][seq.base(j)][seq.base(i + 1)][seq.base(j - 1)]; /* size penalty + terminal mismatch stacking energy*/
         }
 
-        else if (size <= 30 && size > 4) {
+        else if (size <= 30 and size > 4) {
             energy = constants.hairpin[size] + constants.tstkh[seq.base(i)][seq.base(j)][seq.base(i + 1)][seq.base(j - 1)]; /* size penalty + terminal mismatch stacking energy*/
         }
 
@@ -455,7 +455,7 @@ namespace pmfe {
             energy += auPenalty(i, j, seq);
         }
 
-        else if (size < 3 && size != 0) {
+        else if (size < 3 and size != 0) {
             /*  no terminal mismatch */
             energy = constants.hairpin[size];
         } else if (size == 0)
@@ -464,8 +464,8 @@ namespace pmfe {
         /*  GGG Bonus => GU closure preceded by GG */
         /*  i-2 = i-1 = i = G, and j = U; i < j */
         if (i >= 2) {
-            if (seq.base(i - 2) == BASE_G && seq.base(i - 1) == BASE_G && seq.base(i) == BASE_G
-                && seq.base(j) == BASE_U) {
+            if (seq.base(i - 2) == BASE_G and seq.base(i - 1) == BASE_G and seq.base(i) == BASE_G
+                and seq.base(j) == BASE_U) {
                 energy += constants.gubonus;
                 /*  printf ("\n GGG bonus for i %d j %d ", i, j); */
             }
@@ -473,7 +473,7 @@ namespace pmfe {
 
         /*  Poly-C loop => How many C are needed for being a poly-C loop */
         Rational tlink = 1;
-        for (int index = 1; (index <= size) && (tlink == 1); ++index) {
+        for (int index = 1; (index <= size) and (tlink == 1); ++index) {
             if (seq.base(i + index) != BASE_C)
                 tlink = 0;
         }
@@ -494,8 +494,8 @@ namespace pmfe {
           Compute the energy of a stack of pairs (i, j) and (i+1, j-1)
         */
         // Input specification
-        assert (i >= 0 && i < seq.len());
-        assert (j >= 0 && j < seq.len());
+        assert (i >= 0 and i < seq.len());
+        assert (j >= 0 and j < seq.len());
         assert (i < j);
 
         return constants.stack[seq.base(i)][seq.base(j)][seq.base(i+1)][seq.base(j-1)];
@@ -507,8 +507,8 @@ namespace pmfe {
         */
 
         // Input specification
-        assert (i >= 0 && i < seq.len());
-        assert (j >= 0 && j < seq.len());
+        assert (i >= 0 and i < seq.len());
+        assert (j >= 0 and j < seq.len());
         assert (i < j);
 
         MinBox<Rational> vals;
@@ -527,7 +527,7 @@ namespace pmfe {
             }
 
             for (int q = minq; q <= maxq; q++) {
-                if (q - p > TURN && seq.can_pair(p, q)) {
+                if (q - p > TURN and seq.can_pair(p, q)) {
                     vals.insert(eL(i, j, p, q, seq) + seq.V[p][q]);
                 }
             }

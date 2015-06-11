@@ -45,9 +45,9 @@ namespace pmfe {
 
     bool operator==(const ParameterVector& a, const ParameterVector& b) {
         return (
-                a.multiloop_penalty == b.multiloop_penalty &&
-                a.unpaired_penalty == b.unpaired_penalty &&
-                a.branch_penalty == b.branch_penalty &&
+                a.multiloop_penalty == b.multiloop_penalty and
+                a.unpaired_penalty == b.unpaired_penalty and
+                a.branch_penalty == b.branch_penalty and
                 a.dummy_scaling == b.dummy_scaling
                 );
     };
@@ -81,16 +81,16 @@ namespace pmfe {
 
     bool operator==(const ScoreVector& a, const ScoreVector& b) {
         return (
-                a.multiloops == b.multiloops &&
-                a.unpaired == b.unpaired &&
-                a.branches == b.branches &&
-                a.w == b.w &&
+                a.multiloops == b.multiloops and
+                a.unpaired == b.unpaired and
+                a.branches == b.branches and
+                a.w == b.w and
                 a.energy == b.energy
                 );
     };
 
     bool operator!=(const ScoreVector& a, const ScoreVector& b) {
-        return !(a == b);
+        return not (a == b);
     }
 
     bool operator<(const ScoreVector& a, const ScoreVector& b) {
@@ -184,7 +184,7 @@ namespace pmfe {
             line.erase(std::remove_if(line.begin(), line.end(), ::isspace), line.end()); // We use the C implementation of isspace to avoid goofy template problems
 
             // exclude lines starting with FASTA comment characters
-            if(line[0] != ';' && line[0] != '>' && line.length() > 0)
+            if(line[0] != ';' and line[0] != '>' and line.length() > 0)
                 tempseq += line;
         }
 

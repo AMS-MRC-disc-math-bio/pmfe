@@ -122,7 +122,7 @@ namespace pmfe {
         pstack.push(first);
 
         // Main processing loop
-        while (!pstack.empty()) {
+        while (not pstack.empty()) {
             RNAPartialStructure ps = pstack.top();
             pstack.pop();
 
@@ -153,7 +153,7 @@ namespace pmfe {
                 bool pushed_something = subopt_process_top_structure(seq, ps, pstack, upper_bound);
 
                 // If nothing was pushed to the stack, we still need to consider the rest of the partial-structure stack
-                if (!pushed_something) {
+                if (not pushed_something) {
                     pstack.push(ps);
                 }
             }
@@ -276,7 +276,7 @@ namespace pmfe {
                     pstack.push(new_ps);
                     pushed_something = true;
                 }
-                if (k > i+2 && seq.FM[i+2][k] + seq.FM1[k+1][j-1] + auPenalty(i, j, seq) + d5 + constants.multConst[0] + constants.multConst[1] + constants.multConst[2] + ps.total() <= upper_bound) {
+                if (k > i+2 and seq.FM[i+2][k] + seq.FM1[k+1][j-1] + auPenalty(i, j, seq) + d5 + constants.multConst[0] + constants.multConst[1] + constants.multConst[2] + ps.total() <= upper_bound) {
                     RNAPartialStructure new_ps(ps);
                     new_ps.push(Segment(i+2, k, lM, seq.FM[i+2][k]));
                     new_ps.push(Segment(k+1, j-1, lM1, seq.FM1[k+1][j-1]));
@@ -286,7 +286,7 @@ namespace pmfe {
                     pstack.push(new_ps);
                     pushed_something = true;
                 }
-                if (k <= j-TURN-2 && seq.FM[i+1][k] + seq.FM1[k+1][j-2] + auPenalty(i, j, seq) + d3 + constants.multConst[0] + constants.multConst[1] + constants.multConst[2] + ps.total() <= upper_bound) {
+                if (k <= j-TURN-2 and seq.FM[i+1][k] + seq.FM1[k+1][j-2] + auPenalty(i, j, seq) + d3 + constants.multConst[0] + constants.multConst[1] + constants.multConst[2] + ps.total() <= upper_bound) {
                     RNAPartialStructure new_ps(ps);
                     new_ps.push(Segment(i+1, k, lM, seq.FM[i+1][k]));
                     new_ps.push(Segment(k+1, j-2, lM1, seq.FM1[k+1][j-2]));
@@ -296,7 +296,7 @@ namespace pmfe {
                     pstack.push(new_ps);
                     pushed_something = true;
                 }
-                if (k > i+2 && k <= j-TURN-2 && seq.FM[i+2][k] + seq.FM1[k+1][j-2] + auPenalty(i, j, seq) + d53 + constants.multConst[0] + 2*constants.multConst[1] + constants.multConst[2] + ps.total() <= upper_bound) {
+                if (k > i+2 and k <= j-TURN-2 and seq.FM[i+2][k] + seq.FM1[k+1][j-2] + auPenalty(i, j, seq) + d53 + constants.multConst[0] + 2*constants.multConst[1] + constants.multConst[2] + ps.total() <= upper_bound) {
                     RNAPartialStructure new_ps(ps);
                     new_ps.push(Segment(i+2, k, lM, seq.FM[i+2][k]));
                     new_ps.push(Segment(k+1, j-2, lM1, seq.FM1[k+1][j-2]));
@@ -419,7 +419,7 @@ namespace pmfe {
                     pstack.push(new_ps);
                     pushed_something = true;
                 }
-                if (l+1 < j-TURN && seq.V[l+1][j] + auPenalty(l+1, j, seq) + d5 + wim1 + ps.total() <= upper_bound) {
+                if (l+1 < j-TURN and seq.V[l+1][j] + auPenalty(l+1, j, seq) + d5 + wim1 + ps.total() <= upper_bound) {
                     RNAPartialStructure new_ps(ps);
                     new_ps.push(Segment(l+1, j, lV, seq.V[l+1][j]));
                     new_ps.mark_d5(l);
@@ -428,7 +428,7 @@ namespace pmfe {
                     pstack.push(new_ps);
                     pushed_something = true;
                 }
-                if (l < j-TURN-1 && seq.V[l][j-1] + auPenalty(l, j-1, seq) +  d3 + wim1 + ps.total() <= upper_bound) {
+                if (l < j-TURN-1 and seq.V[l][j-1] + auPenalty(l, j-1, seq) +  d3 + wim1 + ps.total() <= upper_bound) {
                     RNAPartialStructure new_ps(ps);
                     new_ps.push(Segment(l, j-1, lV, seq.V[l][j-1]));
                     new_ps.mark_d3(j);
@@ -437,7 +437,7 @@ namespace pmfe {
                     pstack.push(new_ps);
                     pushed_something = true;
                 }
-                if (l+1 < j-TURN-1 && seq.V[l+1][j-1] + auPenalty(l+1, j-1, seq) + d53 + wim1 + ps.total() <= upper_bound) {
+                if (l+1 < j-TURN-1 and seq.V[l+1][j-1] + auPenalty(l+1, j-1, seq) + d53 + wim1 + ps.total() <= upper_bound) {
                     RNAPartialStructure new_ps(ps);
                     new_ps.push(Segment(l+1, j-1, lV, seq.V[l+1][j-1]));
                     new_ps.mark_d5(l);
@@ -531,7 +531,7 @@ namespace pmfe {
                 pstack.push(new_ps);
                 pushed_something = true;
             }
-            if (i+1 < j && seq.V[i+1][j] + auPenalty(i+1, j, seq) + constants.multConst[2] + constants.multConst[1] + d5 + ps.total() <= upper_bound) {
+            if (i+1 < j and seq.V[i+1][j] + auPenalty(i+1, j, seq) + constants.multConst[2] + constants.multConst[1] + d5 + ps.total() <= upper_bound) {
                 RNAPartialStructure new_ps(ps);
                 new_ps.push(Segment(i+1, j, lV, seq.V[i+1][j]));
                 new_ps.accumulate(auPenalty(i+1, j, seq) + constants.multConst[2] + constants.multConst[1] + d5);
@@ -539,7 +539,7 @@ namespace pmfe {
                 pstack.push(new_ps);
                 pushed_something = true;
             }
-            if (i < j-1 && seq.V[i][j-1] + auPenalty(i, j-1, seq) + constants.multConst[2] + constants.multConst[1] + d3 + ps.total() <= upper_bound) {
+            if (i < j-1 and seq.V[i][j-1] + auPenalty(i, j-1, seq) + constants.multConst[2] + constants.multConst[1] + d3 + ps.total() <= upper_bound) {
                 RNAPartialStructure new_ps(ps);
                 new_ps.push(Segment(i, j-1, lV, seq.V[i][j-1]));
                 new_ps.accumulate(auPenalty(i, j-1, seq) + constants.multConst[2] + constants.multConst[1] + d3);
@@ -547,7 +547,7 @@ namespace pmfe {
                 pstack.push(new_ps);
                 pushed_something = true;
             }
-            if (i+1 < j-1 && seq.V[i+1][j-1] + auPenalty(i+1, j-1, seq) + constants.multConst[2] + 2*constants.multConst[1] + d53 + ps.total() <= upper_bound) {
+            if (i+1 < j-1 and seq.V[i+1][j-1] + auPenalty(i+1, j-1, seq) + constants.multConst[2] + 2*constants.multConst[1] + d53 + ps.total() <= upper_bound) {
                 RNAPartialStructure new_ps(ps);
                 new_ps.push(Segment(i+1, j-1, lV, seq.V[i+1][j-1]));
                 new_ps.accumulate(auPenalty(i+1, j-1, seq) + constants.multConst[2] + 2*constants.multConst[1] + d53);
@@ -625,7 +625,7 @@ namespace pmfe {
                 pstack.push(new_ps);
                 pushed_something = true;
             }
-            if (i+1 < j && seq.V[i+1][j] + constants.multConst[2] + constants.multConst[1] + auPenalty(i+1, j, seq) + d5 + ps.total() <= upper_bound) {
+            if (i+1 < j and seq.V[i+1][j] + constants.multConst[2] + constants.multConst[1] + auPenalty(i+1, j, seq) + d5 + ps.total() <= upper_bound) {
                 RNAPartialStructure new_ps(ps);
                 new_ps.push(Segment(i+1, j, lV, seq.V[i+1][j]));
                 new_ps.accumulate(constants.multConst[2] + constants.multConst[1] + auPenalty(i+1, j, seq) + d5);
@@ -633,7 +633,7 @@ namespace pmfe {
                 pstack.push(new_ps);
                 pushed_something = true;
             }
-            if (i < j-1 && seq.V[i][j-1] + constants.multConst[2] + constants.multConst[1] + auPenalty(i, j-1, seq) + d3 + ps.total() <= upper_bound) {
+            if (i < j-1 and seq.V[i][j-1] + constants.multConst[2] + constants.multConst[1] + auPenalty(i, j-1, seq) + d3 + ps.total() <= upper_bound) {
                 RNAPartialStructure new_ps(ps);
                 new_ps.push(Segment(i, j-1, lV, seq.V[i][j-1]));
                 new_ps.accumulate(constants.multConst[2] + constants.multConst[1] + auPenalty(i, j-1, seq) + d3);
@@ -641,7 +641,7 @@ namespace pmfe {
                 pstack.push(new_ps);
                 pushed_something = true;
             }
-            if (i+1 < j-1 && seq.V[i+1][j-1] + constants.multConst[2] + 2*constants.multConst[1] + auPenalty(i+1, j-1, seq) + d53 + ps.total() <= upper_bound) {
+            if (i+1 < j-1 and seq.V[i+1][j-1] + constants.multConst[2] + 2*constants.multConst[1] + auPenalty(i+1, j-1, seq) + d53 + ps.total() <= upper_bound) {
                 RNAPartialStructure new_ps(ps);
                 new_ps.push(Segment(i+1, j-1, lV, seq.V[i+1][j-1]));
                 new_ps.accumulate(constants.multConst[2] + 2*constants.multConst[1] + auPenalty(i+1, j-1, seq) + d53);
@@ -703,7 +703,7 @@ namespace pmfe {
                     pstack.push(new_ps);
                     pushed_something = true;
                 }
-                if (k+2 <= j-TURN && seq.FM[i][k] + seq.V[k+2][j] + constants.multConst[2] + constants.multConst[1] + auPenalty(k+2, j, seq) + d5 + ps.total() <= upper_bound) {
+                if (k+2 <= j-TURN and seq.FM[i][k] + seq.V[k+2][j] + constants.multConst[2] + constants.multConst[1] + auPenalty(k+2, j, seq) + d5 + ps.total() <= upper_bound) {
                     RNAPartialStructure new_ps(ps);
                     new_ps.push(Segment(i, k, lM, seq.FM[i][k]));
                     new_ps.push(Segment(k+2, j, lV, seq.V[k+2][j]));
@@ -712,7 +712,7 @@ namespace pmfe {
                     pstack.push(new_ps);
                     pushed_something = true;
                 }
-                if (k+1 <= j-1-TURN && seq.FM[i][k] + seq.V[k+1][j-1] + constants.multConst[2] + constants.multConst[1] + auPenalty(k+1, j-1, seq) + d3 + ps.total() <= upper_bound) {
+                if (k+1 <= j-1-TURN and seq.FM[i][k] + seq.V[k+1][j-1] + constants.multConst[2] + constants.multConst[1] + auPenalty(k+1, j-1, seq) + d3 + ps.total() <= upper_bound) {
                     RNAPartialStructure new_ps(ps);
                     new_ps.push(Segment(i, k, lM, seq.FM[i][k]));
                     new_ps.push(Segment(k+1, j-1, lV, seq.V[k+1][j-1]));
@@ -721,7 +721,7 @@ namespace pmfe {
                     pstack.push(new_ps);
                     pushed_something = true;
                 }
-                if (k+2 <= j-1-TURN && seq.FM[i][k] + seq.V[k+2][j-1] + constants.multConst[2] + 2*constants.multConst[1] + auPenalty(k+2, j-1, seq) + d53 + ps.total() <= upper_bound) {
+                if (k+2 <= j-1-TURN and seq.FM[i][k] + seq.V[k+2][j-1] + constants.multConst[2] + 2*constants.multConst[1] + auPenalty(k+2, j-1, seq) + d53 + ps.total() <= upper_bound) {
                     RNAPartialStructure new_ps(ps);
                     new_ps.push(Segment(i, k, lM, seq.FM[i][k]));
                     new_ps.push(Segment(k+2, j-1, lV, seq.V[k+2][j-1]));
@@ -785,7 +785,7 @@ namespace pmfe {
                     pstack.push(new_ps);
                     pushed_something = true;
                 }
-                if (k+2 <= j-TURN && seq.V[k+2][j] + constants.multConst[2] + constants.multConst[1]*(k+2 - i) + auPenalty(k+2, j, seq) + d5 + ps.total() <= upper_bound) {
+                if (k+2 <= j-TURN and seq.V[k+2][j] + constants.multConst[2] + constants.multConst[1]*(k+2 - i) + auPenalty(k+2, j, seq) + d5 + ps.total() <= upper_bound) {
                     RNAPartialStructure new_ps(ps);
                     new_ps.push(Segment(k+2, j, lV, seq.V[k+2][j]));
                     new_ps.accumulate(constants.multConst[2] + constants.multConst[1]*(k+2 - i) + auPenalty(k+2, j, seq) + d5);
@@ -793,7 +793,7 @@ namespace pmfe {
                     pstack.push(new_ps);
                     pushed_something = true;
                 }
-                if (k+1 <= j-1-TURN && seq.V[k+1][j-1] + constants.multConst[2] + constants.multConst[1]*(k+1 - i + 1) + auPenalty(k+1, j-1, seq) + d3 + ps.total() <= upper_bound) {
+                if (k+1 <= j-1-TURN and seq.V[k+1][j-1] + constants.multConst[2] + constants.multConst[1]*(k+1 - i + 1) + auPenalty(k+1, j-1, seq) + d3 + ps.total() <= upper_bound) {
                     RNAPartialStructure new_ps(ps);
                     new_ps.push(Segment(k+1, j-1, lV, seq.V[k+1][j-1]));
                     new_ps.accumulate(constants.multConst[2] + constants.multConst[1]*(k+1 - i + 1) + auPenalty(k+1, j-1, seq) + d3);
@@ -801,7 +801,7 @@ namespace pmfe {
                     pstack.push(new_ps);
                     pushed_something = true;
                 }
-                if (k+2 <= j-1-TURN && seq.V[k+2][j-1] + constants.multConst[2] + constants.multConst[1]*(k+2 - i + 1) + auPenalty(k+2, j-1, seq) + d53 + ps.total() <= upper_bound) {
+                if (k+2 <= j-1-TURN and seq.V[k+2][j-1] + constants.multConst[2] + constants.multConst[1]*(k+2 - i + 1) + auPenalty(k+2, j-1, seq) + d53 + ps.total() <= upper_bound) {
                     RNAPartialStructure new_ps(ps);
                     new_ps.push(Segment(k+2, j-1, lV, seq.V[k+2][j-1]));
                     new_ps.accumulate(constants.multConst[2] + constants.multConst[1]*(k+2 - i + 1) + auPenalty(k+2, j-1, seq) + d53);
