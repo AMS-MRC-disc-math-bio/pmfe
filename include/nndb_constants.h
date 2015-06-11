@@ -24,8 +24,8 @@
 
 #include "pmfe_types.h"
 #include "thread_pool.h"
+#include "rational.h"
 
-#include <gmpxx.h>
 #include <boost/filesystem.hpp>
 #include <boost/multi_array.hpp>
 #include <vector>
@@ -37,33 +37,32 @@ namespace pmfe {
     //TODO: Provide Turner99 instance
     class NNDBConstants {
     public:
-        mpq_class maxpen;
-        mpq_class auend;
-        mpq_class gubonus;
-        mpq_class cint; /* cint, cslope, c3 are used for poly C hairpin loops */
-        mpq_class cslope;
-        mpq_class c3;
+        Rational maxpen;
+        Rational auend;
+        Rational gubonus;
+        Rational cint; /* cint, cslope, c3 are used for poly C hairpin loops */
+        Rational cslope;
+        Rational c3;
         bool gail;
-        mpq_class prelog;
-        mpq_class INFINITY_;
+        Rational prelog;
         ParameterVector params;
 
-        std::vector<mpq_class> poppen;
-        std::vector<mpq_class> multConst; /* for multiloop penalties. */
-        std::vector<mpq_class> inter; /* Contains size penalty for internal loops */
-        std::vector<mpq_class> bulge; /* Contain the size penalty for bulges */
-        std::vector<mpq_class> hairpin; /* Contains the size penalty for hairpin loops */
+        std::vector<Rational> poppen;
+        std::vector<Rational> multConst; /* for multiloop penalties. */
+        std::vector<Rational> inter; /* Contains size penalty for internal loops */
+        std::vector<Rational> bulge; /* Contain the size penalty for bulges */
+        std::vector<Rational> hairpin; /* Contains the size penalty for hairpin loops */
 
-        std::map<std::string, mpq_class> tloop;
+        std::map<std::string, Rational> tloop;
 
         //TODO: Rebase anything that should be 1-indexed
-        boost::multi_array<mpq_class, 4> tstkh; /* Terminal mismatch energy used in the calculations of hairpin loops */
-        boost::multi_array<mpq_class, 4> tstki; /* Terminal mismatch energy used in the calculations of internal loops */
-        boost::multi_array<mpq_class, 4> stack; /* Stacking energy used to calculate energy of stack loops */
-        boost::multi_array<mpq_class, 4> dangle; /* Contain dangling energy values */
-        boost::multi_array<mpq_class, 8> iloop22; /* 2*2 internal looops */
-        boost::multi_array<mpq_class, 7> iloop21; /* 2*1 internal loops */
-        boost::multi_array<mpq_class, 6> iloop11; /* 1*1 internal loops */
+        boost::multi_array<Rational, 4> tstkh; /* Terminal mismatch energy used in the calculations of hairpin loops */
+        boost::multi_array<Rational, 4> tstki; /* Terminal mismatch energy used in the calculations of internal loops */
+        boost::multi_array<Rational, 4> stack; /* Stacking energy used to calculate energy of stack loops */
+        boost::multi_array<Rational, 4> dangle; /* Contain dangling energy values */
+        boost::multi_array<Rational, 8> iloop22; /* 2*2 internal looops */
+        boost::multi_array<Rational, 7> iloop21; /* 2*1 internal loops */
+        boost::multi_array<Rational, 6> iloop11; /* 1*1 internal loops */
 
     NNDBConstants(const ParameterVector params = ParameterVector()):
         params(params),
@@ -79,12 +78,7 @@ namespace pmfe {
             iloop22(boost::extents[5][5][5][5][5][5][5][5]),
             iloop21(boost::extents[5][5][5][5][5][5][5]),
             iloop11(boost::extents[5][5][5][5][5][5])
-            {
-                INFINITY_ = mpq_class(9999999999999);
-                if (abs(params.dummy_scaling) > 1) {
-                    INFINITY_ *= abs(params.dummy_scaling);
-                }
-            };
+            {};
     };
 
     class Turner99: public NNDBConstants {

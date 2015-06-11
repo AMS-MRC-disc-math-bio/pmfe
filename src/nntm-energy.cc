@@ -4,13 +4,13 @@
 #include <stdio.h>
 #include <math.h>
 #include <assert.h>
-#include <deque>
 
 #include "nntm.h"
 #include "nndb_constants.h"
 #include "thread_pool.h"
+#include "rational.h"
+#include "minbox.h"
 
-#include <gmpxx.h>
 #include <boost/bind.hpp>
 
 #define BOOST_LOG_DYN_LINK 1 // Fix an issue with dynamic library loading
@@ -26,7 +26,7 @@ namespace pmfe {
     {};
 
     RNASequenceWithTables NNTM::energy_tables(const RNASequence& inseq) const {
-        RNASequenceWithTables seq(inseq, constants.INFINITY_);
+        RNASequenceWithTables seq(inseq);
         populate_energy_tables(seq);
         return seq;
     };
@@ -55,11 +55,11 @@ namespace pmfe {
                 continue;
             }
 
-            std::deque<mpq_class> w_vals;
-            w_vals.push_back(constants.INFINITY_);
+            MinBox<Rational> w_vals;
+            w_vals.insert(Rational::infinity());
 
             for (int i = 0; i < j-TURN; i++) {
-                mpq_class Wim1;
+                Rational Wim1;
                 if (i > 0) {
                     Wim1 = seq.W[i-1];
                 } else {
@@ -69,7 +69,7 @@ namespace pmfe {
                 switch (dangles) {
                 case BOTH_DANGLE:
                     {
-                        mpq_class Widjd = seq.V[i][j] + auPenalty(i, j, seq) + Wim1;
+                        Rational Widjd = seq.V[i][j] + auPenalty(i, j, seq) + Wim1;
                         if (i > 0) {
                             Widjd += Ed5(i, j, seq);
                         }
@@ -78,22 +78,22 @@ namespace pmfe {
                             Widjd += Ed3(i, j, seq);
                         }
 
-                        w_vals.push_back(Widjd);
+                        w_vals.insert(Widjd);
                         break;
                     }
 
                 case NO_DANGLE:
                     {
-                        w_vals.push_back(seq.V[i][j] + auPenalty(i, j, seq) + Wim1);
+                        w_vals.insert(seq.V[i][j] + auPenalty(i, j, seq) + Wim1);
                         break;
                     }
 
                 case CHOOSE_DANGLE:
                     {
-                        w_vals.push_back(seq.V[i][j] + auPenalty(i, j, seq) + Wim1);
-                        w_vals.push_back(seq.V[i+1][j] + auPenalty(i+1, j, seq) + Ed5(i+1, j, seq) + Wim1);
-                        w_vals.push_back(seq.V[i][j-1] + auPenalty(i, j-1, seq) + Ed3(i, j-1, seq) + Wim1);
-                        w_vals.push_back(seq.V[i+1][j-1] + auPenalty(i+1, j-1, seq) + Ed5(i+1, j-1, seq) + Ed3(i+1, j-1, seq) + Wim1);
+                        w_vals.insert(seq.V[i][j] + auPenalty(i, j, seq) + Wim1);
+                        w_vals.insert(seq.V[i+1][j] + auPenalty(i+1, j, seq) + Ed5(i+1, j, seq) + Wim1);
+                        w_vals.insert(seq.V[i][j-1] + auPenalty(i, j-1, seq) + Ed3(i, j-1, seq) + Wim1);
+                        w_vals.insert(seq.V[i+1][j-1] + auPenalty(i+1, j-1, seq) + Ed5(i+1, j-1, seq) + Ed3(i+1, j-1, seq) + Wim1);
                         break;
                     }
 
@@ -103,10 +103,10 @@ namespace pmfe {
                 }
             }
 
-            w_vals.push_back(seq.W[j-1]); // Base j is free
-            w_vals.push_back(0); // All bases up to j are free
+            w_vals.insert(seq.W[j-1]); // Base j is free
+            w_vals.insert(0); // All bases up to j are free
 
-            seq.W[j] = *std::min_element(w_vals.begin(), w_vals.end());
+            seq.W[j] = w_vals.minimum();
         }
 
         seq.energy_tables_populated = true;
@@ -119,32 +119,32 @@ namespace pmfe {
         assert (i < j);
 
         if (seq.can_pair(i, j)) {
-            std::deque<mpq_class> vm_vals;
-            vm_vals.push_back(constants.INFINITY_);
+            MinBox<Rational> vm_vals;
+            vm_vals.insert(Rational::infinity());
 
-            mpq_class d3, d5;
+            Rational d3, d5;
             d3 = Ed3(i, j, seq, true);
             d5 = Ed5(i, j, seq, true);
 
             switch (dangles) {
             case BOTH_DANGLE:
                 {
-                    vm_vals.push_back(seq.WMPrime[i+1][j-1] + d3 + d5 + auPenalty(i, j, seq) + constants.multConst[0] + constants.multConst[2]);
+                    vm_vals.insert(seq.WMPrime[i+1][j-1] + d3 + d5 + auPenalty(i, j, seq) + constants.multConst[0] + constants.multConst[2]);
                     break;
                 }
 
             case NO_DANGLE:
                 {
-                    vm_vals.push_back(seq.WMPrime[i+1][j-1] + auPenalty(i, j, seq) + constants.multConst[0] + constants.multConst[2]);
+                    vm_vals.insert(seq.WMPrime[i+1][j-1] + auPenalty(i, j, seq) + constants.multConst[0] + constants.multConst[2]);
                     break;
                 }
 
             case CHOOSE_DANGLE:
                 {
-                    vm_vals.push_back(seq.WMPrime[i+1][j-1] + auPenalty(i, j, seq) + constants.multConst[0] + constants.multConst[2]);
-                    vm_vals.push_back(seq.WMPrime[i+2][j-1] + d5 + auPenalty(i, j, seq) + constants.multConst[0] + constants.multConst[2] + constants.multConst[1]);
-                    vm_vals.push_back(seq.WMPrime[i+1][j-2] + d3 + auPenalty(i, j, seq) + constants.multConst[0] + constants.multConst[2] + constants.multConst[1]);
-                    vm_vals.push_back(seq.WMPrime[i+2][j-2] + d3 + d5 + auPenalty(i, j, seq) + constants.multConst[0] + constants.multConst[2] + 2*constants.multConst[1]);
+                    vm_vals.insert(seq.WMPrime[i+1][j-1] + auPenalty(i, j, seq) + constants.multConst[0] + constants.multConst[2]);
+                    vm_vals.insert(seq.WMPrime[i+2][j-1] + d5 + auPenalty(i, j, seq) + constants.multConst[0] + constants.multConst[2] + constants.multConst[1]);
+                    vm_vals.insert(seq.WMPrime[i+1][j-2] + d3 + auPenalty(i, j, seq) + constants.multConst[0] + constants.multConst[2] + constants.multConst[1]);
+                    vm_vals.insert(seq.WMPrime[i+2][j-2] + d3 + d5 + auPenalty(i, j, seq) + constants.multConst[0] + constants.multConst[2] + 2*constants.multConst[1]);
                     break;
                 }
 
@@ -153,41 +153,41 @@ namespace pmfe {
                 break;
             }
 
-            seq.VM[i][j] = *std::min_element(vm_vals.begin(), vm_vals.end());
+            seq.VM[i][j] = vm_vals.minimum();
 
-            std::deque<mpq_class> v_vals;
-            v_vals.push_back(constants.INFINITY_);
-            v_vals.push_back(seq.VM[i][j]);
+            MinBox<Rational> v_vals;
+            v_vals.insert(Rational::infinity());
+            v_vals.insert(seq.VM[i][j]);
 
-            v_vals.push_back(eH(i, j, seq));
-            v_vals.push_back(eS(i, j, seq) + seq.V[i+1][j-1]);
+            v_vals.insert(eH(i, j, seq));
+            v_vals.insert(eS(i, j, seq) + seq.V[i+1][j-1]);
 
             seq.VBI[i][j] = calcVBI(i, j, seq);
-            v_vals.push_back(seq.VBI[i][j]);
+            v_vals.insert(seq.VBI[i][j]);
 
-            seq.V[i][j] = *std::min_element(v_vals.begin(), v_vals.end());
+            seq.V[i][j] = v_vals.minimum();
         } else {
-            seq.V[i][j] = constants.INFINITY_;
+            seq.V[i][j] = Rational::infinity();
         }
 
-        std::deque<mpq_class> wmp_vals;
-        wmp_vals.push_back(constants.INFINITY_);
+        MinBox<Rational> wmp_vals;
+        wmp_vals.insert(Rational::infinity());
 
         for (int h = i+TURN+1 ; h <= j-TURN-2; ++h) {
-            wmp_vals.push_back(seq.WM[i][h] + seq.WM[h+1][j]);
+            wmp_vals.insert(seq.WM[i][h] + seq.WM[h+1][j]);
         }
 
-        seq.WMPrime[i][j] = *std::min_element(wmp_vals.begin(), wmp_vals.end());
+        seq.WMPrime[i][j] = wmp_vals.minimum();
 
         // WM begin
-        std::deque<mpq_class> wm_vals;
-        wm_vals.push_back(constants.INFINITY_);
-        wm_vals.push_back(seq.WMPrime[i][j]);
+        MinBox<Rational> wm_vals;
+        wm_vals.insert(Rational::infinity());
+        wm_vals.insert(seq.WMPrime[i][j]);
 
         switch (dangles) {
         case BOTH_DANGLE:
             {
-                mpq_class energy = seq.V[i][j] + auPenalty(i, j, seq) + constants.multConst[2];
+                Rational energy = seq.V[i][j] + auPenalty(i, j, seq) + constants.multConst[2];
 
                 if (i > 0) {
                     energy += Ed5(i, j, seq);
@@ -197,24 +197,24 @@ namespace pmfe {
                     energy += Ed3(i, j, seq);
                 }
 
-                wm_vals.push_back(energy);
+                wm_vals.insert(energy);
                 break;
             }
 
         case NO_DANGLE: {
-            wm_vals.push_back(seq.V[i][j] + auPenalty(i, j, seq) + constants.multConst[2]);
+            wm_vals.insert(seq.V[i][j] + auPenalty(i, j, seq) + constants.multConst[2]);
             break;
         }
 
         case CHOOSE_DANGLE:
             {
-                wm_vals.push_back(seq.V[i][j] + auPenalty(i, j, seq) + constants.multConst[2]); // no dangle
+                wm_vals.insert(seq.V[i][j] + auPenalty(i, j, seq) + constants.multConst[2]); // no dangle
 
-                wm_vals.push_back(seq.V[i+1][j] + Ed5(i+1, j, seq) + auPenalty(i+1, j, seq) + constants.multConst[2] + constants.multConst[1]); //i dangle
+                wm_vals.insert(seq.V[i+1][j] + Ed5(i+1, j, seq) + auPenalty(i+1, j, seq) + constants.multConst[2] + constants.multConst[1]); //i dangle
 
-                wm_vals.push_back(seq.V[i][j-1] + Ed3(i, j-1, seq) + auPenalty(i, j-1, seq) + constants.multConst[2] + constants.multConst[1]);  //j dangle
+                wm_vals.insert(seq.V[i][j-1] + Ed3(i, j-1, seq) + auPenalty(i, j-1, seq) + constants.multConst[2] + constants.multConst[1]);  //j dangle
 
-                wm_vals.push_back(seq.V[i+1][j-1] + Ed5(i+1, j-1, seq) + Ed3(i+1, j-1, seq) + auPenalty(i+1, j-1, seq) + constants.multConst[2] + 2*constants.multConst[1]); //i,j dangle
+                wm_vals.insert(seq.V[i+1][j-1] + Ed5(i+1, j-1, seq) + Ed3(i+1, j-1, seq) + auPenalty(i+1, j-1, seq) + constants.multConst[2] + 2*constants.multConst[1]); //i,j dangle
 
                 break;
             }
@@ -224,15 +224,15 @@ namespace pmfe {
             break;
         }
 
-        wm_vals.push_back(seq.WM[i+1][j] + constants.multConst[1]); //i dangle
+        wm_vals.insert(seq.WM[i+1][j] + constants.multConst[1]); //i dangle
 
-        wm_vals.push_back(seq.WM[i][j-1] + constants.multConst[1]); //j dangle
+        wm_vals.insert(seq.WM[i][j-1] + constants.multConst[1]); //j dangle
 
-        seq.WM[i][j] = *std::min_element(wm_vals.begin(), wm_vals.end());
+        seq.WM[i][j] = wm_vals.minimum();
         // WM end
     }
 
-    mpq_class NNTM::minimum_energy(RNASequenceWithTables& seq) const {
+    Rational NNTM::minimum_energy(RNASequenceWithTables& seq) const {
         /*
           Return the minimum energy of a structure on this sequence
         */
@@ -246,12 +246,12 @@ namespace pmfe {
 
     // dangle on the 5' end of (i, j)
     // if inside==true, dangle i+1 instead of i-1
-    mpq_class NNTM::Ed5(int i, int j, const RNASequence& seq, bool inside) const {
+    Rational NNTM::Ed5(int i, int j, const RNASequence& seq, bool inside) const {
         // Input specification
-        assert (i >= 0 && i < seq.len());
-        assert (j >= 0 && j < seq.len());
+        assert (i >= 0 and i < seq.len());
+        assert (j >= 0 and j < seq.len());
 
-        mpq_class penalty = 0;
+        Rational penalty = 0;
 
         if (i > 0) {
             if (inside)
@@ -270,12 +270,12 @@ namespace pmfe {
 
     // dangle on the 3' end of (i, j)
     // if inside==true, dangle j-1 instead of j+1
-    mpq_class NNTM::Ed3(int i, int j, const RNASequence& seq, bool inside) const {
+    Rational NNTM::Ed3(int i, int j, const RNASequence& seq, bool inside) const {
         // Input specification
-        assert (i >= 0 && i < seq.len());
-        assert (j >= 0 && j < seq.len());
+        assert (i >= 0 and i < seq.len());
+        assert (j >= 0 and j < seq.len());
 
-        mpq_class penalty = 0;
+        Rational penalty = 0;
 
         if (j < seq.len()-1) {
             if (inside)
@@ -292,7 +292,7 @@ namespace pmfe {
         return penalty;
     }
 
-    mpq_class NNTM::auPenalty(int i, int j, const RNASequence& seq) const {
+    Rational NNTM::auPenalty(int i, int j, const RNASequence& seq) const {
         /*
           Return the pairing penalty for (i, j); this is nonzero unless it is a GC pair
         */
@@ -308,7 +308,7 @@ namespace pmfe {
         }
     }
 
-    mpq_class NNTM::eLL(int size) const {
+    Rational NNTM::eLL(int size) const {
         /*
           Compute the energy correction for a long loop
         */
@@ -318,23 +318,23 @@ namespace pmfe {
         if (constants.params.dummy_scaling == 0) {
             return 0;
         } else {
-            mpq_class prelog = constants.prelog / constants.params.dummy_scaling;
-            mpq_class result = (mpz_class) (100 * prelog * log((double) size / 30.0));
-            result *= constants.params.dummy_scaling / 100;
+            Rational prelog = constants.prelog / constants.params.dummy_scaling;
+            Rational result = (Integer) (100 * prelog.get_d() * log((double) size / 30.0));
+            result *= Rational(constants.params.dummy_scaling / 100);
             return result;
         }
     }
 
-    mpq_class NNTM::eL(int i, int j, int ip, int jp, const RNASequence& seq) const {
+    Rational NNTM::eL(int i, int j, int ip, int jp, const RNASequence& seq) const {
         /*
           Compute the energy of an internal loop between pairs (i, j) and (ip, jp)
         */
         // Input specification
-        assert (i >= 0 && i < seq.len());
-        assert (j >= 0 && j < seq.len());
-        assert (i < ip && ip < jp && jp < j);
+        assert (i >= 0 and i < seq.len());
+        assert (j >= 0 and j < seq.len());
+        assert (i < ip and ip < jp and jp < j);
 
-        mpq_class energy = constants.INFINITY_;
+        Rational energy = Rational::infinity();
 
         /*SH: These calculations used to incorrectly be within the bulge loop code, moved out here. */
         int size1 = ip - i - 1;
@@ -344,8 +344,8 @@ namespace pmfe {
         int lopsided = abs(size1 - size2); /* define the asymmetry of an interior loop */
 
         int pindex = std::min(2, std::min(size1, size2));
-        mpq_class lvalue = lopsided * constants.poppen[pindex];
-        mpq_class penterm;
+        Rational lvalue = lopsided * constants.poppen[pindex];
+        Rational penterm;
 
         if (constants.params.dummy_scaling >= 0) {
             penterm = std::min(constants.maxpen, lvalue);
@@ -360,7 +360,7 @@ namespace pmfe {
                     + eLL(size)
                     + auPenalty(i, j, seq)
                     + auPenalty(ip, jp, seq);
-            } else if (size <= 30 && size > 1) {
+            } else if (size <= 30 and size > 1) {
                 /* Does not depend upon i and j and ip and jp - Stacking Energies  */
                 energy = constants.bulge[size]
                     + auPenalty(i, j, seq)
@@ -376,7 +376,7 @@ namespace pmfe {
             /* Internal loop */
 
             if (size > 30) {
-                if (!((size1 == 1 || size2 == 1) && constants.gail)) { /* normal internal loop with size > 30*/
+                if (not ((size1 == 1 or size2 == 1) and constants.gail)) { /* normal internal loop with size > 30*/
                     energy = constants.tstki[seq.base(i)][seq.base(j)][seq.base(i + 1)][seq.base(j - 1)]
                         + constants.tstki[seq.base(jp)][seq.base(ip)][seq.base(jp + 1)][seq.base(ip - 1)] + constants.inter[30]
                         + eLL(size)
@@ -396,7 +396,7 @@ namespace pmfe {
                 energy = constants.iloop21[seq.base(jp)][seq.base(ip)][seq.base(j - 1)][seq.base(i + 2)][seq.base(i + 1)][seq.base(j)][seq.base(i)];
             } else if (size == 2) { /* 1*1 internal loops */
                 energy = constants.iloop11[seq.base(i)][seq.base(i + 1)][seq.base(ip)][seq.base(j)][seq.base(j - 1)][seq.base(jp)];
-            } else if ((size1 == 1 or size2 == 1) && constants.gail) { /* gail = (Grossly Asymmetric Interior Loop Rule) (on/off <-> 1/0)  */
+            } else if ((size1 == 1 or size2 == 1) and constants.gail) { /* gail = (Grossly Asymmetric Interior Loop Rule) (on/off <-> 1/0)  */
                 energy = constants.tstki[seq.base(i)][seq.base(j)][BASE_A][BASE_A] + constants.tstki[seq.base(jp)][seq.base(ip)][BASE_A][BASE_A]
                     + constants.inter[size]
                     + penterm;
@@ -411,17 +411,17 @@ namespace pmfe {
         return energy;
     }
 
-    mpq_class NNTM::eH(int i, int j, const RNASequence& seq) const {
+    Rational NNTM::eH(int i, int j, const RNASequence& seq) const {
         /*
           Compute the energy of a hairpin loop based at pair (i, j)
         */
 
         // Input specification
-        assert (i >= 0 && i < seq.len());
-        assert (j >= 0 && j < seq.len());
+        assert (i >= 0 and i < seq.len());
+        assert (j >= 0 and j < seq.len());
         assert (i < j);
 
-        mpq_class energy = constants.INFINITY_;
+        Rational energy = Rational::infinity();
 
         int size = j - i - 1; /*  size is the number of bases in the loop, when the closing pair is excluded */
 
@@ -431,13 +431,13 @@ namespace pmfe {
             energy = constants.hairpin[30] + eLL(size) + constants.tstkh[seq.base(i)][seq.base(j)][seq.base(i + 1)][seq.base(j - 1)]; /* size penalty + terminal mismatch stacking energy*/
         }
 
-        else if (size <= 30 && size > 4) {
+        else if (size <= 30 and size > 4) {
             energy = constants.hairpin[size] + constants.tstkh[seq.base(i)][seq.base(j)][seq.base(i + 1)][seq.base(j - 1)]; /* size penalty + terminal mismatch stacking energy*/
         }
 
         else if (size == 4) {
             std::string loopkey = seq.subsequence(i, j);
-            mpq_class tlink = 0; // Loop contribution is typically 0
+            Rational tlink = 0; // Loop contribution is typically 0
             if (constants.tloop.count(loopkey) != 0) {
                 tlink = constants.tloop.find(loopkey)->second; // But some loops have special contributions, stored in this table
             }
@@ -455,25 +455,25 @@ namespace pmfe {
             energy += auPenalty(i, j, seq);
         }
 
-        else if (size < 3 && size != 0) {
+        else if (size < 3 and size != 0) {
             /*  no terminal mismatch */
             energy = constants.hairpin[size];
         } else if (size == 0)
-            energy = constants.INFINITY_;
+            energy = Rational::infinity();
 
         /*  GGG Bonus => GU closure preceded by GG */
         /*  i-2 = i-1 = i = G, and j = U; i < j */
         if (i >= 2) {
-            if (seq.base(i - 2) == BASE_G && seq.base(i - 1) == BASE_G && seq.base(i) == BASE_G
-                && seq.base(j) == BASE_U) {
+            if (seq.base(i - 2) == BASE_G and seq.base(i - 1) == BASE_G and seq.base(i) == BASE_G
+                and seq.base(j) == BASE_U) {
                 energy += constants.gubonus;
                 /*  printf ("\n GGG bonus for i %d j %d ", i, j); */
             }
         }
 
         /*  Poly-C loop => How many C are needed for being a poly-C loop */
-        mpq_class tlink = 1;
-        for (int index = 1; (index <= size) && (tlink == 1); ++index) {
+        Rational tlink = 1;
+        for (int index = 1; (index <= size) and (tlink == 1); ++index) {
             if (seq.base(i + index) != BASE_C)
                 tlink = 0;
         }
@@ -489,30 +489,30 @@ namespace pmfe {
         return energy;
     }
 
-    mpq_class NNTM::eS(int i, int j, const RNASequence& seq) const {
+    Rational NNTM::eS(int i, int j, const RNASequence& seq) const {
         /*
           Compute the energy of a stack of pairs (i, j) and (i+1, j-1)
         */
         // Input specification
-        assert (i >= 0 && i < seq.len());
-        assert (j >= 0 && j < seq.len());
+        assert (i >= 0 and i < seq.len());
+        assert (j >= 0 and j < seq.len());
         assert (i < j);
 
         return constants.stack[seq.base(i)][seq.base(j)][seq.base(i+1)][seq.base(j-1)];
     }
 
-    mpq_class NNTM::calcVBI(int i, int j, const RNASequenceWithTables& seq) const {
+    Rational NNTM::calcVBI(int i, int j, const RNASequenceWithTables& seq) const {
         /*
           Helper method to populate the VBI array
         */
 
         // Input specification
-        assert (i >= 0 && i < seq.len());
-        assert (j >= 0 && j < seq.len());
+        assert (i >= 0 and i < seq.len());
+        assert (j >= 0 and j < seq.len());
         assert (i < j);
 
-        std::deque<mpq_class> vals;
-        vals.push_back(constants.INFINITY_);
+        MinBox<Rational> vals;
+        vals.insert(Rational::infinity());
 
         for (int p = i+1; p <= std::min(j-2-TURN, i+MAXLOOP+1) ; ++p) {
             int minq = j-i+p-MAXLOOP-2;
@@ -527,13 +527,13 @@ namespace pmfe {
             }
 
             for (int q = minq; q <= maxq; q++) {
-                if (q - p > TURN && seq.can_pair(p, q)) {
-                    vals.push_back(eL(i, j, p, q, seq) + seq.V[p][q]);
+                if (q - p > TURN and seq.can_pair(p, q)) {
+                    vals.insert(eL(i, j, p, q, seq) + seq.V[p][q]);
                 }
             }
         }
 
-        mpq_class VBIij = *std::min_element(vals.begin(), vals.end());
+        Rational VBIij = vals.minimum();
         return VBIij;
     }
 };

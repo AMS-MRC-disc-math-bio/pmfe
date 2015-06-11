@@ -8,8 +8,8 @@
 
 #include "nntm.h"
 #include "nndb_constants.h"
+#include "rational.h"
 
-#include <gmpxx.h>
 #include <boost/multi_array.hpp>
 
 #define BOOST_LOG_DYN_LINK 1 // Fix an issue with dynamic library loading
@@ -40,17 +40,17 @@ namespace pmfe {
 
     bool NNTM::traceW(int j, const RNASequenceWithTables& seq, RNAStructure& structure, ScoreVector& score) const {
         bool found_something = false;
-        mpq_class wim1;
+        Rational wim1;
 
         if (j <= 0) {
             return score.energy == seq.W[seq.len() - 1];
         }
 
-        for (int i = 0; i < j && !found_something; i++) {
+        for (int i = 0; i < j and not found_something; i++) {
             if (j-i < TURN) continue;
 
             if (i > 0) {
-                wim1 = std::min(mpq_class(0), seq.W[i-1]);
+                wim1 = std::min(Rational(0), seq.W[i-1]);
             } else {
                 wim1 = 0;
             }
@@ -58,7 +58,7 @@ namespace pmfe {
             switch (dangles) {
             case BOTH_DANGLE:
             {
-                mpq_class e_dangles = 0;
+                Rational e_dangles = 0;
                 if (i > 0) {
                     e_dangles += Ed5(i, j, seq);
                 }
@@ -69,7 +69,7 @@ namespace pmfe {
 
                 if (seq.W[j] == seq.V[i][j] + auPenalty(i, j, seq) + e_dangles + wim1) {
                     found_something = true;
-                    mpq_class loop = auPenalty(i, j, seq) + e_dangles;
+                    Rational loop = auPenalty(i, j, seq) + e_dangles;
                     score.energy += loop;
                     BOOST_LOG_TRIVIAL(debug) << "ExtLoop (" << i << ", " << j << ") with energy " << loop.get_d();
                     traceV(i, j, seq, structure, score);
@@ -82,7 +82,7 @@ namespace pmfe {
             {
                 if (seq.W[j] == seq.V[i][j] + auPenalty(i, j, seq) + wim1) {
                     found_something = true;
-                    mpq_class loop = auPenalty(i, j, seq);
+                    Rational loop = auPenalty(i, j, seq);
                     score.energy += loop;
                     BOOST_LOG_TRIVIAL(debug) << "ExtLoop (" << i << ", " << j << ") with energy " << loop.get_d();
                     traceV(i, j, seq, structure, score);
@@ -95,14 +95,14 @@ namespace pmfe {
             {
                 if (seq.W[j] == seq.V[i][j] + auPenalty(i, j, seq) + wim1) {
                     found_something = true;
-                    mpq_class loop = auPenalty(i, j, seq);
+                    Rational loop = auPenalty(i, j, seq);
                     score.energy += loop;
                     BOOST_LOG_TRIVIAL(debug) << "ExtLoop (" << i << ", " << j << ") with energy " << loop.get_d();
                     traceV(i, j, seq, structure, score);
                     traceW(i-1, seq, structure, score);
                 } else if (seq.W[j] ==  seq.V[i][j-1] + auPenalty(i, j-1, seq) + Ed3(i, j-1, seq) + wim1) {
                     found_something = true;
-                    mpq_class loop = auPenalty(i, j-1, seq) + Ed3(i, j-1, seq);
+                    Rational loop = auPenalty(i, j-1, seq) + Ed3(i, j-1, seq);
                     score.energy += loop;
                     BOOST_LOG_TRIVIAL(debug) << "ExtLoop (" << i << ", " << j << ") with energy " << loop.get_d();
                     structure.mark_d3(j);
@@ -110,7 +110,7 @@ namespace pmfe {
                     traceW(i-1, seq, structure, score);
                 } else if (seq.W[j] == seq.V[i+1][j] + auPenalty(i+1, j, seq) + Ed5(i+1, j, seq) + wim1){
                     found_something = true;
-                    mpq_class loop = auPenalty(i+1, j, seq) + Ed5(i+1, j, seq);
+                    Rational loop = auPenalty(i+1, j, seq) + Ed5(i+1, j, seq);
                     score.energy += loop;
                     BOOST_LOG_TRIVIAL(debug) << "ExtLoop (" << i << ", " << j << ") with energy " << loop.get_d();
                     structure.mark_d5(i);
@@ -118,7 +118,7 @@ namespace pmfe {
                     traceW(i-1, seq, structure, score);
                 } else if (seq.W[j] == seq.V[i+1][j-1] + auPenalty(i+1, j-1, seq) + Ed5(i+1, j-1, seq) + Ed3(i+1, j-1, seq) + wim1) {
                     found_something = true;
-                    mpq_class loop = auPenalty(i+1, j-1, seq) + Ed5(i+1, j-1, seq) + Ed3(i+1, j-1, seq);
+                    Rational loop = auPenalty(i+1, j-1, seq) + Ed5(i+1, j-1, seq) + Ed3(i+1, j-1, seq);
                     score.energy += loop;
                     BOOST_LOG_TRIVIAL(debug) << "ExtLoop (" << i << ", " << j << ") with energy " << loop.get_d();
                     structure.mark_d3(j);
@@ -136,11 +136,11 @@ namespace pmfe {
             }
         }
 
-        if (seq.W[j] == seq.W[j-1] && !found_something) {
+        if (seq.W[j] == seq.W[j-1] and not found_something) {
             found_something = traceW(j-1, seq, structure, score);
         }
 
-        if (!found_something) {
+        if (not found_something) {
             BOOST_LOG_TRIVIAL(error) << "W traceback did not finish for j = " << j;
             BOOST_LOG_TRIVIAL(error) << constants.params;
             throw std::logic_error("W traceback did not finish!");
@@ -149,10 +149,10 @@ namespace pmfe {
         return found_something;
     }
 
-    mpq_class NNTM::traceV(int i, int j, const RNASequenceWithTables& seq, RNAStructure& structure, ScoreVector& score) const {
-        mpq_class a, b, c, d;
-        mpq_class Vij;
-        if (j-i < TURN)  return constants.INFINITY_;
+    Rational NNTM::traceV(int i, int j, const RNASequenceWithTables& seq, RNAStructure& structure, ScoreVector& score) const {
+        Rational a, b, c, d;
+        Rational Vij;
+        if (j-i < TURN)  return Rational::infinity();
 
         // TODO: Eliminate silly intermediate variables
         a = eH(i, j, seq);
@@ -165,12 +165,12 @@ namespace pmfe {
         structure.mark_pair(i, j);
 
         if (Vij == a ) {
-            mpq_class loop = eH(i, j, seq);
+            Rational loop = eH(i, j, seq);
             score.energy += loop;
             BOOST_LOG_TRIVIAL(debug) << "Hairpin (" << i << ", " << j << ") with energy " << loop.get_d();
             return Vij;
         } else if (Vij == b) {
-            mpq_class loop = eS(i, j, seq);
+            Rational loop = eS(i, j, seq);
             score.energy += loop;
             BOOST_LOG_TRIVIAL(debug) << "Stack (" << i << ", " << j << ") with energy " << loop.get_d();
             traceV(i+1, j-1, seq, structure, score);
@@ -179,7 +179,7 @@ namespace pmfe {
             traceVBI(i, j, seq, structure, score);
             return Vij;
         } else if (Vij == d) {
-            mpq_class loop = Vij - traceVM(i, j, seq, structure, score);
+            Rational loop = Vij - traceVM(i, j, seq, structure, score);
             score.energy += loop;
             BOOST_LOG_TRIVIAL(debug) << "Multiloop (" << i << ", " << j << ") with energy " << loop.get_d();
             return Vij;
@@ -188,8 +188,8 @@ namespace pmfe {
         return 0;
     }
 
-    mpq_class NNTM::traceVBI(int i, int j, const RNASequenceWithTables& seq, RNAStructure& structure, ScoreVector& score) const {
-        mpq_class VBIij;
+    Rational NNTM::traceVBI(int i, int j, const RNASequenceWithTables& seq, RNAStructure& structure, ScoreVector& score) const {
+        Rational VBIij;
         int ip, jp;
         int ifinal, jfinal;
 
@@ -208,7 +208,7 @@ namespace pmfe {
             if (jp != j) break;
         }
 
-        mpq_class loop = eL(i, j, ifinal, jfinal, seq);
+        Rational loop = eL(i, j, ifinal, jfinal, seq);
         score.energy += loop;
 
         BOOST_LOG_TRIVIAL(debug) << "IntLoop (" << i << ", " << j << ") with energy " << loop.get_d();
@@ -216,8 +216,8 @@ namespace pmfe {
         return traceV(ifinal, jfinal, seq, structure, score);
     }
 
-    mpq_class NNTM::traceVM(int i, int j, const RNASequenceWithTables& seq, RNAStructure& structure, ScoreVector& score) const {
-        mpq_class eVM = 0;
+    Rational NNTM::traceVM(int i, int j, const RNASequenceWithTables& seq, RNAStructure& structure, ScoreVector& score) const {
+        Rational eVM = 0;
 
         switch (dangles) {
         case BOTH_DANGLE:
@@ -277,11 +277,11 @@ namespace pmfe {
         return eVM;
     }
 
-    mpq_class NNTM::traceWMPrime(int i, int j, const RNASequenceWithTables& seq, RNAStructure& structure, ScoreVector& score) const {
+    Rational NNTM::traceWMPrime(int i, int j, const RNASequenceWithTables& seq, RNAStructure& structure, ScoreVector& score) const {
         int done=0, h;
-        mpq_class energy = 0;
+        Rational energy = 0;
 
-        for (h = i; h < j && !done; h++) {
+        for (h = i; h < j and not done; h++) {
             if (seq.WM[i][h] + seq.WM[h+1][j] == seq.WMPrime[i][j]) {
                 energy += traceWM(i, h, seq, structure, score);
                 energy += traceWM(h+1, j, seq, structure, score);
@@ -292,17 +292,17 @@ namespace pmfe {
         return energy;
     }
 
-    mpq_class NNTM::traceWM(int i, int j, const RNASequenceWithTables& seq, RNAStructure& structure, ScoreVector& score) const {
+    Rational NNTM::traceWM(int i, int j, const RNASequenceWithTables& seq, RNAStructure& structure, ScoreVector& score) const {
         assert(i < j);
         int done = 0;
-        mpq_class eWM = 0;
+        Rational eWM = 0;
 
-        if (!done && seq.WM[i][j] == seq.WMPrime[i][j]) {
+        if (not done and seq.WM[i][j] == seq.WMPrime[i][j]) {
             eWM += traceWMPrime(i, j, seq, structure, score);
             done = 1;
         }
 
-        if (!done){
+        if (not done){
             switch (dangles) {
             case BOTH_DANGLE:
             {
@@ -358,7 +358,7 @@ namespace pmfe {
                 break;
             }
 
-            if (!done){
+            if (not done){
                 if (seq.WM[i][j] == seq.WM[i+1][j] + constants.multConst[1]) {
                     done = 1;
                     eWM += traceWM(i+1, j, seq, structure, score);

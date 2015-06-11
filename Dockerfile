@@ -1,4 +1,4 @@
-# Build on a Debian "wheezy" foundation
+# Build on a Debian "jessie"/8.0 foundation
 FROM debian:jessie
 
 MAINTAINER Andrew Gainer-Dewar <andrew.gainer.dewar@gmail.com>
@@ -13,6 +13,7 @@ RUN apt-get update && \
             libgmp-dev \
             libboost-filesystem-dev \
             libboost-program-options-dev \
+            libboost-log-dev \
             libcgal-dev \
             ca-certificates && \
     apt-get clean && \

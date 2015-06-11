@@ -47,6 +47,15 @@ namespace iB4e
         typedef typename LinearAlgebra::Vector LVector;
         typedef typename ConvexHull::Facet_iterator Facet_iterator;
         typedef typename FVector::Base_vector Base_vector;
+
+
+        // May be implemented by derived classes
+        virtual void hook_preinit() {};
+        virtual void hook_postinit() {};
+        virtual void hook_perloop(size_t confirmed) {};
+        virtual void hook_unconfirmed(Facet_iterator facet) {};
+        virtual void hook_confirmed(Facet_iterator facet) {};
+        virtual void hook_postloop() {};
     };
 
     template <typename F>
@@ -69,6 +78,8 @@ namespace iB4e
         // TODO: Why is this trying certain vectors many times?
 
         // Huggins' initialization loop
+        hook_preinit();
+
         while (this->current_dimension() < dim) {
             LMatrix A;
             // Construct some helper objects
@@ -90,16 +101,16 @@ namespace iB4e
                 LVector new_test_vector;
 
                 // If either of c or -c yields a point that increases the dimension of the polytope, add it
-                if (!done) {
+                if (not done) {
                     FPoint result = this->vertex_oracle(c);
-                    if (this->number_of_vertices() == 0 || this->is_dimension_jump(result)) {
+                    if (this->number_of_vertices() == 0 or this->is_dimension_jump(result)) {
                         this->insert(result);
                         new_test_vector = LVector(result.cartesian_begin(), result.cartesian_end()) - first_result_lv;
                         done = true;
                     }
                 }
 
-                if (!done) {
+                if (not done) {
                     FPoint result = vertex_oracle(-c);
                     if (this->is_dimension_jump(result)) {
                         this->insert(result);
@@ -109,7 +120,7 @@ namespace iB4e
                 }
 
                 // Otherwise, add c as a test vector
-                if (!done) {
+                if (not done) {
                     new_test_vector = x;
                     done = true;
                 }
@@ -125,26 +136,32 @@ namespace iB4e
         assert(this->is_valid());
         assert(this->current_dimension() == dim);
 
+        hook_postinit();
+
         // MAIN LOOP
         bool all_confirmed_so_far = false;
         int confirmed = 0;
-        while (!all_confirmed_so_far) {
+        while (not all_confirmed_so_far) {
+            hook_perloop(confirmed);
+
             all_confirmed_so_far = true;
 
             // Attempt to confirm every facet
-            for (Facet_iterator f = this->facets_begin(); f != this->facets_end() && all_confirmed_so_far ; f++) {
-                if (!f->is_confirmed()) { // If the facet is not already confirmed, test it
+            for (Facet_iterator f = this->facets_begin(); f != this->facets_end() and all_confirmed_so_far ; f++) {
+                if (not f->is_confirmed()) { // If the facet is not already confirmed, test it
                     Hyperplane hp = this->hyperplane_supporting(f);
                     FVector innernormal = -hp.orthogonal_vector(); // CGAL returns the outer normal
                     FPoint result = vertex_oracle(innernormal);
 
                     switch (hp.oriented_side(result)) {
                     case CGAL::ON_POSITIVE_SIDE:
+                        hook_unconfirmed(f);
                         this->insert(result); // If so, add the new point and break the inner loop
                         all_confirmed_so_far = false;
                         break;
 
                     case CGAL::ON_ORIENTED_BOUNDARY:
+                        hook_confirmed(f);
                         f->confirm(); // Otherwise, mark the facet as confirmed and continue
                         confirmed++;
                         break;
@@ -164,6 +181,8 @@ namespace iB4e
                 }
             }
         }
+
+        hook_postloop();
         // END LOGIC
     };
 }

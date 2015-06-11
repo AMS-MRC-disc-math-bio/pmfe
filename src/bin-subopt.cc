@@ -9,6 +9,7 @@
 
 #include "pmfe_types.h"
 #include "subopt.h"
+#include "rational.h"
 
 #define BOOST_LOG_DYN_LINK 1 // Fix an issue with dynamic library loading
 #include <boost/log/core.hpp>
@@ -72,24 +73,24 @@ int main(int argc, char* argv[]) {
     }
 
     // Set up the parameters
-    mpq_class delta = pmfe::get_mpq_from_word(vm["delta"].as<std::string>());
+    pmfe::Rational delta = pmfe::get_rational_from_word(vm["delta"].as<std::string>());
 
     pmfe::ParameterVector params = pmfe::ParameterVector();
 
     if (vm.count("multiloop-penalty")) {
-        params.multiloop_penalty = pmfe::get_mpq_from_word(vm["multiloop-penalty"].as<std::string>());
+        params.multiloop_penalty = pmfe::get_rational_from_word(vm["multiloop-penalty"].as<std::string>());
     };
 
     if (vm.count("unpaired-penalty")) {
-        params.unpaired_penalty = pmfe::get_mpq_from_word(vm["unpaired-penalty"].as<std::string>());
+        params.unpaired_penalty = pmfe::get_rational_from_word(vm["unpaired-penalty"].as<std::string>());
     };
 
     if (vm.count("branch-penalty")) {
-        params.branch_penalty = pmfe::get_mpq_from_word(vm["branch-penalty"].as<std::string>());
+        params.branch_penalty = pmfe::get_rational_from_word(vm["branch-penalty"].as<std::string>());
     };
 
     if (vm.count("dummy-scaling")) {
-        params.dummy_scaling = pmfe::get_mpq_from_word(vm["dummy-scaling"].as<std::string>());
+        params.dummy_scaling = pmfe::get_rational_from_word(vm["dummy-scaling"].as<std::string>());
     };
 
     params.canonicalize();

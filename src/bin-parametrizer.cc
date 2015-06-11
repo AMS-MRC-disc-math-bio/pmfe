@@ -52,7 +52,7 @@ int main(int argc, char * argv[]) {
     bool verbose = vm["verbose"].as<bool>();
     if (verbose) {
         boost::log::core::get()->set_filter(
-            boost::log::trivial::severity >= boost::log::trivial::debug);
+            boost::log::trivial::severity >= boost::log::trivial::info);
     } else {
         boost::log::core::get()->set_filter
             (boost::log::trivial::severity >= boost::log::trivial::warning);

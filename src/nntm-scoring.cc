@@ -8,7 +8,6 @@
 #include "nndb_constants.h"
 #include "interval_tree.h"
 
-#include <gmpxx.h>
 #include "boost/multi_array.hpp"
 
 #define BOOST_LOG_DYN_LINK 1 // Fix an issue with dynamic library loading
@@ -28,11 +27,11 @@ namespace pmfe {
             Turner99 classical_constants(thread_pool);
             NNTM classical_model(classical_constants, dangles, thread_pool);
             ScoreVector classical_score = classical_model.score(structure, false);
-            mpq_class classical_energy = classical_score.energy;
+            Rational classical_energy = classical_score.energy;
             result.w = classical_energy - (result.multiloops * classical_constants.multConst[0] + result.unpaired * classical_constants.multConst[1] + result.branches * classical_constants.multConst[2]);
 
             // Check that the computed w is consistent
-            mpq_class formula_energy = result.multiloops * constants.params.multiloop_penalty + result.unpaired * constants.params.unpaired_penalty + result.branches * constants.params.branch_penalty + result.w * constants.params.dummy_scaling;
+            Rational formula_energy = result.multiloops * constants.params.multiloop_penalty + result.unpaired * constants.params.unpaired_penalty + result.branches * constants.params.branch_penalty + result.w * constants.params.dummy_scaling;
             formula_energy.canonicalize();
 
             if (result.energy != formula_energy) {
@@ -74,7 +73,7 @@ namespace pmfe {
         case 0:
         {
             // Hairpin loop
-            mpq_class loop = eH(i, j, tree.seq);
+            Rational loop = eH(i, j, tree.seq);
             score.energy += loop;
             BOOST_LOG_TRIVIAL(debug) << "Hairpin (" << i << ", " << j << ") with energy " << loop.get_d();
             break;
@@ -87,12 +86,12 @@ namespace pmfe {
 
             if (child.start == i + 1 and child.end == j - 1) {
                 // Stack
-                mpq_class loop = eS(i, j, tree.seq);
+                Rational loop = eS(i, j, tree.seq);
                 score.energy += loop;
                 BOOST_LOG_TRIVIAL(debug) << "Stack (" << i << ", " << j << ") with energy " << loop.get_d();
             } else {
                 // Internal or bulge
-                mpq_class loop = eL(i, j, child.start, child.end, tree.seq);
+                Rational loop = eL(i, j, child.start, child.end, tree.seq);
                 score.energy += loop;
                 BOOST_LOG_TRIVIAL(debug) << "IntLoop (" << i << ", " << j << ") to (" << child.start << ", " << child.end << ") with energy " << loop.get_d();
             }
@@ -127,7 +126,7 @@ namespace pmfe {
         */
 
         int start, end;
-        mpq_class d5, d3;
+        Rational d5, d3;
 
         if (i1 < i2 and i2 < j2 and j2 < j1) {
             // (i1, j1) is the initiating pair of the loop, so
@@ -244,7 +243,7 @@ namespace pmfe {
         // Add the contribution for each unpaired region
         // First, consider the dangling regions at the ends of the sequence
         bool has_5d, has_3d;
-        mpq_class d3, d5;
+        Rational d3, d5;
 
         // If there are no children, stop immediately
         if (tree.root.valency() == 0) {

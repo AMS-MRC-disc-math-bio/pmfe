@@ -28,6 +28,7 @@
 #include "nndb_constants.h"
 #include "pmfe_types.h"
 #include "thread_pool.h"
+#include "rational.h"
 
 #include <boost/filesystem.hpp>
 #include <boost/filesystem/fstream.hpp>
@@ -91,16 +92,16 @@ namespace pmfe
         // Extrapolation for large loops based on polymer theory
         // internal, bulge or hairpin loops > 30: dS(T) = dS(30) + prelog * ln(n/30)
         fileStream >> currentWord;
-        prelog = params.dummy_scaling * get_mpq_from_word(currentWord);
+        prelog = params.dummy_scaling * get_rational_from_word(currentWord);
 
         // Maximum correction for asymmetric internal loops per Ninio
         fileStream >> currentWord;
-        maxpen = params.dummy_scaling * get_mpq_from_word(currentWord);
+        maxpen = params.dummy_scaling * get_rational_from_word(currentWord);
 
         // Ninio's f(m) array
         for (int count = 1; count <= 4; ++count) {
             fileStream >> currentWord;
-            poppen[count] = params.dummy_scaling * get_mpq_from_word(currentWord);
+            poppen[count] = params.dummy_scaling * get_rational_from_word(currentWord);
         }
 
         // Multibranch loop
@@ -121,23 +122,23 @@ namespace pmfe
 
         // Non-GC terminal pair penalty (sometimes called "AU penalty")
         fileStream >> currentWord;
-        auend = params.dummy_scaling * get_mpq_from_word(currentWord);
+        auend = params.dummy_scaling * get_rational_from_word(currentWord);
 
         // Bonus for GGG hairpin
         fileStream >> currentWord;
-        gubonus = params.dummy_scaling * get_mpq_from_word(currentWord);
+        gubonus = params.dummy_scaling * get_rational_from_word(currentWord);
 
         // C hairpin slope
         fileStream >> currentWord;
-        cslope = params.dummy_scaling * (get_mpq_from_word(currentWord) + mpq_class(1,100));
+        cslope = params.dummy_scaling * (get_rational_from_word(currentWord) + Rational(1,100));
 
         // C hairpin intercept
         fileStream >> currentWord;
-        cint = params.dummy_scaling * get_mpq_from_word(currentWord);
+        cint = params.dummy_scaling * get_rational_from_word(currentWord);
 
         // C hairpin of 3
         fileStream >> currentWord;
-        c3 = params.dummy_scaling * (get_mpq_from_word(currentWord) + mpq_class(1, 100));
+        c3 = params.dummy_scaling * (get_rational_from_word(currentWord) + Rational(1, 100));
 
         // init value, unused in our model
         fileStream >> currentWord;
@@ -177,25 +178,25 @@ namespace pmfe
             // Column 2: internal loop
             linestream >> currentWord;
             if (currentWord == "inf") {
-                inter[loopsize] = INFINITY_;
+                inter[loopsize] = Rational::infinity();
             } else {
-                inter[loopsize] = params.dummy_scaling * get_mpq_from_word(currentWord);
+                inter[loopsize] = params.dummy_scaling * get_rational_from_word(currentWord);
             }
 
             // Column 3: bulge loop
             linestream >> currentWord;
             if (currentWord == "inf") {
-                bulge[loopsize] = INFINITY_;
+                bulge[loopsize] = Rational::infinity();
             } else {
-                bulge[loopsize] = params.dummy_scaling * get_mpq_from_word(currentWord);
+                bulge[loopsize] = params.dummy_scaling * get_rational_from_word(currentWord);
             }
 
             // Column 4: hairpin loop
             linestream >> currentWord;
             if (currentWord == "inf") {
-                hairpin[loopsize] = INFINITY_;
+                hairpin[loopsize] = Rational::infinity();
             } else {
-                hairpin[loopsize] = params.dummy_scaling * get_mpq_from_word(currentWord);
+                hairpin[loopsize] = params.dummy_scaling * get_rational_from_word(currentWord);
             }
         }
     }
@@ -237,9 +238,9 @@ namespace pmfe
                     for (const auto& D: bases_in_order) {
                         linestream >> currentWord;
                         if (currentWord == "inf") {
-                            tstkh[A][B][C][D] = INFINITY_;
+                            tstkh[A][B][C][D] = Rational::infinity();
                         } else {
-                            tstkh[A][B][C][D] = params.dummy_scaling * get_mpq_from_word(currentWord);
+                            tstkh[A][B][C][D] = params.dummy_scaling * get_rational_from_word(currentWord);
                         }
                     }
                 }
@@ -284,9 +285,9 @@ namespace pmfe
                     for (const auto& D: bases_in_order) {
                         linestream >> currentWord;
                         if (currentWord == "inf") {
-                            tstki[A][B][C][D] = INFINITY_;
+                            tstki[A][B][C][D] = Rational::infinity();
                         } else {
-                            tstki[A][B][C][D] = params.dummy_scaling * get_mpq_from_word(currentWord);
+                            tstki[A][B][C][D] = params.dummy_scaling * get_rational_from_word(currentWord);
                         }
                     }
                 }
@@ -331,9 +332,9 @@ namespace pmfe
                     for (const auto& D: bases_in_order) {
                         linestream >> currentWord;
                         if (currentWord == "inf") {
-                            stack[A][B][C][D] = INFINITY_;
+                            stack[A][B][C][D] = Rational::infinity();
                         } else {
-                            stack[A][B][C][D] = params.dummy_scaling * get_mpq_from_word(currentWord);
+                            stack[A][B][C][D] = params.dummy_scaling * get_rational_from_word(currentWord);
                         }
                     }
                 }
@@ -386,9 +387,9 @@ namespace pmfe
                     for (const auto& C: bases_in_order) {
                         linestream >> currentWord;
                         if (currentWord == "inf") {
-                            dangle[A][B][C][m] = INFINITY_;
+                            dangle[A][B][C][m] = Rational::infinity();
                         } else {
-                            dangle[A][B][C][m] = params.dummy_scaling * get_mpq_from_word(currentWord);
+                            dangle[A][B][C][m] = params.dummy_scaling * get_rational_from_word(currentWord);
                         }
                     }
                 }
@@ -427,7 +428,7 @@ namespace pmfe
 
             // Associated energy
             linestream >> currentWord;
-            mpq_class loopval = params.dummy_scaling * get_mpq_from_word(currentWord);
+            Rational loopval = params.dummy_scaling * get_rational_from_word(currentWord);
 
             tloop[loopkey] = loopval;
         }
@@ -459,14 +460,14 @@ namespace pmfe
             throw std::runtime_error(errorMessage.str());
         }
 
-        // Pre-populate the array with INFINITY_
+        // Pre-populate the array with Rational::infinity()
         for (const auto& A: bases_in_order)
             for (const auto& B: bases_in_order)
                 for (const auto& C: bases_in_order)
                     for (const auto& D: bases_in_order)
                         for (const auto& E: bases_in_order)
                             for (const auto& F: bases_in_order)
-                                iloop11[A][B][C][D][E][F] = INFINITY_;
+                                iloop11[A][B][C][D][E][F] = Rational::infinity();
 
         // Then read the parameters from the file
         for (const auto& left_pair: valid_pairs_in_order) {
@@ -488,7 +489,7 @@ namespace pmfe
                     RNA_base F = right_pair.second;
                     for (const RNA_base& E: bases_in_order) {
                         linestream >> currentWord;
-                        iloop11[A][B][C][D][E][F] = params.dummy_scaling * get_mpq_from_word(currentWord);
+                        iloop11[A][B][C][D][E][F] = params.dummy_scaling * get_rational_from_word(currentWord);
                     }
                 }
             }
@@ -523,7 +524,7 @@ namespace pmfe
             throw std::runtime_error(errorMessage.str());
         }
 
-        // Pre-populate the array with INFINITY_
+        // Pre-populate the array with Rational::infinity()
         for (const auto& A: bases_in_order)
             for (const auto& B: bases_in_order)
                 for (const auto& C: bases_in_order)
@@ -531,7 +532,7 @@ namespace pmfe
                         for (const auto& E: bases_in_order)
                             for (const auto& F: bases_in_order)
                                 for (const auto& G: bases_in_order)
-                                    iloop21[A][B][C][D][E][F][G] = INFINITY_;
+                                    iloop21[A][B][C][D][E][F][G] = Rational::infinity();
 
         // Then read the parameters from the file
         for (const auto& left_pair: valid_pairs_in_order) {
@@ -554,7 +555,7 @@ namespace pmfe
                         RNA_base G = right_pair.second;
                         for (const RNA_base& D: bases_in_order) {
                             linestream >> currentWord;
-                            iloop21[A][B][C][D][E][F][G] = params.dummy_scaling * get_mpq_from_word(currentWord);
+                            iloop21[A][B][C][D][E][F][G] = params.dummy_scaling * get_rational_from_word(currentWord);
                         }
                     }
                 }
@@ -588,7 +589,7 @@ namespace pmfe
             throw std::runtime_error(errorMessage.str());
         }
 
-        // Pre-populate the array with INFINITY_
+        // Pre-populate the array with Rational::infinity()
         for (const auto& A: bases_in_order)
             for (const auto& B: bases_in_order)
                 for (const auto& C: bases_in_order)
@@ -597,7 +598,7 @@ namespace pmfe
                             for (const auto& F: bases_in_order)
                                 for (const auto& G: bases_in_order)
                                     for (const auto& H: bases_in_order)
-                                        iloop22[A][B][C][D][E][F][G][H] = INFINITY_;
+                                        iloop22[A][B][C][D][E][F][G][H] = Rational::infinity();
 
         // Then read the parameters from the file
         for (const auto& left_pair: valid_pairs_in_order) {
@@ -621,7 +622,7 @@ namespace pmfe
                         for (const RNA_base& G: bases_in_order) {
                             for (const RNA_base& H: bases_in_order) {
                                 linestream >> currentWord;
-                                iloop22[A][B][C][D][E][F][G][H] = params.dummy_scaling * get_mpq_from_word(currentWord);
+                                iloop22[A][B][C][D][E][F][G][H] = params.dummy_scaling * get_rational_from_word(currentWord);
                             }
                         }
                     }

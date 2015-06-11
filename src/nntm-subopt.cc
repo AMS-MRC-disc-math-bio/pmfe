@@ -9,8 +9,8 @@
 #include "nntm.h"
 #include "nndb_constants.h"
 #include "pmfe_types.h"
+#include "rational.h"
 
-#include <gmpxx.h>
 #include "boost/multi_array.hpp"
 
 #define BOOST_LOG_DYN_LINK 1 // Fix an issue with dynamic library loading
@@ -40,8 +40,8 @@ namespace pmfe {
 
     void NNTM::populate_subopt_tables(int i, int j, RNASequenceWithTables& seq) const {
         // FM begin
-        std::deque<mpq_class> fm1_vals;
-        fm1_vals.push_back(constants.INFINITY_);
+        std::deque<Rational> fm1_vals;
+        fm1_vals.push_back(Rational::infinity());
 
         int minl = i+TURN+1;
         for (int l = minl; l <= j; ++l) {
@@ -49,15 +49,15 @@ namespace pmfe {
 
             case NO_DANGLE:
             {
-                fm1_vals.push_back(seq.V[i][i] + auPenalty(i, l, seq) + constants.multConst[1]*(j-l) + constants.multConst[2]);
+                fm1_vals.push_back(seq.V[i][l] + auPenalty(i, l, seq) + constants.multConst[1]*(j-l) + constants.multConst[2]);
                 break;
             }
 
             case CHOOSE_DANGLE:
             {
-                mpq_class d5 = Ed5(i+1, l, seq);
-                mpq_class d3 = Ed3(i, l-1, seq);
-                mpq_class d53 = Ed5(i+1, l-1, seq) + Ed3(i+1, l-1, seq);
+                Rational d5 = Ed5(i+1, l, seq);
+                Rational d3 = Ed3(i, l-1, seq);
+                Rational d53 = Ed5(i+1, l-1, seq) + Ed3(i+1, l-1, seq);
 
                 fm1_vals.push_back(seq.V[i][l] + auPenalty(i, l, seq) + constants.multConst[1] * (j-l) + constants.multConst[2]);
 
@@ -75,8 +75,8 @@ namespace pmfe {
 
             case BOTH_DANGLE:
             {
-                mpq_class d5 = Ed5(i, l, seq);
-                mpq_class d3 = Ed3(i, l, seq);
+                Rational d5 = Ed5(i, l, seq);
+                Rational d3 = Ed3(i, l, seq);
                 fm1_vals.push_back(seq.V[i][l] + auPenalty(i, l, seq) + d5 + d3 + constants.multConst[1] * (j-l) + constants.multConst[2]);
                 break;
             }
@@ -90,8 +90,8 @@ namespace pmfe {
         }
         seq.FM1[i][j] = *std::min_element(fm1_vals.begin(), fm1_vals.end());
 
-        std::deque<mpq_class> fm_vals;
-        fm_vals.push_back(constants.INFINITY_);
+        std::deque<Rational> fm_vals;
+        fm_vals.push_back(Rational::infinity());
 
         for (int k = i+TURN+1; k <= j-TURN-1; ++k) {
             fm_vals.push_back(seq.FM[i][k-1] + seq.FM1[k][j]);
@@ -103,15 +103,15 @@ namespace pmfe {
         seq.FM[i][j] = *std::min_element(fm_vals.begin(), fm_vals.end());
     }
 
-    std::vector<RNAStructureWithScore> NNTM::suboptimal_structures(RNASequenceWithTables& seq, mpq_class delta, bool sorted) const {
+    std::vector<RNAStructureWithScore> NNTM::suboptimal_structures(RNASequenceWithTables& seq, Rational delta, bool sorted) const {
         // Ensure tables are available
         if (not seq.subopt_tables_populated) {
             populate_subopt_tables(seq);
         }
 
         // Set up variables
-        mpq_class mfe = minimum_energy(seq);
-        mpq_class upper_bound = mfe + delta;
+        Rational mfe = minimum_energy(seq);
+        Rational upper_bound = mfe + delta;
 
         PartialStructureStack pstack;
         std::vector<RNAStructureWithScore> possible_structures;
@@ -122,7 +122,7 @@ namespace pmfe {
         pstack.push(first);
 
         // Main processing loop
-        while (!pstack.empty()) {
+        while (not pstack.empty()) {
             RNAPartialStructure ps = pstack.top();
             pstack.pop();
 
@@ -153,7 +153,7 @@ namespace pmfe {
                 bool pushed_something = subopt_process_top_structure(seq, ps, pstack, upper_bound);
 
                 // If nothing was pushed to the stack, we still need to consider the rest of the partial-structure stack
-                if (!pushed_something) {
+                if (not pushed_something) {
                     pstack.push(ps);
                 }
             }
@@ -166,7 +166,7 @@ namespace pmfe {
         return possible_structures;
     }
 
-    bool NNTM::subopt_process_top_structure(const RNASequenceWithTables& seq, RNAPartialStructure& ps, PartialStructureStack& pstack, mpq_class upper_bound) const {
+    bool NNTM::subopt_process_top_structure(const RNASequenceWithTables& seq, RNAPartialStructure& ps, PartialStructureStack& pstack, Rational upper_bound) const {
         // Take the top structure from the stack
         Segment seg = ps.top();
         ps.pop();
@@ -206,7 +206,7 @@ namespace pmfe {
         return pushed_something;
     };
 
-    bool NNTM::subopt_traceV(int i, int j, const RNASequenceWithTables& seq, RNAPartialStructure& ps, PartialStructureStack& pstack, mpq_class upper_bound) const {
+    bool NNTM::subopt_traceV(int i, int j, const RNASequenceWithTables& seq, RNAPartialStructure& ps, PartialStructureStack& pstack, Rational upper_bound) const {
         // Input specification
         assert (0 <= i);
         assert (i <= j);
@@ -220,7 +220,6 @@ namespace pmfe {
             new_ps.accumulate(eH(i, j, seq));
             new_ps.mark_pair(i, j);
             pstack.push(new_ps);
-            mpq_class new_t = new_ps.total();
             pushed_something = true;
         }
 
@@ -247,9 +246,9 @@ namespace pmfe {
             switch (dangles) {
             case NO_DANGLE:
             {
-                mpq_class kenergy1 = seq.FM[i+1][k] + seq.FM1[k+1][j-1];
-                mpq_class kenergy2 = auPenalty(i, j, seq) + constants.multConst[0] + constants.multConst[2];
-                mpq_class kenergy_total = kenergy1 + kenergy2;
+                Rational kenergy1 = seq.FM[i+1][k] + seq.FM1[k+1][j-1];
+                Rational kenergy2 = auPenalty(i, j, seq) + constants.multConst[0] + constants.multConst[2];
+                Rational kenergy_total = kenergy1 + kenergy2;
                 if (kenergy_total + ps.total() <= upper_bound) {
                     RNAPartialStructure new_ps(ps);
                     new_ps.push(Segment(i+1, k, lM, seq.FM[i+1][k]));
@@ -265,9 +264,9 @@ namespace pmfe {
             case CHOOSE_DANGLE:
                 // In CHOOSE_DANGLE mode, we need to consider dangles on the initiating pair of a multiloop
             {
-                mpq_class d5 = Ed5(i, j, seq, true);
-                mpq_class d3 = Ed3(i, j, seq, true);
-                mpq_class d53 = d5 + d3;
+                Rational d5 = Ed5(i, j, seq, true);
+                Rational d3 = Ed3(i, j, seq, true);
+                Rational d53 = d5 + d3;
                 if (seq.FM[i+1][k] + seq.FM1[k+1][j-1] + auPenalty(i, j, seq) + constants.multConst[0] + constants.multConst[2] + ps.total() <= upper_bound) {
                     RNAPartialStructure new_ps(ps);
                     new_ps.push(Segment(i+1, k, lM, seq.FM[i+1][k]));
@@ -277,7 +276,7 @@ namespace pmfe {
                     pstack.push(new_ps);
                     pushed_something = true;
                 }
-                if (k > i+2 && seq.FM[i+2][k] + seq.FM1[k+1][j-1] + auPenalty(i, j, seq) + d5 + constants.multConst[0] + constants.multConst[1] + constants.multConst[2] + ps.total() <= upper_bound) {
+                if (k > i+2 and seq.FM[i+2][k] + seq.FM1[k+1][j-1] + auPenalty(i, j, seq) + d5 + constants.multConst[0] + constants.multConst[1] + constants.multConst[2] + ps.total() <= upper_bound) {
                     RNAPartialStructure new_ps(ps);
                     new_ps.push(Segment(i+2, k, lM, seq.FM[i+2][k]));
                     new_ps.push(Segment(k+1, j-1, lM1, seq.FM1[k+1][j-1]));
@@ -287,7 +286,7 @@ namespace pmfe {
                     pstack.push(new_ps);
                     pushed_something = true;
                 }
-                if (k <= j-TURN-2 && seq.FM[i+1][k] + seq.FM1[k+1][j-2] + auPenalty(i, j, seq) + d3 + constants.multConst[0] + constants.multConst[1] + constants.multConst[2] + ps.total() <= upper_bound) {
+                if (k <= j-TURN-2 and seq.FM[i+1][k] + seq.FM1[k+1][j-2] + auPenalty(i, j, seq) + d3 + constants.multConst[0] + constants.multConst[1] + constants.multConst[2] + ps.total() <= upper_bound) {
                     RNAPartialStructure new_ps(ps);
                     new_ps.push(Segment(i+1, k, lM, seq.FM[i+1][k]));
                     new_ps.push(Segment(k+1, j-2, lM1, seq.FM1[k+1][j-2]));
@@ -297,7 +296,7 @@ namespace pmfe {
                     pstack.push(new_ps);
                     pushed_something = true;
                 }
-                if (k > i+2 && k <= j-TURN-2 && seq.FM[i+2][k] + seq.FM1[k+1][j-2] + auPenalty(i, j, seq) + d53 + constants.multConst[0] + 2*constants.multConst[1] + constants.multConst[2] + ps.total() <= upper_bound) {
+                if (k > i+2 and k <= j-TURN-2 and seq.FM[i+2][k] + seq.FM1[k+1][j-2] + auPenalty(i, j, seq) + d53 + constants.multConst[0] + 2*constants.multConst[1] + constants.multConst[2] + ps.total() <= upper_bound) {
                     RNAPartialStructure new_ps(ps);
                     new_ps.push(Segment(i+2, k, lM, seq.FM[i+2][k]));
                     new_ps.push(Segment(k+1, j-2, lM1, seq.FM1[k+1][j-2]));
@@ -313,11 +312,11 @@ namespace pmfe {
 
             case BOTH_DANGLE:
             {
-                mpq_class d5 = Ed5(i, j, seq, true);
-                mpq_class d3 = Ed3(i, j, seq, true);
-                mpq_class kenergy1 = seq.FM[i+1][k] + seq.FM1[k+1][j-1];
-                mpq_class kenergy2 = d5 + d3 + auPenalty(i, j, seq) + constants.multConst[0] + constants.multConst[2];
-                mpq_class kenergy_total = kenergy1 + kenergy2;
+                Rational d5 = Ed5(i, j, seq, true);
+                Rational d3 = Ed3(i, j, seq, true);
+                Rational kenergy1 = seq.FM[i+1][k] + seq.FM1[k+1][j-1];
+                Rational kenergy2 = d5 + d3 + auPenalty(i, j, seq) + constants.multConst[0] + constants.multConst[2];
+                Rational kenergy_total = kenergy1 + kenergy2;
                 if (kenergy_total + ps.total() <= upper_bound) {
                     RNAPartialStructure new_ps(ps);
                     new_ps.push(Segment(i+1, k, lM, seq.FM[i+1][k]));
@@ -341,7 +340,7 @@ namespace pmfe {
         return pushed_something;
     }
 
-    bool NNTM::subopt_traceVBI(int i, int j, const RNASequenceWithTables& seq, RNAPartialStructure& ps, PartialStructureStack& pstack, mpq_class upper_bound) const {
+    bool NNTM::subopt_traceVBI(int i, int j, const RNASequenceWithTables& seq, RNAPartialStructure& ps, PartialStructureStack& pstack, Rational upper_bound) const {
         // Input specification
         assert (0 <= i);
         assert (i < j);
@@ -376,7 +375,7 @@ namespace pmfe {
     }
 
     // Wuchty case E = F
-    bool NNTM::subopt_traceW(int i, int j, const RNASequenceWithTables& seq, RNAPartialStructure& ps, PartialStructureStack& pstack, mpq_class upper_bound) const {
+    bool NNTM::subopt_traceW(int i, int j, const RNASequenceWithTables& seq, RNAPartialStructure& ps, PartialStructureStack& pstack, Rational upper_bound) const {
         // Input specification
         assert (i == 0);
         assert (i < j);
@@ -384,7 +383,7 @@ namespace pmfe {
 
         bool pushed_something = false;
         for (int l = i; l < j-TURN; ++l) {
-            mpq_class wim1;
+            Rational wim1;
             if (l > 0) {
                 wim1 = seq.W[l-1];
             } else {
@@ -394,7 +393,7 @@ namespace pmfe {
             switch (dangles){
             case NO_DANGLE:
             {
-                mpq_class bonus = auPenalty(l, j, seq);
+                Rational bonus = auPenalty(l, j, seq);
                 if (seq.V[l][j] + wim1 + bonus + ps.total() <= upper_bound ) {
                     RNAPartialStructure new_ps(ps);
                     new_ps.push(Segment(l, j, lV, seq.V[l][j]));
@@ -408,9 +407,9 @@ namespace pmfe {
 
             case CHOOSE_DANGLE:
             {
-                mpq_class d5 = Ed5(l+1, j, seq);
-                mpq_class d3 = Ed3(l, j-1, seq);
-                mpq_class d53 = Ed5(l+1, j-1, seq) + Ed3(l+1, j-1, seq);
+                Rational d5 = Ed5(l+1, j, seq);
+                Rational d3 = Ed3(l, j-1, seq);
+                Rational d53 = Ed5(l+1, j-1, seq) + Ed3(l+1, j-1, seq);
 
                 if (seq.V[l][j] + auPenalty(l, j, seq) + wim1 + ps.total() <= upper_bound) {
                     RNAPartialStructure new_ps(ps);
@@ -420,7 +419,7 @@ namespace pmfe {
                     pstack.push(new_ps);
                     pushed_something = true;
                 }
-                if (l+1 < j-TURN && seq.V[l+1][j] + auPenalty(l+1, j, seq) + d5 + wim1 + ps.total() <= upper_bound) {
+                if (l+1 < j-TURN and seq.V[l+1][j] + auPenalty(l+1, j, seq) + d5 + wim1 + ps.total() <= upper_bound) {
                     RNAPartialStructure new_ps(ps);
                     new_ps.push(Segment(l+1, j, lV, seq.V[l+1][j]));
                     new_ps.mark_d5(l);
@@ -429,7 +428,7 @@ namespace pmfe {
                     pstack.push(new_ps);
                     pushed_something = true;
                 }
-                if (l < j-TURN-1 && seq.V[l][j-1] + auPenalty(l, j-1, seq) +  d3 + wim1 + ps.total() <= upper_bound) {
+                if (l < j-TURN-1 and seq.V[l][j-1] + auPenalty(l, j-1, seq) +  d3 + wim1 + ps.total() <= upper_bound) {
                     RNAPartialStructure new_ps(ps);
                     new_ps.push(Segment(l, j-1, lV, seq.V[l][j-1]));
                     new_ps.mark_d3(j);
@@ -438,7 +437,7 @@ namespace pmfe {
                     pstack.push(new_ps);
                     pushed_something = true;
                 }
-                if (l+1 < j-TURN-1 && seq.V[l+1][j-1] + auPenalty(l+1, j-1, seq) + d53 + wim1 + ps.total() <= upper_bound) {
+                if (l+1 < j-TURN-1 and seq.V[l+1][j-1] + auPenalty(l+1, j-1, seq) + d53 + wim1 + ps.total() <= upper_bound) {
                     RNAPartialStructure new_ps(ps);
                     new_ps.push(Segment(l+1, j-1, lV, seq.V[l+1][j-1]));
                     new_ps.mark_d5(l);
@@ -453,7 +452,7 @@ namespace pmfe {
 
             case BOTH_DANGLE:
             {
-                mpq_class bonus = auPenalty(l, j, seq);
+                Rational bonus = auPenalty(l, j, seq);
 
                 if (l > i) {
                     bonus += Ed5(l, j, seq);
@@ -490,7 +489,7 @@ namespace pmfe {
         return pushed_something;
     }
 
-    bool NNTM::subopt_traceM1(int i, int j, const RNASequenceWithTables& seq, RNAPartialStructure& ps, PartialStructureStack& pstack, mpq_class upper_bound) const {
+    bool NNTM::subopt_traceM1(int i, int j, const RNASequenceWithTables& seq, RNAPartialStructure& ps, PartialStructureStack& pstack, Rational upper_bound) const {
         // Input specification
         assert (0 <= i);
         assert (i < j);
@@ -509,7 +508,7 @@ namespace pmfe {
         switch (dangles) {
         case NO_DANGLE:
         {
-            mpq_class bonus = auPenalty(i, j, seq) + constants.multConst[2];
+            Rational bonus = auPenalty(i, j, seq) + constants.multConst[2];
             if (seq.V[i][j] + bonus + ps.total() <= upper_bound) {
                 RNAPartialStructure new_ps(ps);
                 new_ps.push(Segment(i, j, lV, seq.V[i][j]));
@@ -522,9 +521,9 @@ namespace pmfe {
 
         case CHOOSE_DANGLE:
         {
-            mpq_class d5 = Ed5(i+1, j, seq);
-            mpq_class d3 = Ed3(i, j-1, seq);
-            mpq_class d53 = Ed5(i+1, j-1, seq) + Ed3(i+1, j-1, seq);
+            Rational d5 = Ed5(i+1, j, seq);
+            Rational d3 = Ed3(i, j-1, seq);
+            Rational d53 = Ed5(i+1, j-1, seq) + Ed3(i+1, j-1, seq);
             if (seq.V[i][j] + auPenalty(i, j, seq) + constants.multConst[2] + ps.total() <= upper_bound) {
                 RNAPartialStructure new_ps(ps);
                 new_ps.push(Segment(i, j, lV, seq.V[i][j]));
@@ -532,7 +531,7 @@ namespace pmfe {
                 pstack.push(new_ps);
                 pushed_something = true;
             }
-            if (i+1 < j && seq.V[i+1][j] + auPenalty(i+1, j, seq) + constants.multConst[2] + constants.multConst[1] + d5 + ps.total() <= upper_bound) {
+            if (i+1 < j and seq.V[i+1][j] + auPenalty(i+1, j, seq) + constants.multConst[2] + constants.multConst[1] + d5 + ps.total() <= upper_bound) {
                 RNAPartialStructure new_ps(ps);
                 new_ps.push(Segment(i+1, j, lV, seq.V[i+1][j]));
                 new_ps.accumulate(auPenalty(i+1, j, seq) + constants.multConst[2] + constants.multConst[1] + d5);
@@ -540,7 +539,7 @@ namespace pmfe {
                 pstack.push(new_ps);
                 pushed_something = true;
             }
-            if (i < j-1 && seq.V[i][j-1] + auPenalty(i, j-1, seq) + constants.multConst[2] + constants.multConst[1] + d3 + ps.total() <= upper_bound) {
+            if (i < j-1 and seq.V[i][j-1] + auPenalty(i, j-1, seq) + constants.multConst[2] + constants.multConst[1] + d3 + ps.total() <= upper_bound) {
                 RNAPartialStructure new_ps(ps);
                 new_ps.push(Segment(i, j-1, lV, seq.V[i][j-1]));
                 new_ps.accumulate(auPenalty(i, j-1, seq) + constants.multConst[2] + constants.multConst[1] + d3);
@@ -548,7 +547,7 @@ namespace pmfe {
                 pstack.push(new_ps);
                 pushed_something = true;
             }
-            if (i+1 < j-1 && seq.V[i+1][j-1] + auPenalty(i+1, j-1, seq) + constants.multConst[2] + 2*constants.multConst[1] + d53 + ps.total() <= upper_bound) {
+            if (i+1 < j-1 and seq.V[i+1][j-1] + auPenalty(i+1, j-1, seq) + constants.multConst[2] + 2*constants.multConst[1] + d53 + ps.total() <= upper_bound) {
                 RNAPartialStructure new_ps(ps);
                 new_ps.push(Segment(i+1, j-1, lV, seq.V[i+1][j-1]));
                 new_ps.accumulate(auPenalty(i+1, j-1, seq) + constants.multConst[2] + 2*constants.multConst[1] + d53);
@@ -562,7 +561,7 @@ namespace pmfe {
 
         case BOTH_DANGLE:
         {
-            mpq_class bonus = Ed5(i, j, seq) + Ed3(i, j, seq) + auPenalty(i, j, seq) + constants.multConst[2];
+            Rational bonus = Ed5(i, j, seq) + Ed3(i, j, seq) + auPenalty(i, j, seq) + constants.multConst[2];
             if (seq.V[i][j] + bonus + ps.total() <= upper_bound) {
                 RNAPartialStructure new_ps(ps);
                 new_ps.push(Segment(i, j, lV, seq.V[i][j]));
@@ -583,7 +582,7 @@ namespace pmfe {
         return pushed_something;
     }
 
-    bool NNTM::subopt_traceM(int i, int j, const RNASequenceWithTables& seq, RNAPartialStructure& ps, PartialStructureStack& pstack, mpq_class upper_bound) const {
+    bool NNTM::subopt_traceM(int i, int j, const RNASequenceWithTables& seq, RNAPartialStructure& ps, PartialStructureStack& pstack, Rational upper_bound) const {
         // Input specification
         assert (0 <= i);
         assert (i < j);
@@ -603,7 +602,7 @@ namespace pmfe {
         switch (dangles) {
         case NO_DANGLE:
         {
-            mpq_class bonus = constants.multConst[2] + auPenalty(i, j, seq);
+            Rational bonus = constants.multConst[2] + auPenalty(i, j, seq);
             if (seq.V[i][j] + bonus + ps.total() <= upper_bound) {
                 RNAPartialStructure new_ps(ps);
                 new_ps.push(Segment(i, j, lV, seq.V[i][j]));
@@ -616,9 +615,9 @@ namespace pmfe {
 
         case CHOOSE_DANGLE:
         {
-            mpq_class d5 = Ed5(i+1, j, seq);
-            mpq_class d3 = Ed3(i, j-1, seq);
-            mpq_class d53 = Ed5(i+1, j-1, seq) + Ed3(i+1, j-1, seq);
+            Rational d5 = Ed5(i+1, j, seq);
+            Rational d3 = Ed3(i, j-1, seq);
+            Rational d53 = Ed5(i+1, j-1, seq) + Ed3(i+1, j-1, seq);
             if (seq.V[i][j] + constants.multConst[2] + auPenalty(i, j, seq) + ps.total() <= upper_bound) {
                 RNAPartialStructure new_ps(ps);
                 new_ps.push(Segment(i, j, lV, seq.V[i][j]));
@@ -626,7 +625,7 @@ namespace pmfe {
                 pstack.push(new_ps);
                 pushed_something = true;
             }
-            if (i+1 < j && seq.V[i+1][j] + constants.multConst[2] + constants.multConst[1] + auPenalty(i+1, j, seq) + d5 + ps.total() <= upper_bound) {
+            if (i+1 < j and seq.V[i+1][j] + constants.multConst[2] + constants.multConst[1] + auPenalty(i+1, j, seq) + d5 + ps.total() <= upper_bound) {
                 RNAPartialStructure new_ps(ps);
                 new_ps.push(Segment(i+1, j, lV, seq.V[i+1][j]));
                 new_ps.accumulate(constants.multConst[2] + constants.multConst[1] + auPenalty(i+1, j, seq) + d5);
@@ -634,7 +633,7 @@ namespace pmfe {
                 pstack.push(new_ps);
                 pushed_something = true;
             }
-            if (i < j-1 && seq.V[i][j-1] + constants.multConst[2] + constants.multConst[1] + auPenalty(i, j-1, seq) + d3 + ps.total() <= upper_bound) {
+            if (i < j-1 and seq.V[i][j-1] + constants.multConst[2] + constants.multConst[1] + auPenalty(i, j-1, seq) + d3 + ps.total() <= upper_bound) {
                 RNAPartialStructure new_ps(ps);
                 new_ps.push(Segment(i, j-1, lV, seq.V[i][j-1]));
                 new_ps.accumulate(constants.multConst[2] + constants.multConst[1] + auPenalty(i, j-1, seq) + d3);
@@ -642,7 +641,7 @@ namespace pmfe {
                 pstack.push(new_ps);
                 pushed_something = true;
             }
-            if (i+1 < j-1 && seq.V[i+1][j-1] + constants.multConst[2] + 2*constants.multConst[1] + auPenalty(i+1, j-1, seq) + d53 + ps.total() <= upper_bound) {
+            if (i+1 < j-1 and seq.V[i+1][j-1] + constants.multConst[2] + 2*constants.multConst[1] + auPenalty(i+1, j-1, seq) + d53 + ps.total() <= upper_bound) {
                 RNAPartialStructure new_ps(ps);
                 new_ps.push(Segment(i+1, j-1, lV, seq.V[i+1][j-1]));
                 new_ps.accumulate(constants.multConst[2] + 2*constants.multConst[1] + auPenalty(i+1, j-1, seq) + d53);
@@ -656,7 +655,7 @@ namespace pmfe {
 
         case BOTH_DANGLE:
         {
-            mpq_class bonus = Ed5(i, j, seq) + Ed3(i, j, seq) + auPenalty(i, j, seq) + constants.multConst[2];
+            Rational bonus = Ed5(i, j, seq) + Ed3(i, j, seq) + auPenalty(i, j, seq) + constants.multConst[2];
             if (seq.V[i][j] + bonus + ps.total() <= upper_bound) {
                 RNAPartialStructure new_ps(ps);
                 new_ps.push(Segment(i, j, lV, seq.V[i][j]));
@@ -679,7 +678,7 @@ namespace pmfe {
             switch (dangles) {
             case NO_DANGLE:
             {
-                mpq_class bonus = constants.multConst[2] + auPenalty(k+1, j, seq);
+                Rational bonus = constants.multConst[2] + auPenalty(k+1, j, seq);
                 if (seq.FM[i][k] + seq.V[k+1][j] + bonus + ps.total() <= upper_bound) {
                     RNAPartialStructure new_ps(ps);
                     new_ps.push(Segment(i, k, lM, seq.FM[i][k]));
@@ -693,9 +692,9 @@ namespace pmfe {
 
             case CHOOSE_DANGLE:
             {
-                mpq_class d5 = Ed5(k+2, j, seq);
-                mpq_class d3 = Ed3(k+1, j-1, seq);
-                mpq_class d53 = Ed5(k+2, j-1, seq) + Ed3(k+2, j-1, seq);
+                Rational d5 = Ed5(k+2, j, seq);
+                Rational d3 = Ed3(k+1, j-1, seq);
+                Rational d53 = Ed5(k+2, j-1, seq) + Ed3(k+2, j-1, seq);
                 if (seq.FM[i][k] + seq.V[k+1][j] + constants.multConst[2] + auPenalty(k+1, j, seq) + ps.total() <= upper_bound) {
                     RNAPartialStructure new_ps(ps);
                     new_ps.push(Segment(i, k, lM, seq.FM[i][k]));
@@ -704,7 +703,7 @@ namespace pmfe {
                     pstack.push(new_ps);
                     pushed_something = true;
                 }
-                if (k+2 <= j-TURN && seq.FM[i][k] + seq.V[k+2][j] + constants.multConst[2] + constants.multConst[1] + auPenalty(k+2, j, seq) + d5 + ps.total() <= upper_bound) {
+                if (k+2 <= j-TURN and seq.FM[i][k] + seq.V[k+2][j] + constants.multConst[2] + constants.multConst[1] + auPenalty(k+2, j, seq) + d5 + ps.total() <= upper_bound) {
                     RNAPartialStructure new_ps(ps);
                     new_ps.push(Segment(i, k, lM, seq.FM[i][k]));
                     new_ps.push(Segment(k+2, j, lV, seq.V[k+2][j]));
@@ -713,7 +712,7 @@ namespace pmfe {
                     pstack.push(new_ps);
                     pushed_something = true;
                 }
-                if (k+1 <= j-1-TURN && seq.FM[i][k] + seq.V[k+1][j-1] + constants.multConst[2] + constants.multConst[1] + auPenalty(k+1, j-1, seq) + d3 + ps.total() <= upper_bound) {
+                if (k+1 <= j-1-TURN and seq.FM[i][k] + seq.V[k+1][j-1] + constants.multConst[2] + constants.multConst[1] + auPenalty(k+1, j-1, seq) + d3 + ps.total() <= upper_bound) {
                     RNAPartialStructure new_ps(ps);
                     new_ps.push(Segment(i, k, lM, seq.FM[i][k]));
                     new_ps.push(Segment(k+1, j-1, lV, seq.V[k+1][j-1]));
@@ -722,7 +721,7 @@ namespace pmfe {
                     pstack.push(new_ps);
                     pushed_something = true;
                 }
-                if (k+2 <= j-1-TURN && seq.FM[i][k] + seq.V[k+2][j-1] + constants.multConst[2] + 2*constants.multConst[1] + auPenalty(k+2, j-1, seq) + d53 + ps.total() <= upper_bound) {
+                if (k+2 <= j-1-TURN and seq.FM[i][k] + seq.V[k+2][j-1] + constants.multConst[2] + 2*constants.multConst[1] + auPenalty(k+2, j-1, seq) + d53 + ps.total() <= upper_bound) {
                     RNAPartialStructure new_ps(ps);
                     new_ps.push(Segment(i, k, lM, seq.FM[i][k]));
                     new_ps.push(Segment(k+2, j-1, lV, seq.V[k+2][j-1]));
@@ -737,7 +736,7 @@ namespace pmfe {
 
             case BOTH_DANGLE:
             {
-                mpq_class bonus = Ed5(k+1, j, seq) + Ed3(k+1, j, seq) + constants.multConst[2] + auPenalty(k+1, j, seq);
+                Rational bonus = Ed5(k+1, j, seq) + Ed3(k+1, j, seq) + constants.multConst[2] + auPenalty(k+1, j, seq);
                 if (seq.FM[i][k] + seq.V[k+1][j] + bonus + ps.total() <= upper_bound) {
                     RNAPartialStructure new_ps(ps);
                     new_ps.push(Segment(i, k, lM, seq.FM[i][k]));
@@ -758,7 +757,7 @@ namespace pmfe {
         // case that there is a single branch, preceded by free bases ending at position k
         for (int k = i; k <= j-TURN-1; ++k) {
 
-            mpq_class bonus = 0;
+            Rational bonus = 0;
 
             switch (dangles) {
             case NO_DANGLE:
@@ -776,9 +775,9 @@ namespace pmfe {
 
             case CHOOSE_DANGLE:
             {
-                mpq_class d5 = Ed5(k+2, j, seq);
-                mpq_class d3 = Ed3(k+1, j-1, seq);
-                mpq_class d53 = Ed5(k+2, j-1, seq) + Ed3(k+2, j-1, seq);
+                Rational d5 = Ed5(k+2, j, seq);
+                Rational d3 = Ed3(k+1, j-1, seq);
+                Rational d53 = Ed5(k+2, j-1, seq) + Ed3(k+2, j-1, seq);
                 if (seq.V[k+1][j] + constants.multConst[2] + constants.multConst[1]*(k+1 - i) + auPenalty(k+1, j, seq) + ps.total() <= upper_bound) {
                     RNAPartialStructure new_ps(ps);
                     new_ps.push(Segment(k+1, j, lV, seq.V[k+1][j]));
@@ -786,7 +785,7 @@ namespace pmfe {
                     pstack.push(new_ps);
                     pushed_something = true;
                 }
-                if (k+2 <= j-TURN && seq.V[k+2][j] + constants.multConst[2] + constants.multConst[1]*(k+2 - i) + auPenalty(k+2, j, seq) + d5 + ps.total() <= upper_bound) {
+                if (k+2 <= j-TURN and seq.V[k+2][j] + constants.multConst[2] + constants.multConst[1]*(k+2 - i) + auPenalty(k+2, j, seq) + d5 + ps.total() <= upper_bound) {
                     RNAPartialStructure new_ps(ps);
                     new_ps.push(Segment(k+2, j, lV, seq.V[k+2][j]));
                     new_ps.accumulate(constants.multConst[2] + constants.multConst[1]*(k+2 - i) + auPenalty(k+2, j, seq) + d5);
@@ -794,7 +793,7 @@ namespace pmfe {
                     pstack.push(new_ps);
                     pushed_something = true;
                 }
-                if (k+1 <= j-1-TURN && seq.V[k+1][j-1] + constants.multConst[2] + constants.multConst[1]*(k+1 - i + 1) + auPenalty(k+1, j-1, seq) + d3 + ps.total() <= upper_bound) {
+                if (k+1 <= j-1-TURN and seq.V[k+1][j-1] + constants.multConst[2] + constants.multConst[1]*(k+1 - i + 1) + auPenalty(k+1, j-1, seq) + d3 + ps.total() <= upper_bound) {
                     RNAPartialStructure new_ps(ps);
                     new_ps.push(Segment(k+1, j-1, lV, seq.V[k+1][j-1]));
                     new_ps.accumulate(constants.multConst[2] + constants.multConst[1]*(k+1 - i + 1) + auPenalty(k+1, j-1, seq) + d3);
@@ -802,7 +801,7 @@ namespace pmfe {
                     pstack.push(new_ps);
                     pushed_something = true;
                 }
-                if (k+2 <= j-1-TURN && seq.V[k+2][j-1] + constants.multConst[2] + constants.multConst[1]*(k+2 - i + 1) + auPenalty(k+2, j-1, seq) + d53 + ps.total() <= upper_bound) {
+                if (k+2 <= j-1-TURN and seq.V[k+2][j-1] + constants.multConst[2] + constants.multConst[1]*(k+2 - i + 1) + auPenalty(k+2, j-1, seq) + d53 + ps.total() <= upper_bound) {
                     RNAPartialStructure new_ps(ps);
                     new_ps.push(Segment(k+2, j-1, lV, seq.V[k+2][j-1]));
                     new_ps.accumulate(constants.multConst[2] + constants.multConst[1]*(k+2 - i + 1) + auPenalty(k+2, j-1, seq) + d53);
@@ -816,7 +815,7 @@ namespace pmfe {
 
             case BOTH_DANGLE:
             {
-                mpq_class bonus = Ed5(k+1, j, seq) + Ed3(k+1, j, seq) + constants.multConst[2] + constants.multConst[1]*(k-i+1) + auPenalty(k+1, j, seq);
+                Rational bonus = Ed5(k+1, j, seq) + Ed3(k+1, j, seq) + constants.multConst[2] + constants.multConst[1]*(k-i+1) + auPenalty(k+1, j, seq);
                 if (seq.V[k+1][j] + bonus + ps.total() <= upper_bound) {
                     RNAPartialStructure new_ps(ps);
                     new_ps.push(Segment(k+1, j, lV, seq.V[k+1][j]));

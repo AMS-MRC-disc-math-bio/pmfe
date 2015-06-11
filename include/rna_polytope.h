@@ -51,6 +51,11 @@ namespace pmfe {
 
     protected:
         SimpleThreadPool& thread_pool;
+
+        void hook_preinit();
+        void hook_postinit();
+        void hook_perloop(size_t confirmed);
+        void hook_postloop();
     };
 }
 #endif
