@@ -71,10 +71,10 @@ int main(int argc, char * argv[]) {
     fs::path seq_file (vm["sequence"].as<std::string>());
     pmfe::RNASequence sequence(seq_file);
 
-    pmfe::RNAPolytope poly(sequence, dangles, thread_pool);
-
     if (world.rank() == 0) { // Master node
         // Build the polytope
+        pmfe::RNAPolytope poly(sequence, dangles, thread_pool);
+
         poly.build(world.size() - 1);
 
         // Output the results
