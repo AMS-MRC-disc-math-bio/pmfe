@@ -3,8 +3,19 @@
 `pmfe` determines the sensitivity of RNA folding to multibranch-loop-related parameters.
 It relies on an implementation of Zucker's dynamic-programming algorithm for RNA secondary structure prediction, using adapted code from the `gtmfe` program from the [GTFold][gtfold] project.
 
-## Getting started
+## Docker container
 
+This project is available as a [Docker][docker] container.
+If you wish to *run* `pmfe` but do not need to modify and recompile the code, we recommend this approach, as it makes it easy to ensure you have all the dependencies.
+
+
+You can install it by running the following in your shell:
+
+    docker pull agdphd/pmfe
+
+## Getting started with code
+
+If you want to modify the source and compile `pmfe` yourself, the source is available here.
 This project is under active development, so we recommend downloading it using Git.
 To do this, run the following in your terminal:
 
@@ -80,13 +91,6 @@ This project includes "BBPolytope.h", a headers-only implementation of Huggins' 
 It can be found in the `iB4e` subdirectory.
 Note that it requires a replacement for one header file in the CGAL library; this is a small but necessary modification to support the algorithm.
 In the future, this will be updated to use the new Triangulations library in CGAL, and the modification will no longer be necessary.
-
-## Docker container
-
-This project is also available as a [Docker][docker] container.
-You can install it by running the following:
-
-    docker pull agdphd/pmfe
 
 ## License
 
