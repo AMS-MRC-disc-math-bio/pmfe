@@ -1,6 +1,7 @@
 // Copyright (c) 2015 Andrew Gainer-Dewar.
 
 #include <iostream>
+#include <omp.h>
 #include <stdexcept>
 
 #include "boost/filesystem.hpp"
@@ -51,6 +52,7 @@ int main(int argc, char* argv[]) {
 
     // Process thread-related options
     size_t num_threads = (vm["num-threads"].as<int>());
+    omp_set_num_threads(num_threads);
 
     // Process logging-related options
     bool verbose = vm["verbose"].as<bool>();
@@ -101,7 +103,7 @@ int main(int argc, char* argv[]) {
     pmfe::dangle_mode dangles = pmfe::convert_to_dangle_mode(vm["dangle-model"].as<int>());
 
     // Get results
-    std::vector<pmfe::RNAStructureWithScore> structures = suboptimal_structures(seq_file, params, dangles, delta, sorted, num_threads);
+    std::vector<pmfe::RNAStructureWithScore> structures = suboptimal_structures(seq_file, params, dangles, delta, sorted);
 
     // Print some status information
     std::cout << "Found " << structures.size() << " suboptimal structures." << std::endl;

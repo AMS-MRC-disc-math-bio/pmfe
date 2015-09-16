@@ -4,10 +4,10 @@
 #include <stdio.h>
 #include <math.h>
 #include <assert.h>
+#include <omp.h>
 
 #include "nntm.h"
 #include "nndb_constants.h"
-#include "thread_pool.h"
 #include "rational.h"
 #include "minbox.h"
 
@@ -19,10 +19,9 @@
 #include <boost/log/expressions.hpp>
 
 namespace pmfe {
-    NNTM::NNTM(const NNDBConstants& constants, dangle_mode dangles, SimpleThreadPool& thread_pool):
+    NNTM::NNTM(const NNDBConstants& constants, dangle_mode dangles):
         constants(constants),
-        dangles(dangles),
-        thread_pool(thread_pool)
+        dangles(dangles)
     {};
 
     RNASequenceWithTables NNTM::energy_tables(const RNASequence& inseq) const {
@@ -40,12 +39,10 @@ namespace pmfe {
 
         // Populate V, VM, VBI, WM, and WMPrime
         for (int b = TURN+1; b <= seq.len() - 1; ++b) {
-            SimpleJobGroup job_group(thread_pool);
+#pragma omp parallel for shared(seq)
             for (int i = 0; i <= seq.len() - 1 - b; ++i) {
-                job_group.post(boost::bind(&NNTM::populate_energy_tables, this, i, i+b, std::ref(seq)));
+                populate_energy_tables(i, i+b, seq);
             }
-
-            job_group.wait_for_all_jobs();
         }
 
         // Populate W

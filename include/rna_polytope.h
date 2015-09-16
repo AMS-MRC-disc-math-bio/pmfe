@@ -6,7 +6,6 @@
 #include "pmfe_types.h"
 #include "rna_polytope.h"
 #include "BBPolytope.h"
-#include "thread_pool.h"
 
 #include <map>
 #include "boost/filesystem/fstream.hpp"
@@ -44,14 +43,12 @@ namespace pmfe {
         dangle_mode dangles;
         std::map<FPoint, RNAStructureWithScore, compare_fp> structures;
 
-        RNAPolytope(RNASequence sequence, dangle_mode dangles, SimpleThreadPool& thread_pool);
+        RNAPolytope(RNASequence sequence, dangle_mode dangles);
 
         BBP::FPoint vertex_oracle(BBP::FVector objective);
         void write_to_file(const fs::path poly_file) const;
 
     protected:
-        SimpleThreadPool& thread_pool;
-
         void hook_preinit();
         void hook_postinit();
         void hook_perloop(size_t confirmed);

@@ -27,12 +27,10 @@
 
 #include "nndb_constants.h"
 #include "pmfe_types.h"
-#include "thread_pool.h"
 #include "rational.h"
 
 #include <boost/filesystem.hpp>
 #include <boost/filesystem/fstream.hpp>
-#include <boost/bind.hpp>
 
 namespace pmfe
 {
@@ -50,28 +48,23 @@ namespace pmfe
 
     std::vector< RNA_base > bases_in_order = {BASE_A, BASE_C, BASE_G, BASE_U};
 
-    Turner99::Turner99(SimpleThreadPool& thread_pool, const ParameterVector& params, const fs::path& paramDir):
-        NNDBConstants(params),
-        thread_pool(thread_pool)
+    Turner99::Turner99(const ParameterVector& params, const fs::path& paramDir):
+        NNDBConstants(params)
     {
-        SimpleJobGroup job_group(thread_pool);
+        initMiscValues(paramDir);
 
-        job_group.post(boost::bind(&Turner99::initMiscValues, this, paramDir));
+        initLoopValues(paramDir);
 
-        job_group.post(boost::bind(&Turner99::initLoopValues, this, paramDir));
+        initTstkhValues(paramDir);
+        initTstkiValues(paramDir);
 
-        job_group.post(boost::bind(&Turner99::initTstkhValues, this, paramDir));
-        job_group.post(boost::bind(&Turner99::initTstkiValues, this, paramDir));
+        initStackValues(paramDir);
+        initDangleValues(paramDir);
+        initTloopValues(paramDir);
 
-        job_group.post(boost::bind(&Turner99::initStackValues, this, paramDir));
-        job_group.post(boost::bind(&Turner99::initDangleValues, this, paramDir));
-        job_group.post(boost::bind(&Turner99::initTloopValues, this, paramDir));
-
-        job_group.post(boost::bind(&Turner99::initIloop11Values, this, paramDir));
-        job_group.post(boost::bind(&Turner99::initIloop21Values, this, paramDir));
-        job_group.post(boost::bind(&Turner99::initIloop22Values, this, paramDir));
-
-        job_group.wait_for_all_jobs();
+        initIloop11Values(paramDir);
+        initIloop21Values(paramDir);
+        initIloop22Values(paramDir);
     }
 
     void Turner99::initMiscValues(const fs::path& paramDir) {

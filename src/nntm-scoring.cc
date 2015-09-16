@@ -24,8 +24,8 @@ namespace pmfe {
 
         // If requested, compute the w value by re-scoring the structure with the classical parameters
         if (compute_w) {
-            Turner99 classical_constants(thread_pool);
-            NNTM classical_model(classical_constants, dangles, thread_pool);
+            Turner99 classical_constants;
+            NNTM classical_model(classical_constants, dangles);
             ScoreVector classical_score = classical_model.score(structure, false);
             Rational classical_energy = classical_score.energy;
             result.w = classical_energy - (result.multiloops * classical_constants.multConst[0] + result.unpaired * classical_constants.multConst[1] + result.branches * classical_constants.multConst[2]);
