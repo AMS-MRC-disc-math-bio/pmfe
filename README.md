@@ -20,6 +20,10 @@ You can then enter the image by running the following in your shell:
 
 This will give you a shell in the `pmfe` directory with the binaries built and ready to go.
 
+WARNING: Each time you call `docker run […]`, you get a clean new copy of the image!
+Any data you produced in previous runs will *not* be present.
+Thus, be sure to copy out anything important before exiting the image.
+
 ## Getting started with code
 
 If you want to modify the source and compile `pmfe` yourself, the source is available here.
