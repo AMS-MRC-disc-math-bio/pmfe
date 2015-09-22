@@ -34,33 +34,29 @@
 #include "nndb_constants.h"
 #include "nntm.h"
 #include "pmfe_types.h"
-#include "thread_pool.h"
 #include "rational.h"
 
 namespace pmfe {
     namespace fs = boost::filesystem;
 
-    ScoreVector mfe_pywrap(std::string seq_file, ParameterVector params, int dangle_model, int num_threads) {
-        return mfe(seq_file, params, convert_to_dangle_mode(dangle_model), num_threads).score;
+    ScoreVector mfe_pywrap(std::string seq_file, ParameterVector params, int dangle_model) {
+        return mfe(seq_file, params, convert_to_dangle_mode(dangle_model)).score;
     }
 
-    RNAStructureWithScore mfe(fs::path seq_file, fs::path param_dir, dangle_mode dangles, size_t num_threads) {
+    RNAStructureWithScore mfe(fs::path seq_file, fs::path param_dir, dangle_mode dangles) {
         ParameterVector params = ParameterVector();
-        return mfe(seq_file, params, dangles, num_threads);
+        return mfe(seq_file, params, dangles);
     }
 
-    RNAStructureWithScore mfe(fs::path seq_file, ParameterVector params, dangle_mode dangles, size_t num_threads) {
-        // Construct a thread pool
-        SimpleThreadPool thread_pool(num_threads);
-
+    RNAStructureWithScore mfe(fs::path seq_file, ParameterVector params, dangle_mode dangles) {
         // Read in thermodynamic parameters.
-        Turner99 constants(thread_pool, params);
+        Turner99 constants(params);
 
         // Read in the sequence
         RNASequence seq (seq_file);
 
         // Compute the minimum free energy
-        NNTM energy_model(constants, dangles, thread_pool);
+        NNTM energy_model(constants, dangles);
 
         RNASequenceWithTables seq_annotated = energy_model.energy_tables(seq);
 

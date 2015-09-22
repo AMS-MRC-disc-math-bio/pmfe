@@ -23,7 +23,6 @@
 #define _NNDB_CONSTANTS_H
 
 #include "pmfe_types.h"
-#include "thread_pool.h"
 #include "rational.h"
 
 #include <boost/filesystem.hpp>
@@ -83,11 +82,9 @@ namespace pmfe {
 
     class Turner99: public NNDBConstants {
     public:
-        Turner99(SimpleThreadPool& thread_pool, const ParameterVector& params = ParameterVector(), const fs::path& param_dir = "Turner99");
+        Turner99(const ParameterVector& params = ParameterVector(), const fs::path& param_dir = "Turner99");
 
     protected:
-        SimpleThreadPool& thread_pool;
-
         void initMiscValues(const fs::path& param_dir);
         void initLoopValues(const fs::path& param_dir);
         void initTstkhValues(const fs::path& param_dir);

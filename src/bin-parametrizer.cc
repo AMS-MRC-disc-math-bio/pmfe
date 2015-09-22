@@ -5,8 +5,8 @@
 #include "nntm.h"
 #include "pmfe_types.h"
 #include "rna_polytope.h"
-#include "thread_pool.h"
 
+#include <omp.h>
 #include <string>
 
 #include "boost/filesystem.hpp"
@@ -46,7 +46,7 @@ int main(int argc, char * argv[]) {
 
     // Set up thread pool
     size_t num_threads = (vm["num-threads"].as<int>());
-    pmfe::SimpleThreadPool thread_pool(num_threads);
+    omp_set_num_threads(num_threads);
 
         // Process logging-related options
     bool verbose = vm["verbose"].as<bool>();
@@ -65,7 +65,7 @@ int main(int argc, char * argv[]) {
     fs::path seq_file (vm["sequence"].as<std::string>());
     pmfe::RNASequence sequence(seq_file);
 
-    pmfe::RNAPolytope poly(sequence, dangles, thread_pool);
+    pmfe::RNAPolytope poly(sequence, dangles);
     poly.build();
 
     poly.print_statistics();

@@ -23,6 +23,7 @@ INCLUDES += -I/usr/local/include # For Homebrew
 # C++ compiler flags
 CXXFLAGS += --std=c++11
 CXXFLAGS += -fPIC
+CXXFLAGS += -fopenmp
 CXXFLAGS += -Wall
 CXXFLAGS += -g
 CXXFLAGS += -O3
@@ -35,8 +36,6 @@ LIBS += -lm
 LIBS += -lboost_filesystem
 LIBS += -lboost_program_options
 LIBS += -lboost_system
-LIBS += -lboost_thread
-LIBS += -lpthread
 LIBS += -lboost_log
 
 BIN = pmfe-findmfe pmfe-scorer pmfe-parametrizer pmfe-subopt pmfe-tests

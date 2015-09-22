@@ -4,7 +4,6 @@
 #include "nndb_constants.h"
 #include "pmfe_types.h"
 #include "rational.h"
-#include "thread_pool.h"
 
 #include <vector>
 
@@ -15,7 +14,7 @@ namespace pmfe{
         const NNDBConstants& constants;
         const dangle_mode dangles;
 
-        NNTM(const NNDBConstants& constants, dangle_mode dangles, SimpleThreadPool& thread_pool);
+        NNTM(const NNDBConstants& constants, dangle_mode dangles);
 
         RNASequenceWithTables energy_tables(const RNASequence& seq) const;
         Rational minimum_energy(RNASequenceWithTables& seq) const;
@@ -62,9 +61,6 @@ namespace pmfe{
         bool subopt_traceW(int i, int j, const RNASequenceWithTables& seq, RNAPartialStructure& ps, PartialStructureStack& pstack, Rational upper_bound) const;
         bool subopt_traceM1(int i, int j, const RNASequenceWithTables& seq, RNAPartialStructure& ps, PartialStructureStack& pstack, Rational upper_bound) const;
         bool subopt_traceM(int i, int j, const RNASequenceWithTables& seq, RNAPartialStructure& ps, PartialStructureStack& pstack, Rational upper_bound) const;
-
-        // Threading
-        SimpleThreadPool& thread_pool;
 
         // Configurable constants
         const static int MAXLOOP = 30; /* The maximum loop size. */

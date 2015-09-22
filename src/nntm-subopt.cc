@@ -5,6 +5,7 @@
 #include <vector>
 #include <algorithm>
 #include <iostream>
+#include <omp.h>
 
 #include "nntm.h"
 #include "nndb_constants.h"
@@ -28,12 +29,10 @@ namespace pmfe {
 
         // Populate FM1 and FM
         for (int b = TURN+1; b <= seq.len() - 1; ++b) {
-            SimpleJobGroup job_group(thread_pool);
+#pragma omp parallel for shared(seq)
             for (int i = 0; i <= seq.len() - 1 - b; ++i) {
-                job_group.post(boost::bind(&NNTM::populate_subopt_tables, this, i, i+b, std::ref(seq)));
+                populate_subopt_tables(i, i+b, seq);
             }
-
-            job_group.wait_for_all_jobs();
         }
         seq.subopt_tables_populated = true;
     }

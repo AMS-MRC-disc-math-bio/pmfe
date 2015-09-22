@@ -2,12 +2,13 @@
 
 #include "mfe.h"
 #include "pmfe_types.h"
-#include "thread_pool.h"
 #include "nndb_constants.h"
 #include "nntm.h"
 
 #include <iostream>
 #include <string>
+#include <omp.h>
+
 #include "boost/filesystem.hpp"
 #include "boost/program_options.hpp"
 
@@ -51,6 +52,7 @@ int main(int argc, char * argv[]) {
 
     // Process thread-related options
     size_t num_threads = (vm["num-threads"].as<int>());
+    omp_set_num_threads(num_threads);
 
     // Process logging-related options
     bool verbose = vm["verbose"].as<bool>();
@@ -91,10 +93,9 @@ int main(int argc, char * argv[]) {
     pmfe::dangle_mode dangles = pmfe::convert_to_dangle_mode(vm["dangle-model"].as<int>());
 
     // Set up environment
-    pmfe::SimpleThreadPool thread_pool(num_threads);
-    pmfe::Turner99 constants(thread_pool, params);
+    pmfe::Turner99 constants(params);
     pmfe::RNASequence seq(seq_file);
-    pmfe::NNTM energy_model(constants, dangles, thread_pool);
+    pmfe::NNTM energy_model(constants, dangles);
     pmfe::RNAStructure structure(seq, structure_as_string);
 
     // Run calculation

@@ -2,7 +2,9 @@
 
 #include "mfe.h"
 #include "pmfe_types.h"
+
 #include <iostream>
+#include <omp.h>
 #include <string>
 
 #include "boost/filesystem.hpp"
@@ -45,6 +47,7 @@ int main(int argc, char * argv[]) {
 
     // Process thread-related options
     size_t num_threads = (vm["num-threads"].as<int>());
+    omp_set_num_threads(num_threads);
 
     // Process logging-related options
     bool verbose = vm["verbose"].as<bool>();
@@ -83,7 +86,7 @@ int main(int argc, char * argv[]) {
     // Setup dangle model
     pmfe::dangle_mode dangles = pmfe::convert_to_dangle_mode(vm["dangle-model"].as<int>());
 
-    pmfe::RNAStructureWithScore result = pmfe::mfe(seq_file, params, dangles, num_threads);
+    pmfe::RNAStructureWithScore result = pmfe::mfe(seq_file, params, dangles);
     std::cout << result << std::endl;
     return(0);
 }
