@@ -8,10 +8,11 @@ It relies on an implementation of Zucker's dynamic-programming algorithm for RNA
 This project is available as a [Docker][docker] container.
 If you wish to *run* `pmfe` but do not need to modify and recompile the code, we recommend this approach, as it makes it easy to ensure you have all the dependencies.
 
+You can run it by running the following in your shell:
 
-You can install it by running the following in your shell:
+    docker run -it agdphd/pmfe
 
-    docker pull agdphd/pmfe
+This will download the Docker image and give you a shell in the `pmfe` directory with the binaries built and ready to go.
 
 ## Getting started with code
 

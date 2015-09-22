@@ -24,3 +24,6 @@ RUN cd /root && \
     git clone https://github.com/AMS-MRC-disc-math-bio/pmfe && \
     cd pmfe && \
     make
+
+# Set the working directory for convenience
+WORKDIR /root/pmfe
