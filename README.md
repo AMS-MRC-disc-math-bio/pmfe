@@ -61,27 +61,27 @@ This project builds programs that perform a variety of tasks.
 
 ### `pmfe-findmfe`
 Given a FASTA file representing an RNA sequence and (optionally) some modified values for the Turner99 multibranch loop parameters, the `pmfe-findmfe` program will generate a secondary structure which minimizes free energy.
-To use it on the sequence in `test_data/test_tRNA.fasta` with parameters `A`, `B`, `C`, and `D`, type
+For example, to use it on the sequence in `test_data/tRNA/c.diphtheriae_tRNA.fasta` with parameters `A`, `B`, `C`, and `D`, type
 
-    pmfe-findmfe test_data/test_tRNA.fasta -a A -b B -c C -d D
+    pmfe-findmfe test_data/tRNA/c.diphtheriae_tRNA.fasta -a A -b B -c C -d D
 
 The result will be printed to your terminal.
 
 ### `pmfe-subopt`
 Given a FASTA file representing an RNA sequence, an energy gap δ, and (optionally) some modified values for the Turner99 multibranch loop parameters, the `pmfe-subopt` program will generate all secondary structures with energy within δ of the minimum.
-To use it on the sequence in `test_data/test_tRNA.fasta` with parameters `A`, `B`, `C`, and `D` and energy gap δ, type
+To use it on the sequence in `test_data/tRNA/c.diphtheriae_tRNA.fasta` with parameters `A`, `B`, `C`, and `D` and energy gap δ, type
 
-    pmfe-subopt test_data/test_tRNA.fasta -a A -b B -c C -d D --delta δ
+    pmfe-subopt test_data/tRNA/c.diphtheriae_tRNA.fasta -a A -b B -c C -d D --delta δ
 
-The result will be saved in `test_data/test_tRNA.rnasubopt`.
+The result will be saved in `test_data/tRNA/c.diphtheriae_tRNA.rnasubopt`.
 
 ### `pmfe-parametrizer`
 Given a FASTA file representing an RNA sequence, the `pmfe-parametrizer` program will generate the polytope which is the convex hull of all secondary structures on that sequence in ℚ⁴.
-To use it on the sequence in `test_data/test_tRNA.fasta`, type
+To use it on the sequence in `test_data/tRNA/c.diphtheriae_tRNA.fasta`, type
 
-    pmfe-parametrizer test_data/test_tRNA.fasta
+    pmfe-parametrizer test_data/tRNA/c.diphtheriae_tRNA.fasta
 
-The result will be saved in `test_data/test_tRNA.rnapoly`, which can be read directly or used with `rna_poly.py` to produce a Sage polytope for further investigation.
+The result will be saved in `test_data/tRNA/c.diphtheriae_tRNA.rnapoly`, which can be read directly or used with `rna_poly.py` to produce a Sage polytope for further investigation.
 
 ### `pmfe-tests`
 The `pmfe-tests` program runs a suite of unit tests.
