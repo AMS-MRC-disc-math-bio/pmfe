@@ -12,6 +12,8 @@ You can download the latest image by running the following in your shell:
 
     docker pull agdphd/pmfe
 
+This command can be used in the future to update your image to the latest version.
+
 You can then enter the image by running the following in your shell:
 
     docker run -it agdphd/pmfe
