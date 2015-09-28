@@ -120,7 +120,7 @@ int main(int argc, char* argv[]) {
     outfile << "#\tSuboptimal secondary structures within " << delta.get_d() << " of minimum energy." << std::endl;
     outfile << "#\tCoefficients:\t" <<
         "a = " << params.multiloop_penalty << " ≈ " << params.multiloop_penalty.get_d() << ",\t" <<
-        "b = " << params.unpaired_penalty << " ≈ " << params.multiloop_penalty.get_d() << ",\t" <<
+        "b = " << params.unpaired_penalty << " ≈ " << params.unpaired_penalty.get_d() << ",\t" <<
         "c = " << params.branch_penalty << " ≈ " << params.branch_penalty.get_d() << ",\t" <<
         "d = " << params.dummy_scaling << " ≈ " << params.dummy_scaling.get_d() << "." << std::endl;
 
