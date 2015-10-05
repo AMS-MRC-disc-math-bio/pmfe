@@ -43,7 +43,7 @@ all: $(OBJ) $(BIN)
 
 -include $(DEP)
 
-debug: CXXFLAGS += -O0
+debug: CXXFLAGS += -Og
 debug: all
 
 pmfe-findmfe: $(LIBOBJ) src/bin-findmfe.o
