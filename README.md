@@ -3,6 +3,8 @@
 `pmfe` determines the sensitivity of RNA folding to multibranch-loop-related parameters.
 It relies on an implementation of Zucker's dynamic-programming algorithm for RNA secondary structure prediction, using adapted code from the `gtmfe` program from the [GTFold][gtfold] project.
 
+[![DOI](https://zenodo.org/badge/12672/AMS-MRC-disc-math-bio/pmfe.svg)](https://zenodo.org/badge/latestdoi/12672/AMS-MRC-disc-math-bio/pmfe)
+
 ## Docker container
 
 This project is available as a [Docker][docker] container.
