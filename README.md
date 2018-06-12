@@ -1,3 +1,7 @@
+## Warning: old repo
+
+**This version of pmfe is unmaintained. See https://github.com/gtDMMB/pmfe for active development.**
+
 ## Synopsis
 
 `pmfe` determines the sensitivity of RNA folding to multibranch-loop-related parameters.
